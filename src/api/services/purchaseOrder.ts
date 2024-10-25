@@ -17,43 +17,46 @@ export const getAllPurchaseOrders = async ({
   pagination
 }: GetAllPurchaseOrdersInput): Promise<PurchaseOrderListResponse> => {
   const limit = pagination.pageSize;
-  const page = pagination.pageIndex + 1;
-  const offset = page === 1 ? 0 : (page - 1) * limit - 1;
-  const filters: string[] = [];
-  const orders: string[] = [];
+  const offset = pagination.pageIndex * pagination.pageSize;
 
-  // Manually build the filter query
-  columnFilters.forEach((filterItem, index) => {
+  // Initialize filter and order arrays
+  const filter: any[] = [];
+  const order: any[] = [];
+
+  // Build filter array from columnFilters
+  columnFilters.forEach((filterItem) => {
     const { id, value } = filterItem;
-    let type: string;
 
+    // Determine operation type based on the filter value
+    let type: FilterOperationType;
     if (Array.isArray(value)) {
-      type = '=';
+      type = FilterOperationType.InStrings; // Example for array values
     } else if (value === null) {
-      type = 'ne_null';
+      type = FilterOperationType.NeNull; // Example for null values
     } else {
-      type = '=';
+      type = FilterOperationType.Eq; // Default to equality for single values
     }
 
-    filters.push(`filter[${index}][field]=${id}`);
-    filters.push(`filter[${index}][type]=${type}`);
-    filters.push(`filter[${index}][value]=${value}`);
+    filter.push({ field: id, type, value });
   });
 
-  // Manually build the order query
-  sorting.forEach((sort, index) => {
+  // Build order array from sorting
+  sorting.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
-    orders.push(`order[${index}][field]=${sort.id}`);
-    orders.push(`order[${index}][dir]=${direction}`);
+    order.push({ field: sort.id, dir: direction });
   });
 
-  // Build the complete query string
-  const queryString = `?offset=${offset}&limit=${limit}&${filters.join('&')}&${orders.join('&')}`;
+  // Construct the query string using FilterBuilder
+  const queryString = FilterBuilder.buildFilterQueryString({
+    limit,
+    offset,
+    filter,
+    order
+  });
 
   const fullUrl = `/purchase-order${queryString}`;
 
   try {
-    // Make the API request using Axios
     const config = get(fullUrl);
     const response = await axios(config);
     return response.data.data as PurchaseOrderListResponse;
