@@ -70,17 +70,19 @@ export const priorities = [
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  title: string,
+  value: string,
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, title, value }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter users..."
-          value={(table.getColumn('username')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('username')?.setFilterValue(event.target.value)}
+          placeholder={title}
+          value={(table.getColumn(value)?.getFilterValue() as string) ?? ''}
+          onChange={(event) => table.getColumn(value)?.setFilterValue(event.target.value)}
           className="h-8 w-[150px] lg:w-[350px]"
         />
         {table

@@ -4,6 +4,7 @@ export interface ImportRequest {
   id: string;
   poDelivery?: poDelivery;
   warehouseStaffName?: string;
+  code: string;
   type: string
   supplier?: string;
   deliveryType?: string;
