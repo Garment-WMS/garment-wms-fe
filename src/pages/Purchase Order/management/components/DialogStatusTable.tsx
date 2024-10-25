@@ -18,7 +18,10 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: 'status', value: selectedStatus }
+    {
+      id: 'status',
+      value: selectedStatus ? [selectedStatus] : []
+    }
   ]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
@@ -43,6 +46,8 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
           totalFiltered: pageMeta.totalPages
         }
       : undefined;
+
+  const totalPages = pageMeta ? Math.ceil((pageMeta.totalPages || 0) / pagination.pageSize) : 0;
 
   const getColorVariant = (status: PurchaseOrderStatus) => {
     switch (status) {
@@ -140,7 +145,12 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
   ];
 
   useEffect(() => {
-    setColumnFilters([{ id: 'status', value: selectedStatus }]);
+    setColumnFilters([
+      {
+        id: 'status',
+        value: selectedStatus ? [selectedStatus] : []
+      }
+    ]);
   }, [selectedStatus]);
 
   return (
@@ -156,7 +166,7 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
         showToolbar={false}
-        totalPages={paginatedTableData?.totalFiltered}
+        totalPages={totalPages}
       />
     </div>
   );
