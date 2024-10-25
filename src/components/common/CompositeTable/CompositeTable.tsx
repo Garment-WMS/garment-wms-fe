@@ -36,6 +36,11 @@ export default function TanStackBasicTable<TData, TValue>({
   searchColumnId,
   searchPlaceholder = 'Search'
 }: TanStackBasicTableProps<TData, TValue>) {
+  // Calculate total pages based on totalFiltered and pageSize
+  const calculatedTotalPages = Math.ceil(
+    (paginatedTableData?.totalFiltered || 0) / pagination.pageSize
+  );
+
   const table = useReactTable<TData>({
     data: paginatedTableData?.data || [],
     columns,
@@ -68,8 +73,9 @@ export default function TanStackBasicTable<TData, TValue>({
       }
     },
 
-    rowCount: paginatedTableData?.totalFiltered,
-    pageCount: totalPages,
+    // Use totalFiltered for rowCount, calculate pageCount from totalFiltered
+    rowCount: paginatedTableData?.totalFiltered || 0,
+    pageCount: calculatedTotalPages,
     manualPagination: true,
     state: {
       sorting,
@@ -105,7 +111,7 @@ export default function TanStackBasicTable<TData, TValue>({
           <div className="rounded-md border mb-8">
             <TanStackBasicTableTableComponent table={table} columns={columns} />
           </div>
-          {totalPages && totalPages > 1 && (
+          {calculatedTotalPages > 1 && (
             <TanStackBasicTablePaginationNavigationComponent table={table} />
           )}
         </>
