@@ -50,11 +50,12 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   labelType = 'percentage',
   showLegend = false
 }) => {
+  const filteredData = data.filter((entry) => entry.value !== 0);
   return (
     <div className="flex justify-center">
       <PieChart width={width} height={height}>
         <Pie
-          data={data}
+          data={filteredData}
           isAnimationActive={false}
           cx={width / 2}
           cy={height / 2}
