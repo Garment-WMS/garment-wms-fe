@@ -12,7 +12,7 @@ interface Props {
 
 const ImportRequestCreation: React.FC<Props> = (props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
-  let purchasingStaff = importRequest?.purchasingStaff;
+  let purchasingStaff = importRequest?.purchasingStaff as any;
   return (
     <Card className="flex flex-col w-full max-w-5xl">
       <CardHeader className="items-center pb-2">
@@ -23,12 +23,12 @@ const ImportRequestCreation: React.FC<Props> = (props) => {
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
           <Avatar className="w-20 h-20 mb-4">
-            <AvatarImage src={purchasingStaff?.users.avatarUrl} alt="John Doe" />
+            <AvatarImage src={purchasingStaff?.account?.avatarUrl} alt="John Doe" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="text-center">
-            <p className="text-sm font-medium">Created by {purchasingStaff?.users.firstName}</p>
-            <p className="text-xs text-muted-foreground">{purchasingStaff?.users.email}</p>
+            <p className="text-sm font-medium">Created by {purchasingStaff?.account.firstName}</p>
+            <p className="text-xs text-muted-foreground">{purchasingStaff?.account.email}</p>
           </div>
         </div>
 
@@ -38,7 +38,7 @@ const ImportRequestCreation: React.FC<Props> = (props) => {
             <div className="flex items-center text-sm">
               <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Created:</span>
-              <span>{purchasingStaff?.users.createdAt}</span>
+              <span>{purchasingStaff?.account.createdAt}</span>
             </div>
             <div className="flex items-center text-sm">
               <File className="mr-3 h-5 w-5 text-muted-foreground" />

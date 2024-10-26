@@ -1,23 +1,35 @@
 import { Badge } from '@/components/ui/Badge';
 import { Truck } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
+import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 
 const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
-  const { delivery } = location.state as { delivery: PODelivery };
+  const { delivery, poNumber } = location.state as { delivery: PODelivery; poNumber: string };
+  const { poId } = useParams();
 
   const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
-    (sum, detail) => sum + (detail.totalAmount || 0),
+    (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
     0
   );
   const totalQuantity = delivery.poDeliveryDetail.reduce(
-    (sum, detail) => sum + (detail.quantityByPack || 0),
+    (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
     0
   );
+
+  const breadcrumbItems = [
+    { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
+    { label: `Purchase Order #${poNumber}`, href: `/purchase-staff/purchase-order/${poId}` },
+    {
+      label: `Delivery #${delivery.code}`,
+      href: `/purchase-staff/purchase-order/${poId}/po-delivery/${delivery.id}`,
+      disabled: true
+    }
+  ];
 
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
@@ -27,19 +39,22 @@ const PurchaseOrderDeliveryDetails = () => {
         return 'bg-green-500 text-white';
       case PurchaseOrderDeliveryStatus.CANCELLED:
         return 'bg-red-500 text-white';
+      case PurchaseOrderDeliveryStatus.IMPORTING:
+        return 'bg-blue-500 text-white';
       default:
         return 'bg-gray-300 text-white';
     }
   };
 
   return (
-    <main className="w-full h-screen bg-white rounded-md shadow-lg px-8 pt-6 pb-8 pl-5">
+    <main className="w-full h-screen bg-white rounded-xl shadow-xl  px-8 pt-6 pb-8 pl-5">
+      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={3} />
       {/* Header */}
-      <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6">
+      <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6 mt-5">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-medium text-gray-700">Purchase Order Delivery ID:</h1>
-            <h1 className="text-2xl font-bold text-primaryDark">{delivery.purchaseOrderId}</h1>
+            <h1 className="text-2xl font-bold text-primaryDark">{delivery.id}</h1>
           </div>
 
           <div className="flex items-center gap-2 text-green-600">

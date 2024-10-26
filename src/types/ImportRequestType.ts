@@ -34,10 +34,10 @@ type ImportRequestDetail = {
   updatedAt: string;
   deletedAt: string | null;
   quantityByPack: number;
-  materialVariant: MaterialVariant;
+  materialPackage: materialPackage;
 };
 
-type MaterialVariant = {
+type materialPackage = {
   id: string;
   materialId: string;
   name: string;
@@ -212,7 +212,7 @@ export interface UseImportRequestsInput {
   pagination: PaginationState;
 }
 export interface PageMetaData {
-  totalItems: number;
+  total: number;
   offset: number;
   limit: number;
   page: number;

@@ -5,9 +5,9 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/Breadcrumb";
-import { Button } from "@/components/ui/button";
+  BreadcrumbSeparator
+} from '@/components/ui/Breadcrumb';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerClose,
@@ -16,21 +16,22 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/Drawer";
+  DrawerTrigger
+} from '@/components/ui/Drawer';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/DropdownMenu";
-import * as React from "react";
-import { Link } from "react-router-dom";
+  DropdownMenuTrigger
+} from '@/components/ui/DropdownMenu';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'usehooks-ts';
 
 type BreadcrumbItemType = {
   href?: string;
   label: string;
+  disabled?: boolean;
 };
 
 type BreadcrumbResponsiveProps = {
@@ -40,10 +41,10 @@ type BreadcrumbResponsiveProps = {
 
 export function BreadcrumbResponsive({
   breadcrumbItems,
-  itemsToDisplay = 3,
+  itemsToDisplay = 3
 }: BreadcrumbResponsiveProps) {
   const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   return (
     <Breadcrumb className="w-full py-2">
@@ -62,22 +63,16 @@ export function BreadcrumbResponsive({
 
         {breadcrumbItems.length > itemsToDisplay ? (
           <>
-            {/* Render Ellipsis for hidden items */}
             <BreadcrumbItem>
               {isDesktop ? (
                 <DropdownMenu open={open} onOpenChange={setOpen}>
-                  <DropdownMenuTrigger
-                    className="flex items-center gap-1"
-                    aria-label="Toggle menu"
-                  >
+                  <DropdownMenuTrigger className="flex items-center gap-1" aria-label="Toggle menu">
                     <BreadcrumbEllipsis className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {breadcrumbItems.slice(1, -itemsToDisplay + 1).map((item, index) => (
                       <DropdownMenuItem key={index}>
-                        <Link to={item.href ? item.href : "#"}>
-                          {item.label}
-                        </Link>
+                        <Link to={item.href ? item.href : '#'}>{item.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -90,17 +85,11 @@ export function BreadcrumbResponsive({
                   <DrawerContent>
                     <DrawerHeader className="text-left">
                       <DrawerTitle>Navigate to</DrawerTitle>
-                      <DrawerDescription>
-                        Select a page to navigate to.
-                      </DrawerDescription>
+                      <DrawerDescription>Select a page to navigate to.</DrawerDescription>
                     </DrawerHeader>
                     <div className="grid gap-1 px-4">
                       {breadcrumbItems.slice(1, -itemsToDisplay + 1).map((item, index) => (
-                        <Link
-                          key={index}
-                          to={item.href ? item.href : "#"}
-                          className="py-1 text-sm"
-                        >
+                        <Link key={index} to={item.href ? item.href : '#'} className="py-1 text-sm">
                           {item.label}
                         </Link>
                       ))}
@@ -121,20 +110,17 @@ export function BreadcrumbResponsive({
         {/* Render the last few items */}
         {breadcrumbItems.slice(-itemsToDisplay + 1).map((item, index) => (
           <BreadcrumbItem key={index}>
-            {item.href ? (
-              <>
-                <BreadcrumbLink
-                  asChild
-                  className="max-w-20 truncate md:max-w-none"
-                >
-                  <Link to={item.href}>{item.label}</Link>
-                </BreadcrumbLink>
-                <BreadcrumbSeparator />
-              </>
-            ) : (
-              <BreadcrumbPage className="max-w-20 truncate md:max-w-none">
+            {item.disabled ? (
+              <BreadcrumbPage className="max-w-20 truncate md:max-w-none text-gray-500 cursor-default">
                 {item.label}
               </BreadcrumbPage>
+            ) : (
+              <>
+                <BreadcrumbLink asChild className="max-w-20 truncate md:max-w-none">
+                  <Link to={item.href}>{item.label}</Link>
+                </BreadcrumbLink>
+                {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
+              </>
             )}
           </BreadcrumbItem>
         ))}

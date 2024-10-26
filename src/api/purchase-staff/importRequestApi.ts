@@ -2,6 +2,7 @@ import { UseImportRequestsInput, UseImportRequestsResponse } from "@/types/Impor
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import axios from "axios";
 import { get } from "../ApiCaller";
+import privateCall from "../PrivateCaller";
 
 let importRequestUrl = "/import-request";
 
@@ -54,6 +55,6 @@ export const getAllImportRequestFn = async ({
   });
 
   // Make the API request
-  const res = await axios(importRequestApi.getAll(queryString));
+  const res = await privateCall(importRequestApi.getAll(queryString));
   return res.data.data;
 };

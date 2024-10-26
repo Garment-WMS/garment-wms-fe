@@ -1,3 +1,4 @@
+import { convertToVietnamesePhoneNumber } from '@/helpers/convertPhoneNumber';
 import { Supplier } from '@/types/SupplierTypes';
 
 interface KeyValueDisplayProps {
@@ -32,8 +33,14 @@ const OrderToDetails: React.FC<OrderToDetailsProps> = ({ supplier }) => {
           <KeyValueDisplay name="Warehouse Name" value="WPS Warehouse" />
           <KeyValueDisplay name="Warehouse Email" value="warehouse@gmail.com" />
           <KeyValueDisplay name="Warehouse Address" value="297/24B Bui Dinh Tuy" />
-          <KeyValueDisplay name="Warehouse mobile number" value="+84 838631706" />
-          <KeyValueDisplay name="Warehouse Fax number" value="+84 838631706" />
+          <KeyValueDisplay
+            name="Warehouse mobile number"
+            value={convertToVietnamesePhoneNumber('+84 838631706')}
+          />
+          <KeyValueDisplay
+            name="Warehouse Fax number"
+            value={convertToVietnamesePhoneNumber('+84 838631706')}
+          />
         </div>
       </div>
 
@@ -46,8 +53,11 @@ const OrderToDetails: React.FC<OrderToDetailsProps> = ({ supplier }) => {
           <KeyValueDisplay name="Supplier Name" value={supplierName} />
           <KeyValueDisplay name="Supplier Email" value={email} />
           <KeyValueDisplay name="Supplier Address" value={address} />
-          <KeyValueDisplay name="Supplier mobile number" value={phoneNumber} />
-          <KeyValueDisplay name="Supplier Fax number" value={fax} />
+          <KeyValueDisplay
+            name="Supplier mobile number"
+            value={convertToVietnamesePhoneNumber(phoneNumber)}
+          />
+          <KeyValueDisplay name="Supplier Fax number" value={convertToVietnamesePhoneNumber(fax)} />
         </div>
       </div>
     </div>

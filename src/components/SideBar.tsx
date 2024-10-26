@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import control from '@/assets/images/control.png';
 import logo from '@/assets/images/warehouse-logo.svg';
 import { GoSignOut } from 'react-icons/go';
@@ -13,6 +13,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   };
   const [open, setOpen] = useState(true);
   const [activeTitle, setActiveTitle] = useState(menu[0]?.title || '');
+  const location = useLocation();
   const iconSize = 22;
   const constraintWindowWidth = 800;
   const handleMenuClick = (menuTitle: string) => {
@@ -38,6 +39,16 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  
+   // Update activeTitle based on the current URL
+   useEffect(() => {
+    const currentPath = location.pathname;
+    const matchingMenu = menu.find((Menu) => Menu.link === currentPath);
+    if (matchingMenu) {
+      setActiveTitle(matchingMenu.title);
+    }
+  }, [location.pathname, menu]); 
+
   return (
     <div className="flex min-h-screen">
 
@@ -64,7 +75,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
           </div>
           <ul className="pt-6">
             {menu.map((Menu, index) => (
-              <Link to={Menu.link}>
+              <Link key={index} to={Menu.link}>
                 <li
                   key={index}
                   className={`flex font-semibold  rounded-md p-2 cursor-pointer hover:bg-blue-500 text-sm items-center gap-x-4 mt-2

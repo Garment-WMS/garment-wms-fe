@@ -9,7 +9,14 @@ import { useEffect } from 'react';
 import { DataTableToolbar } from './DataTableToolbar';
 import TanStackBasicTableTableComponent from './TableComponent';
 import TanStackBasicTablePaginationNavigationComponent from './TablePagnationNavigation';
-import Loading from '../Loading';
+import TableSkeleton from '../TableSekeleton';
+
+interface TanStackBasicTableProps<TData, TValue> extends TableProps<TData, TValue> {
+  showToolbar?: boolean;
+  totalPages?: number;
+  searchColumnId?: string;
+  searchPlaceholder?: string;
+}
 
 export default function TanStackBasicTable<TData, TValue>({
   isTableDataLoading,
@@ -23,9 +30,18 @@ export default function TanStackBasicTable<TData, TValue>({
   setSorting,
   setPagination,
   columnFilters = [],
-  setColumnFilters
-}: TableProps<TData, TValue>) {
-  const table = useReactTable({
+  setColumnFilters,
+  showToolbar = true,
+  totalPages,
+  searchColumnId,
+  searchPlaceholder = 'Search'
+}: TanStackBasicTableProps<TData, TValue>) {
+  // Calculate total pages based on totalFiltered and pageSize
+  const calculatedTotalPages = Math.ceil(
+    (paginatedTableData?.totalFiltered || 0) / pagination.pageSize
+  );
+
+  const table = useReactTable<TData>({
     data: paginatedTableData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -43,11 +59,23 @@ export default function TanStackBasicTable<TData, TValue>({
 
     // pagination config
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    rowCount: paginatedTableData?.totalFiltered,
-    pageCount: Math.ceil(
-      (paginatedTableData?.totalFiltered || 0) / (paginatedTableData?.limit || 1)
-    ),
+    onPaginationChange: (updater) => {
+      if (setPagination) {
+        setPagination((prevPagination) => {
+          const newPagination = typeof updater === 'function' ? updater(prevPagination) : updater;
+          return {
+            ...newPagination,
+            pageIndex: newPagination.pageIndex
+          };
+        });
+      } else {
+        console.warn('setPagination is undefined');
+      }
+    },
+
+    // Use totalFiltered for rowCount, calculate pageCount from totalFiltered
+    rowCount: paginatedTableData?.totalFiltered || 0,
+    pageCount: calculatedTotalPages,
     manualPagination: true,
     state: {
       sorting,
@@ -67,17 +95,25 @@ export default function TanStackBasicTable<TData, TValue>({
   }, [columnFilters, setPagination]);
 
   return (
-    <div className="p-8 ">
+    <div className="p-8">
       <div className="flex flex-col md:flex-row justify-evenly gap-4"></div>
+      {showToolbar && (
+        <DataTableToolbar
+          table={table}
+          searchColumnId={searchColumnId}
+          searchPlaceholder={searchPlaceholder}
+        />
+      )}
       {isTableDataLoading ? (
-        <Loading/>
+        <TableSkeleton />
       ) : (
         <>
-          <DataTableToolbar table={table} />
           <div className="rounded-md border mb-8">
             <TanStackBasicTableTableComponent table={table} columns={columns} />
           </div>
-          <TanStackBasicTablePaginationNavigationComponent table={table} />
+          {calculatedTotalPages > 1 && (
+            <TanStackBasicTablePaginationNavigationComponent table={table} />
+          )}
         </>
       )}
     </div>

@@ -23,17 +23,17 @@ const ImportRequestDetails = (props: Props) => {
   let formattedDetails: ColumnType[] = [];
   if (details) {
     formattedDetails = details.map((detail) => {
-      const materialVariant = detail.materialVariant;
+      const materialPackage = detail.materialPackage;
 
       return {
-        name: materialVariant?.name ?? 'N/A', // Fallback to 'N/A' if undefined
-        code: materialVariant?.code ?? 'N/A',
-        packUnit: materialVariant?.packUnit ?? 'N/A',
-        materialName: materialVariant?.material?.name ?? 'N/A', // Fallback for nested material
-        uomPerPack: materialVariant?.uomPerPack ?? 0, // Default to 0 if undefined
+        name: materialPackage?.name ?? 'N/A', // Fallback to 'N/A' if undefined
+        code: materialPackage?.code ?? 'N/A',
+        packUnit: materialPackage?.packUnit ?? 'N/A',
+        materialName: materialPackage?.material?.name ?? 'N/A', // Fallback for nested material
+        uomPerPack: materialPackage?.uomPerPack ?? 0, // Default to 0 if undefined
         quantityByPack: detail.quantityByPack ?? 0, // Default to 0 if undefined
-        materialCode: materialVariant?.material?.code ?? 'N/A', // Fallback for nested material
-        materialType: materialVariant?.material?.materialType?.name ?? 'N/A' // Fallback for nested materialType
+        materialCode: materialPackage?.material?.code ?? 'N/A', // Fallback for nested material
+        materialType: materialPackage?.material?.materialType?.name ?? 'N/A' // Fallback for nested materialType
       };
     });
   }
