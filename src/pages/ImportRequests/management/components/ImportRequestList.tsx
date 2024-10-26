@@ -175,8 +175,6 @@ const ImportRequestList = (props: Props) => {
           setSorting={setSorting}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
-          searchTitle="Search code"
-          searchValue="code"
         />
       </div>
     </div>

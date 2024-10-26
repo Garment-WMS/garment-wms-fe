@@ -13,8 +13,6 @@ import TableSkeleton from '../TableSekeleton';
 
 interface TanStackBasicTableProps<TData, TValue> extends TableProps<TData, TValue> {
   showToolbar?: boolean;
-  searchTitle?: string;
-  searchValue?: string;
 }
 
 export default function TanStackBasicTable<TData, TValue>({
@@ -31,8 +29,6 @@ export default function TanStackBasicTable<TData, TValue>({
   columnFilters = [],
   setColumnFilters,
   showToolbar = true,
-  searchTitle = 'Search',
-  searchValue = 'code'
 }: TanStackBasicTableProps<TData, TValue>) {
   const table = useReactTable({
     data: paginatedTableData?.data || [],
@@ -78,7 +74,7 @@ export default function TanStackBasicTable<TData, TValue>({
   return (
     <div className="p-8">
       <div className="flex flex-col md:flex-row justify-evenly gap-4"></div>
-      {showToolbar && <DataTableToolbar value={searchValue} title={searchTitle} table={table} />}
+      {showToolbar && <DataTableToolbar table={table} />}
       {isTableDataLoading ? (
         <TableSkeleton />
       ) : (
