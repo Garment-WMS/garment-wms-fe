@@ -62,8 +62,8 @@ const ImportRequestList = (props: Props) => {
           data: importRequestData,
           limit: pageMeta.limit,
           page: pageMeta.page,
-          total: pageMeta.totalItems,
-          totalFiltered: pageMeta.totalItems
+          total: pageMeta.total,
+          totalFiltered: pageMeta.total
         }
       : undefined;
 
@@ -175,6 +175,8 @@ const ImportRequestList = (props: Props) => {
           setSorting={setSorting}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
+          searchColumnId='code'
+          searchPlaceholder='Search by import request code'
         />
       </div>
     </div>
