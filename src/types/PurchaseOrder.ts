@@ -26,6 +26,7 @@ export interface PODelivery {
   taxAmount: number | null;
   expectedDeliverDate: string;
   deliverDate: string | null;
+  code: string;
   status: PurchaseOrderDeliveryStatus;
   isExtra: boolean;
   createdAt: string | null;

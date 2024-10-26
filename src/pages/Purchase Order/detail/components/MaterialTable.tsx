@@ -27,7 +27,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       header: 'Material Code',
       accessorKey: 'materialVariant.code',
       cell: ({ getValue }) => <div className="pl-2 font-semibold">{getValue<string>()}</div>,
-      enableColumnFilter: false
+      enableColumnFilter: true
     },
     {
       header: 'Material Name',
@@ -37,7 +37,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
     {
       header: 'Material Type',
       accessorKey: 'materialVariant.material.materialType.name',
-      cell: ({ getValue }) => <div className="ml-4">{getValue<string>()}</div>,
+      cell: ({ getValue }) => <div className="ml-1">{getValue<string>()}</div>,
       enableColumnFilter: false
     },
     {
@@ -45,12 +45,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       accessorKey: 'materialVariant.packedWidth',
       cell: ({ row }) => {
         const packedWidth = row.original.materialVariant.packedWidth;
-        const uomName = row.original.materialVariant.material.materialUom.name;
-        return (
-          <div className="ml-1">
-            {packedWidth} {uomName}
-          </div>
-        );
+        return <div className="ml-1">{packedWidth} m</div>;
       },
       enableColumnFilter: false
     },
@@ -59,12 +54,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       accessorKey: 'materialVariant.packedLength',
       cell: ({ row }) => {
         const packedLength = row.original.materialVariant.packedLength;
-        const uomName = row.original.materialVariant.material.materialUom.name;
-        return (
-          <div className="ml-1">
-            {packedLength} {uomName}
-          </div>
-        );
+        return <div className="ml-1">{packedLength} m</div>;
       },
       enableColumnFilter: false
     },
@@ -73,12 +63,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       accessorKey: 'materialVariant.packedHeight',
       cell: ({ row }) => {
         const packedHeight = row.original.materialVariant.packedHeight;
-        const uomName = row.original.materialVariant.material.materialUom.name;
-        return (
-          <div className="ml-1">
-            {packedHeight} {uomName}
-          </div>
-        );
+        return <div className="ml-1">{packedHeight} m</div>;
       },
       enableColumnFilter: false
     },
@@ -87,7 +72,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       accessorKey: 'materialVariant.packedWeight',
       cell: ({ getValue }) => {
         const weight = getValue<number>();
-        return <div className="text-center">{weight} kg</div>;
+        return <div className="ml-1">{weight} kg</div>;
       },
       enableColumnFilter: false
     },
@@ -99,7 +84,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
         const packUnit = row.original.materialVariant.packUnit;
         const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit;
         return (
-          <div className="ml-4">
+          <div className="ml-1">
             <span>{uomPerPack}</span>{' '}
             <span className="lowercase text-slate-800">{pluralizedPackUnit}</span>
           </div>
@@ -128,6 +113,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
         setSorting={setSorting}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
+        showToolbar={false}
       />
     </div>
   );

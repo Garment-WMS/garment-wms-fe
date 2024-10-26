@@ -1,4 +1,4 @@
-import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
 export interface ImportRequest {
   id: string;
@@ -6,6 +6,7 @@ export interface ImportRequest {
   warehouseStaffName?: string;
   code: string;
   type: string
+  type: string;
   supplier?: string;
   deliveryType?: string;
   createdAt?: string;
@@ -14,25 +15,25 @@ export interface ImportRequest {
   importRequestDetail?: ImportRequestDetails[];
   status?: string;
 }
-export interface poDelivery{
-  id: string,
-  purchaseOrderId: string,
-  expectedDeliverDate: string,
-  deliverDate: string,
-  purchaseOrder: PurchaseOrder
+export interface poDelivery {
+  id: string;
+  purchaseOrderId: string;
+  expectedDeliverDate: string;
+  deliverDate: string;
+  purchaseOrder: PurchaseOrder;
 }
-export interface PurchaseOrder{
-  id: string,
-  poNumber: string,
-  supplier: Supplier,
-  status: string
+export interface PurchaseOrder {
+  id: string;
+  poNumber: string;
+  supplier: Supplier;
+  status: string;
 }
-export interface Supplier{
-  supplierName: string,
-  address: string,
-  email: string,
-  phoneNumber: string,
-  fax: string
+export interface Supplier {
+  supplierName: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  fax: string;
 }
 export interface ImportRequestDetails {
   id: string;
@@ -40,22 +41,22 @@ export interface ImportRequestDetails {
   quantityByPack?: number;
 }
 
-export interface MaterialVariant{
+export interface MaterialVariant {
   id: string;
   name: string;
-  code:string;
+  code: string;
   packUnit: string;
   uomPerPack: number;
   material: Material;
 }
-export interface Material{
+export interface Material {
   id: string;
   name: string;
   code: string;
   reorderLevel: number;
   materialType: MaterialType;
 }
-export interface MaterialType{
+export interface MaterialType {
   id: string;
   name: string;
   code: string;
@@ -90,12 +91,10 @@ export interface UseImportRequestsInput {
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;
 }
-export interface PageMetaData{
-  totalItems: number;
+export interface PageMetaData {
+  total: number;
   offset: number;
   limit: number;
   page: number;
   totalPages: number;
 }
-
-  

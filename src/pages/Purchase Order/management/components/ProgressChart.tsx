@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ProgressList from './ProgressList';
 import Colors from '@/constants/color';
 import { useGetPurchaseOrderStatistic } from '@/hooks/useGetPurchaseOrderStatistic';
-import HalfPieChartComponent from '@/components/common/HalfPieChart';
 import ChartSkeleton from '@/components/common/ChartSkeleton';
 import DialogStatusTable from './DialogStatusTable';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
@@ -14,6 +13,7 @@ import {
   SelectContent
 } from '@/components/ui/Select';
 import PieChartComponent from '@/components/common/PieChart';
+import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
 
 const getColorClasses = (status: string) => {
   switch (status) {
@@ -57,7 +57,7 @@ const ProgressChart = () => {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setSelectedStatus('IN_PROGRESS');
+    setSelectedStatus(PurchaseOrderStatus.IN_PROGRESS);
     setSelectedValue(0);
   };
 
@@ -73,14 +73,14 @@ const ProgressChart = () => {
             <ChartSkeleton />
           </div>
         ) : (
-          <div className="flex justify-center items-center gap-5">
+          <div className="flex flex-col items-center gap-9">
             <PieChartComponent
               data={chartData}
               colors={colors}
-              width={600}
-              height={650}
-              innerRadius={85}
-              outerRadius={280}
+              width={450}
+              height={450}
+              innerRadius={50}
+              outerRadius={180}
               labelType="value"
               showLegend={false}
             />
