@@ -1,4 +1,4 @@
-import { Loader2, CheckCircle, XCircle, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, CircleDashed } from 'lucide-react';
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ const getColorClasses = (status?: PurchaseOrderStatus) => {
 const getIcon = (status?: PurchaseOrderStatus) => {
   switch (status) {
     case PurchaseOrderStatus.IN_PROGRESS:
-      return <Loader2 className="text-blue-500 " size={30} />;
+      return <CircleDashed className="text-blue-500 " size={30} />;
     case PurchaseOrderStatus.CANCELLED:
       return <XCircle className="text-red-500" size={30} />;
     case PurchaseOrderStatus.FINISHED:
@@ -64,7 +64,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ status, value, label, onViewDet
 
       <div className="text-center flex flex-col gap-2">
         <h2 className={`text-4xl font-bold ${text}`}>{value}</h2>
-        <p className="text-sm text-slate-400">
+        <p className={`text-sm ${text}`}>
           <span className="capitalize font-semibold">
             {label || status?.toLowerCase().replace('_', ' ')}
           </span>{' '}
@@ -77,7 +77,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ status, value, label, onViewDet
 
 const ProgressList: React.FC<ProgressListProps> = ({ statistics, onViewDetails }) => {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="grid grid-cols-2 items-center gap-5">
       <StatusCard value={statistics.total} label="Total Orders" onViewDetails={onViewDetails} />
       <StatusCard
         status={PurchaseOrderStatus.IN_PROGRESS}

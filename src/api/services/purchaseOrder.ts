@@ -27,14 +27,14 @@ export const getAllPurchaseOrders = async ({
   columnFilters.forEach((filterItem) => {
     const { id, value } = filterItem;
 
-    // Check the type of operation based on your requirement
+    // Determine operation type based on the filter value
     let type: FilterOperationType;
     if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings;
+      type = FilterOperationType.InStrings; // Example for array values
     } else if (value === null) {
-      type = FilterOperationType.NeNull;
+      type = FilterOperationType.NeNull; // Example for null values
     } else {
-      type = FilterOperationType.Eq;
+      type = FilterOperationType.Eq; // Default to equality for single values
     }
 
     filter.push({ field: id, type, value });
@@ -46,7 +46,7 @@ export const getAllPurchaseOrders = async ({
     order.push({ field: sort.id, dir: direction });
   });
 
-  // Construct the query string
+  // Construct the query string using FilterBuilder
   const queryString = FilterBuilder.buildFilterQueryString({
     limit,
     offset,
@@ -54,9 +54,10 @@ export const getAllPurchaseOrders = async ({
     order
   });
 
-  // Make the API request
+  const fullUrl = `/purchase-order${queryString}`;
+
   try {
-    const config = get(`/purchase-order?${queryString}`);
+    const config = get(fullUrl);
     const response = await axios(config);
     return response.data.data as PurchaseOrderListResponse;
   } catch (error) {
