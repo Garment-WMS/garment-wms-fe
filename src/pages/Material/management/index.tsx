@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
 import { getAllMaterialFn, materialTypeApi } from '@/api/services/materialApi';
-import { MaterialType, Material, MaterialDataToRender } from '@/types/MaterialTypes';
+import { Material, MaterialDataToRender, MaterialVariant } from '@/types/MaterialTypes';
 import { toast } from '@/hooks/use-toast';
 import { PageMetaData } from '@/types/ImportRequestType';
 import CompositeTableWithGrid from './components/CompositeTableWithGrid';
@@ -32,15 +32,13 @@ interface filterType {
 const MaterialManagement = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const [pageMeta, setPageMeta] = useState<PageMetaData>();
-  const [data, setData] = useState<MaterialDataToRender>();
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [materialTypes, setMaterialTypes] = useState<filterType[]>([]); // Correct initialization
 
   // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
 
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
@@ -54,7 +52,7 @@ const MaterialManagement = (props: Props) => {
   const fetchMaterialTypes = async () => {
     try {
       const materialTypeResponse = await axios(materialTypeApi.getAll());
-      const materialTypes = materialTypeResponse.data.data.map((item: MaterialType) => ({
+      const materialTypes = materialTypeResponse.data.data.map((item: Material) => ({
         label: item.name, // This will be used as the label (e.g., "Farbic", "Button")
         value: item.name // This will be used as the value (e.g., the id of the material type)
       }));
@@ -68,120 +66,6 @@ const MaterialManagement = (props: Props) => {
       console.error('Failed to fetch material types:', error);
     }
   };
-  // const fetchMaterials = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const filters = debouncedColumnFilters.map((filter) => {
-  //       // Replace dots with underscores only if there are any dots in the id
-  //       const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
-
-  //       return {
-  //         id: fieldKey,
-  //         value: filter.value
-  //       };
-  //     });
-  //     const sorts = debouncedSorting.map((sort) => {
-  //       // Replace dots with underscores only if there are any dots in the id
-  //       const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
-
-  //       return {
-  //         id: fieldKey,
-  //         desc: sort.desc
-  //       };
-  //     });
-  //     const response = await getAllMaterialFn({
-  //       sorting: sorts,
-  //       columnFilters: filters,
-  //       pagination: debouncedPagination
-  //     });
-  //     if (response.statusCode === 200) {
-  //       const resData = response.data.data;
-  //       setPageMeta(response.data.pageMeta);
-  //       const dataWithPage = resData &&
-  //         pageMeta && {
-  //           data: resData,
-  //           limit: pageMeta?.limit || 0,
-  //           page: pageMeta?.page || 0,
-  //           total: pageMeta?.total || 0,
-  //           totalFiltered: pageMeta?.total || 0
-  //         };
-  //       setData(dataWithPage);
-  //     }
-
-  //     console.log(data);
-  //   } catch (error) {
-  //     toast({
-  //       variant: 'destructive',
-  //       description: 'Failed to fetch materials',
-  //       title: 'Error'
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const fetchMaterialandType = async()=>{
-  //   setIsLoading(true);
-  //   try {
-  //     const filters = debouncedColumnFilters.map(filter => {
-  //       // Replace dots with underscores only if there are any dots in the id
-  //       const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
-
-  //       return {
-  //           id: fieldKey,
-  //           value: filter.value,
-  //       };
-  //   });
-  //   const sorts = debouncedSorting.map(sort => {
-  //     // Replace dots with underscores only if there are any dots in the id
-  //     const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
-
-  //     return {
-  //         id: fieldKey,
-  //         desc: sort.desc,
-  //     };
-  // });
-  //     const [materialResponse, materialTypeResponse] =await Promise.all([
-  //       getAllMaterialFn({
-  //         sorting: sorts,
-  //         columnFilters: filters,
-  //         pagination: pagination
-  //       })
-  //       ,
-  //       axios(materialTypeApi.getAll())
-  //     ]);
-
-  //     const resData = materialResponse.data.data;
-  //      setPageMeta(materialResponse.data.pageMeta);
-  //      console.log(pageMeta)
-  //       const dataWithPage = {
-  //         data: resData,
-  //         limit: pageMeta?.limit || 0,
-  //         page: pageMeta?.page || 0,
-  //         total: pageMeta?.total || 0,
-  //         totalFiltered: pageMeta?.total || 0
-  //       };
-  //       setData(dataWithPage);
-  //       console.log(data)
-  //       const materialTypes = materialTypeResponse.data.data.map((item: MaterialType) => ({
-  //         label: item.name, // This will be used as the label (e.g., "Farbic", "Button")
-  //         value: item.name    // This will be used as the value (e.g., the id of the material type)
-  //       }));
-  //       setMaterialTypes(materialTypes);
-  //   } catch (error) {
-  //     toast({
-  //       variant: 'destructive',
-  //       description: 'Something went wrong',
-  //       title: 'Error'
-  //     })
-  //   }finally {
-  //     setIsLoading(false);
-  //   }
-
-  // }
-  // useEffect(() => {
-  //   fetchMaterials();
-  // }, [debouncedColumnFilters, debouncedSorting, debouncedPagination]);
 
   useEffect(() => {
     fetchMaterialTypes();
@@ -207,7 +91,7 @@ const MaterialManagement = (props: Props) => {
     // Navigate to the new route
     navigate(`${basePath}/material/${requestId}`);
   };
-  const materialColumn: CustomColumnDef<Material>[] = [
+  const materialColumn: CustomColumnDef<MaterialVariant>[] = [
     {
       header: 'Material code',
       accessorKey: 'code',
@@ -233,14 +117,14 @@ const MaterialManagement = (props: Props) => {
       }
     },
     {
-      header: 'Material type',
-      accessorKey: 'materialType.name',
+      header: 'Material',
+      accessorKey: 'material.name',
       enableColumnFilter: true,
       filterOptions: materialTypes.map((type) => ({
         label: type.label, // Correctly access the label
         value: type.value // Correctly access the value
       })),
-      cell: ({ row }) => <div>{row.original.materialType.name}</div>
+      cell: ({ row }) => <div>{row.original.material.name}</div>
     },
     {
       header: 'Quantity',
@@ -257,14 +141,14 @@ const MaterialManagement = (props: Props) => {
       }
     },
     {
-      header: 'Variants Quantity',
-      accessorKey: 'numberOfMaterialVariant',
+      header: 'Package Quantity',
+      accessorKey: 'numberOfMaterialPackage',
       enableColumnFilter: false,
       enableSorting: false,
       cell: ({ row }) => {
         return (
           <div className='flex'>
-            <div className=''>{row.original.numberOfMaterialVariant}</div>
+            <div className=''>{row.original.numberOfMaterialPackage}</div>
           </div>
         );
       }

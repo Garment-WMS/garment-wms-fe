@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { materialApi } from '@/api/services/materialApi';
 import Loading from '@/components/common/Loading';
-import { Material, MaterialReceipt } from '@/types/MaterialTypes';
+import { Material, MaterialReceipt, MaterialVariant } from '@/types/MaterialTypes';
 import placeHolder from '@/assets/images/null_placeholder.jpg';
 import General from './components/General';
 
@@ -22,7 +22,7 @@ const MaterialDetails = () => {
   const [activeTab, setActiveTab] = useState('general');
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
-  const [material, setMaterial] = useState<Material>();
+  const [material, setMaterial] = useState<MaterialVariant>();
   const [materialReceipt, setMaterialReceipt] = useState<MaterialReceipt>();
   const fetchMaterial = async (id: string) => {
     if (!id) return;
@@ -79,6 +79,7 @@ const MaterialDetails = () => {
         setMaterial(materialRes.data.data);
         setMaterialReceipt(materialReceiptRes.data.data); // Assuming you have a state for receipt
         console.log('materialRes', materialReceipt);
+        console.log('material', material)
       } else {
         // Handle failure cases for individual requests
         toast({
@@ -112,7 +113,7 @@ const MaterialDetails = () => {
     ) : material ? (
       <div className="container mx-auto p-6 w-full bg-white shadow-md rounded-lg">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Material Details</h1>
+          <h1 className="text-2xl font-bold">Material Variant Details</h1>
           <div className="space-x-2">
             <Button variant="secondary">Update material</Button>
             {/* <Button variant="secondary">Replenish</Button>
@@ -122,8 +123,8 @@ const MaterialDetails = () => {
   
         <div className="">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">{material?.name}</h2>
-            <div className="w-20 h-20">
+          <h2 className="text-2xl font-semibold">{material?.name || 'No name available'}</h2>
+          <div className="w-20 h-20">
               {material?.image ? (
                 <img src={material?.image} alt="" />
               ) : (
@@ -139,10 +140,10 @@ const MaterialDetails = () => {
               <TabsTrigger value="inventory">Inventory</TabsTrigger>
             </TabsList>
             <TabsContent value="general" className="mt-4">
-              <General material={material} />
+              <General materialVariant={material} />
             </TabsContent>
             <TabsContent value="attributes">
-              <VariantTable materialVariants={material?.materialVariant} />
+              <VariantTable materialPackage={material?.materialPackage} />
             </TabsContent>
             <TabsContent value="inventory">
               <ImportRequestTable />

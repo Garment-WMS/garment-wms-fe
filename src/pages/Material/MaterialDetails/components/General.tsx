@@ -1,28 +1,36 @@
 import { Label } from '@/components/ui/Label';
-import { Material } from '@/types/MaterialTypes';
+import { Material, MaterialVariant } from '@/types/MaterialTypes';
 import React from 'react';
 import VariantChart from './VariantChart';
 
 type Props = {
-  material: Material;
+  materialVariant: MaterialVariant;
 };
 
-const General: React.FC<Props> = ({ material }) => {
+const General: React.FC<Props> = ({ materialVariant }) => {
+  console.log(materialVariant)
+  if (!materialVariant) {
+    return (
+      <p className="text-center text-lg text-gray-500">
+        Material Variant data is unavailable.
+      </p>
+    );
+  }
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <Label htmlFor="product-type" className="flex items-center">
-          Material Type: {material?.materialType.name}
+        Material: {materialVariant?.material?.name}
         </Label>
       </div>
       <div>
         <Label htmlFor="product-type" className="flex items-center">
-          Material Code: {material?.code}
+          Material Code: {materialVariant?.code}
         </Label>
       </div>
       <div>
         <Label htmlFor="invoicing-policy" className="flex items-center">
-          Unit of measure: {material?.materialUom.name}
+          Unit of measure: {materialVariant?.material?.materialUom.name}
         </Label>
       </div>
       <div className="col-span-2">
@@ -31,7 +39,7 @@ const General: React.FC<Props> = ({ material }) => {
   </Label> */}
         <div className="flex items-center mt-2">
           <Label htmlFor="track-inventory" className="">
-            Quantity: {material?.onHand} unit
+            Quantity: {materialVariant?.onHand} unit
           </Label>
         </div>
         <p className="text-sm text-gray-500 mt-2">
@@ -39,7 +47,7 @@ const General: React.FC<Props> = ({ material }) => {
         </p>
       </div>
       <div className="mt-4">
-        {material?.materialVariant && <VariantChart materialVariants={material.materialVariant} />}
+        {materialVariant?.materialPackage && <VariantChart materialPackage={materialVariant.materialPackage} />}
       </div>
     </div>
   );

@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
 import { Star } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table"
-import { MaterialVariant } from '@/types/MaterialTypes'
+import { MaterialPackage } from '@/types/MaterialTypes'
 import { DataTable } from '@/components/ui/DataTable'
 import { DetailsColumn } from './VariantColumn'
 import VariantChart from './VariantChart'
 type Props = {
-  materialVariants: MaterialVariant[]
+  materialPackage: MaterialPackage[]
 }
 
 
-const VariantTable: React.FC<Props>= ({materialVariants}) => {
+const VariantTable: React.FC<Props>= ({materialPackage}) => {
   return (
     <div className="container mx-auto p-4">
-      <DataTable columns={DetailsColumn} data={materialVariants}/>
+      <DataTable columns={DetailsColumn} data={materialPackage}/>
       <div className="mt-8">
-        {materialVariants && <VariantChart materialVariants={materialVariants} />}
+        {materialPackage && <VariantChart materialPackage={materialPackage} />}
       </div>
   </div>
   )

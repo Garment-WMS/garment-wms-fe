@@ -1,5 +1,5 @@
 import { getAllMaterialFn } from '@/api/services/materialApi';
-import { MaterialResponse } from '@/types/MaterialTypes';
+import { MaterialVariantResponse } from '@/types/MaterialTypes';
 import { InputType } from '@/types/Shared';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -15,8 +15,8 @@ export const useGetMaterial = ({
       data,
       isLoading,
       isFetching
-    } = useQuery<MaterialResponse, AxiosError>({
-      queryKey: ['Material', sorting, columnFilters, pagination],
+    } = useQuery<MaterialVariantResponse, AxiosError>({
+      queryKey: ['MaterialVariant', sorting, columnFilters, pagination],
       queryFn: () =>
         getAllMaterialFn({
           sorting,
@@ -25,7 +25,6 @@ export const useGetMaterial = ({
         }),
 
     });
-    let result = data
     let materialList = data?.data.data;
     const pageMeta = data?.data.pageMeta;
 

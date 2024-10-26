@@ -12,19 +12,20 @@ export interface UOM {
 }
 
 // Material Type
-export interface MaterialType {
+export interface Material {
   id: string;
   name: string;
   code: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  materialUom: UOM;
 }
 
 // Material
-export interface Material {
+export interface MaterialVariant {
   id: string;
-  materialTypeId: string;
+  materialId: string;
   materialUomId: string;
   name: string;
   code: string;
@@ -32,19 +33,18 @@ export interface Material {
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
-  materialUom: UOM;
-  materialType: MaterialType;
-  materialVariant: MaterialVariant[]
+  material: Material;
+  materialPackage: MaterialPackage[]
   image: string | null;
   onHand: number;
-  numberOfMaterialVariant: number;
+  numberOfMaterialPackage: number;
 }
 
 
-export interface MaterialResponse {
+export interface MaterialVariantResponse {
   statusCode: number;
   data: {
-    data: Material[];
+    data: MaterialVariant[];
     pageMeta: PageMetaData;
   };
   message: string;
@@ -87,7 +87,7 @@ export interface MaterialDataToRender {
   page: number;
   total: number;
   totalFiltered: number;
-  data: Material[];
+  data: MaterialVariant[];
 }
 export interface UseMaterialsInput {
   sorting: SortingState;
@@ -96,7 +96,7 @@ export interface UseMaterialsInput {
 }
 
 // Material Variant
-export interface MaterialVariant {
+export interface MaterialPackage {
   id: string;
   materialId: string;
   name: string;
@@ -122,10 +122,10 @@ export interface InventoryStock {
   updatedAt: string | null;
   deletedAt: string | null;
 }
-export type MaterialVariantResponse = {
+export type MaterialPackageResponse = {
   statusCode: number;
   data: {
-    data: MaterialVariant[];
+    data: MaterialPackage[];
     pageMeta: PageMeta;
   };
   message: string;

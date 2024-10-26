@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
-import { MaterialVariant } from '@/types/MaterialTypes';
+import { MaterialPackage, MaterialVariant } from '@/types/MaterialTypes';
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const DetailsColumn: ColumnDef<MaterialVariant>[] = [
+export const DetailsColumn: ColumnDef<MaterialPackage>[] = [
   {
     header: ({ column }) => {
       return (

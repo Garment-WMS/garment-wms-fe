@@ -24,12 +24,12 @@ const KanbanDisplayCard: React.FC<any> = ({ product }) => {
             <div>
               <h3 className="font-semibold text-sm flex items-center">{product.name}</h3>
               {product.code && <p className="text-xs text-gray-500">[{product.code}]</p>}
-              {product.materialVariant && (
-                <p className="text-xs text-gray-500">{product.materialVariant.length} Variants</p>
+              {product.materialPackage && (
+                <p className="text-xs text-gray-500">{product.materialPackage.length} Package Variants</p>
               )}
 
-              {product.materialType && (
-                <p className="text-xs text-gray-500">{product.materialType.name}</p>
+              {product.material&& (
+                <p className="text-xs text-gray-500">{product.material.name}</p>
               )}
               {product.materialType && (
                 <p className="text-xs text-gray-500">Quantity: {product.onHand}</p>

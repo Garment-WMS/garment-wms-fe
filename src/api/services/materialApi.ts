@@ -1,15 +1,15 @@
-import { MaterialReceiptResponse, MaterialResponse, UseMaterialsInput } from '@/types/MaterialTypes';
+import { MaterialReceiptResponse,  MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
 import { get } from '../ApiCaller';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 
-let material = '/material';
-let materialType ='/material-type';
+let materialVariant = '/material-variant';
+let materialType ='/material';
 export const materialApi = {
-  getOne: (id: string) => get(`${material}/${id}`),
-  getAll: (queryString: string) => get(`${material}${queryString}`),
-  getOneReceipt: (id: string) => get(`${material}/${id}/receipt`),
+  getOne: (id: string) => get(`${materialVariant}/${id}`),
+  getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
+  getOneReceipt: (id: string) => get(`${materialVariant}/${id}/receipt`),
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`),
@@ -18,7 +18,7 @@ export const getAllMaterialFn = async ({
     sorting,
     columnFilters,
     pagination,
-  }: UseMaterialsInput): Promise<MaterialResponse> => {
+  }: UseMaterialsInput): Promise<MaterialVariantResponse> => {
     const limit = pagination.pageSize;
     const offset = pagination.pageIndex * pagination.pageSize;
   
@@ -78,7 +78,7 @@ export const getAllMaterialFn = async ({
     return res.data;
   };
   
-export const getOneMaterial = async (id: string): Promise<MaterialResponse> => {
+export const getOneMaterial = async (id: string): Promise<MaterialVariantResponse> => {
   const res = await axios(materialApi.getOne(id));
   return res.data.data;
 };

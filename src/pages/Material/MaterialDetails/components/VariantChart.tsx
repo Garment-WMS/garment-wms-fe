@@ -2,18 +2,18 @@ import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { MaterialVariant } from '@/types/MaterialTypes';
+import { MaterialPackage } from '@/types/MaterialTypes';
 import { calculatePercentage } from '@/helpers/calculatePercentage';
 import { generateColors } from '@/helpers/generateColors';
 
 type Props = {
-  materialVariants: MaterialVariant[];
+  materialPackage: MaterialPackage[];
 };
 
 
-const VariantChart = ({ materialVariants = [] }: Props) => {
+const VariantChart = ({ materialPackage = [] }: Props) => {
   // Filter out variants with no inventoryStock or quantity
-  const data = materialVariants
+  const data = materialPackage
     .map(variant => ({
       name: variant.name,
       value: variant?.inventoryStock?.quantityByPack || 0,
