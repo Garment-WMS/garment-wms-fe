@@ -52,16 +52,20 @@ export const getAllMaterialFn = async ({
       if (id === 'name' || id === 'code') {
         type = FilterOperationType.Ilike;
       } else {
-        type = FilterOperationType.Eq;
+        type = FilterOperationType.In;
       }
-      if (Array.isArray(value)) {
-        value.forEach((val) => {
-          filter.push({ field: id, type, value: val });
-        });
-      } else {
-        filter.push({ field: id, type, value });
-      }
-    });
+      // Handle FilterOperationType.In as an array
+    if (type === FilterOperationType.In && Array.isArray(value)) {
+      // Push a single filter object with `value` as an array
+      filter.push({ field: id, type, value });
+    } else if (Array.isArray(value)) {
+      value.forEach((val) => {
+        filter.push({ field: id, type, value: val });
+      });
+    } else {
+      filter.push({ field: id, type, value });
+    }
+  });
     sorts.forEach((sort) => {
       const direction = sort.desc ? 'desc' : 'asc';
       order.push({ field: sort.id, dir: direction });

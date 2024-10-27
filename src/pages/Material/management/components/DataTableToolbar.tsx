@@ -87,10 +87,9 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
     <div className="flex items-center justify-between mb-4">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter name and code..."
+          placeholder="Filter name"
           value={
             (table.getColumn('name')?.getFilterValue() as string) ?? 
-            (table.getColumn('code')?.getFilterValue() as string) ?? 
             ''
           }
           onChange={handleFilterChange}
