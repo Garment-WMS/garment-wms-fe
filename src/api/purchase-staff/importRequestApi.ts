@@ -22,26 +22,49 @@ export const getAllImportRequestFn = async ({
   // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
+  const filters = columnFilters.map(filter => {
+    // Replace dots with underscores only if there are any dots in the id
+    const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
+
+    return {
+        id: fieldKey,
+        value: filter.value,
+    };
+});
+const sorts = sorting.map(sort => {
+  // Replace dots with underscores only if there are any dots in the id
+  const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
+
+  return {
+      id: fieldKey,
+      desc: sort.desc,
+  };
+});
 
   // Build filter array from columnFilters
-  columnFilters.forEach((filterItem) => {
+  filters.forEach((filterItem) => {
     const { id, value } = filterItem;
 
     // Check the type of operation based on your requirement
     let type: FilterOperationType;
-    if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings; // Example operation type
-    } else if (value === null) {
-      type = FilterOperationType.NeNull; // Example operation type
+    if (id === 'name' || id === 'code') {
+      type = FilterOperationType.Ilike;
     } else {
-      type = FilterOperationType.Eq; // Default operation type
+      type = FilterOperationType.In;
     }
-
+    // Handle FilterOperationType.In as an array
+  if (type === FilterOperationType.In && Array.isArray(value)) {
+    // Push a single filter object with `value` as an array
     filter.push({ field: id, type, value });
-  });
-
-  // Build order array from sorting
-  sorting.forEach((sort) => {
+  } else if (Array.isArray(value)) {
+    value.forEach((val) => {
+      filter.push({ field: id, type, value: val });
+    });
+  } else {
+    filter.push({ field: id, type, value });
+  }
+});
+  sorts.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
     order.push({ field: sort.id, dir: direction });
   });
