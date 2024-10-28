@@ -177,7 +177,7 @@ export interface Supplier {
 }
 export interface ImportRequestDetails {
   id: string;
-  materialVariant?: MaterialVariant;
+  materialPackage?: materialPackage;
   quantityByPack?: number;
 }
 

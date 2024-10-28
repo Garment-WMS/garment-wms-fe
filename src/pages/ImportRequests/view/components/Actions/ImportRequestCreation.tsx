@@ -14,7 +14,7 @@ const ImportRequestCreation: React.FC<Props> = (props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   let purchasingStaff = importRequest?.purchasingStaff as any;
   return (
-    <Card className="flex flex-col w-full max-w-5xl">
+    <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Import Request Creation</CardTitle>
         <p className="text-sm text-muted-foreground">Request #1234</p>

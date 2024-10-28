@@ -51,7 +51,7 @@ export default function WarehouseStaffAssignment({
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
 
   return (
-    <Card className="flex flex-col w-full max-w-5xl">
+    <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Warehouse Staff Assignment</CardTitle>
         <p className="text-sm text-muted-foreground">Request #{requestId}</p>

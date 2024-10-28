@@ -126,7 +126,7 @@ export default function WarehouseApproval({
 
   return (
     <TooltipProvider>
-      <Card className="flex flex-col w-full max-w-5xl">
+      <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
         <CardHeader className="items-center pb-2">
           <CardTitle className="text-2xl">Warehouse Manager Approval</CardTitle>
           <p className="text-sm text-muted-foreground">Request #{requestId}</p>
