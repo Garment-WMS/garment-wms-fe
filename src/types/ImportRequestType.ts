@@ -23,6 +23,7 @@ export interface ImportRequest {
   purchasingStaff: PurchasingStaff;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
+
 }
 
 type ImportRequestDetail = {
