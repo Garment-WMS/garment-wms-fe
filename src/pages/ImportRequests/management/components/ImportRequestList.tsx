@@ -1,3 +1,4 @@
+import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
 import { badgeVariants } from '@/components/ui/Badge';
 
@@ -17,7 +18,6 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import TanStackBasicTable from './CompositeTable';
 type Props = {};
 
 export const getStatusBadgeVariant = (status: string) => {
@@ -62,8 +62,8 @@ const ImportRequestList = (props: Props) => {
           data: importRequestData,
           limit: pageMeta.limit,
           page: pageMeta.page,
-          total: pageMeta.totalItems,
-          totalFiltered: pageMeta.totalItems
+          total: pageMeta.total,
+          totalFiltered: pageMeta.total
         }
       : undefined;
 
@@ -82,29 +82,18 @@ const ImportRequestList = (props: Props) => {
 
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
-      header: 'Import request ID',
-      accessorKey: 'id',
+      header: 'Import request code',
+      accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
         return (
           <div>
-            <div>{row.original.id.slice(0, 8)}</div>
+            <div>{row.original.code}</div>
           </div>
         );
       }
     },
-    {
-      header: 'Delivery ID',
-      accessorKey: 'poDeliveryId',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div>{row.original.id.slice(0, 8)}</div>
-          </div>
-        );
-      }
-    },
+  
     {
       header: 'Import Request Type',
       accessorKey: 'type',
@@ -186,6 +175,8 @@ const ImportRequestList = (props: Props) => {
           setSorting={setSorting}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
+          searchColumnId='code'
+          searchPlaceholder='Search by import request code'
         />
       </div>
     </div>
