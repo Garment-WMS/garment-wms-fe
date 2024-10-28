@@ -88,7 +88,7 @@ export default function CompositeTableWithGrid<TData, TValue>({
               <List size={20} />
             </Button>
           </div>
-          <DataTableToolbar table={table} />
+          <DataTableToolbar displayState={displayState} table={table} />
           <>
             {displayState === 'grid' ? (
               <KanbanDisplayList

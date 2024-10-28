@@ -23,6 +23,7 @@ import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
 import MaterialDetails from '@/pages/Material/MaterialDetails';
 import MaterialList from '@/pages/Material/management';
+import MaterialVariantUpdate from '@/pages/Material/update';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -96,11 +97,15 @@ const RouterComponent: React.FC = () => {
               element: <Home />
             },
             {
-              path: '/purchase-staff/material/:id',
+              path: '/material-variant/:id',
               element: <MaterialDetails/>
             },
             {
-              path: '/purchase-staff/material',
+              path: '/material-variant/update/:id',
+              element: <MaterialVariantUpdate/>
+            },
+            {
+              path: '/material-variant',
               element: <MaterialList/>
             },
           ]

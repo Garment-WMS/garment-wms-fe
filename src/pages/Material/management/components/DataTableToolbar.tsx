@@ -72,16 +72,16 @@ export const priorities = [
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  displayState: string;
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, displayState }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     // Set filter value for both "name" and "code"
     table.getColumn('name')?.setFilterValue(value);
-    table.getColumn('code')?.setFilterValue(value);
   };
   return (
     <div className="flex items-center justify-between mb-4">
@@ -119,7 +119,10 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
           </Button>
         )}
       </div>
-        <DataTableViewOptions table={table} />
+      {displayState !== 'grid' && (
+                <DataTableViewOptions table={table} />
+
+      )}
     
     </div>
   );

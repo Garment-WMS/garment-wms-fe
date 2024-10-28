@@ -89,7 +89,7 @@ const MaterialManagement = (props: Props) => {
     const basePath = location.pathname.split('/material')[0]; // Get base path (either manager or purchase-staff)
 
     // Navigate to the new route
-    navigate(`${basePath}/material/${requestId}`);
+    navigate(`${basePath}/material-variant/${requestId}`);
   };
   const materialColumn: CustomColumnDef<MaterialVariant>[] = [
     {

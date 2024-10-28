@@ -1,22 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Star, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import VariantTable from './components/VariantTable';
 import ImportRequestTable from './components/ImportRequestTable';
-import { Image } from '@radix-ui/react-avatar';
-import VariantChart from './components/VariantChart';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { materialApi } from '@/api/services/materialApi';
 import Loading from '@/components/common/Loading';
-import { Material, MaterialReceipt, MaterialVariant } from '@/types/MaterialTypes';
+import { MaterialReceipt, MaterialVariant } from '@/types/MaterialTypes';
 import placeHolder from '@/assets/images/null_placeholder.jpg';
 import General from './components/General';
+import { useDispatch } from 'react-redux';
+import { actions } from '../slice';
 
 const MaterialDetails = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -24,6 +21,9 @@ const MaterialDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [material, setMaterial] = useState<MaterialVariant>();
   const [materialReceipt, setMaterialReceipt] = useState<MaterialReceipt>();
+  const navigate = useNavigate(); 
+  const dispatch = useDispatch();
+
   const fetchMaterial = async (id: string) => {
     if (!id) return;
     setIsLoading(true);
@@ -48,7 +48,6 @@ const MaterialDetails = () => {
     setIsLoading(true);
     try {
       const res = await axios(materialApi.getOneReceipt(id));
-      console.log('res', res);
       if (res.status === 200) {
         setMaterial(res.data.data);
       }
@@ -77,6 +76,7 @@ const MaterialDetails = () => {
       if (materialRes.status === 200 && materialReceiptRes.status === 200) {
         // Assuming you want to set both material and receipt data separately
         setMaterial(materialRes.data.data);
+        dispatch(actions.setMaterialVariants(materialRes.data.data));
         setMaterialReceipt(materialReceiptRes.data.data); // Assuming you have a state for receipt
         console.log('materialRes', materialReceipt);
         console.log('material', material)
@@ -104,6 +104,9 @@ const MaterialDetails = () => {
       fetchMaterialAndReceipt(id);
     }
   }, [id]);
+  const handleUpdateMaterial = () => {
+    navigate(`/material-variant/update/${id}`);
+  }
   return (
     <>
     {isLoading ? (
@@ -115,7 +118,9 @@ const MaterialDetails = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Material Variant Details</h1>
           <div className="space-x-2">
-            <Button variant="secondary">Update material</Button>
+            <Button
+            onClick={handleUpdateMaterial}
+            variant="secondary">Update material</Button>
             {/* <Button variant="secondary">Replenish</Button>
             <Button variant="secondary">Print Labels</Button> */}
           </div>

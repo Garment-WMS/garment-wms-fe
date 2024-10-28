@@ -17,7 +17,7 @@ const General: React.FC<Props> = ({ materialVariant }) => {
     );
   }
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="flex flex-col gap-4">
       <div>
         <Label htmlFor="product-type" className="flex items-center">
         Material: {materialVariant?.material?.name}
