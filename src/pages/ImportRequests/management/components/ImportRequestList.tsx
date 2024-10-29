@@ -1,7 +1,6 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
 import { badgeVariants } from '@/components/ui/Badge';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
