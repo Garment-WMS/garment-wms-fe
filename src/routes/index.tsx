@@ -22,6 +22,7 @@ import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
+import ImportReceipt from '@/pages/ImportReceipts';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -43,7 +44,7 @@ const RouterComponent: React.FC = () => {
     },
     {
       path: '/login',
-      element: <Login />,
+      element: <Login />
     },
     {
       element: <WarehouseManagerRoute />,
@@ -92,6 +93,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/home',
               element: <Home />
+            },
+            {
+              path: '/purchase-staff/import-receipt/:id',
+              element: <ImportReceipt />
             }
           ]
         },
