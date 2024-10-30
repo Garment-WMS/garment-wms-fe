@@ -61,15 +61,15 @@ export interface MaterialType{
 }
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
   { label: 'Arrived', value: 'ARRIVED', variant: 'info' },
-  { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
+  { label: 'Rejected', value: 'REJECTED', variant: 'destructive' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
   { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
   { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
   { label: 'Imported', value: 'IMPORTED', variant: 'success' },
-  { label: 'Canceled', value: 'CANCELED', variant: 'danger' }
+  { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
 ];
-type StatusVariant = 'info' | 'danger' | 'success' | 'warning' | 'default';
+type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default';
 export interface UseImportRequestsResponse {
   pageMeta: PageMetaData;
   data: ImportRequest[];
