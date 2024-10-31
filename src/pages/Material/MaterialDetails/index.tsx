@@ -6,7 +6,6 @@ import VariantTable from './components/VariantTable';
 import ImportRequestTable from './components/ImportRequestTable';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
-import axios from 'axios';
 import { materialApi } from '@/api/services/materialApi';
 import Loading from '@/components/common/Loading';
 import { MaterialReceipt, MaterialVariant } from '@/types/MaterialTypes';
@@ -14,6 +13,8 @@ import placeHolder from '@/assets/images/null_placeholder.jpg';
 import General from './components/General';
 import { useDispatch } from 'react-redux';
 import { actions } from '../slice';
+import ImageUpload from './components/ImageUpload';
+import axios from 'axios';
 
 const MaterialDetails = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -107,6 +108,22 @@ const MaterialDetails = () => {
   const handleUpdateMaterial = () => {
     navigate(`/material-variant/update/${id}`);
   }
+  const handleUploadPhoto = async (file: File)=>{
+    if (!id) return;
+    
+    try {
+      
+      const formData = new FormData();
+    formData.append('file', file);
+    await axios(materialApi.addImage(id, formData));
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Failed to upload image',
+        title: 'Error',
+      })
+    }
+  }
   return (
     <>
     {isLoading ? (
@@ -129,13 +146,14 @@ const MaterialDetails = () => {
         <div className="">
           <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">{material?.name || 'No name available'}</h2>
-          <div className="w-20 h-20">
+          {/* <div className="w-28 h-28">
               {material?.image ? (
                 <img src={material?.image} alt="" />
               ) : (
                 <img src={placeHolder} alt="Placeholder" />
               )}
-            </div>
+            </div> */}
+            <ImageUpload initialImage={material.image || undefined} onImageUpload={handleUploadPhoto}/>
           </div>
   
           <Tabs value={activeTab} onValueChange={setActiveTab} className="">

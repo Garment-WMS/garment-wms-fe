@@ -1,5 +1,5 @@
 import { MaterialReceiptResponse,  MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
-import { get } from '../ApiCaller';
+import { get, post } from '../ApiCaller';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
@@ -10,6 +10,7 @@ export const materialApi = {
   getOne: (id: string) => get(`${materialVariant}/${id}`),
   getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
   getOneReceipt: (id: string) => get(`${materialVariant}/${id}/receipt`),
+  addImage: (id: string, data: FormData) => post(`${materialVariant}/${id}/image`, data, ),
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`),
