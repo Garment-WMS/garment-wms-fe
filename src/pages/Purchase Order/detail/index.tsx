@@ -6,6 +6,7 @@ import { useGetPurchaseOrderById } from '@/hooks/useGetPurchaseOrderById';
 import Loading from '@/components/common/Loading';
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { useGetPurchaseOrderDeliveryByPoId } from '@/hooks/useGetPurchaseOrderDeliveryByPoID';
 
 const statusMap: Record<string, PurchaseOrderStatus> = {
   IN_PROGRESS: PurchaseOrderStatus.IN_PROGRESS,
@@ -16,6 +17,7 @@ const statusMap: Record<string, PurchaseOrderStatus> = {
 const PurchaseOrderDetails: React.FC = () => {
   const { id } = useParams();
   const { data, isPending, isError } = useGetPurchaseOrderById(id!);
+  const { data: poDeliveryData } = useGetPurchaseOrderDeliveryByPoId(id ?? '');
   if (isPending) {
     return (
       <div className="flex justify-center items-center">
@@ -37,7 +39,6 @@ const PurchaseOrderDetails: React.FC = () => {
     orderDate,
     expectedFinishDate,
     supplier,
-    poDelivery,
     currency,
     status: poStatus,
     taxAmount,
@@ -68,7 +69,7 @@ const PurchaseOrderDetails: React.FC = () => {
         {/* Order to details */}
         <OrderToDetails supplier={supplier} />
         {/* Order item details */}
-        <OrderItemDetails poDelivery={poDelivery} poId={id} poNumber={poNumber} />
+        <OrderItemDetails poDelivery={poDeliveryData?.data} poId={id} poNumber={poNumber} />
       </div>
     </section>
   );

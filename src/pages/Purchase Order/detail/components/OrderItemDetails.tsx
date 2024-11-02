@@ -34,13 +34,11 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({ poDelivery, poId, p
 
   return (
     <div className="mt-8">
-      <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
+      <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery </h1>
       <div className="mt-5 flex flex-col gap-6">
         {poDelivery.map((delivery) => {
           const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
-            (sum: number, detail: PODeliveryDetail) => {
-              return sum + (detail.totalAmount || 0);
-            },
+            (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
             0
           );
           return (
@@ -58,7 +56,6 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({ poDelivery, poId, p
               }
               defaultOpen={false}>
               <div className="flex items-center justify-between mt-5 gap-6">
-                {/* Total amount for each delivery */}
                 <div className="flex justify-end items-center space-x-4">
                   <div className="text-right flex items-center gap-3">
                     <div className=" text-slate-600">Total Amount:</div>
@@ -77,7 +74,6 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({ poDelivery, poId, p
                 </Link>
               </div>
 
-              {/* Render table for material details */}
               <div className="mt-4 border-t pt-4">
                 <MaterialTable poDeliveryDetail={delivery.poDeliveryDetail} />
               </div>

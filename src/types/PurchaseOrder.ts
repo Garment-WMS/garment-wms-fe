@@ -1,5 +1,5 @@
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
-import { MaterialVariant } from './MaterialTypes';
+import { MaterialPackage } from './MaterialTypes';
 import { Supplier } from './SupplierTypes';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 
@@ -11,12 +11,11 @@ export interface PODeliveryDetail {
   updatedAt: string | null;
   deletedAt: string | null;
   quantityByPack: number;
-  materialVariantId: string;
+  materialPackageId: string;
   expiredDate: string | null;
+  actualImportQuantity: number;
   totalAmount: number;
-  materialVariant: MaterialVariant;
-  plannedQuantity?: number;
-  actualQuantity?: number;
+  materialPackage: MaterialPackage;
 }
 
 // PO Delivery

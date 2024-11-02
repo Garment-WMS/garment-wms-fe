@@ -22,11 +22,9 @@ export interface MaterialType {
 // Material
 export interface Material {
   id: string;
-  materialTypeId: string;
   materialUomId: string;
   name: string;
   code: string;
-  reorderLevel: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
@@ -38,6 +36,21 @@ export interface Material {
 export interface MaterialVariant {
   id: string;
   materialId: string;
+  image: string;
+  name: string;
+  code: string;
+  reorderLevel: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt: string | null;
+  material: Material;
+}
+
+// Material Package Interface
+export interface MaterialPackage {
+  id: string;
+  materialVariantId: string;
+  SKU: string;
   name: string;
   code: string;
   packUnit: string;
@@ -46,11 +59,12 @@ export interface MaterialVariant {
   packedLength: number;
   packedHeight: number;
   packedWeight: number;
-  createdAt: string | null;
-  updatedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
   deletedAt: string | null;
-  material: Material;
+  materialVariant: MaterialVariant;
 }
+
 export type MaterialVariantResponse = {
   statusCode: number;
   data: {
