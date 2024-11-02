@@ -37,7 +37,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
     },
     {
       header: 'Material Type',
-      accessorKey: 'materialPackage.materialVariant.material.materialType.name',
+      accessorKey: 'materialPackage.materialVariant.material.name',
       cell: ({ getValue }) => <div className="ml-1">{getValue<string>()}</div>,
       enableColumnFilter: false
     },

@@ -47,8 +47,9 @@ const PurchaseOrderDeliveryDetails = () => {
   };
 
   return (
-    <main className="w-full h-screen bg-white rounded-xl shadow-xl  px-8 pt-6 pb-8 pl-5">
+    <main className="w-full h-screen bg-white rounded-xl shadow-xl px-8 pt-6 pb-8 pl-5">
       <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={3} />
+
       {/* Header */}
       <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6 mt-5">
         <div className="flex flex-col gap-4">
@@ -105,7 +106,6 @@ const PurchaseOrderDeliveryDetails = () => {
         <h2 className="text-xl font-semibold text-primaryDark mb-4">Order Summary</h2>
 
         <div className="flex justify-between items-center text-lg">
-          {/* Flexbox for aligning Total Quantity and Total Amount on the same line */}
           <div className="flex items-center gap-2">
             <span className="text-gray-500 block">Total Quantity: </span>
             <span className="text-gray-700 font-medium">{totalQuantity} items</span>

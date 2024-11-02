@@ -17,7 +17,9 @@ const statusMap: Record<string, PurchaseOrderStatus> = {
 const PurchaseOrderDetails: React.FC = () => {
   const { id } = useParams();
   const { data, isPending, isError } = useGetPurchaseOrderById(id!);
-  const { data: poDeliveryData } = useGetPurchaseOrderDeliveryByPoId(id ?? '');
+  const { data: poDeliveryData, isPending: isPedingDelivery } = useGetPurchaseOrderDeliveryByPoId(
+    id ?? ''
+  );
   if (isPending) {
     return (
       <div className="flex justify-center items-center">
@@ -69,7 +71,12 @@ const PurchaseOrderDetails: React.FC = () => {
         {/* Order to details */}
         <OrderToDetails supplier={supplier} />
         {/* Order item details */}
-        <OrderItemDetails poDelivery={poDeliveryData?.data} poId={id} poNumber={poNumber} />
+        <OrderItemDetails
+          poDelivery={poDeliveryData?.data}
+          poId={id}
+          poNumber={poNumber}
+          isPendingDelivery={isPedingDelivery}
+        />
       </div>
     </section>
   );

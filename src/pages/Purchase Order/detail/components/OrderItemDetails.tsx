@@ -9,14 +9,21 @@ import {
   PurchaseOrderDeliveryStatusLabels,
   PurchaseOrderDeliveryStatus
 } from '@/enums/purchaseOrderDeliveryStatus';
+import ExpandableSectionSkeleton from '@/components/common/ExpandableSkeleton';
 
 interface OrderItemDetailsProps {
   poDelivery: PODelivery[];
   poId: string | undefined;
   poNumber?: string;
+  isPendingDelivery?: boolean;
 }
 
-const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({ poDelivery, poId, poNumber }) => {
+const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
+  poDelivery,
+  poId,
+  poNumber,
+  isPendingDelivery
+}) => {
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
       case PurchaseOrderDeliveryStatus.PENDING:
@@ -34,52 +41,66 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({ poDelivery, poId, p
 
   return (
     <div className="mt-8">
-      <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery </h1>
+      <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
       <div className="mt-5 flex flex-col gap-6">
-        {poDelivery.map((delivery) => {
-          const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
-            (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
-            0
-          );
-          return (
-            <ExpandableSectionCustom
-              key={delivery.id}
-              title={convertDate(delivery.expectedDeliverDate)}
-              status={
-                <Badge className={`${getStatusBadgeClass(delivery.status)} text-center`}>
-                  {
-                    PurchaseOrderDeliveryStatusLabels[
-                      delivery.status as PurchaseOrderDeliveryStatus
-                    ]
+        {isPendingDelivery
+          ? // Render skeletons if data is pending
+            Array(3)
+              .fill(null)
+              .map((_, index) => (
+                <ExpandableSectionSkeleton
+                  key={index}
+                  title="Loading..."
+                  status={
+                    <Badge className="bg-gray-300 text-white px-3 py-2 rounded-md">Loading</Badge>
                   }
-                </Badge>
-              }
-              defaultOpen={false}>
-              <div className="flex items-center justify-between mt-5 gap-6">
-                <div className="flex justify-end items-center space-x-4">
-                  <div className="text-right flex items-center gap-3">
-                    <div className=" text-slate-600">Total Amount:</div>
-                    <div className="text-lg font-bold text-blue-600">
-                      {totalMaterialAmount.toLocaleString()} VND
+                />
+              ))
+          : // Render actual data if available
+            poDelivery.map((delivery) => {
+              const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
+                (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
+                0
+              );
+              return (
+                <ExpandableSectionCustom
+                  key={delivery.id}
+                  title={convertDate(delivery.expectedDeliverDate)}
+                  status={
+                    <Badge className={`${getStatusBadgeClass(delivery.status)} text-center`}>
+                      {
+                        PurchaseOrderDeliveryStatusLabels[
+                          delivery.status as PurchaseOrderDeliveryStatus
+                        ]
+                      }
+                    </Badge>
+                  }
+                  defaultOpen={false}>
+                  <div className="flex items-center justify-between mt-5 gap-6">
+                    <div className="flex justify-end items-center space-x-4">
+                      <div className="text-right flex items-center gap-3">
+                        <div className="text-slate-600">Total Amount:</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          {totalMaterialAmount.toLocaleString()} VND
+                        </div>
+                      </div>
                     </div>
+
+                    <Link
+                      to={`/purchase-staff/purchase-order/${poId}/po-delivery/${delivery.id}`}
+                      state={{ delivery, poNumber }}
+                      className="flex items-center gap-2 text-primaryDark hover:opacity-80">
+                      <h1 className="text-base font-semibold">View details</h1>
+                      <ExternalLink size={18} />
+                    </Link>
                   </div>
-                </div>
 
-                <Link
-                  to={`/purchase-staff/purchase-order/${poId}/po-delivery/${delivery.id}`}
-                  state={{ delivery, poNumber }}
-                  className="flex items-center gap-2 text-primaryDark hover:opacity-80">
-                  <h1 className="text-base font-semibold">View details</h1>
-                  <ExternalLink size={18} />
-                </Link>
-              </div>
-
-              <div className="mt-4 border-t pt-4">
-                <MaterialTable poDeliveryDetail={delivery.poDeliveryDetail} />
-              </div>
-            </ExpandableSectionCustom>
-          );
-        })}
+                  <div className="mt-4 border-t pt-4">
+                    <MaterialTable poDeliveryDetail={delivery.poDeliveryDetail} />
+                  </div>
+                </ExpandableSectionCustom>
+              );
+            })}
       </div>
     </div>
   );
