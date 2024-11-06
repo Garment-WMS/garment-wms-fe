@@ -51,6 +51,7 @@ export interface ImportRequest {
 }
 
 export interface ImportRequest {
+  code: string;
   id: string;
   warehouseStaffId: string | null;
   status: 'ARRIVED' | 'PENDING' | 'CANCELLED';
