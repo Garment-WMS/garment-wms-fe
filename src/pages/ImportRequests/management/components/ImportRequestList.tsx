@@ -17,12 +17,8 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TanStackBasicTable from './CompositeTable';
+import { getStatusBadgeVariant } from '../helper';
 type Props = {};
-
-export const getStatusBadgeVariant = (status: string) => {
-  const statusObj = Status.find((s) => s.value === status);
-  return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
-};
 
 const ImportRequestList = (props: Props) => {
   const navigate = useNavigate();
@@ -61,8 +57,8 @@ const ImportRequestList = (props: Props) => {
           data: importRequestData,
           limit: pageMeta.limit,
           page: pageMeta.page,
-          total: pageMeta.totalItems,
-          totalFiltered: pageMeta.totalItems
+          total: pageMeta.total,
+          totalFiltered: pageMeta.totalPages
         }
       : undefined;
 

@@ -1,20 +1,21 @@
-import { UseImportRequestsInput, UseImportRequestsResponse } from "@/types/ImportRequestType";
+import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/ImportRequestType';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
-import axios from "axios";
-import { get } from "../ApiCaller";
-import privateCall from "../PrivateCaller";
+import { get, post } from '../ApiCaller';
+import privateCall from '../PrivateCaller';
 
-let importRequestUrl = "/import-request";
+let importRequestUrl = '/import-request';
 
 export const importRequestApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
   getAll: (queryString: string) => get(`${importRequestUrl}${queryString}`),
+  approveRequest: (action: string, note: string, id: string) =>
+    post(`/import-request/${id}/manager-process`, { action, note })
 };
 
 export const getAllImportRequestFn = async ({
   sorting,
   columnFilters,
-  pagination,
+  pagination
 }: UseImportRequestsInput): Promise<UseImportRequestsResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
@@ -51,10 +52,15 @@ export const getAllImportRequestFn = async ({
     limit,
     offset,
     filter,
-    order,
+    order
   });
 
   // Make the API request
   const res = await privateCall(importRequestApi.getAll(queryString));
   return res.data.data;
+};
+
+export const importRequestApprovalFn = async (action: string, note: string, id: string) => {
+  const res = await privateCall(importRequestApi.approveRequest(action, note, id));
+  return res.data;
 };
