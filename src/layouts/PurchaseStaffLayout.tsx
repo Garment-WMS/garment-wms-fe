@@ -28,7 +28,7 @@ const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Product',
     renderIcon: <GiClothes size={iconSize} />,
-    link: '/purchase-staff/product'
+    link: '/material-variant'
   },
   {
     title: 'Report',

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/Dialog"
 import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
+import ShortStockingPlanDetails from './ShortStocktakingPlanDetails'
 
 type Event = {
   date: Date;
@@ -37,9 +38,9 @@ export default function StocktakingCalendar() {
   const renderCalendar = () => {
     const days = getDaysInMonth(currentDate);
     const firstDayOfMonth = days[0].getDay();
-
+  
     return (
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7  ">
         {daysOfWeek.map(day => (
           <div key={day} className="text-center font-semibold text-sm py-2">{day}</div>
         ))}
@@ -51,63 +52,33 @@ export default function StocktakingCalendar() {
             event.date.toDateString() === day.toDateString()
           );
           return (
-            <div 
-              key={index} 
-              className={`p-2 border rounded-md ${day.toDateString() === new Date().toDateString() ? 'bg-blue-500 text-white' : ''}`}
-            >
-              <div className="font-semibold">{day.getDate()}</div>
-              {dayEvents.map((event, eventIndex) => (
-                <div key={eventIndex} className="text-xs bg-green-500 p-1 mt-1 rounded">
-                  {event.title}
+            <Dialog key={index}>
+              <DialogTrigger asChild>
+                <div 
+                  onClick={() => setSelectedDate(day)}
+                  className={`p-2  border rounded-sm cursor-pointer shadow-sm flex flex-col gap-2 ${
+                    day.toDateString() === new Date().toDateString() ? 'bg-blue-500 text-white' : ''
+                  }`}
+                >
+                  <div className="font-semibold text-right mb-6">{day.getDate()}</div>
+                  {dayEvents.map((event, eventIndex) => (
+                    <div key={eventIndex} className="text-xs bg-green-500 p-1 mt-1 rounded">
+                      {event.title}
+                    </div>
+                  ))}
                 </div>
-              ))}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full mt-1 p-0 h-6" 
-                    onClick={() => setSelectedDate(day)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Stocktaking Event</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="event-date" className="text-right">
-                        Date
-                      </Label>
-                      <Input
-                        id="event-date"
-                        value={selectedDate ? selectedDate.toDateString() : ''}
-                        className="col-span-3"
-                        readOnly
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="event-title" className="text-right">
-                        Title
-                      </Label>
-                      <Input
-                        id="event-title"
-                        value={newEventTitle}
-                        onChange={(e) => setNewEventTitle(e.target.value)}
-                        className="col-span-3"
-                      />
-                    </div>
-                  </div>
-                  <Button onClick={addEvent}>Add Event</Button>
-                </DialogContent>
-              </Dialog>
-            </div>
+              </DialogTrigger>
+              <DialogContent>
+                <ShortStockingPlanDetails/>
+                
+              </DialogContent>
+            </Dialog>
           );
         })}
       </div>
     );
   }
+  
 
   return (
     <Card className="w-full max-w-8xl mx-auto">

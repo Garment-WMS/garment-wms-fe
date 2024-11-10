@@ -1,25 +1,19 @@
-import { MaterialReceiptResponse,  MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
-import { get } from '../ApiCaller';
-import { toast } from '@/hooks/use-toast';
-import axios from 'axios';
-import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
+import { InputType } from "@/types/Shared";
+import { get } from "../ApiCaller";
+import { ProductVariantResponse } from "@/types/ProductType";
+import { FilterBuilder, FilterOperationType } from "@chax-at/prisma-filter-common";
+import axios from "axios";
 
-let materialVariant = '/material-variant';
-let materialType ='/material';
-export const materialApi = {
-  getOne: (id: string) => get(`${materialVariant}/${id}`),
-  getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
-  getAllWithoutFilter: () => get(`${materialVariant}/all`),
-  getOneReceipt: (id: string) => get(`${materialVariant}/${id}/receipt`),
-};
-export const materialTypeApi = {
-  getAll: () => get(`${materialType}`),
+const productVariant= '/product-variant';
+export const productApi = {
+    getAll: (queryString: string) => get(`${productVariant}/${queryString}`),
 }
-export const getAllMaterialFn = async ({
+
+export const getAllProductFn = async ({
     sorting,
     columnFilters,
     pagination,
-  }: UseMaterialsInput): Promise<MaterialVariantResponse> => {
+  }: InputType): Promise<ProductVariantResponse> => {
     const limit = pagination.pageSize;
     const offset = pagination.pageIndex * pagination.pageSize;
   
@@ -79,15 +73,6 @@ export const getAllMaterialFn = async ({
       order,
     });
     // Make the API request
-    const res = await axios(materialApi.getAll(queryString));
+    const res = await axios(productApi.getAll(queryString));
     return res.data;
   };
-  
-export const getOneMaterial = async (id: string): Promise<MaterialVariantResponse> => {
-  const res = await axios(materialApi.getOne(id));
-  return res.data.data;
-};
-export const getOneMaterialReceipt = async (id: string): Promise<MaterialReceiptResponse> => {
-  const res = await axios(materialApi.getOneReceipt(id));
-  return res.data.data;
-}

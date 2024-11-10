@@ -24,6 +24,8 @@ import Login from '@/pages/login';
 import Home from '@/pages/home';
 import StocktakingManagement from '@/pages/Stocktaking/management';
 import StocktakingDetails from '@/pages/Stocktaking/details';
+import CreateInventoryReport from '@/pages/Stocktaking/create';
+import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -102,6 +104,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/stocktaking/:id',
               element: <StocktakingDetails/>
+            },
+            {
+              path: '/stocktaking/create',
+              element: <CreateInventoryReport/>
+            },
+            {
+              path: '/stocktaking/plan/create',
+              element: <CreateStocktakingPlan/>
             },
           ]
         },
