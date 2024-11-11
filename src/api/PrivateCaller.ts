@@ -51,7 +51,7 @@ const handleResponseErr = async (error :any) => {
          catch (error) {
             Cookies.remove('token');
             Cookies.remove('refreshToken');
-
+            localStorage.removeItem('userData');
             return Promise.reject(error);
         }
     }

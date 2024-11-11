@@ -3,14 +3,12 @@ import { UseUsersInput } from '@/types/DemoUser';
 import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/ImportRequestType';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import usePrivateCall from './usePrivateCall';
 
 export const useGetImportRequests = ({
   sorting,
   columnFilters,
   pagination
 }: UseImportRequestsInput) => {
-  const axios = usePrivateCall();
   const {
     data,
     isLoading: isimportRequestLoading,

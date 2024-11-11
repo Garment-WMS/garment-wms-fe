@@ -114,7 +114,18 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
       staff.refreshToken = refreshToken;
       Cookies.set('accessToken', accessToken);
       Cookies.set('refreshToken', refreshToken);
-
+      const userToStore = {
+        id: staff.id,
+        email: staff.email,
+        role: role,
+        accessToken: staff.accessToken,
+        refreshToken: staff.refreshToken,
+        name: staff.firstName + ' ' + staff.lastName,
+        avatar: staff.avatarUrl,
+        phone: staff.phoneNumber,
+        gender: staff.gender,
+      }
+      localStorage.setItem('userData', JSON.stringify(userToStore));
       // Dispatch and navigate
       dispatch(actions.setUser(staff));
       navigate('/home');
@@ -140,7 +151,7 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
           toast({
             title: 'Login Error',
             variant: 'destructive',
-            description: 'Something went wrong'
+            description: message
           });
           break;
       }
@@ -205,7 +216,7 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
               )}
             />
             <Button className="mt-5" variant={'default'} disabled={loading} type="submit">
-            {loading ? (<Loading/>) : 'Login with email'}
+            {loading ? (<Loading />) : 'Login with email'}
             </Button>
           </div>
           {/* </div> */}
