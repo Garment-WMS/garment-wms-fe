@@ -2,8 +2,7 @@ export interface InventoryReportPlan{
     from: string;
     to: string;
     title: string;
-    note: string;
-    inventoryReportPlanDetails : InventoryReportPlanDetailsMaterial[] | InventoryReportPlanDetailsProduct[];
+    inventoryReportPlanDetails : Array<InventoryReportPlanDetailsMaterial | InventoryReportPlanDetailsProduct>;
 }
 
 export interface InventoryReportPlanDetailsMaterial{
@@ -15,3 +14,4 @@ export interface InventoryReportPlanDetailsProduct{
     warehouseStaffId: string;
     productSizeId: string;
 }
+

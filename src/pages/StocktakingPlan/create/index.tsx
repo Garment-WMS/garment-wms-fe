@@ -35,7 +35,9 @@ import { ProductVariant } from '@/types/ProductType';
 import { useGetProductVariants } from '@/hooks/useGetProductVariants';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
-import { InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
+import { InventoryReportPlan, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
+import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
+import axios from 'axios';
 
 type Props = {};
 interface inventoryReportPlanDetais {
@@ -121,9 +123,9 @@ const CreateStocktakingPlan = (props: Props) => {
   const [ItemsError, setItemsError] = useState<string>('');
   const [staffError, setStaffError] = useState<string>('');
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     let hasError = false;
-
+    
     // Check for missing staff and items in each assignment
     assignments.forEach((assignment) => {
       if (!assignment.staffId) {
@@ -145,7 +147,7 @@ const CreateStocktakingPlan = (props: Props) => {
       setItemsError('');
 
       // Proceed with formatting values
-      const formattedValues = {
+       const formattedValues = {
         ...values,
         from: values.from.toISOString(),
         to: values.to.toISOString(),
@@ -168,7 +170,35 @@ const CreateStocktakingPlan = (props: Props) => {
           )
         ]
       };
+      console.log(formattedValues);
+      try {
+        const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
+        console.log(res);
+        toast({
+          title: 'Success',
+          description: 'Stocktaking plan created successfully',
+          variant: 'success',
+        });
+      } catch (error: any) {
+        console.log('error',error.response);
+        if (error.response?.status === 401) {
+          toast({
+            title: 'Unauthorized',
+            description: 'You are not authorized to perform this action.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: error.response?.data?.message || error.message,
+            variant: 'destructive',
+          });
+        }
+      }
+      
     }
+
+    
   }
 
   const removeAssignment = (index: number, assignment: Assignment) => {
@@ -272,7 +302,6 @@ const CreateStocktakingPlan = (props: Props) => {
   useEffect(() => {
     fetchWarehouseStaff();
   }, []);
-
   return (
     <div className="mx-auto p-4 bg-white shadow-sm border rounded-md">
       <Label className="text-xl font-primary font-bold">Planning stocktaking</Label>

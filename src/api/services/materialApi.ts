@@ -1,4 +1,4 @@
-import { MaterialReceiptResponse,  MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
+import { MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
 import { get } from '../ApiCaller';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
@@ -87,7 +87,7 @@ export const getOneMaterial = async (id: string): Promise<MaterialVariantRespons
   const res = await axios(materialApi.getOne(id));
   return res.data.data;
 };
-export const getOneMaterialReceipt = async (id: string): Promise<MaterialReceiptResponse> => {
-  const res = await axios(materialApi.getOneReceipt(id));
-  return res.data.data;
-}
+// export const getOneMaterialReceipt = async (id: string): Promise<MaterialReceiptResponse> => {
+//   const res = await axios(materialApi.getOneReceipt(id));
+//   return res.data.data;
+// }
