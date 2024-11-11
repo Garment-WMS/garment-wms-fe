@@ -2,6 +2,8 @@ import { HTTP_MESSAGE, HTTP_STATUS_CODE } from '@/enums/httpStatus';
 import Cookies from 'js-cookie';
 import { authApi } from './auth/auth';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 
 const privateCall = axios.create({
@@ -29,6 +31,7 @@ const handleResponseSuccess = (res:any) => {
 };
 
 const handleResponseErr = async (error :any) => {
+    // const navigate = useNavigate()
     const originalRequest = error.config;
     const refreshToken = Cookies.get('refreshToken');
     if (error?.response?.status === HTTP_STATUS_CODE.UNAUTHORIZED && error?.response?.data?.message === HTTP_MESSAGE.EXPIRED && !originalRequest._retry ) {
@@ -52,6 +55,20 @@ const handleResponseErr = async (error :any) => {
             return Promise.reject(error);
         }
     }
+    if (
+        error?.response?.status === HTTP_STATUS_CODE.UNAUTHORIZED 
+        && error?.response?.data?.message === HTTP_MESSAGE.UNAUTHORIZED 
+        && !originalRequest._retry ){
+            Cookies.remove('token');
+            Cookies.remove('refreshToken');
+            toast({
+                variant: 'destructive',
+                title: 'Error Session',
+                description: 'Your session has expired. Please log in again.'
+            })
+            window.location.href = '/login';
+    }
+    return Promise.reject(error); 
 };
 
 privateCall.interceptors.request.use(

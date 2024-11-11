@@ -1,15 +1,16 @@
 import privateCall from '@/api/PrivateCaller';
 import { testApi } from '@/api/testAuth';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 import usePrivateCall from '@/hooks/usePrivateCall';
+import axios from 'axios';
 
 const Home = () => {
 
   const testAuthFunction = async () => {
     try {
       const response = await privateCall(testApi.testAuth());
-      console.log(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   };
