@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/Badge';
 import ExpandableSectionCustom from './ExpandableSectionCustom';
-import { ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ExternalLink, Eye, Plus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialTable from './MaterialTable';
 import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
@@ -10,6 +10,9 @@ import {
   PurchaseOrderDeliveryStatus
 } from '@/enums/purchaseOrderDeliveryStatus';
 import ExpandableSectionSkeleton from '@/components/common/ExpandableSkeleton';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipArrow } from '@radix-ui/react-tooltip';
 
 interface OrderItemDetailsProps {
   poDelivery: PODelivery[];
@@ -24,6 +27,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   poNumber,
   isPendingDelivery
 }) => {
+  const navigate = useNavigate();
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
       case PurchaseOrderDeliveryStatus.PENDING:
@@ -39,6 +43,56 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     }
   };
 
+  const renderRedirectButton = (delivery: PODelivery, poid: string) => {
+    let path = '';
+    let color = '';
+    let icon;
+    let label = '';
+
+    switch (delivery.status) {
+      case PurchaseOrderDeliveryStatus.PENDING:
+        color = 'bg-blue-400';
+        icon = <Plus size={16} />;
+        label = 'Create Import Request';
+        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}/import-request`;
+        break;
+      case PurchaseOrderDeliveryStatus.FINISHED:
+        color = 'bg-green-400';
+        icon = <Eye size={16} />;
+        label = 'View Details';
+        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}`;
+        break;
+      default:
+        color = 'bg-green-400';
+        icon = <Eye size={16} />;
+        label = 'View Details';
+        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}`;
+        break;
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip delayDuration={5}>
+          <TooltipTrigger asChild>
+            <Button
+              className={`w-30  ${color}`}
+              size={'sm'}
+              onClick={() => {
+                if (poId) {
+                  navigate(path, { state: { delivery, poNumber } });
+                }
+              }}>
+              {icon}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="mb-1" side="top">
+            <TooltipArrow />
+            <p>{label}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
   return (
     <div className="mt-8">
       <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
@@ -75,6 +129,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                       }
                     </Badge>
                   }
+                  redirectButton={renderRedirectButton(delivery, poId || '')}
                   defaultOpen={false}>
                   <div className="flex items-center justify-between mt-5 gap-6">
                     <div className="flex justify-end items-center space-x-4">
