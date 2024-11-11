@@ -8,6 +8,7 @@ import { Label } from './ui/Label';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/DropdownMenu"
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { Button } from './ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import placeholder from '@/assets/images/avatar.png';
 import useLogout from '@/hooks/useLogout';
 type Props = {}
@@ -35,21 +36,35 @@ const TopBar = (props: Props) => {
     
     <DropdownMenu>
   <DropdownMenuTrigger>
-    <Avatar>
-      <AvatarImage src={user.avatar || placeholder} alt="@shadcn" />
-    </Avatar>
+  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user.avatar || placeholder} alt="Profile picture" />
+            <AvatarFallback>KT</AvatarFallback>
+          </Avatar>
+        </Button>
   </DropdownMenuTrigger>
-  <DropdownMenuContent className='mr-12 '>
-    <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+  <DropdownMenuContent className="w-72" align="end" forceMount>
+        <DropdownMenuLabel>
+        <div className="flex flex-col space-y-1">
+            <p className="text-lg font-medium leading-none">{user.name}</p>
+            <p className="text-sm leading-none text-muted-foreground">{convertTitleToTitleCase(user.role)}</p>
+          </div>
+        </DropdownMenuLabel>
     <DropdownMenuSeparator />
-    <DropdownMenuLabel className='font-medium' >Role: {convertTitleToTitleCase(user.role)}</DropdownMenuLabel>
-    <DropdownMenuLabel >Email: {user.email}</DropdownMenuLabel>
-    <DropdownMenuLabel >Phone: {user.phone}</DropdownMenuLabel>
-    <DropdownMenuItem onClick={logout} className='text-red-500 font-bold'>
-      <div className='flex justify-center items-center gap-2'>
-        <LogOut />Log out
-      </div>
-      </DropdownMenuItem>
+    <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <User className="mr-2 h-4 w-4" />
+            <div className="flex flex-col space-y-1">
+              <p className="leading-none">Contact Information</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
+              <p className="text-sm text-muted-foreground">{user.phone}</p>
+            </div>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuItem onClick={logout} className="text-red-600">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>
     
