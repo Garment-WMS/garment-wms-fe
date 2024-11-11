@@ -11,12 +11,11 @@ type Props = {
 
 const statusOrder = [
   'ARRIVED',
-  'INSPECTING',
-  'INSPECTED',
-  'PENDING',
   'CANCELED',
   'REJECTED',
   'APPROVED',
+  'INSPECTING',
+  'INSPECTED',
   'IMPORTING',
   'IMPORTED'
 ];

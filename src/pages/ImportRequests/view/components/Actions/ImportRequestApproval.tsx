@@ -11,7 +11,10 @@ import {
   AlertCircle,
   InfoIcon,
   CheckCircle,
-  XCircle
+  XCircle,
+  Search,
+  Plus,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,9 +32,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/Label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { importRequestApi } from '@/api/services/importRequestApi';
 import { importRequestApprovalFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
+import { statusOrder } from '@/pages/ImportRequests/constants';
+import { Input } from '@/components/ui/Input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/Dialog';
+import { ScrollArea } from '@/components/ui/ScrollArea';
+import AssignStaffPopup from './StaffAssignment';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
 
@@ -43,33 +56,47 @@ interface WarehouseApprovalProps {
   requestDate: string;
 }
 
+interface StaffMember {
+  id: number;
+  name: string;
+  taskCount: number;
+  department: string;
+  efficiency: number;
+}
+
+const staffMembers: StaffMember[] = [
+  { id: 1, name: 'John Doe', taskCount: 5, department: 'Packaging', efficiency: 92 },
+  { id: 2, name: 'Jane Smith', taskCount: 3, department: 'Shipping', efficiency: 88 },
+  { id: 3, name: 'Mike Johnson', taskCount: 7, department: 'Inventory', efficiency: 95 },
+  { id: 4, name: 'Emily Brown', taskCount: 2, department: 'Receiving', efficiency: 90 },
+  { id: 5, name: 'Chris Lee', taskCount: 4, department: 'Quality Control', efficiency: 87 }
+];
+
 const getStatusDetails = (status: ApprovalStatus) => {
-  switch (status) {
-    case 'INSPECTED':
-      return {
-        label: 'Waiting for Approval',
-        color: 'bg-blue-500 text-blue-950',
-        icon: InfoIcon
-      };
-    case 'REJECTED':
-      return {
-        label: 'Rejected',
-        color: 'bg-red-500 text-red-950',
-        icon: AlertCircle
-      };
-    case 'APPROVED':
-      return {
-        label: 'Approved',
-        color: 'bg-green-500 text-green-950',
-        icon: ClipboardCheck
-      };
-    default:
-      return {
-        label: 'Not Reached yet',
-        color: 'bg-muted text-muted-foreground',
-        icon: AlertCircle
-      };
-  }
+  if (status == 'ARRIVED') {
+    return {
+      label: 'Waiting for Approval',
+      color: 'bg-blue-500 text-blue-950',
+      icon: InfoIcon
+    };
+  } else if (status == 'REJECTED') {
+    return {
+      label: 'Rejected',
+      color: 'bg-red-500 text-red-950',
+      icon: AlertCircle
+    };
+  } else if (statusOrder.indexOf(status) >= 3) {
+    return {
+      label: 'Approved',
+      color: 'bg-green-500 text-green-950',
+      icon: ClipboardCheck
+    };
+  } else
+    return {
+      label: 'Not Reached yet',
+      color: 'bg-muted text-muted-foreground',
+      icon: AlertCircle
+    };
 };
 
 const getInitials = (name: string | undefined): string => {
@@ -98,14 +125,34 @@ export default function WarehouseApproval({
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [isConfirmApproveDialogOpen, setIsConfirmApproveDialogOpen] = useState(false);
   const [isConfirmDeclineDialogOpen, setIsConfirmDeclineDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [staff, setStaff] = useState<any>(null);
+  const [selectedInspector, setSelectedInspector] = useState<StaffMember | null>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
   const { toast } = useToast();
   const { id } = useParams();
 
+  const sortedStaff = [...staffMembers].sort((a, b) => b.taskCount - a.taskCount);
+
+  const filteredStaff = sortedStaff.filter(
+    (staff) =>
+      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      staff.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleApprove = async () => {
+    if (!selectedInspector || !selectedAssignee) {
+      toast({
+        title: 'Selection Required',
+        description: 'Please select both an inspector and an assignee before approving.',
+        duration: 5000
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const res = await importRequestApprovalFn('APPROVED', approveNote, id as string);
-    console.log(res);
     toast({
       title: 'Request Approved',
       description: 'The warehouse request has been successfully approved.',
@@ -132,7 +179,7 @@ export default function WarehouseApproval({
 
   return (
     <TooltipProvider>
-      <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
+      <Card className="flex flex-col w-full max-w-5xl h-full justify-center ml-2">
         <CardHeader className="items-center pb-2">
           <CardTitle className="text-2xl">Warehouse Manager Approval</CardTitle>
           <p className="text-sm text-muted-foreground">Request #{requestId}</p>
@@ -169,7 +216,7 @@ export default function WarehouseApproval({
               </div>
               <div className="flex items-center text-sm">
                 <User className="mr-3 h-5 w-5 text-muted-foreground" />
-                <span className="font-medium w-24">Manager:</span>
+                <span className="font-medium w-24">Assigned to:</span>
                 <span>
                   {manager?.account?.firstName + ' ' + manager?.account?.lastName || 'Not assigned'}
                 </span>
@@ -188,97 +235,145 @@ export default function WarehouseApproval({
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
-          {currentStatus == 'INSPECTED' && (
-            <div className="flex space-x-4">
-              <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
-                <AlertDialogTrigger asChild>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="default" onClick={() => setIsApproveDialogOpen(true)}>
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Approve
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Approve this warehouse request</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Approve Request</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Please provide any additional notes for this approval.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="approveNote">Approval Note</Label>
-                      <Textarea
-                        id="approveNote"
-                        value={approveNote}
-                        onChange={(e) => setApproveNote(e.target.value)}
-                        className="h-20 resize-none"
-                        placeholder="Enter any additional notes here..."
-                      />
-                    </div>
-                  </div>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setIsApproveDialogOpen(false)}>
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={() => setIsConfirmApproveDialogOpen(true)}>
-                      Proceed
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+          {currentStatus == 'ARRIVED' && (
+            <div className="flex flex-col space-y-4 w-full">
+              <div className="flex justify-between w-full"></div>
+              {selectedInspector && (
+                <div className="flex items-center space-x-2">
+                  <Label>Selected Inspector:</Label>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${selectedInspector.name}`}
+                    />
+                    <AvatarFallback>
+                      {selectedInspector.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{selectedInspector.name}</span>
+                </div>
+              )}
+              {selectedAssignee && (
+                <div className="flex items-center space-x-2">
+                  <Label>Selected Assignee:</Label>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${selectedAssignee.name}`}
+                    />
+                    <AvatarFallback>
+                      {selectedAssignee.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{selectedAssignee.name}</span>
+                </div>
+              )}
+              <div className="flex space-x-4">
+                <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="default" onClick={() => setIsApproveDialogOpen(true)}>
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          Approve
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Approve this warehouse request</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Approve Request</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Please provide any additional notes for this approval.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <div className="w-full flex items-center ">
+                          <Label className="mr-2"> Inspector staff:</Label>
+                          <AssignStaffPopup setStaff={setStaff} staff={staff} />
+                        </div>
+                        <div className="w-full flex items-center ">
+                          <Label className="mr-2"> Warehouse staff:</Label>
+                          <AssignStaffPopup setStaff={setStaff} staff={staff} />
+                        </div>
 
-              <AlertDialog open={isDeclineDialogOpen} onOpenChange={setIsDeclineDialogOpen}>
-                <AlertDialogTrigger asChild>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="destructive" onClick={() => setIsDeclineDialogOpen(true)}>
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Decline
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Decline this warehouse request</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Decline Request</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Please provide a reason for declining this request.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="declineReason">Reason for Decline</Label>
-                      <Textarea
-                        id="declineReason"
-                        value={declineReason}
-                        onChange={(e) => setDeclineReason(e.target.value)}
-                        className="h-20 resize-none"
-                        placeholder="Enter reason here..."
-                      />
+                        <div className="space-y-2">
+                          <Label htmlFor="approveNote">Approval Note</Label>
+                        </div>
+                        <Textarea
+                          id="approveNote"
+                          value={approveNote}
+                          onChange={(e) => setApproveNote(e.target.value)}
+                          className="h-20 resize-none"
+                          placeholder="Enter any additional notes here..."
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setIsDeclineDialogOpen(false)}>
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => setIsConfirmDeclineDialogOpen(true)}
-                      className="bg-red-500">
-                      Proceed
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setIsApproveDialogOpen(false)}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={() => setIsConfirmApproveDialogOpen(true)}>
+                        Proceed
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <AlertDialog open={isDeclineDialogOpen} onOpenChange={setIsDeclineDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="destructive" onClick={() => setIsDeclineDialogOpen(true)}>
+                          <XCircle className="mr-2 h-4 w-4" />
+                          Decline
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Decline this warehouse request</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Decline Request</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Please provide a reason for declining this request.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="declineReason">Reason for Decline</Label>
+                        <Textarea
+                          id="declineReason"
+                          value={declineReason}
+                          onChange={(e) => setDeclineReason(e.target.value)}
+                          className="h-20 resize-none"
+                          placeholder="Enter reason here..."
+                        />
+                      </div>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setIsDeclineDialogOpen(false)}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => setIsConfirmDeclineDialogOpen(true)}
+                        className="bg-red-500">
+                        Proceed
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           )}
         </CardFooter>

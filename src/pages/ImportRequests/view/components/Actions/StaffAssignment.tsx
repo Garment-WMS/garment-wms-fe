@@ -10,11 +10,11 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/Dialog';
-import { ScrollArea } from '@/components/ui/ScrollArea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
-import { Loader2, Plus, Search, X } from 'lucide-react';
+import { Ghost, Loader2, Plus, Search, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/Label';
 
 // Mock data for staff members
 const staffMembers = [
@@ -24,8 +24,12 @@ const staffMembers = [
   { id: 4, name: 'Emily Brown', taskCount: 2, department: 'Receiving', efficiency: 90 },
   { id: 5, name: 'Chris Lee', taskCount: 4, department: 'Quality Control', efficiency: 87 }
 ];
+export interface Props {
+  staff: any;
+  setStaff: any;
+}
 
-export default function AssignStaffPopup() {
+export default function AssignStaffPopup({ staff, setStaff }: Props) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,48 +44,31 @@ export default function AssignStaffPopup() {
   );
 
   const handleAssignTask = async (staffId: number) => {
-    setAssigningTask(staffId);
-    // Simulating an API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    setAssigningTask(null);
-    toast({
-      title: 'Task Assigned',
-      description: `New task assigned to staff member #${staffId}`
-    });
+    setAssigningTask(staffId);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Avatar className="w-20 h-20 mb-4 cursor-pointer">
-          <AvatarImage src="/placeholder.svg?height=80&width=80" alt={'Warehouse Manager'} />
-          <AvatarFallback>{123}</AvatarFallback>
-        </Avatar>
+        {staff ? (
+          <Badge className="flex items-center" variant={'outline'}>
+            <Avatar className="w-6 h-6 mr-2 ">
+              <AvatarImage src="/placeholder.svg?height=80&width=80" alt={'Warehouse Manager'} />
+              <AvatarFallback>{123}</AvatarFallback>
+            </Avatar>
+            Nguyen Duc Bao
+          </Badge>
+        ) : (
+          <Button variant={'outline'}>Assign Employee</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Assign Staff to Tasks</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search staff members..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-2 h-5 w-5 p-0"
-                onClick={() => setSearchQuery('')}>
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          <ScrollArea className="h-[300px] rounded-md border p-4">
+          <div className="h-[300px] rounded-md border p-4">
             {filteredStaff.map((staff) => (
               <div key={staff.id} className="flex items-center justify-between py-2">
                 <div className="flex items-center space-x-4">
@@ -97,8 +84,8 @@ export default function AssignStaffPopup() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium leading-none">{staff.name}</p>
-                    <p className="text-sm text-muted-foreground">{staff.department}</p>
+                    <p className="text-sm font-medium ">{staff.name}</p>
+                    <p className="text-sm">{staff.department}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -116,7 +103,7 @@ export default function AssignStaffPopup() {
                 </div>
               </div>
             ))}
-          </ScrollArea>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -31,10 +31,7 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
       title: '123',
       content: <ImportRequestCreation />
     },
-    {
-      title: 'Chart Report',
-      content: <Chart />
-    },
+
     // {
     //   title: 'No Inspection Report',
     //   content: (
@@ -56,6 +53,10 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
           requestDate={importRequest?.createdAt}
         />
       )
+    },
+    {
+      title: 'Chart Report',
+      content: <Chart currentStatus={currentStatus} />
     },
     {
       title: 'Pending Approval',

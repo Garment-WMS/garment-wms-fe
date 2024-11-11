@@ -14,7 +14,6 @@ import IRProcessAndAction from './components/IRProcessAndAction';
 type Props = {};
 
 const ViewImportRequest = (props: Props) => {
-  // const [importRequest, setImportRequest] = useState<ImportRequest>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [error, setError] = useState<string>('');
