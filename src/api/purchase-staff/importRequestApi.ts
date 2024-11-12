@@ -8,8 +8,19 @@ let importRequestUrl = '/import-request';
 export const importRequestApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
   getAll: (queryString: string) => get(`${importRequestUrl}${queryString}`),
-  approveRequest: (action: string, note: string, id: string) =>
-    post(`/import-request/${id}/manager-process`, { action, note })
+  approveRequest: (
+    action: string,
+    managerNote: string,
+    id: string,
+    inspectionDepartmentId: string,
+    warehouseStaffId: string
+  ) =>
+    post(`/import-request/${id}/manager-process`, {
+      action,
+      managerNote: managerNote != '' ? managerNote : undefined,
+      inspectionDepartmentId,
+      warehouseStaffId
+    })
 };
 
 export const getAllImportRequestFn = async ({
@@ -60,7 +71,21 @@ export const getAllImportRequestFn = async ({
   return res.data.data;
 };
 
-export const importRequestApprovalFn = async (action: string, note: string, id: string) => {
-  const res = await privateCall(importRequestApi.approveRequest(action, note, id));
+export const importRequestApprovalFn = async (
+  action: string,
+  managerNote: string,
+  id: string,
+  inspectionDepartmentId: string,
+  warehouseStaffId: string
+) => {
+  const res = await privateCall(
+    importRequestApi.approveRequest(
+      action,
+      managerNote,
+      id,
+      inspectionDepartmentId,
+      warehouseStaffId
+    )
+  );
   return res.data;
 };

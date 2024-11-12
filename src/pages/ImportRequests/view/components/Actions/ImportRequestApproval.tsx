@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -46,20 +46,12 @@ interface WarehouseApprovalProps {
 }
 
 interface StaffMember {
-  id: number;
+  id: string;
   name: string;
   taskCount: number;
   department: string;
   efficiency: number;
 }
-
-const staffMembers: StaffMember[] = [
-  { id: 1, name: 'John Doe', taskCount: 5, department: 'Packaging', efficiency: 92 },
-  { id: 2, name: 'Jane Smith', taskCount: 3, department: 'Shipping', efficiency: 88 },
-  { id: 3, name: 'Mike Johnson', taskCount: 7, department: 'Inventory', efficiency: 95 },
-  { id: 4, name: 'Emily Brown', taskCount: 2, department: 'Receiving', efficiency: 90 },
-  { id: 5, name: 'Chris Lee', taskCount: 4, department: 'Quality Control', efficiency: 87 }
-];
 
 const getStatusDetails = (status: ApprovalStatus) => {
   if (status == 'ARRIVED') {
@@ -114,7 +106,6 @@ export default function WarehouseApproval({
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [isConfirmApproveDialogOpen, setIsConfirmApproveDialogOpen] = useState(false);
   const [isConfirmDeclineDialogOpen, setIsConfirmDeclineDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedInspector, setSelectedInspector] = useState<StaffMember | null>(null);
   const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
   const { toast } = useToast();
@@ -123,24 +114,52 @@ export default function WarehouseApproval({
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
       toast({
+        variant: 'destructive',
         title: 'Selection Required',
         description: 'Please select both an inspector and an assignee before approving.',
         duration: 5000
       });
+      setIsApproveDialogOpen(true);
       return;
     }
 
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await importRequestApprovalFn('APPROVED', approveNote, id as string);
-    toast({
-      title: 'Request Approved',
-      description: 'The warehouse request has been successfully approved.',
-      duration: 5000
-    });
-    setIsSubmitting(false);
-    setIsApproveDialogOpen(false);
-    setIsConfirmApproveDialogOpen(false);
+
+    try {
+      // Simulate delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Call the approval function
+      const res = await importRequestApprovalFn(
+        'APPROVED',
+        approveNote,
+        id as string,
+        selectedInspector.id,
+        selectedAssignee.id
+      );
+
+      if (res.statusCode === 200) {
+        toast({
+          variant: 'success',
+          title: 'Request Approved',
+          description: 'The warehouse request has been successfully approved.',
+          duration: 5000
+        });
+      } else {
+        throw new Error(res.errors[0] || 'Unknown error occurred');
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Approve Failed',
+        description: error.message || 'An error occurred while approving the request.',
+        duration: 5000
+      });
+    } finally {
+      setIsSubmitting(false);
+      setIsApproveDialogOpen(false);
+      setIsConfirmApproveDialogOpen(false);
+    }
   };
 
   const handleDecline = async () => {
@@ -218,40 +237,7 @@ export default function WarehouseApproval({
           {currentStatus == 'ARRIVED' && (
             <div className="flex flex-col space-y-4 w-full">
               <div className="flex justify-between w-full"></div>
-              {selectedInspector && (
-                <div className="flex items-center space-x-2">
-                  <Label>Selected Inspector:</Label>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${selectedInspector.name}`}
-                    />
-                    <AvatarFallback>
-                      {selectedInspector.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span>{selectedInspector.name}</span>
-                </div>
-              )}
-              {selectedAssignee && (
-                <div className="flex items-center space-x-2">
-                  <Label>Selected Assignee:</Label>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${selectedAssignee.name}`}
-                    />
-                    <AvatarFallback>
-                      {selectedAssignee.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span>{selectedAssignee.name}</span>
-                </div>
-              )}
+
               <div className="flex space-x-4 items-center w-full justify-center">
                 <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
                   <AlertDialogTrigger asChild>
@@ -281,6 +267,7 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedInspector}
                             staff={selectedInspector}
+                            type={'inspection-department'}
                           />
                         </div>
                         <div className="w-full flex items-center py-4 ">
@@ -288,6 +275,7 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedAssignee}
                             staff={selectedAssignee}
+                            type={'warehouse-staff'}
                           />
                         </div>
 
