@@ -9,6 +9,7 @@ const useLogout = () => {
     dispatch(actions.setUser(null));
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
+    localStorage.removeItem('userData');
     navigate('/login')
   };
 

@@ -4,6 +4,7 @@ import control from '@/assets/images/control.png';
 import logo from '@/assets/images/warehouse-logo.svg';
 import { GoSignOut } from 'react-icons/go';
 import { SideBarProps } from '@/constants/interface';
+import useLogout from '@/hooks/useLogout';
 
 const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   const title = 'Garment Storage';
@@ -19,6 +20,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   const handleMenuClick = (menuTitle: string) => {
     setActiveTitle(menuTitle);
   };
+  const logout = useLogout();
   // Handle screen resize and collapse sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -94,10 +96,11 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
             ))}
           </ul>
           <div
-            className={`flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-white text-sm items-center gap-x-4 mt-2
+          onClick={logout}
+            className={`flex font-semibold  rounded-md p-2 cursor-pointer hover:bg-blue-500 text-white text-sm items-center gap-x-4 mt-2
          ${!open && 'justify-center'}`}>
             <GoSignOut size={iconSize} />
-            <span className={`${!open && 'hidden'} origin-left duration-200`}>Đăng xuất</span>
+            <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
           </div>
         </div>
     </div>
