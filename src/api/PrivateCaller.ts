@@ -52,6 +52,7 @@ const handleResponseErr = async (error :any) => {
             return Promise.reject(error);
         }
     }
+    return Promise.reject(error);
 };
 
 privateCall.interceptors.request.use(

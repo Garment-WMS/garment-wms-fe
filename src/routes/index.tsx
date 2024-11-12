@@ -25,7 +25,10 @@ import Home from '@/pages/home';
 import StocktakingManagement from '@/pages/Stocktaking/management';
 import StocktakingDetails from '@/pages/Stocktaking/details';
 import CreateInventoryReport from '@/pages/Stocktaking/create';
+import CreateDynamicPlan from '@/pages/StocktakingPlan/create/CreateDynamicPlan';
 import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
+import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
+import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -106,12 +109,24 @@ const RouterComponent: React.FC = () => {
               element: <StocktakingDetails/>
             },
             {
+              path: '/stocktaking/plan/:id',
+              element: <StocktakingPlanDetails/>
+            },
+            {
               path: '/stocktaking/create',
               element: <CreateInventoryReport/>
             },
             {
               path: '/stocktaking/plan/create',
               element: <CreateStocktakingPlan/>
+            },
+            {
+              path: '/stocktaking/plan/create/dynamic',
+              element: <CreateDynamicPlan/>
+            },
+            {
+              path: '/stocktaking/plan/create/overall',
+              element: <CreateOverallPlan/>
             },
           ]
         },

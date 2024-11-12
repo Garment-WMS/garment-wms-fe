@@ -12,7 +12,7 @@ import {
 import { User } from '@/types/User';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import Loading from '@/components/common/Loading';
-import { Assignment } from '..';
+import { Assignment } from '../CreateDynamicPlan';
 
 type Props = {
   error: string;

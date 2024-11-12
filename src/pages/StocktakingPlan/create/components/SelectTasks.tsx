@@ -21,7 +21,7 @@ import KanbanDisplayCardWithDelete from './KanbanDisplayList/KanbanDisplayCardWi
 import clothes from '@/assets/images/clothes-svgrepo-com.svg';
 import silk from '@/assets/images/silk-svgrepo-com.svg';
 import { ProductVariant } from '@/types/ProductType';
-import { Assignment } from '..';
+import { Assignment } from '../CreateDynamicPlan';
 interface MaterialVariantSelectionDialogProps {
   assignments: Assignment;
   error: string;

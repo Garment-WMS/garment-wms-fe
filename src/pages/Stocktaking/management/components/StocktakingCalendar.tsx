@@ -52,8 +52,6 @@ export default function StocktakingCalendar() {
             event.date.toDateString() === day.toDateString()
           );
           return (
-            <Dialog key={index}>
-              <DialogTrigger asChild>
                 <div 
                   onClick={() => setSelectedDate(day)}
                   className={`p-2  border rounded-sm cursor-pointer shadow-sm flex flex-col gap-2 ${
@@ -67,12 +65,6 @@ export default function StocktakingCalendar() {
                     </div>
                   ))}
                 </div>
-              </DialogTrigger>
-              <DialogContent>
-                <ShortStockingPlanDetails/>
-                
-              </DialogContent>
-            </Dialog>
           );
         })}
       </div>
