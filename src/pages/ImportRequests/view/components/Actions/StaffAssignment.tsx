@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
 import {
   Dialog,
   DialogContent,
@@ -10,11 +9,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/Dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
-import { Ghost, Loader2, Plus, Search, X } from 'lucide-react';
+import { CheckCheckIcon, Loader2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Label } from '@/components/ui/Label';
 
 // Mock data for staff members
 const staffMembers = [
@@ -30,7 +28,6 @@ export interface Props {
 }
 
 export default function AssignStaffPopup({ staff, setStaff }: Props) {
-  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [assigningTask, setAssigningTask] = useState<number | null>(null);
@@ -46,6 +43,8 @@ export default function AssignStaffPopup({ staff, setStaff }: Props) {
   const handleAssignTask = async (staffId: number) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setAssigningTask(staffId);
+    setStaff(filteredStaff.find((staff) => staff.id == staffId));
+    setIsOpen(false);
   };
 
   return (
@@ -54,10 +53,10 @@ export default function AssignStaffPopup({ staff, setStaff }: Props) {
         {staff ? (
           <Badge className="flex items-center" variant={'outline'}>
             <Avatar className="w-6 h-6 mr-2 ">
-              <AvatarImage src="/placeholder.svg?height=80&width=80" alt={'Warehouse Manager'} />
-              <AvatarFallback>{123}</AvatarFallback>
+              <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${staff.name}`} />
+              <AvatarFallback>{staff.name}</AvatarFallback>
             </Avatar>
-            Nguyen Duc Bao
+            {staff.name}
           </Badge>
         ) : (
           <Button variant={'outline'}>Assign Employee</Button>
@@ -95,7 +94,7 @@ export default function AssignStaffPopup({ staff, setStaff }: Props) {
                     onClick={() => handleAssignTask(staff.id)}
                     disabled={assigningTask === staff.id}>
                     {assigningTask === staff.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <CheckCheckIcon className="h-4 w-4 " />
                     ) : (
                       <Plus className="h-4 w-4" />
                     )}

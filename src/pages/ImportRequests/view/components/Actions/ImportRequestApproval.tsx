@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Clock,
   ClipboardCheck,
@@ -11,10 +11,7 @@ import {
   AlertCircle,
   InfoIcon,
   CheckCircle,
-  XCircle,
-  Search,
-  Plus,
-  Loader2
+  XCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,15 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { importRequestApprovalFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
 import { statusOrder } from '@/pages/ImportRequests/constants';
-import { Input } from '@/components/ui/Input';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/Dialog';
-import { ScrollArea } from '@/components/ui/ScrollArea';
+
 import AssignStaffPopup from './StaffAssignment';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
@@ -126,19 +115,10 @@ export default function WarehouseApproval({
   const [isConfirmApproveDialogOpen, setIsConfirmApproveDialogOpen] = useState(false);
   const [isConfirmDeclineDialogOpen, setIsConfirmDeclineDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [staff, setStaff] = useState<any>(null);
   const [selectedInspector, setSelectedInspector] = useState<StaffMember | null>(null);
   const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
   const { toast } = useToast();
   const { id } = useParams();
-
-  const sortedStaff = [...staffMembers].sort((a, b) => b.taskCount - a.taskCount);
-
-  const filteredStaff = sortedStaff.filter(
-    (staff) =>
-      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      staff.department.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
@@ -272,7 +252,7 @@ export default function WarehouseApproval({
                   <span>{selectedAssignee.name}</span>
                 </div>
               )}
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 items-center w-full justify-center">
                 <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
                   <AlertDialogTrigger asChild>
                     <Tooltip>
@@ -296,13 +276,19 @@ export default function WarehouseApproval({
                     </AlertDialogHeader>
                     <div className="space-y-4 py-4">
                       <div className="space-y-2">
-                        <div className="w-full flex items-center ">
+                        <div className="w-full flex items-center py-4 ">
                           <Label className="mr-2"> Inspector staff:</Label>
-                          <AssignStaffPopup setStaff={setStaff} staff={staff} />
+                          <AssignStaffPopup
+                            setStaff={setSelectedInspector}
+                            staff={selectedInspector}
+                          />
                         </div>
-                        <div className="w-full flex items-center ">
+                        <div className="w-full flex items-center py-4 ">
                           <Label className="mr-2"> Warehouse staff:</Label>
-                          <AssignStaffPopup setStaff={setStaff} staff={staff} />
+                          <AssignStaffPopup
+                            setStaff={setSelectedAssignee}
+                            staff={selectedAssignee}
+                          />
                         </div>
 
                         <div className="space-y-2">
