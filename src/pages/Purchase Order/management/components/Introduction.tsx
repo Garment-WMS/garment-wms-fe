@@ -5,7 +5,7 @@ const Introduction = () => {
   const description = 'Tracks material requests and ensures timely delivery.';
   return (
     <div
-      className="w-full h-28 bg-white rounded-md
+      className="w-full h-28 bg-white rounded-xl shadow-sm border
 md:h-48
 ">
       <div className="flex items-center h-full justify-between">

@@ -1,5 +1,4 @@
 import { getAllImportRequestFn } from '@/api/purchase-staff/importRequestApi';
-import { UseUsersInput } from '@/types/DemoUser';
 import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/ImportRequestType';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';

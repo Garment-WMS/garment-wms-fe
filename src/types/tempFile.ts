@@ -1,54 +1,18 @@
-import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
-import { MaterialVariant } from './MaterialTypes';
-import { Supplier } from './SupplierTypes';
-import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
+import { PODelivery } from './PurchaseOrder';
+import { Supplier } from './Supplier';
 
-// PO Delivery Detail
-export interface PODeliveryDetail {
-  id: string;
-  poDeliveryId: string;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-  quantityByPack: number;
-  materialVariantId: string;
-  expiredDate: string | null;
-  totalAmount: number;
-  materialVariant: MaterialVariant;
-  plannedQuantity?: number;
-  actualQuantity?: number;
-}
-
-// PO Delivery
-export interface PODelivery {
-  id: string;
-  purchaseOrderId: string;
-  taxAmount: number | null;
-  expectedDeliverDate: string;
-  deliverDate: string | null;
-  status: PurchaseOrderDeliveryStatus;
-  isExtra: boolean;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-  poDeliveryDetail: PODeliveryDetail[];
-}
-
-// Purchase Order
 export interface PurchaseOrder {
   id: string;
   poNumber: string;
   quarterlyProductionPlanId: string | null;
   purchasingStaffId: string | null;
+  totalAmount: number;
   currency: string;
-  subTotalAmount: number;
   taxAmount: number;
-  shippingAmount: number;
-  otherAmount: number;
   orderDate: string;
   expectedFinishDate: string;
+  status: string;
   finishDate: string | null;
-  status: PurchaseOrderStatus;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -57,6 +21,11 @@ export interface PurchaseOrder {
   poDelivery: PODelivery[];
 }
 
+export enum PoDeliveryStatus {
+  PENDING = 'PENDING',
+  FINISHED = 'FINISHED',
+  CANCELLED = 'CANCELLED'
+}
 // Pagination Meta
 export interface PageMeta {
   totalItems: number;

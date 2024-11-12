@@ -15,7 +15,7 @@ const CommentComponent = (props: Props) => {
             </Avatar>
             <div className="flex flex-col">
               <div>Michael Gough</div>
-              <div className='text-xs text-slate-700'>Warehouse Manager</div>
+              <div className="text-xs text-slate-700">Warehouse Manager</div>
             </div>
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -24,7 +24,6 @@ const CommentComponent = (props: Props) => {
             </time>
           </p>
         </div>
-        
       </footer>
       <p className="text-gray-500 dark:text-gray-400">
         Very straight-to-point article. Really worth time reading. Thank you! But tools are just the
