@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/Badge';
 import { Truck } from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
@@ -11,7 +11,6 @@ const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
   const { delivery, poNumber } = location.state as { delivery: PODelivery; poNumber: string };
   const { poId } = useParams();
-
   const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
     (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
     0
@@ -67,9 +66,21 @@ const PurchaseOrderDeliveryDetails = () => {
           </div>
         </div>
 
-        <Badge className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
-          {delivery.status}
-        </Badge>
+        <div className="items-center flex flex-col justify-center">
+          <Badge
+            className={`px-3 py-1 rounded-md text-lg mb-2 ${getStatusBadgeClass(delivery.status)}`}>
+            {delivery.status}
+          </Badge>
+
+          {delivery && delivery.importRequest && delivery.importRequest[0].id ? (
+            <Link to={`/purchase-staff/import-request/${delivery.importRequest[0].id}`}>
+              <Badge
+                className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
+                View Import Request
+              </Badge>{' '}
+            </Link>
+          ) : null}
+        </div>
       </section>
 
       {/* Material List */}

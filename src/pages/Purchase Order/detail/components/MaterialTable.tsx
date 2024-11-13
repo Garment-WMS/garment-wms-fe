@@ -63,9 +63,25 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       header: 'Quantity',
       accessorKey: 'quantityByPack',
       cell: ({ row }) => {
-        const uomPerPack = row.original.materialPackage.uomPerPack;
+        const uomPerPack = row.original.quantityByPack;
         const packUnit = row.original.materialPackage.packUnit;
         const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit;
+        return (
+          <div className="ml-1">
+            <span>{uomPerPack}</span>{' '}
+            <span className="lowercase text-slate-800">{pluralizedPackUnit}</span>
+          </div>
+        );
+      },
+      enableColumnFilter: false
+    },
+    {
+      header: 'Actual imports',
+      accessorKey: 'actualImports',
+      cell: ({ row }) => {
+        const uomPerPack = row.original.actualImportQuantity;
+        const packUnit = row.original.materialPackage.packUnit;
+        const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit ;
         return (
           <div className="ml-1">
             <span>{uomPerPack}</span>{' '}

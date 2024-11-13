@@ -2,6 +2,7 @@ import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
 import { MaterialPackage } from './MaterialTypes';
 import { Supplier } from './SupplierTypes';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
+import { ImportRequest } from './ImportRequestType';
 
 // PO Delivery Detail
 export interface PODeliveryDetail {
@@ -32,6 +33,7 @@ export interface PODelivery {
   updatedAt: string | null;
   deletedAt: string | null;
   poDeliveryDetail: PODeliveryDetail[];
+  importRequest?: ImportRequest[];
 }
 
 // Purchase Order
