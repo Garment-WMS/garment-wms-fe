@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import control from '@/assets/images/control.png';
 import logo from '@/assets/images/warehouse-logo.svg';
 import { GoSignOut } from 'react-icons/go';
 import { SideBarProps } from '@/constants/interface';
+import useLogout from '@/hooks/useLogout';
 
 const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   const title = 'Garment Storage';
@@ -13,11 +14,13 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   };
   const [open, setOpen] = useState(true);
   const [activeTitle, setActiveTitle] = useState(menu[0]?.title || '');
+  const location = useLocation();
   const iconSize = 22;
   const constraintWindowWidth = 800;
   const handleMenuClick = (menuTitle: string) => {
     setActiveTitle(menuTitle);
   };
+  const logout = useLogout();
   // Handle screen resize and collapse sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -38,6 +41,16 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  
+   // Update activeTitle based on the current URL
+   useEffect(() => {
+    const currentPath = location.pathname;
+    const matchingMenu = menu.find((Menu) => Menu.link === currentPath);
+    if (matchingMenu) {
+      setActiveTitle(matchingMenu.title);
+    }
+  }, [location.pathname, menu]); 
+
   return (
     <div className="flex min-h-screen">
 
@@ -64,7 +77,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
           </div>
           <ul className="pt-6">
             {menu.map((Menu, index) => (
-              <Link to={Menu.link}>
+              <Link key={index} to={Menu.link}>
                 <li
                   key={index}
                   className={`flex font-semibold  rounded-md p-2 cursor-pointer hover:bg-blue-500 text-sm items-center gap-x-4 mt-2
@@ -83,10 +96,11 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
             ))}
           </ul>
           <div
-            className={`flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-white text-sm items-center gap-x-4 mt-2
+          onClick={logout}
+            className={`flex font-semibold  rounded-md p-2 cursor-pointer hover:bg-blue-500 text-white text-sm items-center gap-x-4 mt-2
          ${!open && 'justify-center'}`}>
             <GoSignOut size={iconSize} />
-            <span className={`${!open && 'hidden'} origin-left duration-200`}>Đăng xuất</span>
+            <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
           </div>
         </div>
     </div>

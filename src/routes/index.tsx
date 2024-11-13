@@ -2,7 +2,6 @@ import ProductionStaffLayout from '@/layouts/ProductionStaffLayout';
 import PurchaseStaffLayout from '@/layouts/PurchaseStaffLayout';
 import WarehouseManagerLayout from '@/layouts/WarehouseManagerLayout';
 import WarehouseStaffLayout from '@/layouts/WarehouseStaffLayout';
-import Home from '@/pages/home';
 import TestPage from '@/pages/test';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import ProductionStaffRoute from './ProductionStaffRoute';
@@ -24,6 +23,9 @@ import ViewImportRequest from '@/pages/ImportRequests/view';
 import MaterialDetails from '@/pages/Material/MaterialDetails';
 import MaterialVariantUpdate from '@/pages/Material/update';
 import MaterialManagement from '@/pages/Material/management';
+import Login from '@/pages/login';
+import Home from '@/pages/home';
+import { Router } from 'react-router-dom';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -44,6 +46,10 @@ const RouterComponent: React.FC = () => {
       element: <TestPage />
     },
     {
+      path: '/login',
+      element: <Login />,
+    },
+    {
       element: <WarehouseManagerRoute />,
       children: [
         {
@@ -57,11 +63,6 @@ const RouterComponent: React.FC = () => {
         }
       ]
     },
-    // {
-    //   path: '/login',
-    //   element: <Login />,
-    // },
-
     {
       path: '/',
       element: <WarehouseStaffRoute />,
@@ -118,11 +119,11 @@ const RouterComponent: React.FC = () => {
               element: <PurchaseOrderManagement />
             },
             {
-              path: '/purchase-staff/purchase-order/detail/:id',
+              path: '/purchase-staff/purchase-order/:id',
               element: <PurchaseOrderDetails />
             },
             {
-              path: '/purchase-staff/purchase-order/delivery/:deliveryId',
+              path: '/purchase-staff/purchase-order/:poId/po-delivery/:deliveryId',
               element: <PurchaseOrderDeliveryDetails />
             },
             {
@@ -166,5 +167,6 @@ const RouterComponent: React.FC = () => {
     // { path: '*', element: <ErrorPage /> },
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
+    
 };
 export default RouterComponent;

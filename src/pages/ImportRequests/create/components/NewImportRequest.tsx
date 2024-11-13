@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate here
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { importRequestApi } from '@/api/services/importRequestApi';
 import {
@@ -19,8 +19,10 @@ import {
 import { Button } from '@/components/ui/button';
 import DeliveryForm from './DeliveryForm';
 import ImportRequestDetails from './ImportRequestDetails';
-import { PODelivery, PODeliveryDetail, PurchaseOrder } from '@/types/purchaseOrder';
+import { PODelivery, PODeliveryDetail, PurchaseOrder } from '@/types/PurchaseOrder';
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
+import { useDebounce } from '@/hooks/useDebouce';
+import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
 type Props = {};
 
@@ -52,8 +54,20 @@ const NewImportRequest = (props: Props) => {
       description: ''
     }
   });
-
-  const { data } = useGetAllPurchaseOrder();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
+  const debouncedSorting: SortingState = useDebounce(sorting, 1000);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 99
+  });
+  // const { data } = useGetAllPurchaseOrder();
+  const { purchaseOrderList: data } = useGetAllPurchaseOrder({
+    sorting: debouncedSorting,
+    columnFilters: debouncedColumnFilters,
+    pagination
+  });
   const [isEditDetail, setEditDetail] = useState<Boolean>(false);
   const [dialogOpen, setDialogOpen] = useState(false); // State to control AlertDialog open/close
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder>();

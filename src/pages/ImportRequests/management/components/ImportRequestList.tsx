@@ -1,6 +1,6 @@
+import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
-import { badgeVariants } from "@/components/ui/Badge"
-
+import { badgeVariants } from '@/components/ui/Badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +15,12 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import {  useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import TanStackBasicTable from './CompositeTable';
 type Props = {};
 
 export const getStatusBadgeVariant = (status: string) => {
-  const statusObj = Status.find(s => s.value === status);
+  const statusObj = Status.find((s) => s.value === status);
   return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
 };
 
@@ -44,7 +43,7 @@ const ImportRequestList = (props: Props) => {
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
 
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
-  // pagination state of the table
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0, //initial page index
     pageSize: 10 //default page size
@@ -60,10 +59,10 @@ const ImportRequestList = (props: Props) => {
     importRequestData && pageMeta
       ? {
           data: importRequestData,
-          limit: pageMeta.limit ?? 0,
-          page: pageMeta.page ?? 0,
-          total: pageMeta.total ?? 0,
-          totalFiltered: pageMeta.total ?? 0
+          limit: pageMeta.limit,
+          page: pageMeta.page,
+          total: pageMeta.total,
+          totalFiltered: pageMeta.total
         }
       : undefined;
 
@@ -75,36 +74,25 @@ const ImportRequestList = (props: Props) => {
       .join(' '); // Join the words back with spaces
   }
 
-  const getLabelOfImportType= (type:string)=>{
-    const typeObj = DeliveryType.find(s => s.value === type);
+  const getLabelOfImportType = (type: string) => {
+    const typeObj = DeliveryType.find((s) => s.value === type);
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
-  }
+  };
 
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
-      header: 'Import request ID',
-      accessorKey: 'id',
+      header: 'Import request code',
+      accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
         return (
           <div>
-            <div>{row.original.id.slice(0, 8)}</div>
+            <div>{row.original.code}</div>
           </div>
         );
       }
     },
-    {
-      header: 'Delivery ID',
-      accessorKey: 'poDeliveryId',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div>{row.original.id.slice(0, 8)}</div>
-          </div>
-        );
-      }
-    },
+  
     {
       header: 'Import Request Type',
       accessorKey: 'type',
@@ -142,7 +130,8 @@ const ImportRequestList = (props: Props) => {
       accessorKey: 'status',
       enableColumnFilter: true,
       cell: ({ row }) => (
-        <div className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+        <div
+          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
@@ -174,19 +163,21 @@ const ImportRequestList = (props: Props) => {
 
   return (
     <div className="pb-4">
-        <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-          <TanStackBasicTable
-            isTableDataLoading={isimportRequestLoading} // Use the persistent loading state
-            paginatedTableData={paginatedTableData}
-            columns={importRequestColumn}
-            pagination={pagination}
-            setPagination={setPagination}
-            sorting={sorting}
-            setSorting={setSorting}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-          />
-        </div>
+      <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
+        <TanStackBasicTable
+          isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
+          paginatedTableData={paginatedTableData ?? undefined}
+          columns={importRequestColumn}
+          pagination={pagination}
+          setPagination={setPagination}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          searchColumnId='code'
+          searchPlaceholder='Search by import request code'
+        />
+      </div>
     </div>
   );
 };

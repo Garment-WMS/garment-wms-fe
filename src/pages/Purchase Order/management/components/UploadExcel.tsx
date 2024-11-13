@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/Dialog';
-import { CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
+import { CircleCheckBig, FileUp, Import, Trash, XCircle } from 'lucide-react';
 import Colors from '@/constants/color';
 import ExcelIcon from '@/assets/images/ExcelFile_Icon.png';
 import { DialogTitle } from '@radix-ui/react-dialog';
@@ -281,7 +281,10 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   return (
     <Dialog>
       <DialogTrigger>
-        <Button>{triggerButtonLabel}</Button>
+        <Button className="flex items-center gap-2">
+          <Import size={20} />
+          {triggerButtonLabel}
+        </Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {

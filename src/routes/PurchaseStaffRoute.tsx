@@ -1,7 +1,12 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 
 const PurchaseStaffRoute = () => {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ScrollRestoration />
+    </>
+  );
 };
 
 export default PurchaseStaffRoute;

@@ -34,7 +34,7 @@ import { CalendarIcon, CaretSortIcon } from '@radix-ui/react-icons';
 import { CheckIcon } from 'lucide-react';
 
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
-import { PODelivery, PODeliveryDetail, PurchaseOrder } from '@/types/purchaseOrder';
+import { PODelivery, PODeliveryDetail, PurchaseOrder } from '@/types/PurchaseOrder';
 import { Textarea } from '@/components/ui/textarea';
 
 type Props = {};
@@ -107,7 +107,7 @@ const DeliveryForm: React.FC<DeliveryFormProps> = ({
                         <CommandList>
                           <CommandEmpty>No Purchase Order found.</CommandEmpty>
                           <CommandGroup>
-                            {data?.data.data.map((item: any) => (
+                            {data?.map((item: any) => (
                               <CommandItem
                                 key={item.id}
                                 value={item.poNumber}
