@@ -22,6 +22,7 @@ import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
+import { Router } from 'react-router-dom';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -151,5 +152,6 @@ const RouterComponent: React.FC = () => {
     // { path: '*', element: <ErrorPage /> },
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
+    
 };
 export default RouterComponent;
