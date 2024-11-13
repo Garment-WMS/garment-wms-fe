@@ -12,7 +12,7 @@ type Props = {
 
 const VariantTable: React.FC<Props>= ({materialPackage}) => {
   return (
-    <div className="container mx-auto p-4">
+    <div className="  ">
       <DataTable columns={DetailsColumn} data={materialPackage}/>
       <div className="mt-8">
         {materialPackage && <VariantChart materialPackage={materialPackage} />}

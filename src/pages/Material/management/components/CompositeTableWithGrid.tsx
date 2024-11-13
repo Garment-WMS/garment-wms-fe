@@ -74,10 +74,11 @@ export default function CompositeTableWithGrid<TData, TValue>({
   }, [columnFilters, setPagination]);
 
   return (
-    <div className="p-8 ">
-      <div className="flex flex-col md:flex-row justify-evenly gap-4"></div>
+    <div className="px-8 pb-4">
       {isTableDataLoading ? (
-        <Loading />
+        <div className="flex justify-center items-center">
+          <Loading />
+        </div>
       ) : (
         <>
           <div className="flex justify-end mb-4">
@@ -94,7 +95,6 @@ export default function CompositeTableWithGrid<TData, TValue>({
               <KanbanDisplayList
                 paginatedData={paginatedTableData}
                 isLoading={isTableDataLoading}
-   
               />
             ) : (
               <div className="rounded-md border mb-8">

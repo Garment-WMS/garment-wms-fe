@@ -22,8 +22,8 @@ import Loading from '@/components/common/Loading';
 import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
 import MaterialDetails from '@/pages/Material/MaterialDetails';
-import MaterialList from '@/pages/Material/management';
 import MaterialVariantUpdate from '@/pages/Material/update';
+import MaterialManagement from '@/pages/Material/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -106,7 +106,7 @@ const RouterComponent: React.FC = () => {
             },
             {
               path: '/material-variant',
-              element: <MaterialList/>
+              element: <MaterialManagement/>
             },
           ]
         },

@@ -2,7 +2,7 @@ import React from 'react'
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import Colors from '@/constants/color'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 type Props = {}
 

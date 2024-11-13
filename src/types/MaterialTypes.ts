@@ -6,6 +6,7 @@ import { PageMetaData } from './ImportRequestType';
 export interface UOM {
   id: string;
   name: string;
+  uomCharacter: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -20,6 +21,7 @@ export interface Material {
   updatedAt: string;
   deletedAt: string | null;
   materialUom: UOM;
+  numberOfMaterialVariants:number
 }
 
 // Material
@@ -50,7 +52,24 @@ export interface MaterialVariantResponse {
   message: string;
   errors: any | null;
 }
-
+export interface MaterialImportReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialImportReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface MaterialExportReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialExportReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
 export interface MaterialReceiptResponse {
   statusCode: number;
   data: MaterialReceipt;
@@ -58,16 +77,27 @@ export interface MaterialReceiptResponse {
   errors: any | null;
 }
 export interface MaterialReceipt {
-  materialimportReceipt: MaterialImportReceipt[];
-    materialExportReceipt: MaterialExportReceipt[];
+  id: string;
+  materialPackageId: string;
+  importReceiptId: string;
+  quantityByPack: number;
+  remainQuantityByPack: number;
+  status: string;
+  materialPackage: MaterialPackage;
+  expiredDate: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt: string | null;
 }
 export interface MaterialImportReceipt{
   id: string;
   materialId: string;
+  code: string;
   importReceiptId: string;
-  expiredDate: string;
+  expireDate: string;
   quantityByPack:number;
-
+  importDate:string;
+  materialPackage: MaterialPackage;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
@@ -75,9 +105,12 @@ export interface MaterialImportReceipt{
 export interface MaterialExportReceipt{
   id: string;
   materialId: string;
+  code: string;
+  importDate:string;
   exportReceiptId: string;
-  expiredDate: string;
+  expireDate: string;
   quantityByPack:number;
+  materialPackage: MaterialPackage;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
@@ -111,6 +144,7 @@ export interface MaterialPackage {
   updatedAt: string | null;
   deletedAt: string | null;
   material: Material;
+  uom: UOM
   inventoryStock: InventoryStock
 }
 export interface InventoryStock {

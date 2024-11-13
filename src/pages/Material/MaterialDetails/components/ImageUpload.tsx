@@ -104,7 +104,7 @@ export default function ImageUploadWithDialog({
 
           <div
             className={`absolute inset-0 bg-black/50 rounded-lg transition-opacity duration-200 ${
-              isHovered ? 'opacity-100' : 'opacity-0'
+              isHovered ? 'opacity-50 cursor-pointer' : 'opacity-0'
             }`}>
             <Button
               variant="ghost"

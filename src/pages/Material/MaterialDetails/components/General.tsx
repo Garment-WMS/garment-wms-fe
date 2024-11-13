@@ -2,13 +2,13 @@ import { Label } from '@/components/ui/Label';
 import { Material, MaterialVariant } from '@/types/MaterialTypes';
 import React from 'react';
 import VariantChart from './VariantChart';
+import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
 
 type Props = {
   materialVariant: MaterialVariant;
 };
 
 const General: React.FC<Props> = ({ materialVariant }) => {
-  console.log(materialVariant)
   if (!materialVariant) {
     return (
       <p className="text-center text-lg text-gray-500">
@@ -17,7 +17,8 @@ const General: React.FC<Props> = ({ materialVariant }) => {
     );
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 ring-1 ring-slate-200 rounded-md p-4">
+
       <div>
         <Label htmlFor="product-type" className="flex items-center">
         Material: {materialVariant?.material?.name}
@@ -30,14 +31,14 @@ const General: React.FC<Props> = ({ materialVariant }) => {
       </div>
       <div>
         <Label htmlFor="invoicing-policy" className="flex items-center">
-          Unit of measure: {materialVariant?.material?.materialUom.name}
+          Unit of measure: {capitalizeFirstLetter(materialVariant?.material?.materialUom.name)} {`(${materialVariant.material.materialUom.uomCharacter})`}
         </Label>
       </div>
       <div className="col-span-2">
         {/* <Label htmlFor="track-inventory" className="flex items-center">
     Track Inventory <Info className="w-4 h-4 ml-1 text-gray-400" />
   </Label> */}
-        <div className="flex items-center mt-2">
+        <div className="flex items-center">
           <Label htmlFor="track-inventory" className="">
             Quantity: {materialVariant?.onHand} unit
           </Label>
@@ -46,9 +47,7 @@ const General: React.FC<Props> = ({ materialVariant }) => {
           The quantity is based on the actual import not the delivery order.
         </p>
       </div>
-      <div className="mt-4">
-        {materialVariant?.materialPackage && <VariantChart materialPackage={materialVariant.materialPackage} />}
-      </div>
+
     </div>
   );
 };
