@@ -26,6 +26,7 @@ export interface ImportRequest {
 }
 
 export interface ImportRequest {
+  managerNote: string;
   id: string;
   warehouseStaffId: string | null;
   status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
@@ -74,6 +75,7 @@ export interface ImportRequest {
   purchasingStaff: PurchasingStaff;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
+  inspectionRequest: any;
 }
 
 export type ImportRequestDetail = {

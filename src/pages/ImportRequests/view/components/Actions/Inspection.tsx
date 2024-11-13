@@ -49,8 +49,10 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
           requestId="123"
           currentStatus={currentStatus}
           manager={importRequest?.warehouseManager}
-          requestDetails="Please handle this quick"
+          requestDetails={importRequest?.managerNote}
           requestDate={importRequest?.createdAt}
+          warehouseStaff={importRequest?.warehouseStaff}
+          inspectionDepartment={importRequest?.inspectionRequest[0]?.inspectionDepartment}
         />
       )
     },
@@ -99,11 +101,11 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
 
   return (
     <div className="flex items-center justify-center">
-      <Carousel className="w-[90%] h-[80%]" setApi={setCarouselApi}>
+      <Carousel className="w-[90%] h-[80%]  max-w-[800px] max-h-[600px]" setApi={setCarouselApi}>
         <CarouselContent>
           {stepsActions.map((action, index) => (
             <CarouselItem key={index}>
-              <div className="w-full h-full">
+              <div className="w-full h-full  max-w-[800px] max-h-[600px]">
                 <div className="flex  items-center justify-center h-full ">{action.content}</div>
               </div>
             </CarouselItem>

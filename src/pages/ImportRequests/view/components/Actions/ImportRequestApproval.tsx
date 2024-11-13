@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,7 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { importRequestApprovalFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
 import { statusOrder } from '@/pages/ImportRequests/constants';
-
+import { IoIosSearch } from 'react-icons/io';
 import AssignStaffPopup from './StaffAssignment';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
@@ -43,6 +43,8 @@ interface WarehouseApprovalProps {
   currentStatus: string;
   requestDetails: string;
   requestDate: string;
+  warehouseStaff?: any;
+  inspectionDepartment?: any;
 }
 
 interface StaffMember {
@@ -96,7 +98,9 @@ export default function WarehouseApproval({
   manager,
   currentStatus,
   requestDetails,
-  requestDate
+  requestDate,
+  warehouseStaff,
+  inspectionDepartment
 }: WarehouseApprovalProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as ApprovalStatus);
   const [approveNote, setApproveNote] = useState('');
@@ -110,7 +114,6 @@ export default function WarehouseApproval({
   const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
   const { toast } = useToast();
   const { id } = useParams();
-
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
       toast({
@@ -163,17 +166,49 @@ export default function WarehouseApproval({
   };
 
   const handleDecline = async () => {
+    // Open dialog to capture reason if not provided
+    if (!declineReason) {
+      toast({
+        variant: 'destructive',
+        title: 'Reason Required',
+        description: 'Please provide a reason for declining the request.',
+        duration: 5000
+      });
+      setIsDeclineDialogOpen(true);
+      return;
+    }
+
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Declined with reason:', declineReason);
-    toast({
-      title: 'Request Declined',
-      description: 'The warehouse request has been declined.',
-      duration: 5000
-    });
-    setIsSubmitting(false);
-    setIsDeclineDialogOpen(false);
-    setIsConfirmDeclineDialogOpen(false);
+
+    try {
+      // Simulate delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Call the decline function
+      const res = await importRequestApprovalFn('REJECTED', declineReason, id as string);
+
+      if (res.statusCode === 200) {
+        toast({
+          variant: 'success',
+          title: 'Request Declined',
+          description: 'The warehouse request has been successfully declined.',
+          duration: 5000
+        });
+      } else {
+        throw new Error(res.errors[0] || 'Unknown error occurred');
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Decline Failed',
+        description: error.message || 'An error occurred while declining the request.',
+        duration: 5000
+      });
+    } finally {
+      setIsSubmitting(false);
+      setIsDeclineDialogOpen(false);
+      setIsConfirmDeclineDialogOpen(false);
+    }
   };
 
   return (
@@ -213,22 +248,54 @@ export default function WarehouseApproval({
                   {label}
                 </Badge>
               </div>
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm  ">
                 <User className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Assigned to:</span>
-                <span>
-                  {manager?.account?.firstName + ' ' + manager?.account?.lastName || 'Not assigned'}
-                </span>
+                {warehouseStaff?.account ? (
+                  <Badge variant={'outline'}>
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage src={warehouseStaff?.account?.avaUrl} alt="Profile picture" />
+                      <AvatarFallback>Staff</AvatarFallback>
+                    </Avatar>
+                    {warehouseStaff?.account?.lastName + ' ' + warehouseStaff?.account?.firstName}
+                  </Badge>
+                ) : (
+                  <h4>Not yet</h4>
+                )}
               </div>
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm ">
+                <IoIosSearch className="mr-3 h-5 w-5 text-muted-foreground" />
+                <span className="font-medium w-24">Inspect by:</span>
+                {inspectionDepartment?.account ? (
+                  <Badge variant={'outline'}>
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage
+                        src={inspectionDepartment?.account?.avaUrl}
+                        alt="Profile picture"
+                      />
+                      <AvatarFallback>Inspec</AvatarFallback>
+                    </Avatar>
+                    {inspectionDepartment?.account?.lastName +
+                      ' ' +
+                      inspectionDepartment?.account?.firstName}
+                  </Badge>
+                ) : (
+                  <h4>Not Yet</h4>
+                )}
+              </div>
+              <div className="flex items-center text-sm ">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
-                <span>{requestDate}</span>
+                <span>
+                  {new Date(requestDate).toLocaleDateString() +
+                    ' ' +
+                    new Date(requestDate).toLocaleTimeString()}
+                </span>
               </div>
               <div className="flex items-start text-sm">
-                <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground mt-1" />
+                <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground " />
                 <span className="font-medium w-24">Notes:</span>
-                <span className="flex-1">{requestDetails}</span>
+                <span className="flex-1">{requestDetails || 'Not yet'}</span>
               </div>
             </div>
           </div>

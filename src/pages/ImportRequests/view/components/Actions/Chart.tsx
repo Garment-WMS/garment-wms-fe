@@ -86,7 +86,7 @@ export function Chart({ currentStatus }: ChartProps) {
             <h2 className="font-bold text-xl text-gray-700">Not Yet</h2>
           </div>
         )}
-        {statusOrder.indexOf(currentStatus) >= 4 && (
+        {statusOrder.indexOf(currentStatus) > 4 && (
           <>
             <div className="col-span-3 sm:col-span-1">
               <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">

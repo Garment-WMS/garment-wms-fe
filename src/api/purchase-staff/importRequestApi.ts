@@ -12,15 +12,23 @@ export const importRequestApi = {
     action: string,
     managerNote: string,
     id: string,
-    inspectionDepartmentId: string,
-    warehouseStaffId: string
-  ) =>
-    post(`/import-request/${id}/manager-process`, {
-      action,
-      managerNote: managerNote != '' ? managerNote : undefined,
-      inspectionDepartmentId,
-      warehouseStaffId
-    })
+    inspectionDepartmentId?: string,
+    warehouseStaffId?: string
+  ) => {
+    if (inspectionDepartmentId && warehouseStaffId) {
+      return post(`/import-request/${id}/manager-process`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined,
+        inspectionDepartmentId,
+        warehouseStaffId
+      });
+    } else {
+      return post(`/import-request/${id}/manager-process`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined
+      });
+    }
+  }
 };
 
 export const getAllImportRequestFn = async ({
@@ -75,8 +83,8 @@ export const importRequestApprovalFn = async (
   action: string,
   managerNote: string,
   id: string,
-  inspectionDepartmentId: string,
-  warehouseStaffId: string
+  inspectionDepartmentId?: string,
+  warehouseStaffId?: string
 ) => {
   const res = await privateCall(
     importRequestApi.approveRequest(
