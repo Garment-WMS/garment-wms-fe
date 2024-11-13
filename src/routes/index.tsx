@@ -29,6 +29,7 @@ import CreateDynamicPlan from '@/pages/StocktakingPlan/create/CreateDynamicPlan'
 import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
 import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
 import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
+import { Router } from 'react-router-dom';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -186,5 +187,6 @@ const RouterComponent: React.FC = () => {
     // { path: '*', element: <ErrorPage /> },
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
+    
 };
 export default RouterComponent;

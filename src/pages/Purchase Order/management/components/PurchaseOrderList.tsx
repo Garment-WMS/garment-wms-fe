@@ -3,9 +3,9 @@ import { Badge } from '@/components/ui/Badge';
 import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import UploadExcel from './UploadExcel';
-import { Link, ScrollRestoration, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import { PurchaseOrder } from '@/types/purchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
@@ -14,12 +14,10 @@ import { useGetAllSupplier } from '@/hooks/useGetAllSupplier';
 import { Supplier } from '@/types/SupplierTypes';
 
 const PurchaseOrderList: React.FC = () => {
-  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10
@@ -38,12 +36,11 @@ const PurchaseOrderList: React.FC = () => {
           data: purchaseOrderList,
           limit: pageMeta.limit,
           page: pageMeta.page,
-          total: pageMeta.totalItems,
-          totalFiltered: pageMeta.totalItems
+          total: pageMeta.total,
+          totalFiltered: pageMeta.totalPages
         }
       : undefined;
 
-  // Table columns definition
   const purchaseOrderColumns: CustomColumnDef<PurchaseOrder>[] = [
     {
       header: 'PO Number',
@@ -155,17 +152,22 @@ const PurchaseOrderList: React.FC = () => {
         <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Lists</h1>
         <UploadExcel fileName="purchase order" triggerButtonLabel="Import" />
       </div>
-      <TanStackBasicTable
-        isTableDataLoading={isFetching || isFetchingSuppliers}
-        paginatedTableData={paginatedTableData}
-        columns={purchaseOrderColumns}
-        pagination={pagination}
-        setPagination={setPagination}
-        sorting={sorting}
-        setSorting={setSorting}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
+      {/* Set fixed height for the table */}
+      <div className="overflow-auto h-[700px]">
+        <TanStackBasicTable
+          isTableDataLoading={isFetching || isFetchingSuppliers}
+          paginatedTableData={paginatedTableData}
+          columns={purchaseOrderColumns}
+          pagination={pagination}
+          setPagination={setPagination}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          totalPages={paginatedTableData?.totalFiltered}
+          searchColumnId="status"
+        />
+      </div>
     </div>
   );
 };
