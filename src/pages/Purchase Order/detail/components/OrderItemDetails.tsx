@@ -50,13 +50,14 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     let label = '';
 
     switch (delivery.status) {
-      case PurchaseOrderDeliveryStatus.PENDING:
-        color = 'bg-blue-400';
-        icon = <Plus size={16} />;
-        label = 'Create Import Request';
-        //TODO: Need to change path later, also need to pass the parameter
-        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}/import-request`;
-        break;
+      //TODO: Will enable this later after merge with import request flow
+      // case PurchaseOrderDeliveryStatus.PENDING:
+      //   color = 'bg-blue-400';
+      //   icon = <Plus size={16} />;
+      //   label = 'Create Import Request';
+      //   //TODO: Need to change path later, also need to pass the parameter
+      //   path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}/import-request`;
+      //   break;
       case PurchaseOrderDeliveryStatus.FINISHED:
         color = 'bg-green-400';
         icon = <Eye size={16} />;
@@ -131,7 +132,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                     </Badge>
                   }
                   redirectButton={renderRedirectButton(delivery, poId || '')}
-                  isExtra = {delivery.isExtra}
+                  isExtra={delivery.isExtra}
                   defaultOpen={false}>
                   <div className="flex items-center justify-between mt-5 gap-6">
                     <div className="flex justify-end items-center space-x-4">
