@@ -7,14 +7,58 @@ import importRequestSelector from '../../slice/selector';
 type Props = {};
 
 interface ColumnType {
-  name?: string;
-  code?: string;
-  packUnit?: string;
-  uomPerPack?: number;
+  id?: string;
+  importRequestId?: string;
+  materialPackageId?: string;
+  productSizeId?: string | null;
   quantityByPack?: number;
-  materialName: string;
-  materialCode?: string;
-  materialType?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  materialPackage?: {
+    id?: string;
+    materialVariantId?: string;
+    name?: string;
+    code?: string;
+    packUnit?: string;
+    uomPerPack?: number;
+    packedWidth?: number;
+    packedLength?: number;
+    packedHeight?: number;
+    packedWeight?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    deletedAt?: string | null;
+    materialVariant?: {
+      id?: string;
+      materialId?: string;
+      image?: string | null;
+      name?: string;
+      code?: string;
+      reorderLevel?: number;
+      createdAt?: string;
+      updatedAt?: string;
+      deletedAt?: string | null;
+      material?: {
+        id?: string;
+        materialUomId?: string;
+        name?: string;
+        code?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        deletedAt?: string | null;
+        materialUom?: {
+          id?: string;
+          name?: string;
+          createdAt?: string;
+          updatedAt?: string;
+          deletedAt?: string | null;
+        };
+      };
+      materialAttribute?: any[];
+      materialInspectionCriteria?: any[];
+    };
+  };
 }
 
 const ImportRequestDetails = (props: Props) => {
@@ -29,11 +73,11 @@ const ImportRequestDetails = (props: Props) => {
         name: materialPackage?.name ?? 'N/A', // Fallback to 'N/A' if undefined
         code: materialPackage?.code ?? 'N/A',
         packUnit: materialPackage?.packUnit ?? 'N/A',
-        materialName: materialPackage?.material?.name ?? 'N/A', // Fallback for nested material
+        materialName: materialPackage?.materialVariant.material.name ?? 'N/A', // Fallback for nested material
         uomPerPack: materialPackage?.uomPerPack ?? 0, // Default to 0 if undefined
         quantityByPack: detail.quantityByPack ?? 0, // Default to 0 if undefined
-        materialCode: materialPackage?.material?.code ?? 'N/A', // Fallback for nested material
-        materialType: materialPackage?.material?.materialType?.name ?? 'N/A' // Fallback for nested materialType
+        materialCode: materialPackage?.materialVariant.material?.code ?? 'N/A', // Fallback for nested material
+        materialType: materialPackage?.materialVariant.material.code ?? 'N/A' // Fallback for nested materialType
       };
     });
   }
@@ -46,13 +90,18 @@ const ImportRequestDetails = (props: Props) => {
     },
     {
       header: 'Material Code',
-      accessorKey: 'materialCode',
+      accessorKey: 'code',
       enableColumnFilter: false
     },
     {
       header: 'Material Name',
       accessorKey: 'materialName',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <div className="text-center">
+          {row.original.materialPackage?.materialVariant?.material?.name}
+        </div>
+      )
     },
     {
       header: 'Variant Name',

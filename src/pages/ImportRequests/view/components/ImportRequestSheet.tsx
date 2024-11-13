@@ -59,7 +59,12 @@ const ImportRequestSheet = (props: Props) => {
       </div>
       <div>
         <div className="font-primary font-semibold text-sm">Note</div>
-        <Textarea placeholder="Note" className="w-full h-20 mt-2" disabled={true} />
+        <Textarea
+          placeholder="Note"
+          className="w-full h-20 mt-2"
+          readOnly
+          value={importRequest?.description}
+        />
       </div>
       <SupplierWarehouseInfo />
       <ImportRequestDetails />
