@@ -78,8 +78,8 @@ export function TypeChart({ materialTypeList }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Mixed</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Material type chart</CardTitle>
+        <CardDescription>This will show number of material each type</CardDescription>
       </CardHeader>
       <CardContent>
       <ChartContainer className="h-[300px] w-full px-4" config={cconfig}>
@@ -112,14 +112,14 @@ export function TypeChart({ materialTypeList }: Props) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
+      {/* <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
           Showing total visitors for the last 6 months
         </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   )
 }

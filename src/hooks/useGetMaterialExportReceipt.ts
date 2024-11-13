@@ -15,7 +15,7 @@ export const useGetMaterialExportReceipt = (id:string,{
       isLoading,
       isFetching
     } = useQuery<MaterialExportReceiptResponse, AxiosError>({
-      queryKey: ['MaterialVariant', sorting, columnFilters, pagination],
+      queryKey: ['tMaterialExportReceipt', sorting, columnFilters, pagination],
       queryFn: () =>
         getOneMaterialExportReceiptFn(id,{
           sorting,

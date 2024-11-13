@@ -21,7 +21,7 @@ export interface Material {
   updatedAt: string;
   deletedAt: string | null;
   materialUom: UOM;
-  numberOfMaterialVariants:number
+  numberOfMaterialVariants: number;
 }
 
 // Material
@@ -36,12 +36,12 @@ export interface MaterialVariant {
   updatedAt: string | null;
   deletedAt: string | null;
   material: Material;
-  materialPackage: MaterialPackage[]
+  materialPackage: MaterialPackage[];
+  materialAttribute: any[];
   image: string | null;
   onHand: number;
   numberOfMaterialPackage: number;
 }
-
 
 export interface MaterialVariantResponse {
   statusCode: number;
@@ -89,31 +89,44 @@ export interface MaterialReceipt {
   updatedAt: string | null;
   deletedAt: string | null;
 }
-export interface MaterialImportReceipt{
+export interface MaterialImportReceipt {
   id: string;
   materialId: string;
   code: string;
   importReceiptId: string;
   expireDate: string;
-  quantityByPack:number;
-  importDate:string;
+  quantityByPack: number;
+  importDate: string;
   materialPackage: MaterialPackage;
+  remainQuantityByPack: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  status: string;
 }
-export interface MaterialExportReceipt{
+type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default';
+
+export const receiptStatus = ['IMPORTING', 'AVAILABLE', 'USED'];
+export const ReceiptStatusLabel: { label: string; value: string; variant: StatusVariant }[] = [
+  { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
+  { label: 'Available', value: 'AVAILABLE', variant: 'success' },
+  { label: 'Used', value: 'USED', variant: 'destructive' }
+];
+export interface MaterialExportReceipt {
   id: string;
   materialId: string;
   code: string;
-  importDate:string;
+  importDate: string;
   exportReceiptId: string;
   expireDate: string;
-  quantityByPack:number;
+  quantityByPack: number;
+  remainQuantityByPack: number;
   materialPackage: MaterialPackage;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  status: string;
+
 }
 export interface MaterialDataToRender {
   limit: number;
@@ -143,9 +156,10 @@ export interface MaterialPackage {
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  materialReceipt: MaterialReceipt[];
   material: Material;
-  uom: UOM
-  inventoryStock: InventoryStock
+  uom: UOM;
+  inventoryStock: InventoryStock;
 }
 export interface InventoryStock {
   id: string;
@@ -164,4 +178,21 @@ export type MaterialPackageResponse = {
   };
   message: string;
   errors: any | null;
+};
+
+export type MaterialReceiptStatisticsResponse = {
+  monthlyData: MonthlyData[];
+};
+
+export type MonthlyData = {
+  month: number;
+  data: OneMonthData[];
+};
+
+export type OneMonthData = {
+  materialVariant: MaterialVariant;
+  totalImportQuantityByUom: number;
+  totalImportQuantityByPack: number;
+  totalExportQuantityByPack: number;
+  totalExportQuantityByUom: number;
 };

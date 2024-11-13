@@ -1,10 +1,7 @@
 import { DataTable } from '@/components/ui/DataTable';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ReceiptChart } from './ReceiptChart';
-import {
-  MaterialExportReceiptResponse,
-  MaterialImportReceiptResponse
-} from '@/types/MaterialTypes';
+
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
 import { Button } from '@/components/ui/button';
@@ -14,21 +11,14 @@ import TanStackBasicTable from '@/components/common/CompositeTable';
 import { useGetMaterialImportReceipt } from '@/hooks/useGetMaterialImportReceipt';
 import { useGetMaterialExportReceipt } from '@/hooks/useGetMaterialExportReceipt';
 import { materialExportReceiptColumn, materialImportReceiptColumn } from './ReceiptColumn';
-
+import { Label } from '@/components/ui/Label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 type Props = {
   id: string;
 };
 type displayState = 'import' | 'export';
 const ReceiptTable: React.FC<Props> = ({ id }) => {
   const [state, setState] = useState<displayState>('import');
-  const [importPagination, setImportPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 5
-  });
-  const [exportPagination, setExportPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 5
-  });
 
   const handleDisplayChange = (state: displayState) => {
     console.log(state);
@@ -50,6 +40,11 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
 
   const importDebouncedSorting: SortingState = useDebounce(importSorting, 1000);
 
+  const [importPagination, setImportPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5
+  });
+
   const {
     pageMeta: importPageMeta,
     importReceiptData,
@@ -69,12 +64,18 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
       totalFiltered: importPageMeta?.total || 0
     };
 
-
   const [exportColumnFilters, setExportColumnFilters] = useState<ColumnFiltersState>([]);
+
   const [exportSorting, setExportSorting] = useState<SortingState>([]);
+
   const exportDebouncedColumnFilters: ColumnFiltersState = useDebounce(exportColumnFilters, 1000);
+
   const exportDebouncedSorting: SortingState = useDebounce(exportSorting, 1000);
 
+  const [exportPagination, setExportPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5
+  });
   const {
     pageMeta: exportPageMeta,
     exportReceiptData,
@@ -93,42 +94,70 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
       totalFiltered: exportPageMeta?.total || 0
     };
 
-
   return (
     <div className=" flex flex-col gap-4 ">
       <div className="h-full">
         <div className="flex mb-4 px-8 justify-end">
-          <Button onClick={() => handleDisplayChange('import')} variant="outline" size="icon">
-            <img className="h-7 w-7" src={importIcon} />
-          </Button>
-          <Button onClick={() => handleDisplayChange('export')} variant="outline" size="icon">
-            <img className="h-7 w-7" src={exportIcon} />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => handleDisplayChange('import')} variant="outline" size="icon">
+                  <img className="h-7 w-7" src={importIcon} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Import</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => handleDisplayChange('export')} variant="outline" size="icon">
+                  <img className="h-7 w-7" src={exportIcon} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         {state === 'import' ? (
-          <TanStackBasicTable
-            isTableDataLoading={isImportLoading}
-            paginatedTableData={importData}
-            columns={materialImportReceiptColumn}
-            pagination={importPagination}
-            sorting={importDebouncedSorting}
-            setSorting={setImportSorting}
-            setPagination={setImportPagination}
-            columnFilters={importDebouncedColumnFilters}
-            setColumnFilters={setImportColumnFilters}
-          />
+          <div className="">
+            <Label>Import Receipt</Label>
+            <TanStackBasicTable
+              isTableDataLoading={isImportLoading}
+              paginatedTableData={importData}
+              columns={materialImportReceiptColumn}
+              pagination={importPagination}
+              sorting={importSorting}
+              setSorting={setImportSorting}
+              setPagination={setImportPagination}
+              columnFilters={importColumnFilters}
+              setColumnFilters={setImportColumnFilters}
+              searchColumnId="code"
+              searchPlaceholder="Search by code"
+            />
+          </div>
         ) : (
-          <TanStackBasicTable
-            isTableDataLoading={isExportLoading}
-            paginatedTableData={exportData}
-            columns={materialExportReceiptColumn}
-            pagination={exportPagination}
-            sorting={exportDebouncedSorting}
-            setSorting={setExportSorting}
-            setPagination={setExportPagination}
-            columnFilters={exportDebouncedColumnFilters}
-            setColumnFilters={setExportColumnFilters}
-          />
+          <div className="">
+            <Label>Export Receipt</Label>
+
+            <TanStackBasicTable
+              isTableDataLoading={isExportLoading}
+              paginatedTableData={exportData}
+              columns={materialExportReceiptColumn}
+              pagination={exportPagination}
+              sorting={exportSorting}
+              setSorting={setExportSorting}
+              setPagination={setExportPagination}
+              columnFilters={exportColumnFilters}
+              setColumnFilters={setExportColumnFilters}
+              searchColumnId="code"
+              searchPlaceholder="Search by code"
+            />
+          </div>
         )}
       </div>
       <ReceiptChart />

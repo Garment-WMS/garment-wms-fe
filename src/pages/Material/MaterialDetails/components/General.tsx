@@ -39,12 +39,13 @@ const General: React.FC<Props> = ({ materialVariant }) => {
     Track Inventory <Info className="w-4 h-4 ml-1 text-gray-400" />
   </Label> */}
         <div className="flex items-center">
-          <Label htmlFor="track-inventory" className="">
-            Quantity: {materialVariant?.onHand} unit
+          <Label htmlFor="track-inventory" className="flex">
+            Quantity:  {" "}{materialVariant?.onHand} {materialVariant?.materialPackage[0]? capitalizeFirstLetter(materialVariant?.materialPackage[0].packUnit): "units"}
           </Label>
+          <div className='font-primary'> </div>
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          The quantity is based on the actual import not the delivery order.
+          The quantity is based on the import receipt that have the status of Available.
         </p>
       </div>
 

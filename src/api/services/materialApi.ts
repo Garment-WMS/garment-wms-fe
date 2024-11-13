@@ -11,8 +11,8 @@ export const materialApi = {
   getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
   getOneImportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/import-receipt/${queryString}`),
   getOneExportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/export-receipt/${queryString}`),
-
-  addImage: (id: string, data: FormData) => post(`${materialVariant}/${id}/image`, data, ),
+  getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
+  addImage: (id: string, data: FormData) => post(`${materialVariant}/${id}/image`, data ),
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`),

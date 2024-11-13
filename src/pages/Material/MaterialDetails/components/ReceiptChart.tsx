@@ -17,34 +17,64 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "January", desktop: 86, mobile: 80 },
-  { month: "February", desktop: 5, mobile: 20 },
-  { month: "March", desktop: 37, mobile: 12 },
-  { month: "April", desktop: 73, mobile: 19 },
-  { month: "May", desktop: 9, mobile: 13 },
-  { month: "June", desktop: 14, mobile: 14 },
-  { month: "July", desktop: 12, mobile: 14 },
-  { month: "August", desktop: 0, mobile: 0 },
-  { month: "September", desktop: 0, mobile: 0 },
-  { month: "October", desktop: 0, mobile: 0 },
-    { month: "November", desktop: 0, mobile: 0 },
-    { month: "December", desktop: 0, mobile: 0 },
-
-]
+import { useEffect, useState } from "react"
+import { toast } from "@/hooks/use-toast"
+import { MaterialReceiptStatisticsResponse, MonthlyData } from "@/types/MaterialTypes"
+import privateCall from "@/api/PrivateCaller"
+import { materialApi } from "@/api/services/materialApi"
+import { useParams } from "react-router-dom"
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  importQuantity: {
+    label: "Import Quantity (by Pack)",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  exportQuantity: {
+    label: "Export Quantity (by Pack)",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function ReceiptChart() {
+  const  { id } = useParams<{ id: string }>()
+  if(!id) {
+    return ;
+  }
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [data, setData] = useState<MaterialReceiptStatisticsResponse>()
+  const fetchData =async () => {
+    const getYear = new Date().getFullYear();
+    try {
+      const body = {
+        "year": getYear,
+        "materialVariantId": [
+          id
+        ]
+      }
+      const res = await privateCall(materialApi.getReceiptStatistics(body)) 
+      setData(res.data.data)
+      console.log('chart',res.data.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    fetchData()
+  }, [])
+  if (!data) {
+    return 
+  }
+  const chartData = data?.monthlyData.map((monthData) => ({
+    month: new Date(0, monthData.month - 1).toLocaleString("default", { month: "long" }),
+    importQuantity: monthData.data.reduce(
+      (sum, item) => sum + (item.totalImportQuantityByPack || 0),
+      0
+    ),
+    exportQuantity: monthData.data.reduce(
+      (sum, item) => sum + (item.totalExportQuantityByPack || 0),
+      0
+    ),
+  })) || [];
   return (
     <Card>
       <CardHeader>
@@ -74,46 +104,46 @@ export function ReceiptChart() {
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillImportQuantity" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-importQuantity)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-importQuantity)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillExportQuantity" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-exportQuantity)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-exportQuantity)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <Area
-              dataKey="mobile"
+              dataKey="importQuantity"
               type="natural"
-              fill="url(#fillMobile)"
+              fill="url(#fillImportQuantity)"
               fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              stroke="var(--color-importQuantity)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="exportQuantity"
               type="natural"
-              fill="url(#fillDesktop)"
+              fill="url(#fillExportQuantity)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
-              stackId="a"
+              stroke="var(--color-exportQuantity)"
+              stackId="b"
             />
           </AreaChart>
         </ChartContainer>
@@ -121,11 +151,9 @@ export function ReceiptChart() {
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
+
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              January - September {new Date().getFullYear()}
             </div>
           </div>
         </div>

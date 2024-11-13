@@ -28,6 +28,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import ReceiptTable from './components/ReceiptTable';
+import Attributes from './components/Attributes';
 
 const MaterialDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -157,7 +158,7 @@ const MaterialDetails = () => {
   const formatMaterialPackage = getMaterialPackage();
 
 
-  
+  const attribute = material?.materialAttribute;
   return (
     <>
       {isLoading ? (
@@ -231,8 +232,7 @@ const MaterialDetails = () => {
                     <Label className="text-xl">Attributes</Label>
                   </AccordionTrigger>
                   <AccordionContent>
-                    Yes. It comes with default styles that matches the other components&apos;
-                    aesthetic.
+                    <Attributes attributes={attribute} />
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
