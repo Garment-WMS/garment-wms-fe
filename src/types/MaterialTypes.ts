@@ -37,7 +37,7 @@ export interface MaterialVariant {
   deletedAt: string | null;
   material: Material;
   materialPackage: MaterialPackage[];
-  materialAttribute: any[];
+  materialAttribute: MaterialAttribute[];
   image: string | null;
   onHand: number;
   numberOfMaterialPackage: number;
@@ -196,3 +196,10 @@ export type OneMonthData = {
   totalExportQuantityByPack: number;
   totalExportQuantityByUom: number;
 };
+export type MaterialAttribute = {
+  id: string
+  name: string
+  value: string
+  type: string
+  materialPackage: MaterialPackage
+}

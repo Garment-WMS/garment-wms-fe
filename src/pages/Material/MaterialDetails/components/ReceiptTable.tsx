@@ -13,6 +13,7 @@ import { useGetMaterialExportReceipt } from '@/hooks/useGetMaterialExportReceipt
 import { materialExportReceiptColumn, materialImportReceiptColumn } from './ReceiptColumn';
 import { Label } from '@/components/ui/Label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { CiInboxIn, CiInboxOut } from "react-icons/ci";
 type Props = {
   id: string;
 };
@@ -102,7 +103,7 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={() => handleDisplayChange('import')} variant="outline" size="icon">
-                  <img className="h-7 w-7" src={importIcon} />
+                <CiInboxIn size={28}/>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -114,7 +115,7 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={() => handleDisplayChange('export')} variant="outline" size="icon">
-                  <img className="h-7 w-7" src={exportIcon} />
+                <CiInboxOut size={28}/>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
