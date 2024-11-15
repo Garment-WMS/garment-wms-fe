@@ -15,7 +15,7 @@ const badgeVariants = cva(
         primary: 'border-transparent bg-bluePrimary text-white shadow  p-2',
         success: 'border-transparent bg-green-500 text-white shadow  p-2',
         warning: 'border-transparent bg-yellow-500 text-white shadow  p-2',
-        danger: 'border-transparent bg-red text-white shadow  p-2',
+        danger: 'border-transparent bg-red-500 text-red-750 shadow  p-2',
         info: 'border-transparent bg-bluePrimary text-white shadow  p-2',
         light: 'border-transparent bg-gray-100 text-gray-800 shadow  p-2',
         dark: 'border-transparent bg-gray-800 text-gray-100 shadow  p-2'

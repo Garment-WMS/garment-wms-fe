@@ -2,17 +2,243 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 
 export interface ImportRequest {
   id: string;
-  poDelivery?: poDelivery;
-  warehouseStaffName?: string;
-  type: string;
-  supplier?: string;
-  deliveryType?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  finishAt?: string;
-  importRequestDetail?: ImportRequestDetails[];
-  status?: string;
+  warehouseStaffId: string | null;
+  status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Other types if applicable
+  startAt: string | null;
+  finishAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  cancelAt: string | null;
+  cancelReason: string | null;
+  description: string;
+  poDeliveryId: string;
+  purchasingStaffId: string;
+  rejectAt: string | null;
+  rejectReason: string | null;
+  warehouseManagerId: string | null;
+  importRequestDetail: ImportRequestDetail[];
+  warehouseManager: WarehouseManager | null;
+  purchasingStaff: PurchasingStaff;
+  warehouseStaff: WarehouseStaff | null;
+  poDelivery: PODelivery;
 }
+
+export interface ImportRequest {
+  managerNote: string;
+  id: string;
+  warehouseStaffId: string | null;
+  status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Other types if applicable
+  startAt: string | null;
+  finishAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  cancelAt: string | null;
+  cancelReason: string | null;
+  description: string;
+  poDeliveryId: string;
+  purchasingStaffId: string;
+  rejectAt: string | null;
+  rejectReason: string | null;
+  warehouseManagerId: string | null;
+  importRequestDetail: ImportRequestDetail[];
+  warehouseManager: WarehouseManager | null;
+  purchasingStaff: PurchasingStaff;
+  warehouseStaff: WarehouseStaff | null;
+  poDelivery: PODelivery;
+}
+
+export interface ImportRequest {
+  code: string;
+  id: string;
+  warehouseStaffId: string | null;
+  status: 'ARRIVED' | 'PENDING' | 'CANCELLED';
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
+  startAt: string | null;
+  finishAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  cancelAt: string | null;
+  cancelReason: string | null;
+  description: string;
+  poDeliveryId: string;
+  purchasingStaffId: string;
+  rejectAt: string | null;
+  rejectReason: string | null;
+  warehouseManagerId: string | null;
+  importRequestDetail: ImportRequestDetail[];
+  warehouseManager: WarehouseManager | null;
+  purchasingStaff: PurchasingStaff;
+  warehouseStaff: WarehouseStaff | null;
+  poDelivery: PODelivery;
+  inspectionRequest: any;
+}
+
+export type ImportRequestDetail = {
+  id: string;
+  importRequestId: string;
+  materialVariantId: string;
+  productVariantId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  quantityByPack: number;
+  materialPackage: MaterialPackage;
+};
+
+export type MaterialPackage = {
+  id: string;
+  materialVariantId: string;
+  name: string;
+  code: string;
+  packUnit: string;
+  uomPerPack: number;
+  packedWidth: number;
+  packedLength: number;
+  packedHeight: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  packedWeight: number;
+  materialVariant: MaterialVariant;
+};
+
+export type MaterialVariant = {
+  id: string;
+  materialId: string;
+  image: string | null;
+  name: string;
+  code: string;
+  reorderLevel: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  material: Material;
+  materialAttribute: MaterialAttribute[];
+  materialInspectionCriteria: MaterialInspectionCriterion[];
+};
+
+export type Material = {
+  id: string;
+  materialUomId: string;
+  name: string;
+  code: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  materialUom: MaterialUom;
+};
+
+export type MaterialUom = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type MaterialAttribute = {
+  id: string;
+  name: string;
+  value: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type MaterialInspectionCriterion = {
+  id: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+interface User {
+  id: string;
+  email: string;
+  password: string;
+  username: string;
+  avatarUrl: string;
+  cidId: string | null;
+  dateOfBirth: string;
+  firstName: string;
+  gender: 'MALE' | 'FEMALE'; // Adjust if needed
+  isDeleted: boolean;
+  isVerified: boolean;
+  lastName: string;
+  phoneNumber: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+type PurchasingStaff = {
+  id: string;
+  userId: string;
+  users: User;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+type WarehouseManager = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+} | null;
+
+type WarehouseStaff = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+} | null;
+
+type PODelivery = {
+  id: string;
+  purchaseOrderId: string;
+  expectedDeliverDate: string;
+  deliverDate: string | null;
+  status: 'IMPORTING' | 'DELIVERED'; // Add more statuses if needed
+  isExtra: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  purchaseOrder: PurchaseOrder;
+};
+
+type PurchaseOrder = {
+  id: string;
+  poNumber: string;
+  quarterlyProductionPlanId: string | null;
+  purchasingStaffId: string;
+  currency: string;
+  subTotalAmount: number;
+  taxAmount: number;
+  shippingAmount: number;
+  otherAmount: number;
+  orderDate: string;
+  expectedFinishDate: string;
+  finishDate: string | null;
+  cancelledAt: string | null;
+  cancelledReason: string | null;
+  status: 'FINISHED' | 'PENDING'; // Add more statuses if needed
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  supplierId: string;
+  purchasingStaff: PurchasingStaff;
+  supplier: Supplier;
+};
+
 export interface poDelivery {
   id: string;
   purchaseOrderId: string;
@@ -20,12 +246,7 @@ export interface poDelivery {
   deliverDate: string;
   purchaseOrder: PurchaseOrder;
 }
-export interface PurchaseOrder {
-  id: string;
-  poNumber: string;
-  supplier: Supplier;
-  status: string;
-}
+
 export interface Supplier {
   supplierName: string;
   address: string;
@@ -35,30 +256,10 @@ export interface Supplier {
 }
 export interface ImportRequestDetails {
   id: string;
-  materialVariant?: MaterialVariant;
+  materialPackage?: MaterialPackage;
   quantityByPack?: number;
 }
 
-export interface MaterialVariant {
-  id: string;
-  name: string;
-  code: string;
-  packUnit: string;
-  uomPerPack: number;
-  material: Material;
-}
-export interface Material {
-  id: string;
-  name: string;
-  code: string;
-  reorderLevel: number;
-  materialType: MaterialType;
-}
-export interface MaterialType {
-  id: string;
-  name: string;
-  code: string;
-}
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
   { label: 'Arrived', value: 'ARRIVED', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
