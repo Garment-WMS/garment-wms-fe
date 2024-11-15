@@ -24,6 +24,7 @@ import Login from '@/pages/login';
 import Home from '@/pages/home';
 import { Router } from 'react-router-dom';
 import MyTasks from '@/pages/tasks';
+import TaskDetailPage from '@/pages/tasks/taskDetails';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -98,6 +99,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/tasks',
               element: <MyTasks />
+            },
+            {
+              path: '/tasks/:id',
+              element: <TaskDetailPage />
             }
           ]
         },

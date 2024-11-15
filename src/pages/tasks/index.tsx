@@ -33,11 +33,12 @@ import {
   LayoutGrid,
   List
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 type Task = {
   id: string;
   title: string;
-  type: 'move' | 'recheck';
+  type: 'import' | 'export' | 'recheck';
   status: 'in progress' | 'completed' | 'canceled';
   dueDate: string;
   assignedTo: {
@@ -49,8 +50,8 @@ type Task = {
 const tasks: Task[] = [
   {
     id: 'T001',
-    title: 'Move packages from Dock A to Storage B',
-    type: 'move',
+    title: 'Import packages from Dock A to Storage B',
+    type: 'import',
     status: 'in progress',
     dueDate: '2024-11-15T14:00:00',
     assignedTo: {
@@ -71,8 +72,8 @@ const tasks: Task[] = [
   },
   {
     id: 'T003',
-    title: 'Move fragile items to secure storage',
-    type: 'move',
+    title: 'Export fragile items to secure storage',
+    type: 'export',
     status: 'canceled',
     dueDate: '2024-11-16T09:00:00',
     assignedTo: {
@@ -95,40 +96,58 @@ const getStatusDetails = (status: Task['status']) => {
 
 const TaskTypeIcon = ({ type }: { type: Task['type'] }) => {
   switch (type) {
-    case 'move':
+    case 'import':
+      return <Truck className="h-5 w-5 text-muted-foreground" />;
+    case 'export':
       return <Truck className="h-5 w-5 text-muted-foreground" />;
     case 'recheck':
       return <ClipboardCheck className="h-5 w-5 text-muted-foreground" />;
   }
 };
 
+const categorizeTasks = (tasks: Task[]) => {
+  const importTasks = tasks.filter((task) => task.type === 'import');
+  const exportTasks = tasks.filter((task) => task.type === 'export');
+  const recheckTasks = tasks.filter((task) => task.type === 'recheck');
+  return { importTasks, exportTasks, recheckTasks };
+};
+
 export default function MyTasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const navigate = useNavigate();
+  const { importTasks, exportTasks, recheckTasks } = categorizeTasks(tasks);
 
   const openTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsDialogOpen(true);
   };
 
-  const renderGridView = () => (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  const renderTasks = (tasks: Task[]) => (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 h-full">
       {tasks.map((task) => (
-        <Card key={task.id} className="flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card key={task.id} className="flex flex-col relative overflow-hidden">
+          <div className="absolute inset-0 flex justify-center items-center opacity-10">
+            {task.type === 'import' || task.type === 'export' ? (
+              <Truck className="h-48 w-48 text-muted-foreground" />
+            ) : (
+              <ClipboardCheck className="h-48 w-48 text-muted-foreground" />
+            )}
+          </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
             <CardTitle className="text-sm font-medium">Task #{task.id}</CardTitle>
             <Badge className={getStatusDetails(task.status).color}>
               {getStatusDetails(task.status).label}
             </Badge>
           </CardHeader>
-          <CardContent>
+          <CardContent className="h-full z-10">
             <div className="text-2xl font-bold">{task.title}</div>
             <p className="text-xs text-muted-foreground">
               Due: {new Date(task.dueDate).toLocaleString()}
             </p>
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex justify-between items-end z-10">
             <div className="flex items-center space-x-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={task.assignedTo.avatar} alt={task.assignedTo.name} />
@@ -136,13 +155,27 @@ export default function MyTasks() {
               </Avatar>
               <span className="text-sm text-muted-foreground">{task.assignedTo.name}</span>
             </div>
-            <Button variant="outline" onClick={() => openTaskDetails(task)}>
+            <Button variant="outline" onClick={() => handleNavigate(task)}>
               View Details
             </Button>
           </CardFooter>
         </Card>
       ))}
     </div>
+  );
+
+  const handleNavigate = (task: any) => {
+    navigate(task.id);
+  };
+  const renderGridView = () => (
+    <>
+      <h2 className="text-xl font-semibold mb-4">Import Tasks</h2>
+      {renderTasks(importTasks)}
+      <h2 className="text-xl font-semibold mt-8 mb-4">Export Tasks</h2>
+      {renderTasks(exportTasks)}
+      <h2 className="text-xl font-semibold mt-8 mb-4">Recheck Tasks</h2>
+      {renderTasks(recheckTasks)}
+    </>
   );
 
   const renderTableView = () => (
@@ -182,7 +215,7 @@ export default function MyTasks() {
               </div>
             </TableCell>
             <TableCell>
-              <Button variant="outline" onClick={() => openTaskDetails(task)}>
+              <Button variant="outline" onClick={() => handleNavigate(task)}>
                 View Details
               </Button>
             </TableCell>
