@@ -1,6 +1,7 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable'
+import { InventoryReport } from '@/types/InventoryReport';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import React, { useState } from 'react'
 
@@ -73,7 +74,7 @@ const stocktakingData: any = {
     total: 1,
     totalFiltered: 1,
 }
-const StocktakingColumn: CustomColumnDef<StocktakingReportProps>[] = [
+const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
     {
         header: 'Code',
         accessorKey: 'code',

@@ -35,7 +35,7 @@ import { ProductVariant } from '@/types/ProductType';
 import { useGetProductVariants } from '@/hooks/useGetProductVariants';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
-import { InventoryReportPlan, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
+import { InventoryReportPlanToCreate, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
