@@ -26,7 +26,7 @@ const Attributes: React.FC<Props> = ({attributes}) => {
             <CardTitle className="ml-2 text-sm font-medium">{attr.name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold">{attr.value}</p>
+            <p className="text-sm font-semibold">{attr.value}</p>
           </CardContent>
         </Card>
       ))}
