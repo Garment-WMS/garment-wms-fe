@@ -23,6 +23,7 @@ import ViewImportRequest from '@/pages/ImportRequests/view';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
 import { Router } from 'react-router-dom';
+import ProductionPlanManagement from '@/pages/Production Plan/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -44,7 +45,7 @@ const RouterComponent: React.FC = () => {
     },
     {
       path: '/login',
-      element: <Login />,
+      element: <Login />
     },
     {
       element: <WarehouseManagerRoute />,
@@ -118,6 +119,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/import-request/create',
               element: <CreateImportRequestMenu />
+            },
+            {
+              path: '/purchase-staff/production-plan',
+              element: <ProductionPlanManagement />
             }
           ]
         }
@@ -152,6 +157,5 @@ const RouterComponent: React.FC = () => {
     // { path: '*', element: <ErrorPage /> },
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
-    
 };
 export default RouterComponent;
