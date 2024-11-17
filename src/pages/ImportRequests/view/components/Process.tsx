@@ -11,12 +11,11 @@ type Props = {
 
 const statusOrder = [
   'ARRIVED',
-  'INSPECTING',
-  'INSPECTED',
-  'PENDING',
   'CANCELED',
   'REJECTED',
   'APPROVED',
+  'INSPECTING',
+  'INSPECTED',
   'IMPORTING',
   'IMPORTED'
 ];
@@ -27,7 +26,7 @@ const Process = ({ currentStatus, selectedStep, setSelectedStep }: Props) => {
   const getDisplayStatus = (itemStates: string[]) => {
     const currentStatusIndex = statusOrder.indexOf(currentStatus);
     return (
-      itemStates.find((state) => statusOrder.indexOf(state) <= currentStatusIndex) || 'NOT YET'
+      itemStates.find((state) => statusOrder.indexOf(state) <= currentStatusIndex + 1) || 'NOT YET'
     );
   };
 

@@ -1,20 +1,40 @@
-import { UseImportRequestsInput, UseImportRequestsResponse } from "@/types/ImportRequestType";
+import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/ImportRequestType';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
-import axios from "axios";
-import { get } from "../ApiCaller";
-import privateCall from "../PrivateCaller";
+import { get, post } from '../ApiCaller';
+import privateCall from '../PrivateCaller';
 
-let importRequestUrl = "/import-request";
+let importRequestUrl = '/import-request';
 
 export const importRequestApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
   getAll: (queryString: string) => get(`${importRequestUrl}${queryString}`),
+  approveRequest: (
+    action: string,
+    managerNote: string,
+    id: string,
+    inspectionDepartmentId?: string,
+    warehouseStaffId?: string
+  ) => {
+    if (inspectionDepartmentId && warehouseStaffId) {
+      return post(`/import-request/${id}/manager-process`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined,
+        inspectionDepartmentId,
+        warehouseStaffId
+      });
+    } else {
+      return post(`/import-request/${id}/manager-process`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined
+      });
+    }
+  }
 };
 
 export const getAllImportRequestFn = async ({
   sorting,
   columnFilters,
-  pagination,
+  pagination
 }: UseImportRequestsInput): Promise<UseImportRequestsResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
@@ -44,8 +64,7 @@ const sorts = sorting.map(sort => {
   // Build filter array from columnFilters
   filters.forEach((filterItem) => {
     const { id, value } = filterItem;
-
-    // Check the type of operation based on your requirement
+  
     let type: FilterOperationType;
     if (id === 'name' || id === 'code') {
       type = FilterOperationType.Ilike;
@@ -74,10 +93,29 @@ const sorts = sorting.map(sort => {
     limit,
     offset,
     filter,
-    order,
+    order
   });
 
   // Make the API request
   const res = await privateCall(importRequestApi.getAll(queryString));
   return res.data.data;
+};
+
+export const importRequestApprovalFn = async (
+  action: string,
+  managerNote: string,
+  id: string,
+  inspectionDepartmentId?: string,
+  warehouseStaffId?: string
+) => {
+  const res = await privateCall(
+    importRequestApi.approveRequest(
+      action,
+      managerNote,
+      id,
+      inspectionDepartmentId,
+      warehouseStaffId
+    )
+  );
+  return res.data;
 };

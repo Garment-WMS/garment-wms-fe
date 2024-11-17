@@ -4,15 +4,26 @@ export const importRequestStatusList = [
     state: ['ARRIVED']
   },
   {
+    title: 'Import request approval',
+    state: ['REJECTED', 'CANCELED', 'APPROVED']
+  },
+  {
     title: 'In Inspection',
     state: ['INSPECTING', 'INSPECTED']
   },
-  {
-    title: 'Waiting for approval',
-    state: ['PENDING', 'CANCELED', 'REJECTED', 'APPROVED']
-  },
+
   {
     title: 'Import To Warehouse',
     state: ['IMPORTING', 'IMPORTED']
   }
+];
+export const statusOrder = [
+  'ARRIVED',
+  'CANCELED',
+  'REJECTED',
+  'APPROVED',
+  'INSPECTING',
+  'INSPECTED',
+  'IMPORTING',
+  'IMPORTED'
 ];

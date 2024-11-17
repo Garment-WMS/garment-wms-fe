@@ -6,6 +6,7 @@ import { PageMetaData } from './Shared';
 export interface UOM {
   id: string;
   name: string;
+  uomCharacter: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -20,6 +21,7 @@ export interface Material {
   updatedAt: string;
   deletedAt: string | null;
   materialUom: UOM;
+  numberOfMaterialVariants: number;
 }
 
 // Material
@@ -34,12 +36,12 @@ export interface MaterialVariant {
   updatedAt: string | null;
   deletedAt: string | null;
   material: Material;
-  materialPackage: MaterialPackage[]
+  materialPackage: MaterialPackage[];
+  materialAttribute: MaterialAttribute[];
   image: string | null;
   onHand: number;
   numberOfMaterialPackage: number;
 }
-
 
 export interface MaterialVariantResponse {
   statusCode: number;
@@ -50,41 +52,81 @@ export interface MaterialVariantResponse {
   message: string;
   errors: any | null;
 }
-
-
+export interface MaterialImportReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialImportReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface MaterialExportReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialExportReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface MaterialReceiptResponse {
+  statusCode: number;
+  data: MaterialReceipt;
+  message: string;
+  errors: any | null;
+}
 export interface MaterialReceipt {
   id: string;
   materialPackageId: string;
   importReceiptId: string;
-  expireDate: string;
-  importDate: string;
   quantityByPack: number;
   remainQuantityByPack: number;
   status: string;
+  materialPackage: MaterialPackage;
+  expiredDate: string;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
 }
-export interface MaterialImportReceipt{
+export interface MaterialImportReceipt {
   id: string;
   materialId: string;
+  code: string;
   importReceiptId: string;
-  expiredDate: string;
-  quantityByPack:number;
-
+  expireDate: string;
+  quantityByPack: number;
+  importDate: string;
+  materialPackage: MaterialPackage;
+  remainQuantityByPack: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  status: string;
 }
-export interface MaterialExportReceipt{
+type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default';
+
+export const receiptStatus = ['IMPORTING', 'AVAILABLE', 'USED'];
+export const ReceiptStatusLabel: { label: string; value: string; variant: StatusVariant }[] = [
+  { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
+  { label: 'Available', value: 'AVAILABLE', variant: 'success' },
+  { label: 'Used', value: 'USED', variant: 'destructive' }
+];
+export interface MaterialExportReceipt {
   id: string;
   materialId: string;
+  code: string;
+  importDate: string;
   exportReceiptId: string;
-  expiredDate: string;
-  quantityByPack:number;
+  expireDate: string;
+  quantityByPack: number;
+  remainQuantityByPack: number;
+  materialPackage: MaterialPackage;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  status: string;
+
 }
 export interface MaterialDataToRender {
   limit: number;
@@ -114,9 +156,10 @@ export interface MaterialPackage {
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
-  material: Material;
   materialReceipt: MaterialReceipt[];
+  material: Material;
   inventoryStock: InventoryStock
+  uom: UOM;
 }
 export interface InventoryStock {
   id: string;
@@ -136,3 +179,27 @@ export type MaterialPackageResponse = {
   message: string;
   errors: any | null;
 };
+
+export type MaterialReceiptStatisticsResponse = {
+  monthlyData: MonthlyData[];
+};
+
+export type MonthlyData = {
+  month: number;
+  data: OneMonthData[];
+};
+
+export type OneMonthData = {
+  materialVariant: MaterialVariant;
+  totalImportQuantityByUom: number;
+  totalImportQuantityByPack: number;
+  totalExportQuantityByPack: number;
+  totalExportQuantityByUom: number;
+};
+export type MaterialAttribute = {
+  id: string
+  name: string
+  value: string
+  type: string
+  materialPackage: MaterialPackage
+}

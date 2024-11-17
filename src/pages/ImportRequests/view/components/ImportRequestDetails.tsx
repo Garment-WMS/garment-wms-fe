@@ -7,14 +7,15 @@ import importRequestSelector from '../../slice/selector';
 type Props = {};
 
 interface ColumnType {
-  name?: string;
-  code?: string;
-  packUnit?: string;
-  uomPerPack?: number;
-  quantityByPack?: number;
-  materialName: string;
-  materialCode?: string;
-  materialType?: string;
+  id: string;
+  name: string; // Fallback to 'N/A' if undefined
+  code: string;
+  packUnit: string;
+  materialName: any;
+  uomPerPack: any;
+  quantityByPack: any;
+  materialCode: any;
+  materialType: any; // Fallback for nested materialType
 }
 
 const ImportRequestDetails = (props: Props) => {
@@ -26,33 +27,32 @@ const ImportRequestDetails = (props: Props) => {
       const materialPackage = detail.materialPackage;
 
       return {
+        id: materialPackage?.id ?? 'N/A',
         name: materialPackage?.name ?? 'N/A', // Fallback to 'N/A' if undefined
         code: materialPackage?.code ?? 'N/A',
         packUnit: materialPackage?.packUnit ?? 'N/A',
-        materialName: materialPackage?.material?.name ?? 'N/A', // Fallback for nested material
+        materialName: materialPackage?.materialVariant.material.name ?? 'N/A', // Fallback for nested material
         uomPerPack: materialPackage?.uomPerPack ?? 0, // Default to 0 if undefined
         quantityByPack: detail.quantityByPack ?? 0, // Default to 0 if undefined
-        materialCode: materialPackage?.material?.code ?? 'N/A', // Fallback for nested material
-        materialType: materialPackage?.material?.materialType?.name ?? 'N/A' // Fallback for nested materialType
+        materialCode: materialPackage?.materialVariant.material?.code ?? 'N/A', // Fallback for nested material
+        materialType: materialPackage?.materialVariant.material.code ?? 'N/A' // Fallback for nested materialType
       };
     });
   }
 
   const DetailsColumn: CustomColumnDef<ColumnType>[] = [
     {
-      header: 'Variant code',
-      accessorKey: 'code',
-      enableColumnFilter: false
-    },
-    {
       header: 'Material Code',
-      accessorKey: 'materialCode',
+      accessorKey: 'code',
       enableColumnFilter: false
     },
     {
       header: 'Material Name',
       accessorKey: 'materialName',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.materialName}</div>;
+      }
     },
     {
       header: 'Variant Name',

@@ -31,7 +31,7 @@ const ApiCaller = (
 export const get = (
   endpoint: string,
   params?: Record<string, any>,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
 ): ApiCallerParams => {
   return ApiCaller('GET', endpoint, headers, params);
 };
