@@ -1,3 +1,4 @@
+import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -13,7 +14,8 @@ import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { convertDate } from '@/helpers/convertDate';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
 import { ProductionPlan } from '@/types/ProductionPlan';
-import { CalendarArrowDown, CalendarArrowUp, ExternalLink, Plus } from 'lucide-react';
+import { CalendarArrowDown, CalendarArrowUp, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -30,11 +32,13 @@ const getStatusBadgeClass = (status: ProductionPlanStatus) => {
 
 const ProductionPlanManagement = () => {
   const { data, isPending, isError } = useGetAllProductionPlans();
-
   if (isPending) {
-    return <p>Loading production plans...</p>;
+    return (
+      <div className="flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   }
-
   if (isError) {
     return <p>Failed to load production plans. Please try again later.</p>;
   }
@@ -55,9 +59,14 @@ const ProductionPlanManagement = () => {
             <div className="flex justify-between items-center">
               <CardTitle className="text-2xl font-bold">
                 <div className="flex items-center gap-2">
-                  <span className="text-primaryLight underline hover:opacity-50 cursor-pointer ">
-                    {plan.name}
-                  </span>
+                  <Link
+                    className="text-primaryLight underline hover:opacity-50 cursor-pointer"
+                    to={{
+                      pathname: `/purchase-staff/production-plan/${plan.id}`
+                    }}
+                    state={{ plan }}>
+                    <span>{plan.name}</span>
+                  </Link>
                   <span>
                     <Badge className="bg-gray-500 ml-2 text-white px-2 py-1 rounded">
                       {plan.code}

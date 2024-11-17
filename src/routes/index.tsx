@@ -24,6 +24,7 @@ import Login from '@/pages/login';
 import Home from '@/pages/home';
 import { Router } from 'react-router-dom';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
+import ProductionPlanDetail from '@/pages/Production Plan/detail';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -123,6 +124,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/production-plan',
               element: <ProductionPlanManagement />
+            },
+            {
+              path: '/purchase-staff/production-plan/:id',
+              element: <ProductionPlanDetail />
             }
           ]
         }
