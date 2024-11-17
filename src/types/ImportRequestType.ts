@@ -23,10 +23,62 @@ export interface ImportRequest {
   purchasingStaff: PurchasingStaff;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
-
 }
 
-type ImportRequestDetail = {
+export interface ImportRequest {
+  managerNote: string;
+  id: string;
+  warehouseStaffId: string | null;
+  status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Other types if applicable
+  startAt: string | null;
+  finishAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  cancelAt: string | null;
+  cancelReason: string | null;
+  description: string;
+  poDeliveryId: string;
+  purchasingStaffId: string;
+  rejectAt: string | null;
+  rejectReason: string | null;
+  warehouseManagerId: string | null;
+  importRequestDetail: ImportRequestDetail[];
+  warehouseManager: WarehouseManager | null;
+  purchasingStaff: PurchasingStaff;
+  warehouseStaff: WarehouseStaff | null;
+  poDelivery: PODelivery;
+}
+
+export interface ImportRequest {
+  code: string;
+  id: string;
+  warehouseStaffId: string | null;
+  status: 'ARRIVED' | 'PENDING' | 'CANCELLED';
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
+  startAt: string | null;
+  finishAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  cancelAt: string | null;
+  cancelReason: string | null;
+  description: string;
+  poDeliveryId: string;
+  purchasingStaffId: string;
+  rejectAt: string | null;
+  rejectReason: string | null;
+  warehouseManagerId: string | null;
+  importRequestDetail: ImportRequestDetail[];
+  warehouseManager: WarehouseManager | null;
+  purchasingStaff: PurchasingStaff;
+  warehouseStaff: WarehouseStaff | null;
+  poDelivery: PODelivery;
+  inspectionRequest: any;
+}
+
+export type ImportRequestDetail = {
   id: string;
   importRequestId: string;
   materialVariantId: string;
@@ -35,12 +87,12 @@ type ImportRequestDetail = {
   updatedAt: string;
   deletedAt: string | null;
   quantityByPack: number;
-  materialPackage: materialPackage;
+  materialPackage: MaterialPackage;
 };
 
-type materialPackage = {
+export type MaterialPackage = {
   id: string;
-  materialId: string;
+  materialVariantId: string;
   name: string;
   code: string;
   packUnit: string;
@@ -52,34 +104,60 @@ type materialPackage = {
   updatedAt: string;
   deletedAt: string | null;
   packedWeight: number;
-  material: Material;
+  materialVariant: MaterialVariant;
 };
 
-type Material = {
+export type MaterialVariant = {
   id: string;
-  materialTypeId: string;
-  materialUomId: string;
-  image: string;
+  materialId: string;
+  image: string | null;
   name: string;
   code: string;
   reorderLevel: number;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  materialType: MaterialType;
+  material: Material;
   materialAttribute: MaterialAttribute[];
+  materialInspectionCriteria: MaterialInspectionCriterion[];
 };
 
-type MaterialType = {
+export type Material = {
   id: string;
+  materialUomId: string;
   name: string;
   code: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  materialUom: MaterialUom;
 };
 
-type MaterialAttribute = any; // Define according to your needs if necessary
+export type MaterialUom = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type MaterialAttribute = {
+  id: string;
+  name: string;
+  value: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type MaterialInspectionCriterion = {
+  id: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
 interface User {
   id: string;
   email: string;
@@ -178,7 +256,7 @@ export interface Supplier {
 }
 export interface ImportRequestDetails {
   id: string;
-  materialPackage?: materialPackage;
+  materialPackage?: MaterialPackage;
   quantityByPack?: number;
 }
 

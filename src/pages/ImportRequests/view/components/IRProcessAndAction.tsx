@@ -3,7 +3,6 @@ import Process from './Process';
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../../slice/selector';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Chart } from './Actions/Chart';
 import InspectionStep from './Actions/Inspection';
 
 interface Props {}

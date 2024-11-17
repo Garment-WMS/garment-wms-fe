@@ -27,7 +27,7 @@ const getStatusDetails = (status: AssignmentStatus) => {
       return { label: 'Approved', color: 'bg-green-500 text-green-950', icon: ClipboardCheck };
 
     default:
-      return { label: 'Unknown', color: 'bg-muted text-muted-foreground', icon: AlertCircle };
+      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: AlertCircle };
   }
 };
 

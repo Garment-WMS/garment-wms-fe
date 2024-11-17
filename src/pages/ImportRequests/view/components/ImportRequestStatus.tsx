@@ -1,11 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/button';
 import { ImportRequest } from '@/types/ImportRequestType';
-
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../../slice/selector';
-import { getStatusBadgeVariant } from '../../management/components/ImportRequestList';
+import { getSatusName, getStatusBadgeVariant } from '../../management/helper';
 
 type Props = {};
 
@@ -17,11 +15,11 @@ const ImportRequestStatus = (props: Props) => {
     ? new Date(importRequest.createdAt).toLocaleDateString()
     : 'N/A';
   const lastUpdated = importRequest?.updatedAt
-  ? new Date(importRequest.updatedAt).toLocaleDateString()
-  : 'N/A';
+    ? new Date(importRequest.updatedAt).toLocaleDateString()
+    : 'N/A';
   const closedAt = importRequest?.finishAt
-  ? new Date(importRequest.finishAt).toLocaleDateString()
-  : 'N/A';
+    ? new Date(importRequest.finishAt).toLocaleDateString()
+    : 'N/A';
   return (
     <div
       className="w-full lg:w-[90%] h-fit bg-white rounded-xl shadow-sm border-2 sticky top-4 p-4 flex flex-row justify-evenly items-center gap-2
@@ -40,7 +38,12 @@ const ImportRequestStatus = (props: Props) => {
 
       <div className="flex flex-col gap-2 items-start">
         <div className="flex justify-center items-center gap-2 font-primary  text-sm">
-          Status: {status ? <Badge variant={getStatusBadgeVariant(status)}>{status}</Badge> : 'N/A'}
+          Status:{' '}
+          {status ? (
+            <Badge variant={getStatusBadgeVariant(status)}>{getSatusName(status)}</Badge>
+          ) : (
+            'N/A'
+          )}
         </div>
         <div className="flex justify-center items-center  gap-2 font-primary text-sm">
           Created at: <div className="font-primary text-xs text-bluePrimary">{createdDate}</div>
@@ -50,9 +53,6 @@ const ImportRequestStatus = (props: Props) => {
         </div>
         <div className="flex justify-center items-center  gap-2 font-primary text-sm">
           Closed at : <div className="font-primary text-xs text-bluePrimary">{closedAt}</div>
-        </div>
-        <div className="flex w-full items-center justify-center">
-          <Button>Create Inspection </Button>
         </div>
       </div>
     </div>
