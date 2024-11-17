@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import {
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { convertDate } from '@/helpers/convertDate';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
+import { SortingState, ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import { ProductionPlan } from '@/types/ProductionPlan';
 import { CalendarArrowDown, CalendarArrowUp, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -31,7 +33,20 @@ const getStatusBadgeClass = (status: ProductionPlanStatus) => {
 };
 
 const ProductionPlanManagement = () => {
-  const { data, isPending, isError } = useGetAllProductionPlans();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10
+  });
+
+  const {
+    productionPlanList: plans,
+    pageMeta,
+    isPending,
+    isError
+  } = useGetAllProductionPlans({ sorting, columnFilters, pagination });
+
   if (isPending) {
     return (
       <div className="flex justify-center items-center">
@@ -39,11 +54,10 @@ const ProductionPlanManagement = () => {
       </div>
     );
   }
+
   if (isError) {
     return <p>Failed to load production plans. Please try again later.</p>;
   }
-
-  const plans: ProductionPlan[] = data?.data || [];
 
   return (
     <div className="container mx-auto">
@@ -53,7 +67,7 @@ const ProductionPlanManagement = () => {
           <Plus className="mr-2 h-4 w-4" /> Add New Plan
         </Button>
       </div>
-      {plans.map((plan) => (
+      {plans?.data?.map((plan) => (
         <Card key={plan.id} className="mb-6 shadow-md">
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -120,6 +134,23 @@ const ProductionPlanManagement = () => {
           </CardContent>
         </Card>
       ))}
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }))}
+          disabled={pagination.pageIndex === 0}>
+          Previous
+        </Button>
+        <p>
+          Page {pagination.pageIndex + 1} of {pageMeta?.totalPages || 1}
+        </p>
+        <Button
+          onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }))}
+          disabled={!pageMeta || pagination.pageIndex + 1 >= pageMeta.totalPages}>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
