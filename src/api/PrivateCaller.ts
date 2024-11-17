@@ -5,29 +5,27 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
-
 const privateCall = axios.create({
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
-const handleRequestSuccess = async (config:any ) => {
-    const token = Cookies.get('accessToken');
+const handleRequestSuccess = async (config: any) => {
+  const token = Cookies.get('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
+  return config;
 };
 
 const handleRequestErr = (err: any) => {
-    return Promise.reject(err);
+  return Promise.reject(err);
 };
 
-const handleResponseSuccess = (res:any) => {
-    return res;
+const handleResponseSuccess = (res: any) => {
+  return res;
 };
 
 const handleResponseErr = async (error :any) => {
@@ -72,13 +70,13 @@ const handleResponseErr = async (error :any) => {
 };
 
 privateCall.interceptors.request.use(
-    (config: any) => handleRequestSuccess(config),
-    (err: any) => handleRequestErr(err)
+  (config: any) => handleRequestSuccess(config),
+  (err: any) => handleRequestErr(err)
 );
 
 privateCall.interceptors.response.use(
-    (config: any) => handleResponseSuccess(config),
-    (err: any) => handleResponseErr(err)
+  (config: any) => handleResponseSuccess(config),
+  (err: any) => handleResponseErr(err)
 );
 
 export default privateCall;
