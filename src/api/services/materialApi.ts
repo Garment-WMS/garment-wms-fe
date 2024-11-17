@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
-import { get } from '../ApiCaller';
-=======
 import { MaterialExportReceiptResponse, MaterialImportReceiptResponse, MaterialReceiptResponse,  MaterialVariantResponse,  UseMaterialsInput } from '@/types/MaterialTypes';
 import { get, post } from '../ApiCaller';
->>>>>>> origin/d_dev
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
@@ -14,15 +9,12 @@ let materialType ='/material';
 export const materialApi = {
   getOne: (id: string) => get(`${materialVariant}/${id}`),
   getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
-<<<<<<< HEAD
   getAllWithoutFilter: () => get(`${materialVariant}/all`),
   getOneReceipt: (id: string) => get(`${materialVariant}/${id}/receipt`),
-=======
   getOneImportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/import-receipt/${queryString}`),
   getOneExportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/export-receipt/${queryString}`),
   getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
   addImage: (id: string, data: FormData) => post(`${materialVariant}/${id}/image`, data ),
->>>>>>> origin/d_dev
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`),
@@ -99,12 +91,10 @@ export const getOneMaterial = async (id: string): Promise<MaterialVariantRespons
   const res = await axios(materialApi.getOne(id));
   return res.data.data;
 };
-<<<<<<< HEAD
 // export const getOneMaterialReceipt = async (id: string): Promise<MaterialReceiptResponse> => {
 //   const res = await axios(materialApi.getOneReceipt(id));
 //   return res.data.data;
 // }
-=======
 
 export const getOneMaterialImportReceiptFn = async (id:string,{
   sorting,
@@ -241,4 +231,3 @@ const sorts = sorting.map(sort => {
   const res = await axios(materialApi.getOneExportReceipt(id,queryString));
   return res.data;
 };
->>>>>>> origin/d_dev
