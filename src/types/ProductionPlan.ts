@@ -1,6 +1,6 @@
-import { ProductionPlanStatus } from '@/enums/ProductionPlan';
 import { PurchaseOrder } from './purchaseOrder';
 import { Account } from './Account';
+import { ProductionPlanStatus } from '@/enums/productionPlan';
 
 export interface ProductSize {
   id: string;
