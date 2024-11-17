@@ -19,7 +19,6 @@ const PurchaseOrderDeliveryDetails = () => {
     (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
     0
   );
-
   const breadcrumbItems = [
     { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
     { label: `Purchase Order #${poNumber}`, href: `/purchase-staff/purchase-order/${poId}` },
@@ -72,7 +71,7 @@ const PurchaseOrderDeliveryDetails = () => {
             {delivery.status}
           </Badge>
 
-          {delivery && delivery.importRequest && delivery.importRequest[0].id ? (
+          {delivery && delivery?.importRequest && delivery?.importRequest[0]?.id ? (
             <Link to={`/purchase-staff/import-request/${delivery.importRequest[0].id}`}>
               <Badge
                 className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
@@ -113,18 +112,18 @@ const PurchaseOrderDeliveryDetails = () => {
       </section>
 
       {/* Order Summary */}
-      <section className="border-t border-gray-200 pt-6 mt-8">
+      <section className="border-t border-gray-200 pt-6 -mt-9">
         <h2 className="text-xl font-semibold text-primaryDark mb-4">Order Summary</h2>
 
-        <div className="flex justify-between items-center text-lg">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap justify-between items-center text-lg">
+          <div className="flex items-center gap-2 flex-1">
             <span className="text-gray-500 block">Total Quantity: </span>
             <span className="text-gray-700 font-medium">{totalQuantity} items</span>
           </div>
 
-          <div className="text-right">
+          <div className="text-right flex-1">
             <span className="text-gray-500 block">Total Amount</span>
-            <span className="text-4xl font-bold text-blue-600">
+            <span className="text-4xl font-bold text-blue-600 break-words">
               {totalMaterialAmount.toLocaleString()} VND
             </span>
           </div>
