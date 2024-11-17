@@ -1,36 +1,20 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
 export interface ImportRequest {
-  id: string;
-  warehouseStaffId: string | null;
-  status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
-  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Other types if applicable
-  startAt: string | null;
-  finishAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  cancelAt: string | null;
-  cancelReason: string | null;
-  description: string;
-  poDeliveryId: string;
-  purchasingStaffId: string;
-  rejectAt: string | null;
-  rejectReason: string | null;
-  warehouseManagerId: string | null;
-  importRequestDetail: ImportRequestDetail[];
-  warehouseManager: WarehouseManager | null;
-  purchasingStaff: PurchasingStaff;
-  warehouseStaff: WarehouseStaff | null;
-  poDelivery: PODelivery;
-}
-
-export interface ImportRequest {
   managerNote: string;
   id: string;
   warehouseStaffId: string | null;
-  status: 'ARRIVED' | 'PENDING' | 'CANCELLED'; // Other statuses if needed
-  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Other types if applicable
+  status:
+    | 'ARRIVED'
+    | 'PENDING'
+    | 'CANCELLED'
+    | 'REJECTED'
+    | 'APPROVED'
+    | 'INSPECTING'
+    | 'INSPECTED'
+    | 'IMPORTING'
+    | 'IMPORTED'; // Expanded statuses
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Extended as needed
   startAt: string | null;
   finishAt: string | null;
   createdAt: string;
@@ -55,7 +39,16 @@ export interface ImportRequest {
   code: string;
   id: string;
   warehouseStaffId: string | null;
-  status: 'ARRIVED' | 'PENDING' | 'CANCELLED';
+  status:
+    | 'ARRIVED'
+    | 'PENDING'
+    | 'CANCELLED'
+    | 'REJECTED'
+    | 'APPROVED'
+    | 'INSPECTING'
+    | 'INSPECTED'
+    | 'IMPORTING'
+    | 'IMPORTED'; // Expanded statuses
   type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
   startAt: string | null;
   finishAt: string | null;
@@ -184,6 +177,7 @@ type PurchasingStaff = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  account: any;
 };
 
 type WarehouseManager = {
@@ -192,6 +186,7 @@ type WarehouseManager = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  account: any;
 } | null;
 
 type WarehouseStaff = {
@@ -200,6 +195,7 @@ type WarehouseStaff = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  account: any;
 } | null;
 
 type PODelivery = {

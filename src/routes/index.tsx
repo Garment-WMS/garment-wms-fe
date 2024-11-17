@@ -20,6 +20,9 @@ import WarehouseStaffRoute from './WarehouseStaffRoute';
 import Loading from '@/components/common/Loading';
 import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
+import MaterialDetails from '@/pages/Material/MaterialDetails';
+import MaterialVariantUpdate from '@/pages/Material/update';
+import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
 import { Router } from 'react-router-dom';
@@ -93,7 +96,19 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/home',
               element: <Home />
-            }
+            },
+            {
+              path: '/material-variant/:id',
+              element: <MaterialDetails/>
+            },
+            {
+              path: '/material-variant/update/:id',
+              element: <MaterialVariantUpdate/>
+            },
+            {
+              path: '/material-variant',
+              element: <MaterialManagement/>
+            },
           ]
         },
         {

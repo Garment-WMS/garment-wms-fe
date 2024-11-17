@@ -87,3 +87,23 @@ export interface PurchaseOrderSingleResponse {
   message: string;
   errors: any;
 }
+
+
+// Purchase Order Response
+export interface PurchaseOrderResponse {
+  statusCode: number;
+  data: {
+    data: PurchaseOrder[] | null;
+    pageMeta: PageMeta | null;
+  };
+  message: string;
+  errors: any;
+}
+
+// Purchase Order Response for Single Order
+export interface PurchaseOrderSingleResponse {
+  statusCode: number;
+  data: PurchaseOrder | null;
+  message: string;
+  errors: any;
+}
