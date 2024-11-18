@@ -7,58 +7,15 @@ import importRequestSelector from '../../slice/selector';
 type Props = {};
 
 interface ColumnType {
-  id?: string;
-  importRequestId?: string;
-  materialPackageId?: string;
-  productSizeId?: string | null;
-  quantityByPack?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string | null;
-  materialPackage?: {
-    id?: string;
-    materialVariantId?: string;
-    name?: string;
-    code?: string;
-    packUnit?: string;
-    uomPerPack?: number;
-    packedWidth?: number;
-    packedLength?: number;
-    packedHeight?: number;
-    packedWeight?: number;
-    createdAt?: string;
-    updatedAt?: string;
-    deletedAt?: string | null;
-    materialVariant?: {
-      id?: string;
-      materialId?: string;
-      image?: string | null;
-      name?: string;
-      code?: string;
-      reorderLevel?: number;
-      createdAt?: string;
-      updatedAt?: string;
-      deletedAt?: string | null;
-      material?: {
-        id?: string;
-        materialUomId?: string;
-        name?: string;
-        code?: string;
-        createdAt?: string;
-        updatedAt?: string;
-        deletedAt?: string | null;
-        materialUom?: {
-          id?: string;
-          name?: string;
-          createdAt?: string;
-          updatedAt?: string;
-          deletedAt?: string | null;
-        };
-      };
-      materialAttribute?: any[];
-      materialInspectionCriteria?: any[];
-    };
-  };
+  id: string;
+  name: string; // Fallback to 'N/A' if undefined
+  code: string;
+  packUnit: string;
+  materialName: any;
+  uomPerPack: any;
+  quantityByPack: any;
+  materialCode: any;
+  materialType: any; // Fallback for nested materialType
 }
 
 const ImportRequestDetails = (props: Props) => {
@@ -70,6 +27,7 @@ const ImportRequestDetails = (props: Props) => {
       const materialPackage = detail.materialPackage;
 
       return {
+        id: materialPackage?.id ?? 'N/A',
         name: materialPackage?.name ?? 'N/A', // Fallback to 'N/A' if undefined
         code: materialPackage?.code ?? 'N/A',
         packUnit: materialPackage?.packUnit ?? 'N/A',
@@ -84,11 +42,6 @@ const ImportRequestDetails = (props: Props) => {
 
   const DetailsColumn: CustomColumnDef<ColumnType>[] = [
     {
-      header: 'Variant code',
-      accessorKey: 'code',
-      enableColumnFilter: false
-    },
-    {
       header: 'Material Code',
       accessorKey: 'code',
       enableColumnFilter: false
@@ -97,11 +50,9 @@ const ImportRequestDetails = (props: Props) => {
       header: 'Material Name',
       accessorKey: 'materialName',
       enableColumnFilter: false,
-      cell: ({ row }) => (
-        <div className="text-center">
-          {row.original.materialPackage?.materialVariant?.material?.name}
-        </div>
-      )
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.materialName}</div>;
+      }
     },
     {
       header: 'Variant Name',

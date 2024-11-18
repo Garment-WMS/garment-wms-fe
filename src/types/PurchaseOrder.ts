@@ -1,7 +1,8 @@
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
-import { MaterialVariant } from './MaterialTypes';
+import { MaterialPackage } from './MaterialTypes';
 import { Supplier } from './SupplierTypes';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
+import { ImportRequest } from './ImportRequestType';
 
 // PO Delivery Detail
 export interface PODeliveryDetail {
@@ -11,12 +12,11 @@ export interface PODeliveryDetail {
   updatedAt: string | null;
   deletedAt: string | null;
   quantityByPack: number;
-  materialVariantId: string;
+  materialPackageId: string;
   expiredDate: string | null;
+  actualImportQuantity: number;
   totalAmount: number;
-  materialVariant: MaterialVariant;
-  plannedQuantity?: number;
-  actualQuantity?: number;
+  materialPackage: MaterialPackage;
 }
 
 // PO Delivery
@@ -33,6 +33,7 @@ export interface PODelivery {
   updatedAt: string | null;
   deletedAt: string | null;
   poDeliveryDetail: PODeliveryDetail[];
+  importRequest?: ImportRequest[];
 }
 
 // Purchase Order
@@ -67,6 +68,26 @@ export interface PageMeta {
   hasNext: boolean;
   hasPrevious: boolean;
 }
+
+// Purchase Order Response
+export interface PurchaseOrderResponse {
+  statusCode: number;
+  data: {
+    data: PurchaseOrder[] | null;
+    pageMeta: PageMeta | null;
+  };
+  message: string;
+  errors: any;
+}
+
+// Purchase Order Response for Single Order
+export interface PurchaseOrderSingleResponse {
+  statusCode: number;
+  data: PurchaseOrder | null;
+  message: string;
+  errors: any;
+}
+
 
 // Purchase Order Response
 export interface PurchaseOrderResponse {

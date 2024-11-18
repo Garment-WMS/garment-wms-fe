@@ -20,6 +20,9 @@ import WarehouseStaffRoute from './WarehouseStaffRoute';
 import Loading from '@/components/common/Loading';
 import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
+import MaterialDetails from '@/pages/Material/MaterialDetails';
+import MaterialVariantUpdate from '@/pages/Material/update';
+import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
 import ImportReceipt from '@/pages/ImportReceiptDetail';
@@ -104,6 +107,18 @@ const RouterComponent: React.FC = () => {
               path: '/import-receipt/',
               element: <ImportReceiptList />
             }
+            {
+              path: '/material-variant/:id',
+              element: <MaterialDetails/>
+            },
+            {
+              path: '/material-variant/update/:id',
+              element: <MaterialVariantUpdate/>
+            },
+            {
+              path: '/material-variant',
+              element: <MaterialManagement/>
+            },
           ]
         },
         {
