@@ -19,10 +19,9 @@ import {
 import { Button } from '@/components/ui/button';
 import DeliveryForm from './DeliveryForm';
 import ImportRequestDetails from './ImportRequestDetails';
-import { PODelivery, PODeliveryDetail, PurchaseOrder } from '@/types/PurchaseOrder';
-import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
-import { useDebounce } from '@/hooks/useDebouce';
-import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { PODeliveryDetail } from '@/types/PurchaseOrder';
+import WarehouseImportDialog from './WarehouseImportDialog';
+import { PODelivery, PurchaseOrder } from '@/types/ProductionPlan';
 
 type Props = {};
 
@@ -35,8 +34,6 @@ const WarehouseInfo = {
 };
 
 const deliveryFormSchema = z.object({
-  purchaseOrder: z.string().min(1, 'Please select a supplier.'),
-  purchaseOrderBatch: z.string().min(1, 'Please select a supplier batch.'),
   deliveryDate: z.date({
     required_error: 'A date of delivery is required.'
   }),
@@ -48,26 +45,11 @@ const NewImportRequest = (props: Props) => {
   const form = useForm<z.infer<typeof deliveryFormSchema>>({
     resolver: zodResolver(deliveryFormSchema),
     defaultValues: {
-      purchaseOrder: '',
-      purchaseOrderBatch: '',
       deliveryDate: undefined,
       description: ''
     }
   });
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
-  const debouncedSorting: SortingState = useDebounce(sorting, 1000);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 99
-  });
-  // const { data } = useGetAllPurchaseOrder();
-  const { purchaseOrderList: data } = useGetAllPurchaseOrder({
-    sorting: debouncedSorting,
-    columnFilters: debouncedColumnFilters,
-    pagination
-  });
+
   const [isEditDetail, setEditDetail] = useState<Boolean>(false);
   const [dialogOpen, setDialogOpen] = useState(false); // State to control AlertDialog open/close
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder>();
@@ -85,7 +67,7 @@ const NewImportRequest = (props: Props) => {
         return;
       }
       const response = await importRequestApi.create(
-        data.purchaseOrderBatch,
+        selectedPoDelivery?.id as string,
         data.description as string,
         poDeliveryDetails,
         'MATERIAL_BY_PO'
@@ -123,15 +105,14 @@ const NewImportRequest = (props: Props) => {
       <div className="w-full px-4">
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Delivery</div>
-          <DeliveryForm
-            form={form}
-            onSubmit={onSubmit}
-            data={data}
+          <WarehouseImportDialog
+            selectedPo={selectedPO}
             setSelectedPO={setSelectedPO}
-            selectedPO={selectedPO}
             setSelectedPoDelivery={setSelectedPoDelivery}
+            selectedPoDelivery={selectedPoDelivery}
             setPoDeliverydetails={setPoDeliverydetails}
           />
+          <DeliveryForm form={form} onSubmit={onSubmit} />
         </div>
       </div>
       <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
