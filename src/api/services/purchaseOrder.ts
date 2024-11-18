@@ -4,7 +4,7 @@ import { ApiResponse } from '@/types/ApiResponse';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
-import privateCall from "../PrivateCaller";
+import privateCall from '../PrivateCaller';
 
 interface GetAllPurchaseOrdersInput {
   sorting: SortingState;
@@ -60,6 +60,18 @@ export const getAllPurchaseOrders = async ({
   try {
     const config = get(fullUrl);
     const response = await axios(config);
+    return response.data.data as PurchaseOrderListResponse;
+  } catch (error) {
+    console.error('Error fetching purchase orders:', error);
+    throw new Error('Failed to fetch purchase orders');
+  }
+};
+export const getAllPurchaseOrderNoQuerry = async (): Promise<PurchaseOrderListResponse> => {
+  const fullUrl = `/purchase-order`;
+
+  try {
+    const config = get(fullUrl);
+    const response = await privateCall(config);
     return response.data.data as PurchaseOrderListResponse;
   } catch (error) {
     console.error('Error fetching purchase orders:', error);
