@@ -73,7 +73,7 @@ export interface ProductionPlan {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
-  purchaseOrder: PurchaseOrder[];
-  productionPlanDetail: ProductionPlanDetail[];
-  factoryDirector: FactoryDirector;
+  purchaseOrder: PurchaseOrder[]; // Association with PurchaseOrder
+  productionPlanDetail: ProductionPlanDetail[]; // Association with ProductionPlanDetail
+  factoryDirector: FactoryDirector; // Reference to the FactoryDirector
 }

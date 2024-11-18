@@ -18,6 +18,7 @@ import { SortingState, ColumnFiltersState, PaginationState } from '@tanstack/rea
 import { ProductionPlan } from '@/types/ProductionPlan';
 import { CalendarArrowDown, CalendarArrowUp, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ProductionPlanIntroduction from './components/Introduction';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -40,12 +41,11 @@ const ProductionPlanManagement = () => {
     pageSize: 10
   });
 
-  const {
-    productionPlanList: plans,
-    pageMeta,
-    isPending,
-    isError
-  } = useGetAllProductionPlans({ sorting, columnFilters, pagination });
+  const { productionPlanList, pageMeta, isPending, isError } = useGetAllProductionPlans({
+    sorting,
+    columnFilters,
+    pagination
+  });
 
   if (isPending) {
     return (
@@ -59,15 +59,17 @@ const ProductionPlanManagement = () => {
     return <p>Failed to load production plans. Please try again later.</p>;
   }
 
+  const plans = productionPlanList?.data || [];
+
   return (
-    <div className="container mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-primaryLight">Production Plans</h1>
+    <div className="h-auto w-full px-4 py-3 flex flex-col space-y-3">
+      <ProductionPlanIntroduction />
+      <div className="flex justify-end items-center mb-6">
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Add New Plan
         </Button>
       </div>
-      {plans?.data?.map((plan) => (
+      {plans.map((plan: ProductionPlan) => (
         <Card key={plan.id} className="mb-6 shadow-md">
           <CardHeader>
             <div className="flex justify-between items-center">

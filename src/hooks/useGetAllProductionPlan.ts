@@ -35,6 +35,5 @@ export const useGetAllProductionPlans = ({
 
   const productionPlanList = data?.data;
   const pageMeta = data?.pageMeta;
-
   return { data, status, isPending, isFetching, isError, isSuccess, pageMeta, productionPlanList };
 };
