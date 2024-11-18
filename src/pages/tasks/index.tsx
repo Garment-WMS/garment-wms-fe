@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,6 +34,7 @@ import {
   List
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getMytaskFn } from '@/api/services/taskApi';
 
 type Task = {
   id: string;
@@ -116,6 +117,7 @@ export default function MyTasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [isLoading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { importTasks, exportTasks, recheckTasks } = categorizeTasks(tasks);
 
@@ -124,6 +126,19 @@ export default function MyTasks() {
     setIsDialogOpen(true);
   };
 
+  useEffect(() => {
+    const getAllProductionPlan = async () => {
+      try {
+        setLoading(true);
+        const data = await getMytaskFn();
+      } catch (err) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getAllProductionPlan();
+  }, []);
   const renderTasks = (tasks: Task[]) => (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 h-full">
       {tasks.map((task) => (
