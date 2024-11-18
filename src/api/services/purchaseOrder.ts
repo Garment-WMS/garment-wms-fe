@@ -95,7 +95,7 @@ export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
   formData.append('file', file);
   const config = post('/purchase-order', formData, {}, { 'Content-Type': 'multipart/form-data' });
   try {
-    const response = await axios(config);
+    const response = await privateCall(config);
     return response.data as ApiResponse;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

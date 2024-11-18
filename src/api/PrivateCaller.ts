@@ -2,7 +2,6 @@ import { HTTP_MESSAGE, HTTP_STATUS_CODE } from '@/enums/httpStatus';
 import Cookies from 'js-cookie';
 import { authApi } from './auth/auth';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 const privateCall = axios.create({

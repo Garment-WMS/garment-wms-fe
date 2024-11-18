@@ -349,7 +349,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
               className="w-40"
               onClick={() => {
                 if (poId) {
-                  navigate(`/purchase-staff/purchase-order/detail/${poId}`);
+                  navigate(`/purchase-staff/purchase-order/${poId}`);
                 }
               }}>
               View purchase order

@@ -31,7 +31,6 @@ export interface MaterialVariant {
   materialUomId: string;
   name: string;
   code: string;
-  reorderLevel: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
@@ -145,6 +144,21 @@ export interface UseMaterialsInput {
 export interface MaterialPackage {
   id: string;
   materialId: string;
+  image: string;
+  name: string;
+  code: string;
+  reorderLevel: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt: string | null;
+  material: Material;
+}
+
+// Material Package Interface
+export interface MaterialPackage {
+  id: string;
+  materialVariantId: string;
+  SKU: string;
   name: string;
   code: string;
   packUnit: string;
@@ -153,9 +167,13 @@ export interface MaterialPackage {
   packedLength: number;
   packedHeight: number;
   packedWeight: number;
-  createdAt: string | null;
-  updatedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
   deletedAt: string | null;
+  materialVariant: MaterialVariant;
+}
+
+export type MaterialVariantResponse = {
   materialReceipt: MaterialReceipt[];
   material: Material;
   uom: UOM;

@@ -2,9 +2,9 @@
 export interface Supplier {
   id: string;
   supplierName: string;
-  supplierCode: string;
-  address: string;
   representativeName: string;
+  code: string;
+  address: string;
   email: string;
   phoneNumber: string;
   fax: string;
