@@ -100,16 +100,20 @@ const ProductionPlanDetail = () => {
 
       {/* Tabs for Products and Plan Details */}
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="products" className="text-lg py-3">
+        <TabsList className="grid grid-cols-2 mb-6 gap-3 border rounded-md bg-gray-50 h-auto">
+          <TabsTrigger
+            value="products"
+            className="text-lg py-3 w-full text-center rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-500">
             Table
           </TabsTrigger>
-          <TabsTrigger value="details" className="text-lg py-3">
+          <TabsTrigger
+            value="details"
+            className="text-lg py-3 w-full text-center rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-500">
             Details
           </TabsTrigger>
         </TabsList>
-        {/* Products Tab */}
         <TabsContent value="products">
+          {/* Products Tab Content */}
           <Card>
             <CardContent className="pt-6">
               <Table>
@@ -141,9 +145,8 @@ const ProductionPlanDetail = () => {
             </CardContent>
           </Card>
         </TabsContent>
-
-        {/* Plan Details Tab */}
         <TabsContent value="details">
+          {/* Details Tab Content */}
           <Card>
             <CardContent className="pt-6">
               <div className="grid gap-6 md:grid-cols-2">
