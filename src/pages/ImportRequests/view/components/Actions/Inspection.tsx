@@ -65,9 +65,10 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
       content: (
         <WarehouseStaffAssignment
           currentStatus={currentStatus}
-          requestId="123"
-          managerEmail="123"
-          managerName="Nguyen Duc Bao"
+          requestId={importRequest?.code}
+          warehouseManager={importRequest?.warehouseManager}
+          warehouseStaff={importRequest?.warehouseStaff}
+          lastedUpdate={importRequest?.updatedAt}
         />
       )
     }

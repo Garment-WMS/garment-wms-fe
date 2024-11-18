@@ -32,6 +32,11 @@ const PurchaseStaffMenu: MenuProps[] = [
     link: '/purchase-staff/product'
   },
   {
+    title: 'Material',
+    renderIcon: <GiClothes size={iconSize} />,
+    link: '/material-variant'
+  },
+  {
     title: 'Report',
     renderIcon: <RiFilePaper2Fill size={iconSize} />,
 
