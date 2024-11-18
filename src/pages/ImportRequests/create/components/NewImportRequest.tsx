@@ -59,6 +59,7 @@ const NewImportRequest = (props: Props) => {
 
   const onSubmit = async (data: z.infer<typeof deliveryFormSchema>) => {
     try {
+      console.log('123');
       if (isEditDetail) {
         toast({
           variant: 'destructive',
