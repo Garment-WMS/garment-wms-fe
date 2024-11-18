@@ -10,10 +10,11 @@ import {
 } from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarArrowDown, CalendarArrowUp, ClipboardList } from 'lucide-react';
+import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react';
 import { convertDate } from '@/helpers/convertDate';
 import { ProductionPlan } from '@/types/ProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
+import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 
 const getStatusBadgeStyle = (status: string) => {
   switch (status) {
@@ -32,7 +33,10 @@ const ProductionPlanDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const plan = location.state?.plan as ProductionPlan;
-
+  const breadcrumbItems = [
+    { label: 'Production Plan', href: '/purchase-staff/production-plan' },
+    { label: `Production Plan #${plan.code}`, href: `/purchase-staff/purchase-order/${plan.id}` }
+  ];
   if (!plan) {
     return (
       <div className="container mx-auto py-10">
@@ -51,7 +55,8 @@ const ProductionPlanDetail = () => {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 ring-gray-300 flex flex-col gap-8">
+      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={2} />
       {/* Header Card */}
       <Card className="mb-6 border-t-4 border-t-blue-500 shadow-md">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100">
@@ -100,7 +105,7 @@ const ProductionPlanDetail = () => {
             Table
           </TabsTrigger>
           <TabsTrigger value="details" className="text-lg py-3">
-            Detail
+            Details
           </TabsTrigger>
         </TabsList>
         {/* Products Tab */}
