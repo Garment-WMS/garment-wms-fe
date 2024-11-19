@@ -38,11 +38,6 @@ const RouterComponent: React.FC = () => {
     { path: '/', element: <Navigate to="home" /> },
 
     {
-      path: '/home',
-      element: <Home />
-    },
-
-    {
       path: '/demo',
       element: <Demo />
     },
@@ -92,15 +87,15 @@ const RouterComponent: React.FC = () => {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/import-request/:id',
+              path: '/import-request/:id',
               element: <ViewImportRequest />
             },
             {
-              path: '/purchase-staff/import-request',
+              path: '/import-request',
               element: <ImportRequestManagement />
             },
             {
-              path: '/purchase-staff/home',
+              path: '/home',
               element: <Home />
             },
             {
@@ -130,6 +125,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/material-variant',
               element: <MaterialManagement />
+            },
+            {
+              path: '/dashboard',
+              element: <Home />
             }
           ]
         },
@@ -137,31 +136,31 @@ const RouterComponent: React.FC = () => {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/purchase-order',
+              path: '/purchase-order',
               element: <PurchaseOrderManagement />
             },
             {
-              path: '/purchase-staff/purchase-order/:id',
+              path: '/purchase-order/:id',
               element: <PurchaseOrderDetails />
             },
             {
-              path: '/purchase-staff/purchase-order/:poId/po-delivery/:deliveryId',
+              path: '/purchase-order/:poId/po-delivery/:deliveryId',
               element: <PurchaseOrderDeliveryDetails />
             },
             {
-              path: '/purchase-staff/import-request/create/material',
+              path: '/import-request/create/material',
               element: <CreateImportRequest />
             },
             {
-              path: '/purchase-staff/import-request/create',
+              path: '/import-request/create',
               element: <CreateImportRequestMenu />
             },
             {
-              path: '/purchase-staff/production-plan',
+              path: '/production-plan',
               element: <ProductionPlanManagement />
             },
             {
-              path: '/purchase-staff/production-plan/:id',
+              path: '/production-plan/:id',
               element: <ProductionPlanDetail />
             }
           ]

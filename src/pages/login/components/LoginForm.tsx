@@ -97,7 +97,6 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
       default:
         break;
     }
-    
   }
 
   async function login(role: string, us: string, pw: string) {
@@ -123,12 +122,12 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
         name: staff.firstName + ' ' + staff.lastName,
         avatar: staff.avatarUrl,
         phone: staff.phoneNumber,
-        gender: staff.gender,
-      }
+        gender: staff.gender
+      };
       localStorage.setItem('userData', JSON.stringify(userToStore));
       // Dispatch and navigate
       dispatch(actions.setUser(staff));
-      navigate('/home');
+      navigate('/dashboard');
     } catch (error: any) {
       // Handle login errors
       const message = error.response?.data?.message || 'UNKNOWN_ERROR';
@@ -216,7 +215,7 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
               )}
             />
             <Button className="mt-5" variant={'default'} disabled={loading} type="submit">
-            {loading ? (<Loading />) : 'Login with email'}
+              {loading ? <Loading /> : 'Login with email'}
             </Button>
           </div>
           {/* </div> */}
