@@ -25,9 +25,11 @@ import MaterialVariantUpdate from '@/pages/Material/update';
 import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
+import ImportReceipt from '@/pages/ImportReceiptDetail';
 import { Router } from 'react-router-dom';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
+import ImportReceiptList from '@/pages/ImportReceiptList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -100,17 +102,25 @@ const RouterComponent: React.FC = () => {
               element: <Home />
             },
             {
+              path: '/import-receipt/:id',
+              element: <ImportReceipt />
+            },
+            {
+              path: '/import-receipt/',
+              element: <ImportReceiptList />
+            },
+            {
               path: '/material-variant/:id',
-              element: <MaterialDetails/>
+              element: <MaterialDetails />
             },
             {
               path: '/material-variant/update/:id',
-              element: <MaterialVariantUpdate/>
+              element: <MaterialVariantUpdate />
             },
             {
               path: '/material-variant',
-              element: <MaterialManagement/>
-            },
+              element: <MaterialManagement />
+            }
           ]
         },
         {

@@ -1,4 +1,5 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
+import { Badge } from '@/components/ui/Badge';
 import { badgeVariants } from '@/components/ui/Badge';
 import {
   DropdownMenu,
@@ -15,19 +16,23 @@ import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
+import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
+import { ImportReceipt } from '@/types/ImportReceipt';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarFallback } from '@radix-ui/react-avatar';
 type Props = {};
 
-const ImportRequestList = (props: Props) => {
+const ImportReceiptTable = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleViewClick = (requestId: string) => {
-    const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
+    const basePath = location.pathname.split('/')[0];
 
     // Navigate to the new route
-    navigate(`${basePath}/import-request/${requestId}`);
+    navigate(`${basePath}/import-receipt/${requestId}`);
   };
 
   // sorting state of the table
@@ -44,16 +49,16 @@ const ImportRequestList = (props: Props) => {
     pageSize: 10 //default page size
   });
 
-  const { pageMeta, importRequestData, isimportRequestLoading, isFetching } = useGetImportRequests({
+  const { pageMeta, importReceiptData, isimportRequestLoading, isFetching } = useGetImportReceipts({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
   });
 
   const paginatedTableData =
-    importRequestData && pageMeta
+    importReceiptData && pageMeta
       ? {
-          data: importRequestData,
+          data: importReceiptData,
           limit: pageMeta.limit,
           page: pageMeta.page,
           total: pageMeta.total,
@@ -74,7 +79,7 @@ const ImportRequestList = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
+  const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
     {
       header: 'Import request code',
       accessorKey: 'code',
@@ -89,14 +94,68 @@ const ImportRequestList = (props: Props) => {
     },
 
     {
-      header: 'Import Request Type',
+      header: 'Import Receipt Type',
       accessorKey: 'type',
       enableColumnFilter: true,
       filterOptions: DeliveryType.map((delivery) => ({
         label: delivery.label,
         value: delivery.value
       })),
-      cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
+      cell: ({ row }) => <div>{row.original.type}</div>
+    },
+    {
+      header: 'Assigned to',
+      accessorKey: 'creator',
+      enableColumnFilter: true,
+      filterOptions: DeliveryType.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => (
+        <Link className="flex text-blue-500 underline" to="">
+          <Avatar className="mr-2 ">
+            <AvatarImage
+              src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
+            />
+            <AvatarFallback className="w-full h-full text-center">
+              {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
+                row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
+            </AvatarFallback>
+          </Avatar>
+          <h4>
+            {row?.original?.warehouseStaff?.account?.lastName +
+              ' ' +
+              row?.original?.warehouseStaff?.account?.firstName}
+          </h4>
+        </Link>
+      )
+    },
+    {
+      header: 'Approved by',
+      accessorKey: 'creator',
+      enableColumnFilter: true,
+      filterOptions: DeliveryType.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => (
+        <Link className="flex text-blue-500 underline" to="">
+          <Avatar className="mr-2 ">
+            <AvatarImage
+              src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
+            />
+            <AvatarFallback className="w-full h-full text-center">
+              {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
+                row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
+            </AvatarFallback>
+          </Avatar>
+          <h4>
+            {row?.original?.warehouseManager?.account?.lastName +
+              ' ' +
+              row?.original?.warehouseManager?.account?.firstName}
+          </h4>
+        </Link>
+      )
     },
     {
       header: 'Create date',
@@ -116,6 +175,22 @@ const ImportRequestList = (props: Props) => {
         return (
           <div>
             <div>{formattedDate}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Inspection report',
+      accessorKey: 'inspectionReport',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div>
+            <Link
+              to={`inspection/${row.original.inspectionReportId}`}
+              className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
+              {row.original?.inspectionReport?.code || 'None'}
+            </Link>
           </div>
         );
       }
@@ -170,11 +245,11 @@ const ImportRequestList = (props: Props) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
-          searchPlaceholder="Search by import request code"
+          searchPlaceholder="Search import receipt by code"
         />
       </div>
     </div>
   );
 };
 
-export default ImportRequestList;
+export default ImportReceiptTable;
