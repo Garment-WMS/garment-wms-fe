@@ -1,124 +1,8 @@
-export interface ProductionPlan {
-  statusCode: number;
-  data: ProductionPlanData[];
-  message: string;
-  errors: null | any;
-}
+import { PurchaseOrder } from './purchaseOrder';
+import { Account } from './Account';
+import { ProductionPlanStatus } from '@/enums/productionPlan';
 
-export interface ProductionPlanData {
-  id: string;
-  factoryDirectorId: string;
-  name: string;
-  code: string;
-  note: string | null;
-  status: string;
-  expectedStartDate: string;
-  expectedEndDate: string;
-  startDate: string | null;
-  finishDate: string | null;
-  createdAt: string | null;
-  updatedAt: string;
-  deletedAt: string | null;
-  purchaseOrder: PurchaseOrder[];
-  productionPlanDetail: ProductionPlanDetail[];
-}
-
-export interface PurchaseOrder {
-  id: string;
-  poNumber: string;
-  productionPlanId: string;
-  purchasingStaffId: string;
-  supplierId: string;
-  status: string;
-  currency: string;
-  subTotalAmount: number;
-  taxAmount: number;
-  shippingAmount: number;
-  otherAmount: number;
-  orderDate: string;
-  note: string | null;
-  expectedFinishDate: string;
-  finishDate: string | null;
-  cancelledAt: string | null;
-  cancelledReason: string | null;
-  cancelledBy: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  poDelivery: PODelivery[];
-  supplier: any;
-}
-
-export interface PODelivery {
-  id: string;
-  purchaseOrderId: string;
-  expectedDeliverDate: string;
-  deliverDate: string | null;
-  code: string;
-  status: string;
-  isExtra: boolean;
-  cancelledAt: string | null;
-  cancelledReason: string | null;
-  cancelledBy: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  importRequest: ImportRequest[];
-  poDeliveryDetail: PODeliveryDetail[];
-}
-
-interface ImportRequest {
-  id: string;
-  warehouseStaffId: string;
-  poDeliveryId: string;
-  purchasingStaffId: string;
-  warehouseManagerId: string;
-  productionDepartmentId: string | null;
-  productionBatchId: string | null;
-  status: string;
-  code: string;
-  type: string;
-  startedAt: string | null;
-  finishedAt: string | null;
-  cancelledAt: string | null;
-  cancelReason: string | null;
-  description: string;
-  managerNote: string | null;
-  rejectAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
-interface PODeliveryDetail {
-  id: string;
-  poDeliveryId: string;
-  materialPackageId: string;
-  quantityByPack: number;
-  expiredDate: string | null;
-  actualImportQuantity: number;
-  totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
-interface ProductionPlanDetail {
-  id: string;
-  productionPlanId: string;
-  productSizeId: string;
-  quantityToProduce: number;
-  code: string;
-  note: string | null;
-  startDate: string | null;
-  finishDate: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  productSize: ProductSize;
-}
-
-interface ProductSize {
+export interface ProductSize {
   id: string;
   productVariantId: string;
   name: string;
@@ -128,40 +12,68 @@ interface ProductSize {
   length: number;
   weight: number;
   size: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  productVariant: ProductVariant;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  productVariant: any; // Placeholder for ProductVariant type
+  productFormula: any[]; // Placeholder for ProductFormula type
+  importRequestDetail: any[]; // Placeholder for ImportRequestDetail type
+  inspectionReportDetail: any[]; // Placeholder for InspectionReportDetail type
+  productReceipt: any[]; // Placeholder for ProductReceipt type
+  productionPlanDetail: any[]; // Placeholder for ProductionPlanDetail type
+  inventoryStock?: any; // Placeholder for InventoryStock type
+  InventoryReportPlanDetail: any[]; // Placeholder for InventoryReportPlanDetail type
 }
 
-interface ProductVariant {
+// Define the ProductionBatch type
+export interface ProductionBatch {
   id: string;
-  productId: string;
-  image: string | null;
+  // Add more properties of ProductionBatch as per your schema
+}
+
+// Define the ProductionPlanDetail type
+export interface ProductionPlanDetail {
+  id: string;
+  productionPlanId: string;
+  productSizeId: string;
+  quantityToProduce: number;
+  code?: string;
+  note?: string;
+  startDate?: Date;
+  finishDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  productSize: ProductSize;
+  productionPlan: ProductionPlan;
+  productionBatch: ProductionBatch[];
+}
+
+export interface FactoryDirector {
+  id: string;
+  accountId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  account: Account;
+  productionPlan: ProductionPlan[];
+}
+// Define the ProductionPlan type
+export interface ProductionPlan {
+  id: string;
+  factoryDirectorId: string;
   name: string;
   code: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  product: Product;
-}
-
-interface Product {
-  id: string;
-  productUomId: string;
-  name: string;
-  code: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  productUom: ProductUom;
-}
-
-interface ProductUom {
-  id: string;
-  name: string;
-  uomCharacter: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  note?: string;
+  status: ProductionPlanStatus;
+  expectedStartDate: Date;
+  expectedEndDate: Date;
+  startDate?: Date;
+  finishDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  purchaseOrder: PurchaseOrder[]; // Association with PurchaseOrder
+  productionPlanDetail: ProductionPlanDetail[]; // Association with ProductionPlanDetail
+  factoryDirector: FactoryDirector; // Reference to the FactoryDirector
 }
