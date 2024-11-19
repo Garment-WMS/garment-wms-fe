@@ -11,6 +11,7 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequest } from '@/types/InspectionRequest';
 import { CustomColumnDef } from '@/types/CompositeTable';
+import { Link } from 'react-router-dom';
 
 const InspectionReportList = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -43,7 +44,13 @@ const InspectionReportList = () => {
     {
       header: 'Request Code',
       accessorKey: 'code',
-      cell: ({ row }) => <div className="font-bold text-primary">{row.original.code}</div>,
+      cell: ({ row }) => (
+        <Link
+          to={`/purchase-staff/report/${row.original.id}`}
+          className="font-semibold text-primary underline">
+          {row.original.code}
+        </Link>
+      ),
       enableColumnFilter: false
     },
     {

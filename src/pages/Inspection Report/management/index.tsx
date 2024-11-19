@@ -1,7 +1,7 @@
-import InspectionReportList from './components/InspectionReportList';
+import InspectionReportList from './components/InspectionRequestList';
 import InspectionReportIntroduction from './components/Introduction';
 
-const InspectionReportManagement = () => {
+const InspectionRequestManagement = () => {
   return (
     <div className="h-auto w-full px-4 py-3 flex flex-col space-y-3">
       {/* Introduction */}
@@ -12,4 +12,4 @@ const InspectionReportManagement = () => {
   );
 };
 
-export default InspectionReportManagement;
+export default InspectionRequestManagement;

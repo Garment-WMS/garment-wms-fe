@@ -3,6 +3,7 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { get } from './ApiCaller';
 import axios from 'axios';
+import { ApiResponse } from '@/types/ApiResponse';
 
 interface GetAllInspectionRequestsInput {
   sorting: SortingState;
@@ -62,5 +63,16 @@ export const getAllInspectionRequests = async ({
   } catch (error) {
     console.error('Error fetching inspection reports:', error);
     throw new Error('Failed to fetch inspection reports');
+  }
+};
+
+export const getInspectionRequestById = async (id: string): Promise<ApiResponse> => {
+  try {
+    const config = get(`/inspection-request/${id}`);
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Failed to fetch inspection request by ID:', error);
+    throw new Error('Failed to fetch inspection request');
   }
 };
