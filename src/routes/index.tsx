@@ -30,6 +30,7 @@ import { Router } from 'react-router-dom';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import InspectionReportManagement from '@/pages/Inspection Report/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -153,7 +154,8 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/production-plan/:id',
               element: <ProductionPlanDetail />
-            }
+            },
+            { path: '/purchase-staff/report', element: <InspectionReportManagement /> }
           ]
         }
       ]
