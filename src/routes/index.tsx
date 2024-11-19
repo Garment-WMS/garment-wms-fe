@@ -32,6 +32,8 @@ import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import CreateExportRequest from '@/pages/ExportRequest';
+import ViewExportRequest from '@/pages/ExportRequestDetail';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -163,6 +165,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/purchase-staff/production-plan/:id',
               element: <ProductionPlanDetail />
+            },
+            {
+              path: '/purchase-staff/export-request/create',
+              element: <CreateExportRequest />
+            },
+            {
+              path: '/purchase-staff/export-request/:id',
+              element: <ViewExportRequest />
             }
           ]
         }
