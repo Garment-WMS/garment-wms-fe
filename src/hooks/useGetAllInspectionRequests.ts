@@ -1,6 +1,5 @@
 import { getAllInspectionRequests } from '@/api/services/inspectionRequest';
 import { InspectionRequestListResponse } from '@/types/InspectionRequestListResponse';
-
 import { useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { AxiosError } from 'axios';
@@ -33,7 +32,7 @@ export const useGetAllInspectionRequest = ({
     ],
     queryFn: () => getAllInspectionRequests({ sorting, columnFilters, pagination })
   });
-  const inspectionReportList = data?.data;
+  const inspectionRequestList = data?.data;
   const pageMeta = data?.pageMeta;
   return {
     data,
@@ -43,6 +42,6 @@ export const useGetAllInspectionRequest = ({
     isError,
     isSuccess,
     pageMeta,
-    inspectionReportList
+    inspectionRequestList
   };
 };

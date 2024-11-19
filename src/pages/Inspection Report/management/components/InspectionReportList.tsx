@@ -1,7 +1,16 @@
 import { useDebounce } from '@/hooks/useDebouce';
-import { useGetAllInspectionReport } from '@/hooks/useGetAllInspectionReports';
+import { useGetAllInspectionRequest } from '@/hooks/useGetAllInspectionRequests';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
+import TanStackBasicTable from '@/components/common/CompositeTable';
+import { convertDate } from '@/helpers/convertDate';
+import { Badge } from '@/components/ui/Badge';
+import {
+  InspectionRequestStatus,
+  InspectionRequestStatusLabels
+} from '@/enums/inspectionRequestStatus';
+import { InspectionRequest } from '@/types/InspectionRequest';
+import { CustomColumnDef } from '@/types/CompositeTable';
 
 const InspectionReportList = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -12,16 +21,103 @@ const InspectionReportList = () => {
     pageIndex: 0,
     pageSize: 10
   });
-  const { isFetching, inspectionReportList, pageMeta } = useGetAllInspectionReport({
+
+  const { isFetching, inspectionRequestList, pageMeta } = useGetAllInspectionRequest({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
   });
-  console.log(inspectionReportList);
+
+  const paginatedTableData =
+    inspectionRequestList && pageMeta
+      ? {
+          data: inspectionRequestList,
+          limit: pageMeta.limit,
+          page: pageMeta.page,
+          total: pageMeta.total,
+          totalFiltered: pageMeta.totalPages
+        }
+      : undefined;
+
+  const inspectionRequestColumns: CustomColumnDef<InspectionRequest>[] = [
+    {
+      header: 'Request Code',
+      accessorKey: 'code',
+      cell: ({ row }) => <div className="font-bold text-primary">{row.original.code}</div>,
+      enableColumnFilter: false
+    },
+    {
+      header: 'Import Request Code',
+      accessorKey: 'importRequest.code',
+      cell: ({ row }) =>
+        row.original.importRequest?.code ? (
+          <div>{row.original.importRequest.code}</div>
+        ) : (
+          <div className="text-slate-400">N/A</div>
+        ),
+      enableColumnFilter: false
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      enableColumnFilter: true,
+      filterOptions: Object.keys(InspectionRequestStatus).map((key) => ({
+        label:
+          InspectionRequestStatusLabels[
+            InspectionRequestStatus[key as keyof typeof InspectionRequestStatus]
+          ],
+        value: InspectionRequestStatus[key as keyof typeof InspectionRequestStatus]
+      })),
+      cell: ({ row }) => {
+        const status = row.original.status as InspectionRequestStatus;
+        const statusLabel = InspectionRequestStatusLabels[status];
+        let colorVariant;
+        switch (status) {
+          case InspectionRequestStatus.INSPECTING:
+            colorVariant = 'bg-blue-500 text-white';
+            break;
+          case InspectionRequestStatus.INSPECTED:
+            colorVariant = 'bg-green-500 text-white';
+            break;
+          case InspectionRequestStatus.CANCELLED:
+            colorVariant = 'bg-red-500 text-white';
+            break;
+          default:
+            colorVariant = 'bg-gray-200 text-black';
+        }
+        return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
+      }
+    },
+    {
+      header: 'Created At',
+      accessorKey: 'createdAt',
+      cell: ({ getValue }) => {
+        const isoDate = getValue<string>();
+        return <div>{convertDate(isoDate)}</div>;
+      },
+      enableColumnFilter: false
+    }
+  ];
+
   return (
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Inspection Report Lists</h1>
+      </div>
+      <div className="overflow-auto h-[700px] mt-4">
+        <TanStackBasicTable
+          isTableDataLoading={isFetching}
+          paginatedTableData={paginatedTableData}
+          columns={inspectionRequestColumns}
+          pagination={pagination}
+          setPagination={setPagination}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          totalPages={paginatedTableData?.totalFiltered}
+          searchColumnId="code"
+        />
       </div>
     </div>
   );
