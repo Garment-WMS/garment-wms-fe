@@ -1,20 +1,21 @@
-import { getAllInspectionReports } from '@/api/services/inspectionReport';
-import { InspectionReportListResponse } from '@/types/InspectionReportListResponse';
+import { getAllInspectionRequests } from '@/api/services/inspectionRequest';
+import { InspectionRequestListResponse } from '@/types/InspectionRequestListResponse';
+
 import { useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { AxiosError } from 'axios';
 
-interface UseGetAllInspectionReprotParams {
+interface UseGetAllInspectionRequestParams {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;
 }
 
-export const useGetAllInspectionReport = ({
+export const useGetAllInspectionRequest = ({
   sorting,
   columnFilters,
   pagination
-}: UseGetAllInspectionReprotParams) => {
+}: UseGetAllInspectionRequestParams) => {
   const {
     data,
     status,
@@ -22,15 +23,15 @@ export const useGetAllInspectionReport = ({
     isError,
     isSuccess,
     isFetching
-  } = useQuery<InspectionReportListResponse, AxiosError>({
+  } = useQuery<InspectionRequestListResponse, AxiosError>({
     queryKey: [
-      'inspectionReportList',
+      'inspectionRequestList',
       sorting,
       columnFilters,
       pagination.pageIndex,
       pagination.pageSize
     ],
-    queryFn: () => getAllInspectionReports({ sorting, columnFilters, pagination })
+    queryFn: () => getAllInspectionRequests({ sorting, columnFilters, pagination })
   });
   const inspectionReportList = data?.data;
   const pageMeta = data?.pageMeta;

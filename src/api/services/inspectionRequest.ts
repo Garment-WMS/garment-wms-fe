@@ -1,20 +1,20 @@
-import { InspectionReportListResponse } from '@/types/InspectionReportListResponse';
+import { InspectionRequestListResponse } from '@/types/InspectionRequestListResponse';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { get } from './ApiCaller';
 import axios from 'axios';
 
-interface GetAllInspectionReportsInput {
+interface GetAllInspectionRequestsInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;
 }
 
-export const getAllInspectionReports = async ({
+export const getAllInspectionRequests = async ({
   sorting,
   columnFilters,
   pagination
-}: GetAllInspectionReportsInput): Promise<InspectionReportListResponse> => {
+}: GetAllInspectionRequestsInput): Promise<InspectionRequestListResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
@@ -53,12 +53,12 @@ export const getAllInspectionReports = async ({
     order
   });
 
-  const fullUrl = `/inspection-report${queryString}`;
+  const fullUrl = `/inspection-request${queryString}`;
 
   try {
     const config = get(fullUrl);
     const response = await axios(config);
-    return response.data.data as InspectionReportListResponse;
+    return response.data.data as InspectionRequestListResponse;
   } catch (error) {
     console.error('Error fetching inspection reports:', error);
     throw new Error('Failed to fetch inspection reports');

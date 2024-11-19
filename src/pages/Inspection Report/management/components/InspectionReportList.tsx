@@ -17,7 +17,14 @@ const InspectionReportList = () => {
     columnFilters: debouncedColumnFilters,
     pagination
   });
-  return <div></div>;
+  console.log(inspectionReportList);
+  return (
+    <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-primaryLight">Inspection Report Lists</h1>
+      </div>
+    </div>
+  );
 };
 
 export default InspectionReportList;
