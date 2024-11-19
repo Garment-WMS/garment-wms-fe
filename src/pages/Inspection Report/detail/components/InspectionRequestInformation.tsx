@@ -10,6 +10,8 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
+import { Calendar, Edit3, FileText, Type } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -24,11 +26,7 @@ interface InspectionRequestInformationProps {
   requestNote: string | null;
   requestCreatedAt: string;
   requestUpdatedAt: string;
-  importRequestCode: string;
-  poDeliveryCode: string;
-  purchaseOrderNumber: string;
   warehouseManager: any;
-  inspectionReport?: string;
   importRequest?: ImportRequest;
 }
 
@@ -39,11 +37,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestNote,
   requestCreatedAt,
   requestUpdatedAt,
-  importRequestCode,
-  poDeliveryCode,
-  purchaseOrderNumber,
   warehouseManager,
-  inspectionReport,
   importRequest
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
@@ -54,7 +48,10 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
       <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            <span>Request #{requestCode}</span>
+            <div className="flex flex-row items-center gap-2">
+              Request{' '}
+              <span className="text-primaryLight text-lg font-semibold"> #{requestCode}</span>
+            </div>
             <Badge className={`${statusColors[requestStatus]} text-white`}>
               {InspectionRequestStatusLabels[requestStatus]}
             </Badge>
@@ -63,36 +60,66 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="materials">Materials</TabsTrigger>
-              <TabsTrigger value="inspectionReport">Inspection Report</TabsTrigger>
+              <TabsTrigger value="inspectItem">
+                {InspectionRequestTypeLabels[requestType]}s
+              </TabsTrigger>
             </TabsList>
 
             {/* General Tab */}
             <TabsContent value="general" className="mt-4">
               <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <dt className="font-medium text-gray-500">Type</dt>
-                  <dd>{InspectionRequestTypeLabels[requestType]}</dd>
+                {/* Request Code */}
+                <div className="flex items-center">
+                  <Type className="text-gray-500 mr-2" />
+                  <div>
+                    <dt className="font-medium text-gray-500">Request Code</dt>
+                    <dd className="text-gray-800">
+                      <Badge className="bg-primaryLight">{requestCode}</Badge>
+                    </dd>
+                  </div>
                 </div>
-                <div>
-                  <dt className="font-medium text-gray-500">Created At</dt>
-                  <dd>{new Date(requestCreatedAt).toLocaleString()}</dd>
+
+                {/* Type */}
+                <div className="flex items-center">
+                  <FileText className="text-gray-500 mr-2" />
+                  <div>
+                    <dt className="font-medium text-gray-500">Type</dt>
+                    <dd className="font-semibold uppercase">
+                      {InspectionRequestTypeLabels[requestType]}
+                    </dd>
+                  </div>
                 </div>
-                <div>
-                  <dt className="font-medium text-gray-500">Updated At</dt>
-                  <dd>{new Date(requestUpdatedAt).toLocaleString()}</dd>
+
+                {/* Created At */}
+                <div className="flex items-center">
+                  <Calendar className="text-gray-500 mr-2" />
+                  <div>
+                    <dt className="font-medium text-gray-500">Created At</dt>
+                    <dd className="text-gray-800">{convertDate(requestCreatedAt)}</dd>
+                  </div>
                 </div>
-                <div>
-                  <dt className="font-medium text-gray-500">Note</dt>
-                  <dd>{requestNote || 'No notes provided'}</dd>
+
+                {/* Note */}
+                <div className="flex flex-col">
+                  <div className="flex items-center mb-1">
+                    <Edit3 className="text-gray-500 mr-2" />
+                    <dt className="font-medium text-gray-500">Note</dt>
+                  </div>
+                  <Input
+                    type="text"
+                    defaultValue={requestNote || 'No notes provided'}
+                    placeholder="Enter note here..."
+                    className="text-gray-400"
+                    disabled={!requestNote}
+                  />
                 </div>
               </dl>
             </TabsContent>
 
             {/* Materials Tab */}
-            <TabsContent value="materials" className="mt-4">
+            <TabsContent value="inspectItem" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 {importRequestDetails.map((detail) => (
                   <div
@@ -133,24 +160,6 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
                   </div>
                 ))}
               </div>
-            </TabsContent>
-
-            {/* Inspection Report Tab */}
-            <TabsContent value="inspectionReport" className="mt-4">
-              {inspectionReport ? (
-                <div>
-                  <h4 className="font-medium">Inspection Report:</h4>
-                  {typeof inspectionReport === 'string' ? (
-                    <p>{inspectionReport}</p>
-                  ) : (
-                    <pre className="bg-gray-100 p-2 rounded">
-                      {JSON.stringify(inspectionReport, null, 2)}
-                    </pre>
-                  )}
-                </div>
-              ) : (
-                <p>No inspection report available.</p>
-              )}
             </TabsContent>
           </Tabs>
         </CardContent>
