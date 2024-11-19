@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,104 +15,133 @@ import {
   User,
   Truck,
   ClipboardCheck,
-  ArrowLeft
+  ArrowLeft,
+  Loader2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { getTaskDetail, getTaskDetailFn } from '@/api/services/taskApi';
+import { Link, useParams } from 'react-router-dom';
+
+// Assuming you have an API function to fetch task details
+import { getTaskDetailFn } from '@/api/services/taskApi';
+
+type Todo = {
+  id: string;
+  code: string;
+  title: string;
+  isChecked: boolean;
+};
 
 type Task = {
   id: string;
-  title: string;
-  type: 'import' | 'export' | 'recheck';
-  status: 'in progress' | 'completed' | 'canceled';
-  dueDate: string;
-  location: string;
-  assignedTo: {
-    name: string;
-    avatar: string;
+  code: string;
+  taskType: string;
+  status: string;
+  createdAt: string;
+  warehouseStaff: {
+    account: {
+      firstName: string;
+      lastName: string;
+      avatarUrl: string | null;
+    };
   };
-  todoList: string[];
-  description: string;
+  importReceipt: {
+    code: string;
+    startedAt: string;
+  };
+  importReceiptId: string;
+  todo: Todo[];
 };
 
-const getStatusDetails = (status: Task['status']) => {
-  switch (status) {
-    case 'in progress':
-      return { label: 'In Progress', color: 'bg-blue-500 text-blue-950', icon: Clock };
-    case 'completed':
+const getStatusDetails = (status: string) => {
+  switch (status.toUpperCase()) {
+    case 'OPEN':
+      return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
+    case 'COMPLETED':
       return { label: 'Completed', color: 'bg-green-500 text-green-950', icon: CheckCircle };
-    case 'canceled':
+    case 'CANCELED':
       return { label: 'Canceled', color: 'bg-red-500 text-red-950', icon: XCircle };
+    default:
+      return { label: status, color: 'bg-gray-500 text-gray-950', icon: Clock };
   }
 };
 
-const TaskTypeIcon = ({ type }: { type: Task['type'] }) => {
-  switch (type) {
-    case 'import':
-    case 'export':
+const TaskTypeIcon = ({ type }: { type: string }) => {
+  switch (type.toUpperCase()) {
+    case 'IMPORT':
       return <Truck className="h-5 w-5" />;
-    case 'recheck':
+    case 'EXPORT':
+      return <Truck className="h-5 w-5 rotate-180" />;
+    default:
       return <ClipboardCheck className="h-5 w-5" />;
   }
 };
 
 export default function TaskDetailPage() {
-  // In a real application, you would fetch this data based on the task ID from the URL
-  const task: Task = {
-    id: 'T001',
-    title: 'Import packages from Dock A to Storage B',
-    type: 'import',
-    status: 'in progress',
-    dueDate: '2024-11-15T14:00:00',
-    location: 'Warehouse 1, Dock A',
-    assignedTo: {
-      name: 'John Doe',
-      avatar: '/placeholder.svg?height=40&width=40'
-    },
-    todoList: [
-      'Verify package manifest',
-      'Inspect packages for damage',
-      'Sort packages by destination',
-      'Update inventory system',
-      'Move packages to Storage B'
-    ],
-    description:
-      'This task involves importing a new shipment of packages from Dock A and properly storing them in Storage B. Ensure all packages are accounted for and any discrepancies are reported immediately.'
-  };
+  const { id } = useParams();
+  const [task, setTask] = useState<Task | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchTaskDetail = async () => {
       try {
         setIsLoading(true);
-        const data = await getTaskDetailFn();
-        setTasks(data);
-        setError(null);
+        const response = await getTaskDetailFn(id as string);
+        if (response.statusCode === 200) {
+          console.log(response);
+          setTask(response.data);
+        } else {
+          throw new Error(response.message || 'Failed to fetch task details');
+        }
       } catch (err) {
-        console.error('Error fetching tasks:', err);
-        setError('Failed to load tasks. Please try again later.');
+        console.error('Error fetching task details:', err);
+        setError('Failed to load task details. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTasks();
+    fetchTaskDetail();
   }, []);
 
-  const [todoList, setTodoList] = useState(
-    task.todoList.map((item) => ({ text: item, checked: false }))
-  );
-  const [isCompleted, setIsCompleted] = useState(task.status === 'completed');
-
-  const handleTodoToggle = (index: number) => {
-    setTodoList((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item))
-    );
+  const handleTodoToggle = async (todoId: string) => {
+    if (!task) return;
+    // Here you would typically update the todo status on the server
+    // For now, we'll just update it locally
+    setTask({
+      ...task,
+      todo: task.todo.map((item) =>
+        item.id === todoId ? { ...item, isChecked: !item.isChecked } : item
+      )
+    });
   };
 
-  const handleFinishJob = () => {
-    setIsCompleted(true);
+  const handleFinishJob = async () => {
+    if (!task) return;
     // Here you would typically update the task status on the server
+    // For now, we'll just update it locally
+    setTask({
+      ...task,
+      status: 'COMPLETED'
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !task) {
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <p className="text-red-500">{error || 'Task not found'}</p>
+      </div>
+    );
+  }
+
+  const statusDetails = getStatusDetails(task.status);
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
@@ -124,62 +153,66 @@ export default function TaskDetailPage() {
       </div>
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-3xl font-bold">Task #{task.id}</CardTitle>
-          <Badge className={getStatusDetails(isCompleted ? 'completed' : task.status).color}>
-            {getStatusDetails(isCompleted ? 'completed' : task.status).label}
-          </Badge>
+          <CardTitle className="text-3xl font-bold">Task #{task.code}</CardTitle>
+          <Badge className={statusDetails.color}>{statusDetails.label}</Badge>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-2">
-            <TaskTypeIcon type={task.type} />
-            <span className="text-2xl font-medium">{task.title}</span>
+            <TaskTypeIcon type={task.taskType} />
+            <span className="text-2xl font-medium">{task.taskType} Task</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Due: {new Date(task.dueDate).toLocaleString()}</span>
+              <span>Created: {new Date(task.createdAt).toLocaleString()}</span>
             </div>
-            <div className="flex items-center space-x-2 text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              <span>Location: {task.location}</span>
-            </div>
+            {task.importReceipt && (
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>Import Receipt: {task.importReceipt.code}</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={task.assignedTo.avatar} alt={task.assignedTo.name} />
-              <AvatarFallback>{task.assignedTo.name.charAt(0)}</AvatarFallback>
+              <AvatarImage
+                src={task.warehouseStaff.account.avatarUrl || undefined}
+                alt={`${task.warehouseStaff.account.firstName} ${task.warehouseStaff.account.lastName}`}
+              />
+              <AvatarFallback>
+                {task.warehouseStaff.account.firstName[0]}
+                {task.warehouseStaff.account.lastName[0]}
+              </AvatarFallback>
             </Avatar>
-            <span>Assigned to: {task.assignedTo.name}</span>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium mb-2">Description:</h3>
-            <p className="text-muted-foreground">{task.description}</p>
+            <span>
+              Assigned to: {task.warehouseStaff.account.firstName}{' '}
+              {task.warehouseStaff.account.lastName}
+            </span>
           </div>
           <div className="space-y-2">
             <h3 className="text-lg font-medium">Todo List:</h3>
-            {todoList.map((item, index) => (
-              <div key={index} className="flex items-center space-x-2">
+            {task.todo.map((item) => (
+              <div key={item.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`todo-${index}`}
-                  checked={item.checked}
-                  onCheckedChange={() => handleTodoToggle(index)}
+                  id={item.id}
+                  checked={item.isChecked}
+                  onCheckedChange={() => handleTodoToggle(item.id)}
                 />
                 <label
-                  htmlFor={`todo-${index}`}
-                  className={`text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}>
-                  {item.text}
+                  htmlFor={item.id}
+                  className={`text-sm ${item.isChecked ? 'line-through text-muted-foreground' : ''}`}>
+                  {item.title}
                 </label>
               </div>
             ))}
           </div>
         </CardContent>
         <CardFooter>
-          <Button
-            className="w-full"
-            onClick={handleFinishJob}
-            disabled={isCompleted || todoList.some((item) => !item.checked)}>
-            {isCompleted ? 'Job Completed' : 'Finish Job'}
-          </Button>
+          <Link
+            to={task.taskType == 'IMPORT' ? `import/receipt${task.importReceiptId}` : ''}
+            className="w-full">
+            <Button className="w-full">Go to Task</Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>
