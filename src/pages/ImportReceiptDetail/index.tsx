@@ -2,19 +2,51 @@
 
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Chart';
-import { Package, FileText, CheckCircle, UserCircle, Users } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
-import { importReceiptApi } from '@/api/ImportReceiptApi';
+import { finishImportReceiptFn, importReceiptApi } from '@/api/ImportReceiptApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../ImportReceiptList/slice';
 import { useToast } from '@/hooks/use-toast';
 import { ImportReceipt } from '@/types/ImportReceipt';
 import importReceiptSelector from '../ImportReceiptList/slice/selector';
 import Loading from '@/components/common/Loading';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/Table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/Dialog';
+import Barcode from 'react-barcode';
+import MaterialReceiptLabels from './components/MaterialreceiptLabels';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -31,13 +63,45 @@ const qualityData = [
 ];
 
 export default function MaterialReceipt() {
-  const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
   const dispatch = useDispatch();
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
+  const [showLabelModal, setShowLabelModal] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const handleFinishImport = async () => {
+    setShowLabelModal(true);
+  };
+  const handleConfirmFinishImport = async () => {
+    setIsLoading(true);
+    try {
+      const res = await finishImportReceiptFn(id as string);
+      if (res.status === 201) {
+        toast({
+          title: 'Import finished successfully',
+          description: 'The import receipt has been marked as imported.'
+        });
+        setShowConfirmDialog(false);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Import finished unsuccessfully',
+          description: 'The import receipt has not been marked as imported.'
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to finish import',
+        description: 'There was a problem finishing the import process.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
@@ -115,6 +179,29 @@ export default function MaterialReceipt() {
               </CardContent>
             </Card>
           </div>
+          <Card className="mb-6">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Import Status</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-2xl font-bold capitalize">{importReceipt?.status}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {importReceipt?.status === 'IMPORTING'
+                      ? 'Import in progress'
+                      : 'Import completed'}
+                  </p>
+                </div>
+                {importReceipt?.status === 'IMPORTING' && (
+                  <Button onClick={handleFinishImport} disabled={isLoading}>
+                    Add Label
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <Card>
               <CardHeader>
@@ -245,88 +332,107 @@ export default function MaterialReceipt() {
             </Card>
           </div>
 
-          <div className="w-full flex items-center justify-center mt-6">
-            <Card className="w-full">
-              <CardHeader>
-                <CardTitle>Received Materials</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <ChartContainer
-                  config={{
-                    quantity: {
-                      label: 'Quantity',
-                      color: 'hsl(var(--chart-1))'
-                    }
-                  }}
-                  className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="quantity" fill="var(--color-quantity)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
-
           <div className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle>Material Receipt Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          Material Code
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Material Name
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Quantity Received
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Unit
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Storage Location
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td className="px-6 py-4">RBB150</td>
-                        <td className="px-6 py-4">Red Button Box</td>
-                        <td className="px-6 py-4">1500</td>
-                        <td className="px-6 py-4">PCS</td>
-                        <td className="px-6 py-4">Aisle A, Rack 3, Shelf 2</td>
-                      </tr>
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td className="px-6 py-4">BS200</td>
-                        <td className="px-6 py-4">Blue Switch</td>
-                        <td className="px-6 py-4">2000</td>
-                        <td className="px-6 py-4">PCS</td>
-                        <td className="px-6 py-4">Aisle B, Rack 1, Shelf 1</td>
-                      </tr>
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td className="px-6 py-4">GL300</td>
-                        <td className="px-6 py-4">Green LED</td>
-                        <td className="px-6 py-4">3000</td>
-                        <td className="px-6 py-4">PCS</td>
-                        <td className="px-6 py-4">Aisle C, Rack 2, Shelf 3</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Material Receipt Code</TableHead>
+                      <TableHead>Material Code</TableHead>
+                      <TableHead>Material Name</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Unit</TableHead>
+                      <TableHead>Expire Date</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {importReceipt?.materialReceipt.map((item: any) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.code}</TableCell>
+                        <TableCell>{item.materialPackage.code}</TableCell>
+                        <TableCell>{item.materialPackage.name}</TableCell>
+                        <TableCell>{item.quantityByPack}</TableCell>
+                        <TableCell>
+                          {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
+                        </TableCell>
+                        <TableCell>{new Date(item.expireDate).toLocaleDateString()}</TableCell>
+                        <TableCell>{item.status}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
+          <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Material Labels</DialogTitle>
+                <DialogDescription>
+                  Review and print labels for each material in this import receipt.
+                </DialogDescription>
+              </DialogHeader>
+              <ScrollArea className="max-h-96">
+                {/* <div className="w-full text-center text-xl font-bold">Material Barcode</div>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  {importReceipt?.materialReceipt.map((item: any) => (
+                    <div key={item.id} className="border p-4 rounded-md">
+                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
+                      <p>Code: {item.materialPackage.code}</p>
+                      <div className="mt-2">
+                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
+                      </div>
+                    </div>
+                  ))}
+                </div> */}
+                <div className="w-full text-center text-xl font-bold">Material Receipt Barcode</div>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  {importReceipt?.materialReceipt.map((item: any) => (
+                    <div key={item.id} className="border p-4 rounded-md">
+                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
+                      <p> Material Code: {item.materialPackage.code}</p>
+                      <p>
+                        Quantity: {item.quantityByPack * item.materialPackage.uomPerPack}{' '}
+                        {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
+                      </p>
+                      <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
+                      <div className="mt-2">
+                        <Barcode value={item.code} width={1.5} height={50} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <DialogFooter>
+                <MaterialReceiptLabels materialReceipts={importReceipt?.materialReceipt} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="default">Confirm Finish Import</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action will finish the import process and mark all materials as
+                        received in the warehouse.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleConfirmFinishImport}>
+                        Confirm
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>

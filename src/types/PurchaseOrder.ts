@@ -88,7 +88,6 @@ export interface PurchaseOrderSingleResponse {
   errors: any;
 }
 
-
 // Purchase Order Response
 export interface PurchaseOrderResponse {
   statusCode: number;
