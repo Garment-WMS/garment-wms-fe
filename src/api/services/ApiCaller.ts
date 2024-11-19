@@ -54,6 +54,14 @@ export const put = (
   return ApiCaller('PUT', endpoint, headers, params, body);
 };
 
+export const patch = (
+  endpoint: string,
+  body?: any,
+  params?: Record<string, any>,
+  headers?: Record<string, string>
+): ApiCallerParams => {
+  return ApiCaller('PATCH', endpoint, headers, params, body);
+};
 export const remove = (
   endpoint: string,
   body?: any,

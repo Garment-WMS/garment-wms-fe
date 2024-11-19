@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getTaskDetail, getTaskDetailFn } from '@/api/services/taskApi';
 
 type Task = {
   id: string;
@@ -78,6 +79,24 @@ export default function TaskDetailPage() {
     description:
       'This task involves importing a new shipment of packages from Dock A and properly storing them in Storage B. Ensure all packages are accounted for and any discrepancies are reported immediately.'
   };
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getTaskDetailFn();
+        setTasks(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching tasks:', err);
+        setError('Failed to load tasks. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const [todoList, setTodoList] = useState(
     task.todoList.map((item) => ({ text: item, checked: false }))

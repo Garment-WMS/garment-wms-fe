@@ -5,11 +5,11 @@ import { createSelector } from '@reduxjs/toolkit';
 
 const selectDomain = (state: any) => state[name] || initialState;
 
-const importRequestSelector: any = {
+const importReceiptSelector: any = {
   ...generateSelectors(initialState, selectDomain),
   modal: {
     confirm: createSelector([selectDomain], (state) => state.modal.confirm)
   }
 };
 
-export default importRequestSelector;
+export default importReceiptSelector;
