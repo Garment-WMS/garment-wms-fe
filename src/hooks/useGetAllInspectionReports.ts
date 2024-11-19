@@ -24,7 +24,7 @@ export const useGetAllInspectionReport = ({
     isFetching
   } = useQuery<InspectionReportListResponse, AxiosError>({
     queryKey: [
-      'purchaseOrdersList',
+      'inspectionReportList',
       sorting,
       columnFilters,
       pagination.pageIndex,
@@ -32,7 +32,16 @@ export const useGetAllInspectionReport = ({
     ],
     queryFn: () => getAllInspectionReports({ sorting, columnFilters, pagination })
   });
-  const purchaseOrderList = data?.data;
+  const inspectionReportList = data?.data;
   const pageMeta = data?.pageMeta;
-  return { data, status, isPending, isFetching, isError, isSuccess, pageMeta, purchaseOrderList };
+  return {
+    data,
+    status,
+    isPending,
+    isFetching,
+    isError,
+    isSuccess,
+    pageMeta,
+    inspectionReportList
+  };
 };

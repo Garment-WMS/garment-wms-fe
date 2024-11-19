@@ -53,7 +53,7 @@ export const getAllInspectionReports = async ({
     order
   });
 
-  const fullUrl = `/purchase-order${queryString}`;
+  const fullUrl = `/inspection-report${queryString}`;
 
   try {
     const config = get(fullUrl);
