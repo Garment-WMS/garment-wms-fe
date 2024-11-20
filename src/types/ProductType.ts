@@ -29,6 +29,7 @@ export interface ProductVariantResponse {
   export interface ProductReceipt {
     id: string;
     productSizeId: string;
+    code: string;
     importReceiptId: string;
     expireDate: string;
     importDate: string;

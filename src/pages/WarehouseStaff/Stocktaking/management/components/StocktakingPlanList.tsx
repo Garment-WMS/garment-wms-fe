@@ -1,4 +1,4 @@
-import { getAllInventoryReportPlanFn } from '@/api/services/inventoryReportPlanApi';
+import { getAllInventoryReportPlanFn, getAllInventoryReportPlanForWarehouseStaffFn } from '@/api/services/inventoryReportPlanApi';
 import { useDebounce } from '@/hooks/useDebouce';
 import {
   InventoryReportPlan,
@@ -88,12 +88,13 @@ const StocktakingPlanList = (props: Props) => {
       const fetchDataTable = async () => {
         setIsLoading(true); // Start loading
         try {
-          const response = await getAllInventoryReportPlanFn({
+          const response = await getAllInventoryReportPlanForWarehouseStaffFn({
             sorting,
             columnFilters: debouncedColumnFilters,
             pagination: debouncedPagination
           });
-          setInventoryReportPlanList(response);
+          const list = response.data
+          setInventoryReportPlanList(list);
         } finally {
           setIsLoading(false); // Stop loading
         }
@@ -133,6 +134,20 @@ const StocktakingPlanList = (props: Props) => {
     return start === end ? start : `${start} - ${end}`;
   };
   // Create a mapping of event date ranges
+  // const eventDateRanges = Array.isArray(inventoryReportPlanList)
+  // ? inventoryReportPlanList.map((plan) => {
+  //     const startDate = new Date(plan.from);
+  //     const endDate = new Date(plan.to);
+  //     const label = formatDateRange(startDate, endDate);
+
+  //     return {
+  //       label,
+  //       from: startDate,
+  //       to: endDate,
+  //       events: plan
+  //     };
+  //   }).sort((a, b) => a.from.getTime() - b.from.getTime()) // Sort by start date
+  // : [];
   const eventDateRanges = inventoryReportPlanList
     .map((plan) => {
       const startDate = new Date(plan.from);
@@ -146,8 +161,8 @@ const StocktakingPlanList = (props: Props) => {
         events: plan
       };
     })
-    .sort((a, b) => a.from.getTime() - b.from.getTime()); // Sort by start date
-
+    .sort((a, b) => a.from.getTime() - b.from.getTime());
+console.log('ds',inventoryReportPlanList)
   return (
     <Card className="w-full mx-auto">
       <div className="p-6">
@@ -169,9 +184,6 @@ const StocktakingPlanList = (props: Props) => {
             </div>
             <Button variant="outline" size="icon" onClick={() => updateMonth(1)}>
               <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button variant="default" onClick={() => navigate('/stocktaking/plan/create')}>
-              Create plan
             </Button>
           </div>
         </div>

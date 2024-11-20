@@ -1,6 +1,6 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { useDebounce } from '@/hooks/useDebouce';
-import { useGetAllInventoryReport } from '@/hooks/useGetAllInventoryReport';
+import { useGetAllInventoryReport, useGetAllStaffInventoryReport } from '@/hooks/useGetAllInventoryReport';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import React, { useState } from 'react'
 import { badgeVariants } from "@/components/ui/Badge";
@@ -228,7 +228,7 @@ const StocktakingReport = (props: Props) => {
     pageIndex: 0, //initial page index
     pageSize: 10 //default page size
   });
-  const { pageMeta, reportList,isFetching, isLoading } = useGetAllInventoryReport({
+  const { pageMeta, reportList,isFetching, isLoading } = useGetAllStaffInventoryReport({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination: pagination
@@ -243,6 +243,7 @@ const StocktakingReport = (props: Props) => {
   }
   return (
     <div className='bg-white rounded-xl shadow-sm border-2'>
+      <div className='pt-8 pl-8 font-primary font-semibold'>Your Inventory Reports</div>
         <TanStackBasicTable
             searchColumnId='code'
             searchPlaceholder='Search by code'

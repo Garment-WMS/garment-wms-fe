@@ -79,6 +79,7 @@ export interface MaterialReceiptResponse {
 export interface MaterialReceipt {
   id: string;
   materialPackageId: string;
+  code:string;
   importReceiptId: string;
   quantityByPack: number;
   remainQuantityByPack: number;

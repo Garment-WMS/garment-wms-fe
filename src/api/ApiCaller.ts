@@ -62,3 +62,12 @@ export const remove = (
 ): ApiCallerParams => {
   return ApiCaller('DELETE', endpoint, headers, params, body);
 };
+
+export const patch = (
+  endpoint: string,
+  body?: any,
+  params?: Record<string, any>,
+  headers?: Record<string, string>
+): ApiCallerParams => {
+  return ApiCaller('PATCH', endpoint, headers, params, body);
+};

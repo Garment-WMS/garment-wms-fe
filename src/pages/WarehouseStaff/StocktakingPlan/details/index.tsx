@@ -37,27 +37,23 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScrollBar } from '@/components/ui/ScrollArea';
 import InventoryReportDialog from './components/InventoryReportDialog';
 import Loading from '@/components/common/Loading';
+import { useGetProfile } from '@/hooks/useGetProfile';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 
 type Props = {};
 
-const breadcrumbItems = [
-  {
-    label: 'Stocktaking Plans',
-    href: '/stocktaking'
-  }
-]
-const StocktakingPlanDetails = (props: Props) => {
+const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const user = useGetProfile();
+  const [planData, setPlanData] = useState<InventoryReportPlanToRender>();
+  const [isLoading, setIsLoading] = useState(false);
   const breadcrumbItems = [
     {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
-    },
+    }
   ]
-  const navigate = useNavigate();
-  const [planData, setPlanData] = useState<InventoryReportPlanToRender>();
-  const [isLoading, setIsLoading] = useState(false);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -73,37 +69,64 @@ const StocktakingPlanDetails = (props: Props) => {
       }
     } catch (error: any) {
       toast({
-        title: 'error',
+        title: 'Error fetching data',
         variant: 'destructive',
         description: error.message
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  async function createReport(id:string) {
+    try {
+      setIsLoading(true);
+      const res = await privateCall(inventoryReportPlanApi.receiveInventoryReport(id));
+      if(res && res.data.statusCode === 200){
+        toast({
+          title: 'Report created successfully',
+          variant: 'success',
+          description: 'You have successfully created the report'
+        });
+
+        navigate(`/stocktaking/${res.data.data.id}`);
+    }
+  }catch (error: any) {
+     toast({
+      title: 'Error creating report',
+      variant: 'destructive',
+      description: error.message
+    });
     }
     finally {
       setIsLoading(false);
     }
-  };
+  }
   useEffect(() => {
     fetchData();
   }, [id]);
-  if(isLoading) return (
-    <div className='w-full flex justify-center items-center'>
-      <Loading/>
-    </div>
-    )
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   if (!planData) return <div>Not Found Data</div>;
 
-  if(isLoading) return (
-  <div className='w-full flex justify-center items-center'>
-    <Loading/>
-  </div>
-  )
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   return (
     <Card className="w-full  mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl">
           
           <div>
-            <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
+          <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
+
             Inventory Report Plan
             </div></CardTitle>
         <CardDescription>Details of the inventory report plan and its items</CardDescription>
@@ -217,7 +240,7 @@ const StocktakingPlanDetails = (props: Props) => {
                           </div>
                         </div>
 
-                        {detail.inventoryReport !== null && detail.inventoryReport.status !== 'IN_PROGRESS' && (
+                        {detail.warehouseStaff.id === user.roleId && (
                           <div className="flex gap-4 w-auto items-center">
                             <div className="flex justify-center items-center gap-2">
                               <NotebookPen className="text-muted-foreground h-5 w-5" />
@@ -225,14 +248,18 @@ const StocktakingPlanDetails = (props: Props) => {
                                 Inventory Report
                               </h3>
                             </div>
-                            <Label
-                              onClick={() => {
-                                const url = `/stocktaking/${detail.inventoryReport.id}`;
-                                window.open(url, '_blank', 'noopener,noreferrer');
-                              }}
-                              className="underline text-bluePrimary cursor-pointer">
-                              {detail.inventoryReport.code}
-                            </Label>
+                            {detail.inventoryReport != null ? (
+                              <Label
+                                onClick={() => {
+                                  const url = `/stocktaking/${detail.inventoryReport.id}`;
+                                  window.open(url, '_blank', 'noopener,noreferrer');
+                                }}
+                                className="underline text-bluePrimary cursor-pointer">
+                                {detail.inventoryReport.code}
+                              </Label>
+                            ) : (
+                              <Button onClick={() => createReport(planData.id)}>Create your report</Button>
+                            )}
                           </div>
                         )}
 
@@ -333,4 +360,4 @@ const StocktakingPlanDetails = (props: Props) => {
   );
 };
 
-export default StocktakingPlanDetails;
+export default WarehouseStaffStocktakingPlanDetails;

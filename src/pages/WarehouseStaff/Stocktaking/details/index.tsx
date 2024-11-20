@@ -60,10 +60,10 @@ interface DetailsToApproveChange {
 
 interface DetailsToApprove {
   inventoryReportDetailId: string;
-  managerQuantityConfirm: number | null;
+  actualQuantity: number | null;
 }
 
-export default function StocktakingDetails() {
+export default function WarehousestaffStocktakingDetails() {
   const { id } = useParams();
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -74,22 +74,23 @@ export default function StocktakingDetails() {
   const [approvedDetails, setApprovedDetails] = useState<DetailsToApproveChange>({ details: [] });
   const [materialDetails, setMaterialDetails] = useState<MaterialDetailsToRender[]>([]);
   const [productDetails, setProductDetails] = useState<ProductDetailsToRender[]>([]);
+
   const breadcrumbItems = [
     {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
-    },
+    }
   ]
-  async function onSubmit() {
+  async function onSubmitInventoryReport() {
   
     try {
       // Validation: Ensure all details have valid quantities
       const hasErrors = approvedDetails.details.some(
         (detail) =>
-          detail.managerQuantityConfirm === null ||
-          detail.managerQuantityConfirm === undefined ||
-          detail.managerQuantityConfirm <= 0 ||
-          detail.managerQuantityConfirm > 99999
+          detail.actualQuantity === null ||
+          detail.actualQuantity === undefined ||
+          detail.actualQuantity <= 0 ||
+          detail.actualQuantity > 99999
       );
   
       if (hasErrors) {
@@ -105,7 +106,7 @@ export default function StocktakingDetails() {
   
       if (id) {
         const res = await privateCall(
-          inventoryReportApi.approveInventoryReport(id, approvedDetails)
+          inventoryReportApi.recordInventoryReport(id, approvedDetails)
         );
         if (res.status === 200) {
           fetchData();
@@ -114,18 +115,18 @@ export default function StocktakingDetails() {
         throw new Error('ID is undefined');
       }
     } catch (error) {
-      console.error(error);
-      setApprovedDetails((prev) => ({
-        details: prev.details.map((detail) => ({
-          ...detail,
-          actualQuantity: null,
-        })),
-      }));
       toast({
         variant: 'destructive',
         title: 'Error',
         description: 'Failed to approve inventory report',
       });
+      // Reset actualQuantity to null for all details
+    setApprovedDetails((prev) => ({
+      details: prev.details.map((detail) => ({
+        ...detail,
+        actualQuantity: null,
+      })),
+    }));
     } finally {
       setIsLoading(false);
     }
@@ -153,13 +154,13 @@ export default function StocktakingDetails() {
         // If the item exists, update the `managerQuantityConfirm`
         updatedDetails[existingIndex] = {
           ...updatedDetails[existingIndex],
-          managerQuantityConfirm: value
+          actualQuantity: value
         };
       } else {
         // If the item doesn't exist, add it to the array
         updatedDetails.push({
           inventoryReportDetailId: id,
-          managerQuantityConfirm: value
+          actualQuantity: value
         });
       }
 
@@ -181,7 +182,7 @@ export default function StocktakingDetails() {
           detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
             item.inventoryReportDetails.map((reportDetail) => ({
               inventoryReportDetailId: reportDetail.id,
-              managerQuantityConfirm: reportDetail.actualQuantity
+              actualQuantity: reportDetail.actualQuantity
             }))
           )
         );
@@ -209,23 +210,6 @@ export default function StocktakingDetails() {
     }
   };
 
-  // useEffect(() => {
-  //   if (!inventoryReport) return;
-
-  //   const materialDetails: MaterialDetailsToRender[] = [];
-  //   const productDetails: ProductDetailsToRender[] = [];
-
-  //   inventoryReport.inventoryReportDetail?.forEach((detail) => {
-  //     if (detail.materialVariant) {
-  //       materialDetails.push(detail);
-  //     } else {
-  //       productDetails.push(detail);
-  //     }
-  //   });
-
-  //   setMaterialDetails(materialDetails);
-  //   setProductDetails(productDetails);
-  // }, [inventoryReport]);
 
   useEffect(() => {
     if (id) {
@@ -250,10 +234,9 @@ export default function StocktakingDetails() {
   console.log('ds', approvedDetails);
   return (
     <div className="container mx-auto p-4 w-full  bg-white rounded-xl shadow-sm border">
-      
       <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
       <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold leading-none tracking-tight">Inventory Report #{inventoryReport?.code}</h1>
+        <h1 className="text-2xl font-bold">Inventory Report #{inventoryReport?.code}</h1>
         {/* <div>
           <Button variant="outline" className="mr-2">
             Sửa phiếu kiểm hàng
@@ -263,6 +246,7 @@ export default function StocktakingDetails() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
         <Card className="col-span-2">
           <CardContent>
             {materialDetails.length > 0 && (
@@ -336,7 +320,7 @@ export default function StocktakingDetails() {
                                       <TableBody>
                                         {pkg.inventoryReportDetails.map((reportDetail, idx) => (
                                           <>
-                                            {inventoryReport.status === 'REPORTED' ? (
+                                            {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>
                                                 <TableCell className="font-medium">
                                                   {reportDetail.materialReceipt.code}
@@ -344,13 +328,12 @@ export default function StocktakingDetails() {
                                                 <TableCell>
                                                   {reportDetail.expectedQuantity}
                                                 </TableCell>
-                                                <TableCell>{reportDetail.actualQuantity}</TableCell>
                                                 <TableCell>
                                                   <Input
                                                     type="number"
                                                     className="w-20"
-                                                    defaultValue={reportDetail.actualQuantity}
-                                                    value={reportDetail.managerQuantityConfirm}
+                                                   
+                                                    value={reportDetail.actualQuantity}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
                                                     onChange={(e) => {
@@ -380,6 +363,8 @@ export default function StocktakingDetails() {
                                                     </p>
                                                   )}
                                                 </TableCell>
+                                                <TableCell>{reportDetail.managerQuantityConfirm}</TableCell>
+
                                               </TableRow>
                                             ) : (
                                               <TableRow>
@@ -619,9 +604,9 @@ export default function StocktakingDetails() {
                 </div>
               )}
             </div>
-            {inventoryReport.status === 'REPORTED' && (
-              <Button type="submit" onClick={onSubmit} className="mt-4 w-full">
-                Cân bằng kho
+            {inventoryReport.status === 'IN_PROGRESS' && (
+              <Button type="submit" onClick={onSubmitInventoryReport} className="mt-4 w-full">
+                Confirm Report
               </Button>
             )}
           </CardContent>

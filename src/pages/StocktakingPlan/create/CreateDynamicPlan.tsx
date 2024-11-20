@@ -152,27 +152,29 @@ const CreateDynamicPlan = (props: Props) => {
       // Proceed with formatting values
        const formattedValues = {
         ...values,
+        inventoryReportPlanType:"PARTIAL",
         from: values.from.toISOString(),
         to: values.to.toISOString(),
         inventoryReportPlanDetails: [
           ...assignments.flatMap((assignment) =>
-            assignment.materialSelectedVariants.flatMap((variant) =>
-              variant.materialPackage.map((materialPackage) => ({
-                warehouseStaffId: assignment.staffId,
-                materialPackageId: materialPackage.id
-              }))
-            )
+            assignment.materialSelectedVariants.map((variant) => ({
+              warehouseStaffId: assignment.staffId,
+              materialVariantId: variant.id,
+            }))
           ),
+        
           ...assignments.flatMap((assignment) =>
-            assignment.productSelectedVariants.flatMap((variant) =>
-              variant.productSize.map((productSize) => ({
-                warehouseStaffId: assignment.staffId,
-                productSizeId: productSize.id
-              }))
+            assignment.productSelectedVariants.flatMap((variant) =>({
+              warehouseStaffId: assignment.staffId,
+              productVariantId: variant.id,
+            })
+              
             )
           )
         ]
       };
+      console.log(formattedValues);
+
       try {
         const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
         console.log('res',res);
@@ -304,7 +306,7 @@ const CreateDynamicPlan = (props: Props) => {
   }, []);
   return (
     <div className="mx-auto p-4 bg-white shadow-sm border rounded-md">
-      <Label className="text-xl font-primary font-bold">Planning stocktaking</Label>
+      <Label className="text-xl font-primary font-bold">Planning partial stocktaking plan</Label>
       <div className="py-4">
         <Form {...form}>
           <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

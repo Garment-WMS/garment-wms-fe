@@ -62,34 +62,35 @@ const CreateOverallPlan = (props: Props) => {
 
   // Function to add a new assignment
   const addAssignment = () => {
+
     setAssignments([
       ...assignments,
       { staffId: '', materialSelectedVariants: [], productSelectedVariants: [] }
     ]);
   };
   // Function to handle material and product selection for a specific assignment
-  const handleMaterialSelection = (
-    index: number,
-    selectedVariants: MaterialVariant[],
-    assignmentSelectedVariants: MaterialVariant[]
-  ) => {
-    const updatedAssignments = [...assignments];
-    updatedAssignments[index].materialSelectedVariants = assignmentSelectedVariants;
-    setMaterialSelectedVariants(selectedVariants);
+  // const handleMaterialSelection = (
+  //   index: number,
+  //   selectedVariants: MaterialVariant[],
+  //   assignmentSelectedVariants: MaterialVariant[]
+  // ) => {
+  //   const updatedAssignments = [...assignments];
+  //   updatedAssignments[index].materialSelectedVariants = assignmentSelectedVariants;
+  //   setMaterialSelectedVariants(selectedVariants);
 
-    setAssignments(updatedAssignments);
-  };
+  //   setAssignments(updatedAssignments);
+  // };
 
-  const handleProductSelection = (
-    index: number,
-    selectedVariants: ProductVariant[],
-    assignmentSelectedVariants: ProductVariant[]
-  ) => {
-    const updatedAssignments = [...assignments];
-    updatedAssignments[index].productSelectedVariants = assignmentSelectedVariants;
-    setProductSelectedVariants(selectedVariants);
-    setAssignments(updatedAssignments);
-  };
+  // const handleProductSelection = (
+  //   index: number,
+  //   selectedVariants: ProductVariant[],
+  //   assignmentSelectedVariants: ProductVariant[]
+  // ) => {
+  //   const updatedAssignments = [...assignments];
+  //   updatedAssignments[index].productSelectedVariants = assignmentSelectedVariants;
+  //   setProductSelectedVariants(selectedVariants);
+  //   setAssignments(updatedAssignments);
+  // };
 
   const formSchema = z
     .object({
@@ -304,7 +305,7 @@ const CreateOverallPlan = (props: Props) => {
   }, []);
   return (
     <div className="mx-auto p-4 bg-white shadow-sm border rounded-md">
-      <Label className="text-xl font-primary font-bold">Planning stocktaking</Label>
+      <Label className="text-xl font-primary font-bold">Planning overall stocktaking plan</Label>
       <div className="py-4">
         <Form {...form}>
           <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -379,9 +380,9 @@ const CreateOverallPlan = (props: Props) => {
             />
 
 <div>
-    <Label>Material Variants</Label>
+    <Label>Select Staff </Label>
 </div>
-            {/* {assignments.map((assignment, index) => (
+            {assignments.map((assignment, index) => (
               <div key={index} className="flex flex-col gap-2">
                 <div className="flex gap-4 items-center">
                   <Label>Assign #{index + 1} </Label>
@@ -404,7 +405,7 @@ const CreateOverallPlan = (props: Props) => {
                   staffList={warehouseStaffList}
                 />
 
-                <SelectTasks
+                {/* <SelectTasks
                   assignments={assignments[index]}
                   error={ItemsError}
                   isMaterialLoading={materialIsLoading}
@@ -431,9 +432,9 @@ const CreateOverallPlan = (props: Props) => {
                   onSelectProductVariants={(selectedVariants, assignmentVariant) =>
                     handleProductSelection(index, selectedVariants, assignmentVariant)
                   }
-                />
+                /> */}
 
-                <div className="flex flex-col w-[60%] gap-4">
+                {/* <div className="flex flex-col w-[60%] gap-4">
                   {assignment.materialSelectedVariants.length > 0 && (
                     <div>
                       <Label className="text-sm">Material Variants</Label>
@@ -468,9 +469,9 @@ const CreateOverallPlan = (props: Props) => {
                       </ScrollArea>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
-            ))} */}
+            ))}
 
             <Button
               type="button"

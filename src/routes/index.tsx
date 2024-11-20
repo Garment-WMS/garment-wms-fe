@@ -33,6 +33,9 @@ import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
 import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
 import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
 import { Router } from 'react-router-dom';
+import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktaking/management';
+import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
+import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -111,6 +114,18 @@ const RouterComponent: React.FC = () => {
             {
               path: '/stocktaking/:id',
               element: <StocktakingDetails/>
+            },
+            {
+              path: '/warehouse-staff/stocktaking',
+              element: <WarehouseStaffStocktakingManagement/>
+            },
+            {
+              path: '/warehouse-staff/stocktaking/:id',
+              element: <WarehousestaffStocktakingDetails/>
+            },
+            {
+              path: '/warehouse-staff/stocktaking/plan/:id',
+              element: <WarehouseStaffStocktakingPlanDetails/>
             },
             {
               path: '/stocktaking/plan/:id',

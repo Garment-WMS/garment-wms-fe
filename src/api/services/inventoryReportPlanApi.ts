@@ -1,5 +1,5 @@
-import { InventoryReportPlan, InventoryReportPlanResponse, InventoryReportPlanToCreate, InventoryReportPlanToRender } from '@/types/InventoryReport';
-import { get, post } from '../ApiCaller';
+import { InventoryReportPlan, InventoryReportPlanResponse, InventoryReportPlanToCreate, InventoryReportPlanToRender, InventoryReportPlanToRenderResponse } from '@/types/InventoryReport';
+import { get, patch, post } from '../ApiCaller';
 import { InputType } from '@/types/Shared';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import privateCall from '../PrivateCaller';
@@ -10,11 +10,17 @@ export const inventoryReportPlanApi = {
   createInventoryReportPlan(data: InventoryReportPlanToCreate) {
     return post(inventoryReportPlanApiPath, data);
   },
+  getAllForWarehouseStaff(queryString: string){
+    return get(`${inventoryReportPlanApiPath}/warehouse-staff/${queryString}`);
+   },
   getOne(id: string) {
     return get(`${inventoryReportPlanApiPath}/${id}`);
   },
   getAllInTimeRange: (queryString: string) => {
     return get(`${inventoryReportPlanApiPath}/${queryString}`);
+  },
+  receiveInventoryReport:(id:string)=> {
+    return patch(`${inventoryReportPlanApiPath}/${id}/process`);
   }
 };
 export const getAllInventoryReportPlanFn = async ({
@@ -79,6 +85,63 @@ export const getAllInventoryReportPlanFn = async ({
 
   // Make the API request
   const res = await privateCall(inventoryReportPlanApi.getAllInTimeRange(queryString));
+  return res.data.data;
+};
+
+export const getAllInventoryReportPlanForWarehouseStaffFn = async ({
+  sorting,
+  columnFilters,
+  pagination
+}: InputType): Promise<InventoryReportPlanToRenderResponse> => {
+  const limit = pagination.pageSize;
+  const offset = pagination.pageIndex * pagination.pageSize;
+
+  // Initialize filter and order arrays
+  const filter: any[] = [];
+  const order: any[] = [];
+
+  const sorts = sorting.map((sort) => {
+    // Replace dots with underscores only if there are any dots in the id
+    const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
+
+    return {
+      id: fieldKey,
+      desc: sort.desc
+    };
+  });
+
+  // Build filter array from columnFilters
+  columnFilters.forEach((filterItem) => {
+    const { id, value } = filterItem;
+    // Check the type of operation based on your requirement
+    let type: FilterOperationType;
+    // Check the type of operation based on filter `id`
+    if (id === 'from') {
+      type = FilterOperationType.Gte; // Greater than or equal to
+    } else if (id === 'to') {
+      type = FilterOperationType.Lte; // Less than or equal to
+    } else {
+
+      type = FilterOperationType.In; // Default to "equals" for other fields
+    }
+
+    filter.push({ field: id, type, value });
+  });
+  sorts.forEach((sort) => {
+    const direction = sort.desc ? 'desc' : 'asc';
+    order.push({ field: sort.id, dir: direction });
+  });
+
+  // Construct the query string
+  const queryString = FilterBuilder.buildFilterQueryString({
+    limit,
+    offset,
+    filter,
+    order
+  });
+
+  // Make the API request
+  const res = await privateCall(inventoryReportPlanApi.getAllForWarehouseStaff(queryString));
   return res.data.data;
 };
 

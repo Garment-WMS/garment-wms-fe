@@ -108,7 +108,7 @@ export function BreadcrumbResponsive({
         ) : null}
 
         {/* Render the last few items */}
-        {breadcrumbItems.slice(-itemsToDisplay + 1).map((item, index) => (
+        {/* {breadcrumbItems.slice(-itemsToDisplay + 1).map((item, index) => (
           <BreadcrumbItem key={index}>
             {item.disabled ? (
               <BreadcrumbPage className="max-w-20 truncate md:max-w-none text-gray-500 cursor-default">
@@ -117,13 +117,13 @@ export function BreadcrumbResponsive({
             ) : (
               <>
                 <BreadcrumbLink asChild className="max-w-20 truncate md:max-w-none">
-                  <Link to={item.href}>{item.label}</Link>
+                  <Link to={item.href ?? '#'}>{item.label}</Link>
                 </BreadcrumbLink>
                 {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
               </>
             )}
           </BreadcrumbItem>
-        ))}
+        ))} */}
       </BreadcrumbList>
     </Breadcrumb>
   );
