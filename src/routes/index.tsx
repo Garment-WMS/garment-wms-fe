@@ -27,6 +27,8 @@ import Login from '@/pages/login';
 import Home from '@/pages/home';
 import ImportReceipt from '@/pages/ImportReceiptDetail';
 import { Router } from 'react-router-dom';
+import MyTasks from '@/pages/tasks';
+import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
@@ -36,11 +38,6 @@ import InspectionRequestManagement from '@/pages/Inspection Report/management';
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
     { path: '/', element: <Navigate to="home" /> },
-
-    {
-      path: '/home',
-      element: <Home />
-    },
 
     {
       path: '/demo',
@@ -92,16 +89,24 @@ const RouterComponent: React.FC = () => {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/import-request/:id',
+              path: '/import-request/:id',
               element: <ViewImportRequest />
             },
             {
-              path: '/purchase-staff/import-request',
+              path: '/import-request',
               element: <ImportRequestManagement />
             },
             {
-              path: '/purchase-staff/home',
+              path: '/home',
               element: <Home />
+            },
+            {
+              path: '/tasks',
+              element: <MyTasks />
+            },
+            {
+              path: '/tasks/:id',
+              element: <TaskDetailPage />
             },
             {
               path: '/import-receipt/:id',
@@ -122,6 +127,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/material-variant',
               element: <MaterialManagement />
+            },
+            {
+              path: '/dashboard',
+              element: <Home />
             }
           ]
         },
@@ -129,36 +138,36 @@ const RouterComponent: React.FC = () => {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/purchase-order',
+              path: '/purchase-order',
               element: <PurchaseOrderManagement />
             },
             {
-              path: '/purchase-staff/purchase-order/:id',
+              path: '/purchase-order/:id',
               element: <PurchaseOrderDetails />
             },
             {
-              path: '/purchase-staff/purchase-order/:poId/po-delivery/:deliveryId',
+              path: '/purchase-order/:poId/po-delivery/:deliveryId',
               element: <PurchaseOrderDeliveryDetails />
             },
             {
-              path: '/purchase-staff/import-request/create/material',
+              path: '/import-request/create/material',
               element: <CreateImportRequest />
             },
             {
-              path: '/purchase-staff/import-request/create',
+              path: '/import-request/create',
               element: <CreateImportRequestMenu />
             },
             {
-              path: '/purchase-staff/production-plan',
+              path: '/production-plan',
               element: <ProductionPlanManagement />
             },
             {
-              path: '/purchase-staff/production-plan/:id',
+              path: '/production-plan/:id',
               element: <ProductionPlanDetail />
             },
-            { path: '/purchase-staff/report', element: <InspectionRequestManagement /> },
+            { path: '/report', element: <InspectionRequestManagement /> },
             {
-              path: '/purchase-staff/report/:id',
+              path: '/report/:id',
               element: <InspectionRequestDetails />
             }
           ]

@@ -46,9 +46,7 @@ const InspectionReportList = () => {
       header: 'Request Code',
       accessorKey: 'code',
       cell: ({ row }) => (
-        <Link
-          to={`/purchase-staff/report/${row.original.id}`}
-          className="font-semibold text-primary underline">
+        <Link to={`/report/${row.original.id}`} className="font-semibold text-primary underline">
           {row.original.code}
         </Link>
       ),

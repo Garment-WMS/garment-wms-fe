@@ -2,12 +2,14 @@ import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/Impor
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { get } from './ApiCaller';
 import privateCall from './PrivateCaller';
+import { patch } from './services/ApiCaller';
 
 let importRequestUrl = '/import-receipt';
 
 export const importReceiptApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
-  getAll: (queryString: string) => get(`/import-receipt${queryString}`)
+  getAll: (queryString: string) => get(`/import-receipt${queryString}`),
+  finish: (id: string) => patch(`${importRequestUrl}/${id}/finish`)
 };
 
 export const getAllImportReceiptFn = async ({
@@ -55,5 +57,11 @@ export const getAllImportReceiptFn = async ({
 
   // Make the API request
   const res = await privateCall(importReceiptApi.getAll(queryString));
+  return res.data.data;
+};
+
+export const finishImportReceiptFn = async (id: string): Promise<any> => {
+  // Make the API request
+  const res = await privateCall(importReceiptApi.finish(id));
   return res.data.data;
 };

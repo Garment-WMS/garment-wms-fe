@@ -5,29 +5,36 @@ import { FaHome, FaBoxOpen, FaCalendar } from 'react-icons/fa';
 import { GiClothes } from 'react-icons/gi';
 import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
+import { Calendar } from 'lucide-react';
 
 type Props = {};
 const iconSize = 22;
 const PurchaseStaffMenu: MenuProps[] = [
   {
-    title: 'Home',
+    title: 'Dashboard',
     renderIcon: <FaHome size={iconSize} />,
-    link: '/purchase-staff/home'
+    link: '/dashboard'
   },
+  {
+    title: 'Production Plan',
+    renderIcon: <Calendar size={iconSize} />,
+    link: '/production-plan'
+  },
+
   {
     title: 'Purchase Order',
     renderIcon: <FaBoxOpen size={iconSize} />,
-    link: '/purchase-staff/purchase-order'
+    link: '/purchase-order'
   },
   {
-    title: 'Delivery Note',
+    title: 'Import Request',
     renderIcon: <FaBoxOpen size={iconSize} />,
-    link: '/purchase-staff/import-request'
+    link: '/import-request'
   },
   {
     title: 'Product',
     renderIcon: <GiClothes size={iconSize} />,
-    link: '/purchase-staff/product'
+    link: '/product'
   },
   {
     title: 'Material',
@@ -37,13 +44,7 @@ const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Report',
     renderIcon: <RiFilePaper2Fill size={iconSize} />,
-
-    link: '/purchase-staff/report'
-  },
-  {
-    title: 'Production Plan',
-    renderIcon: <FaCalendar size={iconSize} />,
-    link: '/purchase-staff/production-plan'
+    link: '/report'
   }
 ];
 const PurchaseStaffLayout = (props: Props) => {
