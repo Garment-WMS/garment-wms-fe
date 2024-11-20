@@ -112,6 +112,22 @@ const InspectionReportList = () => {
       }
     },
     {
+      header: 'Inspection Report Code',
+      accessorKey: 'inspectionReport.code',
+      cell: ({ row }) =>
+        row.original.inspectionReport?.code ? (
+          <Badge className="bg-green-500 text-white ml-[10%]">
+            {row.original.inspectionReport.code}
+          </Badge>
+        ) : (
+          <div className="ml-[30%]">
+            <span className="text-slate-500 text-center text-xl font-semibold">-</span>
+          </div>
+        ),
+      enableColumnFilter: false
+    },
+
+    {
       header: 'Requested At',
       accessorKey: 'createdAt',
       cell: ({ getValue }) => {
@@ -125,7 +141,7 @@ const InspectionReportList = () => {
   return (
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-primaryLight">Inspection Report Lists</h1>
+        <h1 className="text-3xl font-bold text-primaryLight">Inspection Request Lists</h1>
       </div>
       <div className="overflow-auto h-[700px] mt-4">
         <TanStackBasicTable
