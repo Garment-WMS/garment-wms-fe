@@ -26,7 +26,6 @@ import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
 import ImportReceipt from '@/pages/ImportReceiptDetail';
-import { Router } from 'react-router-dom';
 import MyTasks from '@/pages/tasks';
 import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
@@ -34,6 +33,7 @@ import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
+import ProductionBatchManagement from '@/pages/Production Batch/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -169,7 +169,8 @@ const RouterComponent: React.FC = () => {
             {
               path: '/report/:id',
               element: <InspectionRequestDetails />
-            }
+            },
+            { path: '/production-batch', element: <ProductionBatchManagement /> }
           ]
         }
       ]
