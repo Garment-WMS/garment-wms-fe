@@ -16,6 +16,8 @@ import {
   InspectionRequestStatus,
   InspectionRequestStatusLabels
 } from '@/enums/inspectionRequestStatus';
+import Colors from '@/constants/color';
+import PieChartComponent from '@/components/common/PieChart';
 
 interface InspectionRequestChartProps {
   inspectionReport: InspectionReport | null;
@@ -30,6 +32,22 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
     );
   }
 
+  // Calculate total inspected materials
+  const totalFail = inspectionReport.inspectionReportDetail.reduce(
+    (sum, detail) => sum + (detail.defectQuantityByPack || 0),
+    0
+  );
+  const totalPass = inspectionReport.inspectionReportDetail.reduce(
+    (sum, detail) => sum + (detail.approvedQuantityByPack || 0),
+    0
+  );
+  const totalInspected = totalFail + totalPass;
+
+  const chartData = [
+    { name: 'Fail', value: totalFail },
+    { name: 'Pass', value: totalPass }
+  ];
+
   const statusClass = {
     [InspectionRequestStatus.CANCELLED]: 'bg-red-500 text-white',
     [InspectionRequestStatus.INSPECTING]: 'bg-blue-500 text-white',
@@ -37,14 +55,37 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
   };
 
   return (
-    <div className="grid grid-cols-2 w-full space-x-3">
-      {/* Chart */}
-      <Card>This is for the Chart</Card>
+    <div className="grid grid-cols-[1fr_2fr] w-full">
+      {/* Pie Chart */}
+      <Card className="w-full max-w-4xl mx-auto pb-7">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold">Inspection Report Summary</CardTitle>
+          <CardTitle className="font-bold">
+            <div className="flex items-center flex-col ">
+              Total
+              <span className="ml-2 text-2xl text-blue-600">{totalInspected}</span>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <div className="w-full pb-5">
+          <PieChartComponent
+            data={chartData}
+            colors={[Colors.red[500], Colors.green[500]]}
+            width={400}
+            height={400}
+            innerRadius={90}
+            outerRadius={150}
+            labelType="value"
+            showLegend={true}
+            legendHeight={20}
+          />
+        </div>
+      </Card>
 
       {/* Report details */}
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Inspection Report</CardTitle>
+          <CardTitle className="text-2xl font-bold">Inspection Report Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -85,7 +126,10 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
                     <TableRow>
                       <TableHead className="py-4 px-6 text-center text-sm font-semibold text-gray-600"></TableHead>
                       <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
-                        Material
+                        Material Name
+                      </TableHead>
+                      <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
+                        Material Code
                       </TableHead>
                       <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
                         Quantity
@@ -119,6 +163,11 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
                         </TableCell>
                         <TableCell className="py-3 px-6 text-sm font-medium text-gray-800 align-middle">
                           {detail?.materialPackage?.name || 'null name'}
+                        </TableCell>
+                        <TableCell className="py-3 px-6 text-sm font-medium text-center text-gray-600 align-middle">
+                          <Badge className="bg-slate-500">
+                            {detail?.materialPackage?.code || 'N/A'}
+                          </Badge>
                         </TableCell>
                         <TableCell className="py-3 px-6 text-sm text-center align-middle">
                           <span className="text-lg font-semibold">{detail.quantityByPack}</span>
