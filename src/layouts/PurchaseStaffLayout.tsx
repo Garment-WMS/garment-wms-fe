@@ -5,7 +5,6 @@ import { FaHome, FaBoxOpen, FaCalendar } from 'react-icons/fa';
 import { GiClothes } from 'react-icons/gi';
 import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
-import { Calendar } from 'lucide-react';
 
 type Props = {};
 const iconSize = 22;
@@ -17,7 +16,7 @@ const PurchaseStaffMenu: MenuProps[] = [
   },
   {
     title: 'Production Plan',
-    renderIcon: <Calendar size={iconSize} />,
+    renderIcon: <FaCalendar size={iconSize} />,
     link: '/production-plan'
   },
 

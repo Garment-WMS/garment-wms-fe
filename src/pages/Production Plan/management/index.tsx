@@ -78,7 +78,7 @@ const ProductionPlanManagement = () => {
                   <Link
                     className="text-primaryLight underline hover:opacity-50 cursor-pointer"
                     to={{
-                      pathname: `/purchase-staff/production-plan/${plan.id}`
+                      pathname: `/production-plan/${plan.id}`
                     }}
                     state={{ plan }}>
                     <span>{plan.name}</span>
