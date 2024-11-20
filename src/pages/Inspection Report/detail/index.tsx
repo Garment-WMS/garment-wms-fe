@@ -3,7 +3,7 @@ import Loading from '@/components/common/Loading';
 import { useGetInspectionRequestById } from '@/hooks/useGetInspectionRequestById';
 import { useParams } from 'react-router-dom';
 import InspectionRequestInformation from './components/InspectionRequestInformation';
-import { ImportRequestDetail, Material, MaterialAttribute } from '@/types/ImportRequestType';
+import InspectionRequestChart from './components/InspectionRequestChart';
 
 const InspectionRequestDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -69,6 +69,8 @@ const InspectionRequestDetails: React.FC = () => {
           inspectionReport={inspectionReport}
           importRequest={importRequest}
         />
+        {/* Inspection Report Detail */}
+        <InspectionRequestChart inspectionReport={inspectionReport} />
       </div>
     </section>
   );

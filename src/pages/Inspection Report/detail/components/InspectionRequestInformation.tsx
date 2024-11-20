@@ -12,6 +12,7 @@ import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/insp
 import { ImportRequest } from '@/types/ImportRequestType';
 import { Calendar, Edit3, FileText, Type } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
+import { InspectionReport } from '@/types/InspectionReport';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -25,8 +26,12 @@ interface InspectionRequestInformationProps {
   requestType: InspectionRequestType;
   requestNote: string | null;
   requestCreatedAt: string;
+  importRequestCode: string;
+  poDeliveryCode: string;
   requestUpdatedAt: string;
   warehouseManager: any;
+  purchaseOrderNumber: string;
+  inspectionReport: InspectionReport;
   importRequest?: ImportRequest;
 }
 
@@ -36,7 +41,6 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestType,
   requestNote,
   requestCreatedAt,
-  requestUpdatedAt,
   warehouseManager,
   importRequest
 }) => {
@@ -48,9 +52,9 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
       <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-2 text-lg">
               Request{' '}
-              <span className="text-primaryLight text-lg font-semibold"> #{requestCode}</span>
+              <span className="text-primaryLight text-2xl font-semibold"> #{requestCode}</span>
             </div>
             <Badge className={`${statusColors[requestStatus]} text-white`}>
               {InspectionRequestStatusLabels[requestStatus]}
