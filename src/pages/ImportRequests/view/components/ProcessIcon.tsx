@@ -43,7 +43,6 @@ const ProcessIcon: React.FC<Props> = (props: Props) => {
             </span>
             <div className="flex flex-col items-center justify-center">
               <span className="lg:text-xs md:text-xs font-bold">{props.title}</span>
-              <div className="lg:text-xs md:text-xs">{props.displayStatus}</div>
             </div>
             {props.isSelected && (
               <TiArrowSortedDown className="absolute top-[-25px] left-1/2 transform -translate-x-1/2 text-bluePrimary text-2xl" />

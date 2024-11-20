@@ -1,10 +1,9 @@
-import React from 'react';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Colors from '@/constants/color';
+import { IoIosQrScanner } from 'react-icons/io';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useGetProfile } from '@/hooks/useGetProfile';
-import { Label } from './ui/Label';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +18,7 @@ import { Button } from './ui/button';
 import { LogOut, User } from 'lucide-react';
 import placeholder from '@/assets/images/avatar.png';
 import useLogout from '@/hooks/useLogout';
+import ScannerPopup from './ScannerPopup';
 type Props = {};
 
 const TopBar = (props: Props) => {
@@ -29,10 +29,9 @@ const TopBar = (props: Props) => {
   return (
     <div className="w-full h-20 pl-6 flex bg-white">
       <div className="w-full flex gap-2 justify-end items-center pr-8">
+        <ScannerPopup />
         <IoIosNotificationsOutline color={blue} size={iconSize} />
-
         <CiSettings color={blue} size={iconSize} />
-
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger>
