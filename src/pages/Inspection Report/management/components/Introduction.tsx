@@ -2,7 +2,7 @@ import photo from '@/assets/images/inspectionReport.jpg';
 
 const InspectionReportIntroduction = () => {
   const title = 'Inspection Report';
-  const description = 'Tracks material requests and ensures timely delivery.';
+  const description = 'Tracks inspections to ensure quality standards.';
   return (
     <div
       className="w-full h-28 bg-white rounded-xl shadow-sm border

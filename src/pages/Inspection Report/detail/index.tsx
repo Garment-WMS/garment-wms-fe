@@ -43,8 +43,8 @@ const InspectionRequestDetails: React.FC = () => {
   } = importRequest || {};
 
   const breadcrumbItems = [
-    { label: 'Inspection Request', href: '/purchase-staff/report' },
-    { label: `Inspection Request #${requestCode}`, href: `/purchase-staff/purchase-order/${id}` }
+    { label: 'Inspection Request', href: '/report' },
+    { label: `Inspection Request #${requestCode}`, href: `/report/${id}` }
   ];
 
   return (
