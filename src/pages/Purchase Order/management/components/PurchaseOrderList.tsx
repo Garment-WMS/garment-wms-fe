@@ -47,7 +47,7 @@ const PurchaseOrderList: React.FC = () => {
       accessorKey: 'poNumber',
       cell: ({ row }) => (
         <Link
-          to={`/purchase-staff/purchase-order/${row.original.id}`}
+          to={`/purchase-order/${row.original.id}`}
           className="ml-2 font-semibold text-primary underline hover:opacity-50">
           {row.original.poNumber}
         </Link>
