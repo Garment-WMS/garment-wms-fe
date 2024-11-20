@@ -126,13 +126,13 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
                     <TableRow>
                       <TableHead className="py-4 px-6 text-center text-sm font-semibold text-gray-600"></TableHead>
                       <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
-                        Material Name
+                        Name
                       </TableHead>
                       <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
-                        Material Code
+                        Code
                       </TableHead>
                       <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
-                        Quantity
+                        Total
                       </TableHead>
                       <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
                         No. Pass

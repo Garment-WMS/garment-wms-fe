@@ -10,11 +10,12 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Calendar, Edit3, FileText, Type } from 'lucide-react';
+import { Box, Calendar, Edit3, FileText, Shirt, Type } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
 import { Gender } from '@/enums/gender';
+import fallbackAvatar from '@/assets/images/avaPlaceholder.jpg';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -87,13 +88,16 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
                     </dd>
                   </div>
                 </div>
-
                 {/* Type */}
                 <div className="flex items-center">
-                  <FileText className="text-gray-500 mr-2" />
+                  {requestType === InspectionRequestType.MATERIAL ? (
+                    <Box className="text-gray-500 mr-2" />
+                  ) : (
+                    <Shirt className="text-gray-500 mr-2" />
+                  )}
                   <div>
                     <dt className="font-medium text-gray-500">Type</dt>
-                    <dd className="font-semibold uppercase">
+                    <dd className="font-semibold uppercase text-primaryLight">
                       {InspectionRequestTypeLabels[requestType]}
                     </dd>
                   </div>
@@ -181,7 +185,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
           <div className="flex items-center space-x-4">
             <Avatar>
               <AvatarImage
-                src={inspectionDepartment?.account?.avatarUrl || 'https://via.placeholder.com/100'}
+                src={inspectionDepartment?.account?.avatarUrl || fallbackAvatar}
                 alt="Inspection Department"
               />
               <AvatarFallback>
@@ -200,20 +204,20 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
           </div>
           <div className="mt-4 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-700">Account Username:</span>
+              <span className="font-medium text-gray-400">Account Username:</span>
               <span className="text-lg font-semibold">
                 {inspectionDepartment?.account?.username || 'N/A'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-700">Phone:</span>
+              <span className="font-medium text-gray-400">Phone:</span>
               <span className="text-lg font-semibold text-gray-900">
                 {convertToVietnamesePhoneNumber(inspectionDepartment?.account?.phoneNumber) ||
                   'N/A'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-700">Gender:</span>
+              <span className="font-medium text-gray-400">Gender:</span>
               <span className="text-lg font-semibold text-gray-900">
                 {inspectionDepartment?.account?.gender
                   ? inspectionDepartment.account.gender === Gender.MALE
@@ -223,7 +227,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-700">Date of Birth:</span>
+              <span className="font-medium text-gray-400">Date of Birth:</span>
               <span className="text-lg font-semibold text-gray-900">
                 {inspectionDepartment?.account?.dateOfBirth
                   ? convertDate(inspectionDepartment.account.dateOfBirth)

@@ -12,6 +12,7 @@ import {
 import { InspectionRequest } from '@/types/InspectionRequest';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { Link } from 'react-router-dom';
+import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 
 const InspectionReportList = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -58,11 +59,28 @@ const InspectionReportList = () => {
       accessorKey: 'importRequest.code',
       cell: ({ row }) =>
         row.original.importRequest?.code ? (
-          <div>{row.original.importRequest.code}</div>
+          <Badge className="bg-slate-500">{row.original.importRequest.code}</Badge>
         ) : (
           <div className="text-slate-400">N/A</div>
         ),
       enableColumnFilter: false
+    },
+    {
+      header: 'Type',
+      accessorKey: 'type',
+      enableColumnFilter: true,
+      filterOptions: Object.keys(InspectionRequestType).map((key) => ({
+        label:
+          InspectionRequestTypeLabels[
+            InspectionRequestType[key as keyof typeof InspectionRequestType]
+          ],
+        value: InspectionRequestType[key as keyof typeof InspectionRequestType]
+      })),
+      cell: ({ row }) => (
+        <div className="font-semibold mr-2">
+          {InspectionRequestTypeLabels[row.original.type as InspectionRequestType] || 'N/A'}
+        </div>
+      )
     },
     {
       header: 'Status',
@@ -96,11 +114,11 @@ const InspectionReportList = () => {
       }
     },
     {
-      header: 'Created At',
+      header: 'Requested At',
       accessorKey: 'createdAt',
       cell: ({ getValue }) => {
         const isoDate = getValue<string>();
-        return <div>{convertDate(isoDate)}</div>;
+        return <div className="ml-3">{convertDate(isoDate)}</div>;
       },
       enableColumnFilter: false
     }
