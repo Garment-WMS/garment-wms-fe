@@ -112,6 +112,22 @@ const InspectionReportList = () => {
       }
     },
     {
+      header: 'Inspection Report Code',
+      accessorKey: 'inspectionReport.code',
+      cell: ({ row }) =>
+        row.original.inspectionReport?.code ? (
+          <Badge className="bg-green-500 text-white ml-[10%]">
+            {row.original.inspectionReport.code}
+          </Badge>
+        ) : (
+          <div className="ml-[30%]">
+            <span className="text-slate-500 text-center text-xl font-semibold">-</span>
+          </div>
+        ),
+      enableColumnFilter: false
+    },
+
+    {
       header: 'Requested At',
       accessorKey: 'createdAt',
       cell: ({ getValue }) => {

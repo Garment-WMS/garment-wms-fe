@@ -3,8 +3,8 @@ import { InspectionRequestType } from '@/enums/inspectionRequestType';
 import { useGetInspectionRequestByType } from '@/hooks/useGetInspectionRequestByType';
 import PieChartComponent from '@/components/common/PieChart';
 import Colors from '@/constants/color';
-import Loading from '@/components/common/Loading';
-import { Package, Shirt } from 'lucide-react'; // Icons for Material and Product
+import ChartSkeleton from '@/components/common/ChartSkeleton';
+import { Package, Shirt } from 'lucide-react';
 
 const InspectionRequestChart = () => {
   const { data: materialStats, isPending: isMaterialLoading } = useGetInspectionRequestByType(
@@ -23,9 +23,11 @@ const InspectionRequestChart = () => {
   ) => {
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center h-64">
-          <Loading />
-        </div>
+        <Card className="w-full max-w-4xl mx-auto pb-7 border-gray-200 shadow-md">
+          <div className="flex justify-center items-center h-80">
+            <ChartSkeleton />
+          </div>
+        </Card>
       );
     }
 
@@ -64,15 +66,24 @@ const InspectionRequestChart = () => {
     );
   };
 
+  const isLoadingData = isMaterialLoading || isProductLoading;
+
   return (
     <section className="px-6 pt-6 pb-8 w-auto bg-white rounded-xl shadow-md border">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primaryLight">Inspection Request Summary</h1>
       </div>
-      <div className="grid grid-cols-2 gap-6">
-        {renderPieChart('Material', materialStats, isMaterialLoading, Package, 'text-slate-500')}
-        {renderPieChart('Product', productStats, isProductLoading, Shirt, 'text-slate-500')}
-      </div>
+      {isLoadingData ? (
+        <div className="grid grid-cols-2 gap-6">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-6">
+          {renderPieChart('Material', materialStats, isMaterialLoading, Package, 'text-slate-500')}
+          {renderPieChart('Product', productStats, isProductLoading, Shirt, 'text-slate-500')}
+        </div>
+      )}
     </section>
   );
 };
