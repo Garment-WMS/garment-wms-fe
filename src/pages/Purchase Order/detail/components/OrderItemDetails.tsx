@@ -62,13 +62,13 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
         color = 'bg-green-400';
         icon = <Eye size={16} />;
         label = 'View Details';
-        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}`;
+        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
         break;
       default:
         color = 'bg-green-400';
         icon = <Eye size={16} />;
         label = 'View Details';
-        path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}`;
+        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
         break;
     }
 
@@ -145,7 +145,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                     </div>
 
                     <Link
-                      to={`/purchase-staff/purchase-order/${poId}/po-delivery/${delivery.id}`}
+                      to={`/purchase-order/${poId}/po-delivery/${delivery.id}`}
                       state={{ delivery, poNumber }}
                       className="flex items-center gap-2 text-primaryDark hover:opacity-80">
                       <h1 className="text-base font-semibold">View details</h1>
