@@ -4,11 +4,16 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { get } from './ApiCaller';
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
+import { InspectionRequestType } from '@/enums/inspectionRequestType';
 
 interface GetAllInspectionRequestsInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;
+}
+
+interface GetInspectionRequestStatisticInput {
+  type: InspectionRequestType;
 }
 
 export const getAllInspectionRequests = async ({
@@ -74,5 +79,20 @@ export const getInspectionRequestById = async (id: string): Promise<ApiResponse>
   } catch (error: any) {
     console.error('Failed to fetch inspection request by ID:', error);
     throw new Error('Failed to fetch inspection request');
+  }
+};
+
+export const getInspectionRequestStatistic = async ({
+  type
+}: GetInspectionRequestStatisticInput): Promise<ApiResponse> => {
+  try {
+    const queryString = `?type=${type}`;
+    const fullUrl = `/inspection-request/statistic${queryString}`;
+    const config = get(fullUrl);
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Failed to fetch inspection request statistic:', error);
+    throw new Error('Failed to fetch inspection request statistic');
   }
 };
