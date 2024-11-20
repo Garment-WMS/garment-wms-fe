@@ -9,8 +9,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import { CalendarIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
+import { CalendarArrowDown, CalendarArrowUp, CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { InspectionReport } from '@/types/InspectionReport';
+import { convertDate } from '@/helpers/convertDate';
+import {
+  InspectionRequestStatus,
+  InspectionRequestStatusLabels
+} from '@/enums/inspectionRequestStatus';
 
 interface InspectionRequestChartProps {
   inspectionReport: InspectionReport | null;
@@ -25,10 +30,17 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
     );
   }
 
+  const statusClass = {
+    [InspectionRequestStatus.CANCELLED]: 'bg-red-500 text-white',
+    [InspectionRequestStatus.INSPECTING]: 'bg-blue-500 text-white',
+    [InspectionRequestStatus.INSPECTED]: 'bg-green-500 text-white'
+  };
+
   return (
     <div className="grid grid-cols-2 w-full space-x-3">
       {/* Chart */}
       <Card>This is for the Chart</Card>
+
       {/* Report details */}
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
@@ -40,26 +52,26 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Report Code</p>
-                <p className="text-lg font-semibold">{inspectionReport.code}</p>
+                <Badge className="bg-primaryLight">{inspectionReport.code}</Badge>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Status</p>
-                <Badge variant="outline" className="mt-1">
-                  {inspectionReport.inspectionRequest.status}
+                <Badge className={`mt-1 ${statusClass[inspectionReport.inspectionRequest.status]}`}>
+                  {InspectionRequestStatusLabels[inspectionReport.inspectionRequest.status]}
                 </Badge>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Created At</p>
+                <p className="text-sm font-medium text-muted-foreground">Requested At</p>
                 <p className="text-lg font-semibold flex items-center">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {new Date(inspectionReport.createdAt).toLocaleDateString()}
+                  <CalendarArrowUp className="mr-2 h-5 w-5" />
+                  {convertDate(inspectionReport?.inspectionRequest?.createdAt || '')}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Updated At</p>
+                <p className="text-sm font-medium text-muted-foreground">Inspected At</p>
                 <p className="text-lg font-semibold flex items-center">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {new Date(inspectionReport.updateAt).toLocaleDateString()}
+                  <CalendarArrowDown className="mr-2 h-5 w-5" />
+                  {convertDate(inspectionReport.createdAt || '')}
                 </p>
               </div>
             </div>
@@ -68,31 +80,58 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
             <div>
               <h3 className="text-lg font-semibold mb-2">Inspection Details</h3>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
+                <Table className="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden shadow-md">
+                  <TableHeader className="bg-gray-100">
                     <TableRow>
-                      <TableHead>Material</TableHead>
-                      <TableHead className="text-right">Quantity</TableHead>
-                      <TableHead className="text-right">Approved</TableHead>
-                      <TableHead className="text-right">Defective</TableHead>
+                      <TableHead className="py-4 px-6 text-center text-sm font-semibold text-gray-600"></TableHead>
+                      <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
+                        Material
+                      </TableHead>
+                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
+                        Quantity
+                      </TableHead>
+                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
+                        No. Pass
+                      </TableHead>
+                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
+                        No. Failed
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {inspectionReport.inspectionReportDetail.map((detail) => (
-                      <TableRow key={detail.id}>
-                        <TableCell className="font-medium">
+                      <TableRow
+                        key={detail.id}
+                        className="hover:bg-gray-50 transition-colors duration-200">
+                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
+                          <div className="flex items-center justify-center">
+                            <div className="relative w-20 h-20 rounded-lg overflow-hidden shadow-md border border-gray-300">
+                              <img
+                                src={
+                                  detail?.materialPackage?.materialVariant?.image ||
+                                  'https://via.placeholder.com/100'
+                                }
+                                alt={detail?.materialPackage?.name || 'Material'}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 px-6 text-sm font-medium text-gray-800 align-middle">
                           {detail?.materialPackage?.name || 'null name'}
                         </TableCell>
-                        <TableCell className="text-right">{detail.quantityByPack}</TableCell>
-                        <TableCell className="text-right">
-                          <span className="flex items-center justify-end">
-                            <CheckCircleIcon className="mr-2 h-4 w-4 text-green-500" />
+                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
+                          <span className="text-lg font-semibold">{detail.quantityByPack}</span>
+                        </TableCell>
+                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
+                          <span className="flex items-center text-lg justify-end text-green-800 font-semibold">
+                            <CheckCircleIcon className="mr-2 h-6 w-6 text-green-500" />
                             {detail.approvedQuantityByPack}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <span className="flex items-center justify-end">
-                            <XCircleIcon className="mr-2 h-4 w-4 text-red-500" />
+                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
+                          <span className="flex items-center text-lg justify-end text-red-800 font-semibold">
+                            <XCircleIcon className="mr-2 h-6 w-6 text-red-500" />
                             {detail.defectQuantityByPack}
                           </span>
                         </TableCell>
@@ -100,52 +139,6 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
                     ))}
                   </TableBody>
                 </Table>
-              </div>
-            </div>
-
-            {/* Associated Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Associated Request</h3>
-                <p>
-                  <strong>Import Request Code:</strong>{' '}
-                  {inspectionReport?.inspectionRequest?.importRequest?.code}
-                </p>
-                <p>
-                  <strong>PO Delivery Code:</strong>{' '}
-                  {/* {inspectionReport?.inspectionRequest?.importRequest?.poDelivery?.code} */}
-                  Po Code
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Responsible Parties</h3>
-                <p>
-                  <strong>Warehouse Manager:</strong>{' '}
-                  {
-                    inspectionReport?.inspectionRequest?.importRequest?.warehouseManager?.account
-                      .firstName
-                  }{' '}
-                  {
-                    inspectionReport?.inspectionRequest?.importRequest?.warehouseManager?.account
-                      ?.lastName
-                  }
-                </p>
-                <p>
-                  <strong>Purchasing Staff:</strong>{' '}
-                  {
-                    inspectionReport?.inspectionRequest?.importRequest?.purchasingStaff?.account
-                      ?.firstName
-                  }{' '}
-                  {
-                    inspectionReport?.inspectionRequest?.importRequest?.purchasingStaff?.account
-                      ?.lastName
-                  }
-                </p>
-                <p>
-                  <strong>Inspection Department:</strong>{' '}
-                  {inspectionReport?.inspectionRequest?.inspectionDepartment?.account?.firstName}{' '}
-                  {inspectionReport?.inspectionRequest?.inspectionDepartment?.account?.lastName}
-                </p>
               </div>
             </div>
           </div>
