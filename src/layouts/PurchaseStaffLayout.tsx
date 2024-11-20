@@ -1,8 +1,7 @@
 import SideBar from '@/components/SideBar';
 import { MenuProps } from '@/constants/interface';
-import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { FaHome, FaBoxOpen } from 'react-icons/fa';
+import { FaHome, FaBoxOpen, FaCalendar } from 'react-icons/fa';
 import { GiClothes } from 'react-icons/gi';
 import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
@@ -45,7 +44,6 @@ const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Report',
     renderIcon: <RiFilePaper2Fill size={iconSize} />,
-
     link: '/report'
   }
 ];

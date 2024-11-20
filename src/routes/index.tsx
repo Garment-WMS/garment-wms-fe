@@ -32,6 +32,8 @@ import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import InspectionRequestDetails from '@/pages/Inspection Report/detail';
+import InspectionRequestManagement from '@/pages/Inspection Report/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -162,6 +164,11 @@ const RouterComponent: React.FC = () => {
             {
               path: '/production-plan/:id',
               element: <ProductionPlanDetail />
+            },
+            { path: '/report', element: <InspectionRequestManagement /> },
+            {
+              path: '/report/:id',
+              element: <InspectionRequestDetails />
             }
           ]
         }
