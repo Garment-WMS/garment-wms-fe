@@ -4,6 +4,7 @@ import { useGetInspectionRequestById } from '@/hooks/useGetInspectionRequestById
 import { useParams } from 'react-router-dom';
 import InspectionRequestInformation from './components/InspectionRequestInformation';
 import InspectionRequestChart from './components/InspectionRequestChart';
+import { InspectionDepartment } from '../../../types/InspectionDepartment';
 
 const InspectionRequestDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,7 @@ const InspectionRequestDetails: React.FC = () => {
       updatedAt: requestUpdatedAt,
       importRequest,
       warehouseManager,
+      inspectionDepartment,
       inspectionReport = null
     } = {}
   } = inspectionRequestData || {};
@@ -61,14 +63,16 @@ const InspectionRequestDetails: React.FC = () => {
           poDeliveryCode={poDeliveryCode || ''}
           purchaseOrderNumber={purchaseOrderNumber || ''}
           warehouseManager={{
-            firstName: warehouseManager?.account.firstName || '',
-            lastName: warehouseManager?.account.lastName || '',
-            email: warehouseManager?.account.email || '',
-            avatarUrl: warehouseManager?.account.avatarUrl
+            firstName: warehouseManager?.account?.firstName || '',
+            lastName: warehouseManager?.account?.lastName || '',
+            email: warehouseManager?.account?.email || '',
+            avatarUrl: warehouseManager?.account?.avatarUrl
           }}
           inspectionReport={inspectionReport}
           importRequest={importRequest}
+          inspectionDepartment={inspectionDepartment}
         />
+
         {/* Inspection Report Detail */}
         <InspectionRequestChart inspectionReport={inspectionReport} />
       </div>

@@ -13,6 +13,8 @@ import { ImportRequest } from '@/types/ImportRequestType';
 import { Calendar, Edit3, FileText, Type } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { InspectionReport } from '@/types/InspectionReport';
+import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
+import { Gender } from '@/enums/gender';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -33,6 +35,7 @@ interface InspectionRequestInformationProps {
   purchaseOrderNumber: string;
   inspectionReport: InspectionReport;
   importRequest?: ImportRequest;
+  inspectionDepartment?: any;
 }
 
 const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
@@ -41,8 +44,8 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestType,
   requestNote,
   requestCreatedAt,
-  warehouseManager,
-  importRequest
+  importRequest,
+  inspectionDepartment
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
 
@@ -169,23 +172,63 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
         </CardContent>
       </Card>
 
-      {/* Warehouse Manager Info */}
+      {/* Inspection Department Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Warehouse Manager</CardTitle>
+          <CardTitle>Inspection Department</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-4">
             <Avatar>
-              <AvatarImage src={warehouseManager.avatarUrl} alt="Warehouse Manager" />
+              <AvatarImage
+                src={inspectionDepartment?.account?.avatarUrl || 'https://via.placeholder.com/100'}
+                alt="Inspection Department"
+              />
               <AvatarFallback>
-                {warehouseManager.firstName[0]}
-                {warehouseManager.lastName[0]}
+                {inspectionDepartment?.account?.firstName?.[0] || 'I'}
+                {inspectionDepartment?.account?.lastName?.[0] || 'D'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{`${warehouseManager.firstName} ${warehouseManager.lastName}`}</p>
-              <p className="text-sm text-gray-500">{warehouseManager.email}</p>
+              <p className="font-medium text-xl">
+                {`${inspectionDepartment?.account?.firstName || ''} ${inspectionDepartment?.account?.lastName || ''}`}
+              </p>
+              <p className="text-sm text-gray-500">
+                {inspectionDepartment?.account?.email || 'N/A'}
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-700">Account Username:</span>
+              <span className="text-lg font-semibold">
+                {inspectionDepartment?.account?.username || 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-700">Phone:</span>
+              <span className="text-lg font-semibold text-gray-900">
+                {convertToVietnamesePhoneNumber(inspectionDepartment?.account?.phoneNumber) ||
+                  'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-700">Gender:</span>
+              <span className="text-lg font-semibold text-gray-900">
+                {inspectionDepartment?.account?.gender
+                  ? inspectionDepartment.account.gender === Gender.MALE
+                    ? 'Male'
+                    : 'Female'
+                  : 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-700">Date of Birth:</span>
+              <span className="text-lg font-semibold text-gray-900">
+                {inspectionDepartment?.account?.dateOfBirth
+                  ? convertDate(inspectionDepartment.account.dateOfBirth)
+                  : 'N/A'}
+              </span>
             </div>
           </div>
         </CardContent>
