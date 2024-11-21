@@ -635,7 +635,7 @@ export default function StocktakingDetails() {
             </div>
             {inventoryReport.status === 'REPORTED' && (
               <Button type="submit" onClick={onSubmit} className="mt-4 w-full">
-                Cân bằng kho
+                Balance inventory
               </Button>
             )}
           </CardContent>
