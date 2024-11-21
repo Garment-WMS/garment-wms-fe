@@ -2,14 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Barcode, Receipt, X, Keyboard, ScanLine } from 'lucide-react';
+import {
+  Barcode,
+  Receipt,
+  X,
+  Keyboard,
+  ScanLine,
+  ExternalLink,
+  Package,
+  Calendar,
+  Truck
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { IoIosQrScanner } from 'react-icons/io';
-
+import { scannerSearchFn } from '@/api/services/scannerApi';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/Badge';
+import EmptyScanner from '@/assets/images/empty_scanner.svg';
 export default function ScannerPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [scanMode, setScanMode] = useState('product');
@@ -17,8 +30,58 @@ export default function ScannerPopup() {
   const [scannedData, setScannedData] = useState('');
   const [manualInput, setManualInput] = useState('');
   const [isReady, setIsReady] = useState(false); // New state to track readiness
+  const [isEmtpy, setEmpty] = useState(false); // New state to track readiness
+  const [scannedItem, setScannedItem] = useState<any>();
+  const [scannedReceipt, setScannedReceipt] = useState<any>();
   const scannerInputRef = useRef<HTMLInputElement>(null);
+  const renderScannedItemDetails = () => {
+    if (!scannedItem) return null;
 
+    const isProduct = 'productId' in scannedItem;
+    const detailsLink = isProduct ? `/product/${scannedItem.id}` : `/material/${scannedItem.id}`;
+
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">{scannedItem.name}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary">{scannedItem.code}</Badge>
+              <Badge variant="outline">{isProduct ? 'Product' : 'Material'}</Badge>
+            </div>
+            {scannedItem.image && (
+              <img
+                src={scannedItem.image}
+                alt={scannedItem.name}
+                className="w-full h-40 object-cover rounded-md"
+              />
+            )}
+            {scannedItem.materialAttribute && scannedItem.materialAttribute.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-2">Attributes:</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {scannedItem.materialAttribute.map((attr: any) => (
+                    <Badge key={attr.id} variant="outline" className="justify-between">
+                      <span>{attr.name}:</span>
+                      <span className="font-semibold">{attr.value}</span>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            <Button asChild className="w-full">
+              <a href={detailsLink} target="_blank" rel="noopener noreferrer">
+                View Details
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
   useEffect(() => {
     if (isOpen && entryMode === 'scanner' && scannerInputRef.current) {
       scannerInputRef.current.focus();
@@ -27,13 +90,6 @@ export default function ScannerPopup() {
 
   const handleScan = (e: React.FormEvent) => {
     e.preventDefault();
-    const dataToProcess = entryMode === 'manual' ? manualInput : scannedData;
-
-    console.log('Processing:', dataToProcess);
-
-    setTimeout(() => {
-      console.log('Scanned Data:', scannedData);
-    }, 1500);
 
     if (entryMode === 'scanner' && scannerInputRef.current) {
       scannerInputRef.current.value = ''; // Clear the input for next scan
@@ -50,17 +106,150 @@ export default function ScannerPopup() {
     }
   };
 
-  const handleScannerInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleScannerInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const scannedValue = e.currentTarget.value;
-      console.log('Scanned value:', scannedValue);
+
       setScannedData(scannedValue);
+      const mode = scanMode == 'product' ? 'material-product' : 'receipt';
+      const res = await scannerSearchFn(mode, scannedValue);
+      if (scanMode == 'material-product') {
+        if (res.materialVariant == null && res.productVariant == null) {
+          setEmpty(true);
+          setScannedItem(null);
+        } else if (res.materialVariant != null) {
+          setEmpty(false);
+          setScannedItem(res.materialVariant);
+        } else {
+          setScannedItem(res.productVariant);
+          setEmpty(false);
+        }
+      } else {
+        if (
+          res.materialReceipt == null &&
+          res.productReceipt == null &&
+          res.importReceipt == null
+        ) {
+          setEmpty(true);
+          setScannedReceipt(null);
+        } else if (res.materialReceipt != null) {
+          setScannedItem(null);
+          setEmpty(false);
+          setScannedReceipt(res.materialReceipt);
+        } else if (res.materialReceipt != null) {
+          setScannedItem(null);
+          setScannedReceipt(res.productReceipt);
+          setEmpty(false);
+        } else {
+          setScannedItem(null);
+          setScannedReceipt(res.importReceipt);
+          setEmpty(false);
+        }
+      }
       handleScan(e);
       setIsReady(false); // Reset readiness after scanning
     }
   };
+  const renderScannedReceiptDetails = () => {
+    if (!scannedReceipt) return null;
 
+    const isMaterialReceipt = 'materialPackage' in scannedReceipt;
+    const isImportReceipt = 'warehouseStaff' in scannedReceipt;
+    const redirectUrl = isMaterialReceipt
+      ? `/import-receipt/${scannedReceipt.importReceiptId}`
+      : `/import-receipt/${scannedReceipt.id}`;
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              {isMaterialReceipt
+                ? 'Material Receipt'
+                : isImportReceipt
+                  ? 'Import Receipt'
+                  : 'Product Receipt'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary">{scannedReceipt.code}</Badge>
+              <Badge variant="outline">{scannedReceipt.status}</Badge>
+            </div>
+
+            {isMaterialReceipt && (
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <span>{scannedReceipt.materialPackage.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span>Expires: {new Date(scannedReceipt.expireDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div>
+                  <p>
+                    Quantity: {scannedReceipt.quantityByPack}{' '}
+                    {scannedReceipt.materialPackage.packUnit}
+                  </p>
+                  <p>
+                    Remaining: {scannedReceipt.remainQuantityByPack}{' '}
+                    {scannedReceipt.materialPackage.packUnit}
+                  </p>
+                </div>
+              </>
+            )}
+
+            {isImportReceipt && (
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Truck className="h-4 w-4 text-muted-foreground" />
+                    <span>Type: {scannedReceipt.type}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span>Started: {new Date(scannedReceipt.startedAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div>
+                  <p>
+                    Manager: {scannedReceipt.warehouseManager.account.firstName}{' '}
+                    {scannedReceipt.warehouseManager.account.lastName}
+                  </p>
+                  <p>
+                    Staff: {scannedReceipt.warehouseStaff.account.firstName}{' '}
+                    {scannedReceipt.warehouseStaff.account.lastName}
+                  </p>
+                </div>
+                {scannedReceipt.materialReceipt && scannedReceipt.materialReceipt.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2">Material Receipts:</h4>
+                    <ul className="list-disc list-inside">
+                      {scannedReceipt.materialReceipt.map((receipt: any) => (
+                        <li key={receipt.id}>
+                          {receipt.code} - Quantity: {receipt.quantityByPack}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+
+            <Button asChild className="w-full">
+              <a href={redirectUrl} target="_blank" rel="noopener noreferrer">
+                View Full Receipt
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
   return (
     <div className="flex items-center justify-center">
       <Button onClick={() => setIsOpen(true)} className="bg-transparent text-blue-500">
@@ -163,13 +352,15 @@ export default function ScannerPopup() {
                 </Button>
               </form>
 
-              {scannedData && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 p-4 bg-gray-800 rounded-lg text-blue-300 text-center">
-                  {scannedData}
-                </motion.div>
+              {renderScannedItemDetails()}
+              {renderScannedReceiptDetails()}
+              {isEmtpy && (
+                <div className="flex flex-col justify-center w-full items-center">
+                  <img src={EmptyScanner} className="w-80" />
+                  <h3 className="font-bold text-center ">
+                    Sorry, could not find any item of that code, please try again!
+                  </h3>
+                </div>
               )}
             </motion.div>
           </motion.div>
