@@ -34,8 +34,8 @@ const ProductionPlanDetail = () => {
   const navigate = useNavigate();
   const plan = location.state?.plan as ProductionPlan;
   const breadcrumbItems = [
-    { label: 'Production Plan', href: '/purchase-staff/production-plan' },
-    { label: `Production Plan #${plan.code}`, href: `/purchase-staff/purchase-order/${plan.id}` }
+    { label: 'Production Plan', href: '/production-plan' },
+    { label: `Production Plan #${plan.code}`, href: `/production-plan/${plan.id}`, disabled: true }
   ];
   if (!plan) {
     return (

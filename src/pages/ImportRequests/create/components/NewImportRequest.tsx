@@ -79,7 +79,7 @@ const NewImportRequest = (props: Props) => {
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate('/purchase-staff/import-request'); // Navigate back after successful creation
+        navigate('import-request'); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({

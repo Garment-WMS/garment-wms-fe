@@ -2,11 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/Badge';
 
 import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
-import AssignStaffPopup from './StaffAssignment';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
+import Waiting from '@/assets/images/wait-2.svg';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {

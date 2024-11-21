@@ -72,7 +72,7 @@ const PurchaseOrderDeliveryDetails = () => {
           </Badge>
 
           {delivery && delivery?.importRequest && delivery?.importRequest[0]?.id ? (
-            <Link to={`/purchase-staff/import-request/${delivery.importRequest[0].id}`}>
+            <Link to={`/import-request/${delivery.importRequest[0].id}`}>
               <Badge
                 className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
                 View Import Request

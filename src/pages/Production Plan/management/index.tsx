@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -78,7 +78,7 @@ const ProductionPlanManagement = () => {
                   <Link
                     className="text-primaryLight underline hover:opacity-50 cursor-pointer"
                     to={{
-                      pathname: `/purchase-staff/production-plan/${plan.id}`
+                      pathname: `/production-plan/${plan.id}`
                     }}
                     state={{ plan }}>
                     <span>{plan.name}</span>
