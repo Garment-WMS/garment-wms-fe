@@ -2,8 +2,7 @@
 
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { flexRender, Table } from '@tanstack/react-table';
-import { MdAdd } from "react-icons/md";
-
+import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
@@ -78,8 +77,8 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const navigate = useNavigate();
-  function onClick(){
-    navigate('/purchase-staff/import-request/create')
+  function onClick() {
+    navigate('/import-request/create');
   }
   return (
     <div className="flex items-center justify-between mb-4">
@@ -116,8 +115,12 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
       </div>
       <div className="flex gap-5">
         <DataTableViewOptions table={table} />
-        <Button onClick={onClick} variant={'default'} size="sm" className="ml-auto hidden h-8 lg:flex">
-          <MdAdd className="mr-2 h-4 w-4"/>
+        <Button
+          onClick={onClick}
+          variant={'default'}
+          size="sm"
+          className="ml-auto hidden h-8 lg:flex">
+          <MdAdd className="mr-2 h-4 w-4" />
           Add
         </Button>
       </div>

@@ -158,20 +158,25 @@ const ImportRequestList = (props: Props) => {
 
   return (
     <div className="pb-4">
-      <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-        <TanStackBasicTable
-          isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
-          paginatedTableData={paginatedTableData ?? undefined}
-          columns={importRequestColumn}
-          pagination={pagination}
-          setPagination={setPagination}
-          sorting={sorting}
-          setSorting={setSorting}
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-          searchColumnId="code"
-          searchPlaceholder="Search by import request code"
-        />
+      <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border flex flex-col items-center">
+        <div className="w-full">
+          <TanStackBasicTable
+            isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
+            paginatedTableData={paginatedTableData ?? undefined}
+            columns={importRequestColumn}
+            pagination={pagination}
+            setPagination={setPagination}
+            sorting={sorting}
+            setSorting={setSorting}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            searchColumnId="code"
+            searchPlaceholder="Search by import request code"
+          />
+        </div>
+        <Button className="w-[60%]" onClick={() => navigate('create')}>
+          Create new Import request
+        </Button>
       </div>
     </div>
   );
