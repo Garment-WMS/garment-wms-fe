@@ -18,7 +18,6 @@ import placeHolder from '@/assets/images/null_placeholder.jpg';
 import General from './components/General';
 import { useDispatch } from 'react-redux';
 import { actions } from '../slice';
-import ImageUpload from './components/ImageUpload';
 import axios from 'axios';
 import { Label } from '@/components/ui/Label';
 import {
@@ -29,6 +28,8 @@ import {
 } from '@/components/ui/accordion';
 import ReceiptTable from './components/ReceiptTable';
 import Attributes from './components/Attributes';
+import privateCall from '@/api/PrivateCaller';
+import ImageUploadWithDialog from './components/ImageUpload';
 
 const MaterialDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +43,7 @@ const MaterialDetails = () => {
     if (!id) return;
     setIsLoading(true);
     try {
-      const res = await axios(materialApi.getOne(id));
+      const res = await privateCall(materialApi.getOne(id));
       if (res.status === 200) {
         setMaterial(res.data.data);
         dispatch(actions.setMaterialVariants(res.data.data));
@@ -134,7 +135,11 @@ const MaterialDetails = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      await axios(materialApi.addImage(id, formData));
+      const config = {
+          'Content-Type': 'multipart/form-data',
+        
+      };
+      await privateCall(materialApi.addImage(id, formData,config));
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -168,7 +173,7 @@ const MaterialDetails = () => {
       ) : material ? (
         <div className="container mx-auto p-6 w-full bg-white shadow-md rounded-lg">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Material Details</h1>
+            <h1 className="text-2xl font-bold">Material Variant Details</h1>
           </div>
 
           <div className="">
@@ -183,7 +188,7 @@ const MaterialDetails = () => {
                 <img src={placeHolder} alt="Placeholder" />
               )}
             </div> */}
-              <ImageUpload
+              <ImageUploadWithDialog
                 initialImage={material.image || undefined}
                 onImageUpload={handleUploadPhoto}
               />
@@ -221,7 +226,7 @@ const MaterialDetails = () => {
                 </AccordionItem>
                 <AccordionItem value="item-2">
                   <AccordionTrigger>
-                    <Label className="text-xl">Variants</Label>
+                    <Label className="text-xl">Packages</Label>
                   </AccordionTrigger>
                   <AccordionContent>
                     <VariantTable materialPackage={formatMaterialPackage} />
