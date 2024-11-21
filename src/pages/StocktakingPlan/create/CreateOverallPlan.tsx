@@ -114,7 +114,7 @@ const CreateOverallPlan = (props: Props) => {
         ...values,
         from: values.from.toISOString(),
         to: values.to.toISOString(),
-        inventoryReportPlanType: 'ALL',
+        inventoryReportPlanType: 'OVERALL',
         staffList: (assignments.map((assignment) => 
         {
           return {
@@ -123,7 +123,6 @@ const CreateOverallPlan = (props: Props) => {
         }
         )),
       };
-      console.log(formattedValues);
       try {
         const res = await privateCall(inventoryReportPlanApi.createOverallInventoryReportPlan(formattedValues));
         if(res.status=== 201){

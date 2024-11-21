@@ -2,14 +2,29 @@ import { InputType } from "@/types/Shared";
 import { get } from "../ApiCaller";
 import { ProductVariantResponse } from "@/types/ProductType";
 import { FilterBuilder, FilterOperationType } from "@chax-at/prisma-filter-common";
-import axios from "axios";
+import privateCall from "../PrivateCaller";
 
-const productVariant= '/product-variant';
-export const productApi = {
-    getAll: (queryString: string) => get(`${productVariant}/${queryString}`),
+const productPath = '/product';
+const productVariantPath = '/product-variant';
+export const productVariantApi = {
+    getAllProductVariant(queryString: string) {
+        return get(`${productVariantPath}${queryString}`);
+    },
+    getOneProductVariant(id: string) {
+        return get(`${productVariantPath}/${id}`);
+    },
 }
 
-export const getAllProductFn = async ({
+export const productApi = {
+    getAllProduct() {
+        return get(`${productPath}`);
+    },
+    getOneProduct(id: string) {
+        return get(`${productPath}/${id}`);
+    },
+}
+
+export const getAllProductVariantFn = async ({
     sorting,
     columnFilters,
     pagination,
@@ -73,6 +88,6 @@ export const getAllProductFn = async ({
       order,
     });
     // Make the API request
-    const res = await axios(productApi.getAll(queryString));
+    const res = await privateCall(productVariantApi.getAllProductVariant(queryString));
     return res.data;
   };

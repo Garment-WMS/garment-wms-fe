@@ -37,8 +37,8 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
                 </p>
               )}
 
-              {product.material && <p className="text-xs text-gray-500 text-ellipsis">{product.material.name}</p>}
-              {product.product && <p className="text-xs text-gray-500 text-ellipsis">{product.product.name}</p>}
+              {product.material && <p className="text-xs text-gray-500 truncate">{product.material.name}</p>}
+              {product.product && <p className="text-xs text-gray-500 truncate">{product.product.name}</p>}
               {product.onHand !== null && product.onHand !== undefined && (
                 <p className="text-xs text-gray-500">Quantity: {product.onHand}</p>
               )}

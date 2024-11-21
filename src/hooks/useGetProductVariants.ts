@@ -1,9 +1,8 @@
-import { getAllProductFn } from '@/api/services/productApi';
-import { ProductVariantResponse } from '@/types/ProductType';
-import { InputType } from '@/types/Shared';
-import { useQuery } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-
+import { getAllProductVariantFn } from "@/api/services/productApi";
+import { ProductVariantResponse } from "@/types/ProductType";
+import { InputType } from "@/types/Shared";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 export const useGetProductVariants = ({
     sorting,
@@ -18,7 +17,7 @@ export const useGetProductVariants = ({
     } = useQuery<ProductVariantResponse, AxiosError>({
       queryKey: ['ProductVariant', sorting, columnFilters, pagination],
       queryFn: () =>
-        getAllProductFn({
+        getAllProductVariantFn({
           sorting,
           columnFilters,
           pagination,

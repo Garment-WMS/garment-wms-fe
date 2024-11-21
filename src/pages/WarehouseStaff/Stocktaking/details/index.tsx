@@ -12,7 +12,8 @@ import {
   InventoryReportToRender,
   MaterialDetailsToRender,
   MaterialPackageOfInventoryReport,
-  ProductDetailsToRender
+  ProductDetailsToRender,
+  ProductSizeOfInventoryReport
 } from '@/types/InventoryReport';
 import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import axios from 'axios';
@@ -40,18 +41,6 @@ import {
 import placeholder from '@/assets/images/null_placeholder.jpg';
 import Loading from '@/components/common/Loading';
 import { toast } from '@/hooks/use-toast';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/Form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 
 interface DetailsToApproveChange {
@@ -177,15 +166,26 @@ export default function WarehousestaffStocktakingDetails() {
 
       setInventoryReport(response.data.data);
       // Initialize approvedDetails based on inventoryReportDetails
-      const initialApprovedDetails: DetailsToApprove[] =
-        fetchedReport.inventoryReportDetail?.flatMap((detail: InventoryReportDetailsToRender) =>
-          detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
-            item.inventoryReportDetails.map((reportDetail) => ({
-              inventoryReportDetailId: reportDetail.id,
-              actualQuantity: reportDetail.actualQuantity
-            }))
-          )
-        );
+      const initialApprovedDetails: DetailsToApprove[] = fetchedReport.inventoryReportDetail.flatMap(
+        (detail: InventoryReportDetailsToRender) => [
+          ...(detail.materialPackages
+            ? detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
+                item.inventoryReportDetails.map((reportDetail) => ({
+                  inventoryReportDetailId: reportDetail.id,
+                  actualQuantity: reportDetail.actualQuantity,
+                }))
+              )
+            : []),
+          ...(detail.productSizes
+            ? detail.productSizes.flatMap((item: ProductSizeOfInventoryReport) =>
+                item.inventoryReportDetails.map((reportDetail) => ({
+                  inventoryReportDetailId: reportDetail.id,
+                  actualQuantity: reportDetail.actualQuantity,
+                }))
+              )
+            : []),
+        ]
+      );
 
       setApprovedDetails({ details: initialApprovedDetails });
 
@@ -224,6 +224,7 @@ export default function WarehousestaffStocktakingDetails() {
       </div>
     );
   }
+
   if (!inventoryReport) {
     return (
       <div className="flex justify-center items-center">
@@ -336,6 +337,8 @@ export default function WarehousestaffStocktakingDetails() {
                                                     value={reportDetail.actualQuantity}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
+                                                    onWheel={(e) => e.currentTarget.blur()} // Prevent scrolling from changing the value
+
                                                     onChange={(e) => {
                                                       const inputValue = e.target.value;
                                                   
@@ -357,6 +360,7 @@ export default function WarehousestaffStocktakingDetails() {
                                                       }
                                                     }}
                                                   />
+                                                  
                                                   {error[reportDetail.id] && (
                                                     <p className="text-red-500 text-xs">
                                                       {error[reportDetail.id]}
@@ -369,7 +373,7 @@ export default function WarehousestaffStocktakingDetails() {
                                             ) : (
                                               <TableRow>
                                                 <TableCell className="font-medium">
-                                                  {reportDetail.materialReceipt.code}
+                                                {reportDetail.materialReceipt.code}
                                                 </TableCell>
                                                 <TableCell>
                                                   {reportDetail.expectedQuantity}
@@ -466,9 +470,9 @@ export default function WarehousestaffStocktakingDetails() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                        {pkg.inventoryReportDetails.map((reportDetail, idx) => (
+                                      {pkg.inventoryReportDetails.map((reportDetail, idx) => (
                                           <>
-                                            {inventoryReport.status === 'REPORTED' ? (
+                                            {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>
                                                 <TableCell className="font-medium">
                                                   {reportDetail.productReceipt.code}
@@ -476,13 +480,12 @@ export default function WarehousestaffStocktakingDetails() {
                                                 <TableCell>
                                                   {reportDetail.expectedQuantity}
                                                 </TableCell>
-                                                <TableCell>{reportDetail.actualQuantity}</TableCell>
                                                 <TableCell>
                                                   <Input
                                                     type="number"
                                                     className="w-20"
-                                                    defaultValue={reportDetail.actualQuantity}
-                                                    value={reportDetail.managerQuantityConfirm}
+                                                    onWheel={(e) => e.currentTarget.blur()}
+                                                    value={reportDetail.actualQuantity}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
                                                     onChange={(e) => {
@@ -506,12 +509,15 @@ export default function WarehousestaffStocktakingDetails() {
                                                       }
                                                     }}
                                                   />
+                                                  
                                                   {error[reportDetail.id] && (
                                                     <p className="text-red-500 text-xs">
                                                       {error[reportDetail.id]}
                                                     </p>
                                                   )}
                                                 </TableCell>
+                                                <TableCell>{reportDetail.managerQuantityConfirm}</TableCell>
+
                                               </TableRow>
                                             ) : (
                                               <TableRow>

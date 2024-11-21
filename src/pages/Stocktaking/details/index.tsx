@@ -12,7 +12,8 @@ import {
   InventoryReportToRender,
   MaterialDetailsToRender,
   MaterialPackageOfInventoryReport,
-  ProductDetailsToRender
+  ProductDetailsToRender,
+  ProductSizeOfInventoryReport
 } from '@/types/InventoryReport';
 import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import axios from 'axios';
@@ -176,15 +177,26 @@ export default function StocktakingDetails() {
 
       setInventoryReport(response.data.data);
       // Initialize approvedDetails based on inventoryReportDetails
-      const initialApprovedDetails: DetailsToApprove[] =
-        fetchedReport.inventoryReportDetail?.flatMap((detail: InventoryReportDetailsToRender) =>
-          detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
-            item.inventoryReportDetails.map((reportDetail) => ({
-              inventoryReportDetailId: reportDetail.id,
-              managerQuantityConfirm: reportDetail.actualQuantity
-            }))
-          )
-        );
+      const initialApprovedDetails: DetailsToApprove[] = fetchedReport.inventoryReportDetail.flatMap(
+        (detail: InventoryReportDetailsToRender) => [
+          ...(detail.materialPackages
+            ? detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
+                item.inventoryReportDetails.map((reportDetail) => ({
+                  inventoryReportDetailId: reportDetail.id,
+                  managerQuantityConfirm: reportDetail.actualQuantity,
+                }))
+              )
+            : []),
+          ...(detail.productSizes
+            ? detail.productSizes.flatMap((item: ProductSizeOfInventoryReport) =>
+                item.inventoryReportDetails.map((reportDetail) => ({
+                  inventoryReportDetailId: reportDetail.id,
+                  managerQuantityConfirm: reportDetail.actualQuantity,
+                }))
+              )
+            : []),
+        ]
+      );
 
       setApprovedDetails({ details: initialApprovedDetails });
 
@@ -350,6 +362,7 @@ export default function StocktakingDetails() {
                                                     type="number"
                                                     className="w-20"
                                                     defaultValue={reportDetail.actualQuantity}
+                                                    onWheel={(e) => e.currentTarget.blur()}
                                                     value={reportDetail.managerQuantityConfirm}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
@@ -497,6 +510,7 @@ export default function StocktakingDetails() {
                                                     type="number"
                                                     className="w-20"
                                                     defaultValue={reportDetail.actualQuantity}
+                                                    onWheel={(e) => e.currentTarget.blur()}
                                                     value={reportDetail.managerQuantityConfirm}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
