@@ -34,6 +34,7 @@ import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
+import ProductManagement from '@/pages/Product/Management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -127,6 +128,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/material-variant',
               element: <MaterialManagement />
+            },
+            {
+              path: '/product-variant',
+              element: <ProductManagement />
             },
             {
               path: '/dashboard',
