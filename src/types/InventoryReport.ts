@@ -131,6 +131,13 @@ export interface InventoryReportPlanToCreate{
     inventoryReportPlanDetails : Array<InventoryReportPlanDetailsMaterial | InventoryReportPlanDetailsProduct>;
 }
 
+export interface OverallInventoryReportPlanToCreate{
+    from: string;
+    to: string;
+    title: string;
+    staffList : {warehouseStaffId: string}[]
+}
+
 export interface InventoryReportPlanDetailsMaterial{
     materialVariantId: string;
     warehouseStaffId: string;

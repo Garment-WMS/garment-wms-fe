@@ -10,13 +10,14 @@ import {
   SelectValue
 } from '@/components/ui/Select';
 import { User } from '@/types/User';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Loading from '@/components/common/Loading';
 import { Assignment } from '../CreateDynamicPlan';
+import { AssignmentForOverall } from '../CreateOverallPlan';
 
 type Props = {
   error: string;
-  assignment: Assignment;
+  assignment: Assignment | AssignmentForOverall;
   staffList: User[];
   chosenStaff: User[];
   setChosenStaff: any;

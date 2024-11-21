@@ -38,26 +38,19 @@ import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard'
 import { InventoryReportPlanToCreate, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {};
-interface inventoryReportPlanDetais {
-  warehouseStaffId: string;
-  materialPackageId: string[];
-}
-export interface Assignment {
+
+export interface AssignmentForOverall {
   staffId: string;
-  materialSelectedVariants: MaterialVariant[];
-  productSelectedVariants: ProductVariant[];
 }
 const CreateOverallPlan = (props: Props) => {
   const [warehouseStaffList, setWarehouseStaffList] = useState<User[]>([]);
   const [choosenStaff, setChoosenStaff] = useState<User[]>([]);
-  const [inventoryReportPlanDetais, setInventoryReportPlanDetails] = useState<any>({
-    warehouseStaffId: '',
-    materialPackageId: []
-  });
-  const [assignments, setAssignments] = useState<Assignment[]>([
-    { staffId: '', materialSelectedVariants: [], productSelectedVariants: [] }
+  const navigate = useNavigate();
+  const [assignments, setAssignments] = useState<AssignmentForOverall[]>([
+    { staffId: ''}
   ]);
 
   // Function to add a new assignment
@@ -65,33 +58,10 @@ const CreateOverallPlan = (props: Props) => {
 
     setAssignments([
       ...assignments,
-      { staffId: '', materialSelectedVariants: [], productSelectedVariants: [] }
+      { staffId: '' }
     ]);
   };
-  // Function to handle material and product selection for a specific assignment
-  // const handleMaterialSelection = (
-  //   index: number,
-  //   selectedVariants: MaterialVariant[],
-  //   assignmentSelectedVariants: MaterialVariant[]
-  // ) => {
-  //   const updatedAssignments = [...assignments];
-  //   updatedAssignments[index].materialSelectedVariants = assignmentSelectedVariants;
-  //   setMaterialSelectedVariants(selectedVariants);
-
-  //   setAssignments(updatedAssignments);
-  // };
-
-  // const handleProductSelection = (
-  //   index: number,
-  //   selectedVariants: ProductVariant[],
-  //   assignmentSelectedVariants: ProductVariant[]
-  // ) => {
-  //   const updatedAssignments = [...assignments];
-  //   updatedAssignments[index].productSelectedVariants = assignmentSelectedVariants;
-  //   setProductSelectedVariants(selectedVariants);
-  //   setAssignments(updatedAssignments);
-  // };
-
+ 
   const formSchema = z
     .object({
       title: z.string().min(1).max(255),
@@ -121,7 +91,6 @@ const CreateOverallPlan = (props: Props) => {
     }
   });
 
-  const [ItemsError, setItemsError] = useState<string>('');
   const [staffError, setStaffError] = useState<string>('');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -133,53 +102,39 @@ const CreateOverallPlan = (props: Props) => {
         setStaffError('Each assignment must have a staff member assigned.');
         hasError = true;
       }
-      if (
-        assignment.materialSelectedVariants.length === 0 &&
-        assignment.productSelectedVariants.length === 0
-      ) {
-        setItemsError('Each assignment must have at least one material or product selected.');
-        hasError = true;
-      }
+     
     });
 
     // Reset errors if no issues are found
     if (!hasError) {
       setStaffError('');
-      setItemsError('');
 
       // Proceed with formatting values
        const formattedValues = {
         ...values,
         from: values.from.toISOString(),
         to: values.to.toISOString(),
-        inventoryReportPlanDetails: [
-          ...assignments.flatMap((assignment) =>
-            assignment.materialSelectedVariants.flatMap((variant) =>
-              variant.materialPackage.map((materialPackage) => ({
-                warehouseStaffId: assignment.staffId,
-                materialPackageId: materialPackage.id
-              }))
-            )
-          ),
-          ...assignments.flatMap((assignment) =>
-            assignment.productSelectedVariants.flatMap((variant) =>
-              variant.productSize.map((productSize) => ({
-                warehouseStaffId: assignment.staffId,
-                productSizeId: productSize.id
-              }))
-            )
-          )
-        ]
+        inventoryReportPlanType: 'ALL',
+        staffList: (assignments.map((assignment) => 
+        {
+          return {
+            warehouseStaffId: assignment.staffId
+          }
+        }
+        )),
       };
       console.log(formattedValues);
       try {
-        const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
-        console.log(res);
-        toast({
-          title: 'Success',
-          description: 'Stocktaking plan created successfully',
-          variant: 'success',
-        });
+        const res = await privateCall(inventoryReportPlanApi.createOverallInventoryReportPlan(formattedValues));
+        if(res.status=== 201){
+          const { id } = res.data.data;
+          toast({
+            title: 'Success',
+            description: 'Stocktaking plan created successfully.',
+            variant: 'success',
+          });
+          navigate(`/stocktaking/plan/${id}`);
+        }
       } catch (error: any) {
         console.log('error',error.response);
         if (error.response?.status === 401) {
@@ -202,88 +157,17 @@ const CreateOverallPlan = (props: Props) => {
     
   }
 
-  const removeAssignment = (index: number, assignment: Assignment) => {
+  const removeAssignment = (index: number, assignment: AssignmentForOverall) => {
     const staffIdToRemove = assignment.staffId;
-    const materialsToRemove = assignment.materialSelectedVariants.map((variant) => variant.id);
-    const productsToRemove = assignment.productSelectedVariants.map((variant) => variant.id);
-    
-    const updatedMaterialVariants = materialSelectedVariants.filter(
-      (variant) => !materialsToRemove.includes(variant.id)
-    );
-    const updatedProductVariants = productSelectedVariants.filter(
-      (variant) => !productsToRemove.includes(variant.id)
-    );
+
     const updatedStaffList = choosenStaff.filter((staff) => staff.id !== staffIdToRemove);
     const updatedAssignments = assignments.filter((_, i) => i !== index);
     setAssignments(updatedAssignments);
-    setMaterialSelectedVariants(updatedMaterialVariants);
+
     setChoosenStaff(updatedStaffList);
-    setProductSelectedVariants(updatedProductVariants);
+
   };
 
-  const [materialSelectedVariants, setMaterialSelectedVariants] = useState<MaterialVariant[]>([]);
-  // sorting state of the table
-  const [materialSorting, setMaterialSorting] = useState<SortingState>([]);
-  // column filters state of the table
-  const [materialColumnFilters, setMaterialColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const debouncedColumnFilters: ColumnFiltersState = useDebounce(materialColumnFilters, 1000);
-
-  const debouncedSorting: SortingState = useDebounce(materialSorting, 1000);
-  // pagination state of the table
-  const [materialPagination, setMaterialPagination] = useState<PaginationState>({
-    pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
-  });
-  const {
-    materialList,
-    pageMeta: materialPageMeta,
-    isLoading: materialIsLoading
-  } = useGetMaterial({
-    sorting: debouncedSorting,
-    columnFilters: debouncedColumnFilters,
-    pagination: materialPagination
-  });
-  const materialData = materialList &&
-    materialPageMeta && {
-      data: materialList,
-      limit: materialPageMeta?.limit || 0,
-      page: materialPageMeta?.page || 0,
-      total: materialPageMeta?.total || 0,
-      totalFiltered: materialPageMeta?.total || 0
-    };
-
-  const [productSelectedVariants, setProductSelectedVariants] = useState<ProductVariant[]>([]);
-  // sorting state of the table
-  const [productSorting, setProductSorting] = useState<SortingState>([]);
-  // column filters state of the table
-  const [productColumnFilters, setProductColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const productDebouncedColumnFilters: ColumnFiltersState = useDebounce(productColumnFilters, 1000);
-
-  const productDebouncedSorting: SortingState = useDebounce(productSorting, 1000);
-  // pagination state of the table
-  const [productPagination, setProductPagination] = useState<PaginationState>({
-    pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
-  });
-  const {
-    productList,
-    pageMeta: productPageMeta,
-    isLoading: productIsLoading
-  } = useGetProductVariants({
-    sorting: productDebouncedSorting,
-    columnFilters: productDebouncedColumnFilters,
-    pagination: materialPagination
-  });
-  const productData = productList &&
-    productPageMeta && {
-      data: productList,
-      limit: productPageMeta?.limit || 0,
-      page: productPageMeta?.page || 0,
-      total: productPageMeta?.total || 0,
-      totalFiltered: productPageMeta?.total || 0
-    };
   const fetchWarehouseStaff = async (retries = 5) => {
     try {
       const res = await privateCall(getWarehouseStaff());

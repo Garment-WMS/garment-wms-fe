@@ -1,4 +1,4 @@
-import { InventoryReportPlan, InventoryReportPlanResponse, InventoryReportPlanToCreate, InventoryReportPlanToRender, InventoryReportPlanToRenderResponse } from '@/types/InventoryReport';
+import { InventoryReportPlan, InventoryReportPlanResponse, InventoryReportPlanToCreate, InventoryReportPlanToRender, InventoryReportPlanToRenderResponse, OverallInventoryReportPlanToCreate } from '@/types/InventoryReport';
 import { get, patch, post } from '../ApiCaller';
 import { InputType } from '@/types/Shared';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
@@ -9,6 +9,9 @@ const inventoryReportPlanApiPath = '/inventory-report-plan';
 export const inventoryReportPlanApi = {
   createInventoryReportPlan(data: InventoryReportPlanToCreate) {
     return post(inventoryReportPlanApiPath, data);
+  },
+  createOverallInventoryReportPlan(data: OverallInventoryReportPlanToCreate) {
+    return post(`${inventoryReportPlanApiPath}/overall`, data);
   },
   getAllForWarehouseStaff(queryString: string){
     return get(`${inventoryReportPlanApiPath}/warehouse-staff/${queryString}`);

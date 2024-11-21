@@ -225,7 +225,7 @@ const StocktakingPlanList = (props: Props) => {
                             <div className="flex items-center gap-2">
                               <Captions size={20} />
                               <h3 className="font-semibold">
-                                {eventRange.events.title} - {eventRange.events.code}
+                                {eventRange.events.title} - {eventRange.events.code} - {convertTitleToTitleCase(eventRange.events.type)} plan
                               </h3>
                               <Badge
                                 className={cn(`ml-2`, badgeVariants({

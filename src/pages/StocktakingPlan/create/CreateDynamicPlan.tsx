@@ -177,10 +177,8 @@ const CreateDynamicPlan = (props: Props) => {
 
       try {
         const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
-        console.log('res',res);
         if(res.status=== 201){
           const { id } = res.data.data;
-          console.log('id',id);
           toast({
             title: 'Success',
             description: 'Stocktaking plan created successfully.',
