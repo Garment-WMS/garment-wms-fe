@@ -57,6 +57,9 @@ export interface PurchaseOrder {
   supplierId: string;
   supplier: Supplier;
   poDelivery: PODelivery[];
+  totalImportQuantity: number;
+  totalFailImportQuantity: number;
+  totalQuantityToImport: number;
 }
 
 // Pagination Meta

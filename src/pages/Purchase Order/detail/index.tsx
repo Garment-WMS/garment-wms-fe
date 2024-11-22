@@ -45,7 +45,10 @@ const PurchaseOrderDetails: React.FC = () => {
     status: poStatus,
     taxAmount,
     shippingAmount,
-    otherAmount
+    otherAmount,
+    totalImportQuantity,
+    totalFailImportQuantity,
+    totalQuantityToImport
   } = purchaseOrder;
   const breadcrumbItems = [
     { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
@@ -67,6 +70,9 @@ const PurchaseOrderDetails: React.FC = () => {
           taxAmount={taxAmount}
           shippingAmount={shippingAmount}
           otherAmount={otherAmount}
+          totalImportQuantity={totalImportQuantity}
+          totalFailImportQuantity={totalFailImportQuantity}
+          totalQuantityToImport={totalQuantityToImport}
         />
         {/* Order to details */}
         <OrderToDetails supplier={supplier} />

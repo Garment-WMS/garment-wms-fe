@@ -12,6 +12,7 @@ import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchase
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
 import { useGetAllSupplier } from '@/hooks/useGetAllSupplier';
 import { Supplier } from '@/types/SupplierTypes';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const PurchaseOrderList: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -142,6 +143,42 @@ const PurchaseOrderList: React.FC = () => {
             colorVariant = 'bg-gray-200 text-black';
         }
         return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
+      }
+    },
+    {
+      header: 'Progress',
+      accessorKey: 'progress',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const totalImportQuantity = row.original.totalImportQuantity || 0;
+        const totalQuantityToImport = row.original.totalQuantityToImport || 1; // Avoid division by zero
+        const progress = (totalImportQuantity / totalQuantityToImport) * 100;
+
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <div className="flex items-center gap-1 flex-row">
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 w-full cursor-pointer">
+                    {/* Progress Bar Container */}
+                    <div className="w-36 bg-gray-200 rounded-full h-4 flex-shrink-0">
+                      <div
+                        className="bg-blue-500 h-4 rounded-full"
+                        style={{ width: `${progress}%` }}></div>
+                    </div>
+                    {/* Progress Text */}
+                    <span className="text-sm text-gray-600 font-medium">
+                      {`${progress.toFixed(0)}%`}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{`${totalImportQuantity} / ${totalQuantityToImport}`}</p>
+                </TooltipContent>
+              </div>
+            </Tooltip>
+          </TooltipProvider>
+        );
       }
     }
   ];

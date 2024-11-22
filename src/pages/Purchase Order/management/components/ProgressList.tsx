@@ -50,7 +50,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ status, value, label, onViewDet
   const { bg, text, buttonBg } = getColorClasses(status);
 
   return (
-    <div className={`${bg} p-6 rounded-lg shadow-md w-96 flex flex-col justify-between h-36`}>
+    <div className={`${bg} p-6 rounded-lg shadow-md w-92 flex flex-col justify-between h-36`}>
       <div className="flex justify-between items-center">
         <div>{getIcon(status)}</div>
         {status && (
