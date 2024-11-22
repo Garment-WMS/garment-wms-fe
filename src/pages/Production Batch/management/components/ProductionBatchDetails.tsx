@@ -1,5 +1,10 @@
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  ImportRequestStatus,
+  ImportRequestStatusLabels,
+  ImportRequestStatusStyles
+} from '@/enums/importRequest';
 import { ProductionBatchStatusColors } from '@/enums/productionBatch';
 import { convertDate } from '@/helpers/convertDate';
 import { ProductionBatch } from '@/types/ProductionBatch';
@@ -70,7 +75,12 @@ export function ProductionBatchDetails({ data }: ProductionBatchDetailsProps) {
             <CardContent className="pt-4">
               <div className="flex justify-between items-center mb-2">
                 <p className="font-medium">{request.code}</p>
-                <Badge variant="outline">{request.status}</Badge>
+                <Badge
+                  className={
+                    ImportRequestStatusStyles[request.status] || ImportRequestStatusStyles.DEFAULT
+                  }>
+                  {ImportRequestStatusLabels[request.status as ImportRequestStatus]}
+                </Badge>
               </div>
               <p className="text-sm text-muted-foreground">Type: {request.type}</p>
               <p className="text-sm text-muted-foreground">
