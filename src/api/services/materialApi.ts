@@ -3,6 +3,7 @@ import { get, post } from '../ApiCaller';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
+import privateCall from '../PrivateCaller';
 
 let materialVariant = '/material-variant';
 let materialType ='/material';
@@ -12,7 +13,7 @@ export const materialApi = {
   getOneImportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/import-receipt/${queryString}`),
   getOneExportReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/export-receipt/${queryString}`),
   getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
-  addImage: (id: string, data: FormData) => post(`${materialVariant}/${id}/image`, data ),
+  addImage: (id: string, data: FormData,config: any) => post(`${materialVariant}/${id}/image`, data,undefined, config), 
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`),
@@ -81,12 +82,12 @@ export const getAllMaterialFn = async ({
       order,
     });
     // Make the API request
-    const res = await axios(materialApi.getAll(queryString));
+    const res = await privateCall(materialApi.getAll(queryString));
     return res.data;
   };
   
 export const getOneMaterial = async (id: string): Promise<MaterialVariantResponse> => {
-  const res = await axios(materialApi.getOne(id));
+  const res = await privateCall(materialApi.getOne(id));
   return res.data.data;
 };
 
@@ -154,7 +155,7 @@ const sorts = sorting.map(sort => {
     order,
   });
   // Make the API request
-  const res = await axios(materialApi.getOneImportReceipt(id,queryString));
+  const res = await privateCall(materialApi.getOneImportReceipt(id,queryString));
   return res.data;
 };
 
@@ -222,6 +223,6 @@ const sorts = sorting.map(sort => {
     order,
   });
   // Make the API request
-  const res = await axios(materialApi.getOneExportReceipt(id,queryString));
+  const res = await privateCall(materialApi.getOneExportReceipt(id,queryString));
   return res.data;
 };

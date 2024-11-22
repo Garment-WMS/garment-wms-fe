@@ -11,6 +11,7 @@ import {
   TbShoppingCartCog
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
+import { GiRolledCloth } from 'react-icons/gi';
 
 type Props = {};
 const iconSize = 22;
@@ -42,12 +43,12 @@ const PurchaseStaffMenu: MenuProps[] = [
   },
   {
     title: 'Product',
-    renderIcon: <TbShirt size={iconSize} />,
-    link: '/product'
+    renderIcon: <TbPackage size={iconSize} />,
+    link: '/product-variant'
   },
   {
     title: 'Material',
-    renderIcon: <TbPackage size={iconSize} />,
+    renderIcon: <GiRolledCloth size={iconSize} />,
     link: '/material-variant'
   },
   {

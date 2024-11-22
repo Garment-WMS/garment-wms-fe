@@ -9,14 +9,14 @@ const InspectionReportIntroduction = () => {
 md:h-48
 ">
       <div
-        className="flex items-center h-full justify-between px-4
+        className="grid grid-cols-[2fr_1fr] h-full  px-4
 md:px-8 lg:px-12
 ">
         {/* Title and Description */}
         <div className="flex flex-col justify-center h-full w-full">
           <h1
-            className="font-primary font-bold text-bluePrimary text-xl
-md:text-2xl lg:text-3xl xl:text-4xl
+            className="font-primary font-bold text-bluePrimary text-4xl
+  ]
 ">
             {title}
           </h1>
@@ -29,8 +29,8 @@ md:text-md lg:text-lg
         </div>
 
         {/* Image */}
-        <div className="h-full flex justify-end py-3">
-          <img className="h-auto" src={photo} alt="Inspection Report" />
+        <div className="h-full hidden md:flex pr-8">
+          <img className=" h-auto" src={photo} />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { MaterialAttribute } from '@/types/MaterialTypes'
 import { Circle, Droplet, Hexagon, Info, Layers, Palette, Scale, Thermometer, FlaskRoundIcon as Flask, Flame, Waves, Sun, Package, Shirt } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import React from 'react'
 import { getIconAttributes } from '@/helpers/getIconAttributes'

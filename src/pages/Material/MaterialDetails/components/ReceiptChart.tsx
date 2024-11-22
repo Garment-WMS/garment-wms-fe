@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { TrendingUp } from 'lucide-react';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   Card,
@@ -9,72 +9,83 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/Card"
+  CardTitle
+} from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import { useEffect, useState } from "react"
-import { toast } from "@/hooks/use-toast"
-import { MaterialReceiptStatisticsResponse, MonthlyData } from "@/types/MaterialTypes"
-import privateCall from "@/api/PrivateCaller"
-import { materialApi } from "@/api/services/materialApi"
-import { useParams } from "react-router-dom"
+  ChartTooltipContent
+} from '@/components/ui/chart';
+import { useEffect, useState } from 'react';
+import { toast } from '@/hooks/use-toast';
+import { MaterialReceiptStatisticsResponse, MonthlyData } from '@/types/MaterialTypes';
+import privateCall from '@/api/PrivateCaller';
+import { materialApi } from '@/api/services/materialApi';
+import { useParams } from 'react-router-dom';
+import Loading from '@/components/common/Loading';
 
 const chartConfig = {
   importQuantity: {
-    label: "Import Quantity (by Pack)",
-    color: "hsl(var(--chart-1))",
+    label: 'Import Quantity (by Pack)',
+    color: 'hsl(var(--chart-1))'
   },
   exportQuantity: {
-    label: "Export Quantity (by Pack)",
-    color: "hsl(var(--chart-2))",
-  },
+    label: 'Export Quantity (by Pack)',
+    color: 'hsl(var(--chart-2))'
+  }
 } satisfies ChartConfig;
 
 export function ReceiptChart() {
-  const  { id } = useParams<{ id: string }>()
-  if(!id) {
-    return ;
+  const { id } = useParams<{ id: string }>();
+  if (!id) {
+    return;
   }
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [data, setData] = useState<MaterialReceiptStatisticsResponse>()
-  const fetchData =async () => {
+  const [data, setData] = useState<MaterialReceiptStatisticsResponse>();
+  const fetchData = async () => {
     const getYear = new Date().getFullYear();
     try {
+      setIsLoading(true);
       const body = {
-        "year": getYear,
-        "materialVariantId": [
-          id
-        ]
-      }
-      const res = await privateCall(materialApi.getReceiptStatistics(body)) 
-      setData(res.data.data)
-      console.log('chart',res.data.data)
+        year: getYear,
+        materialVariantId: [id]
+      };
+      const res = await privateCall(materialApi.getReceiptStatistics(body));
+      setData(res.data.data);
+      console.log('chart', res.data.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
   if (!data) {
-    return 
+    return;
   }
-  const chartData = data?.monthlyData.map((monthData) => ({
-    month: new Date(0, monthData.month - 1).toLocaleString("default", { month: "long" }),
-    importQuantity: monthData.data.reduce(
-      (sum, item) => sum + (item.totalImportQuantityByPack || 0),
-      0
-    ),
-    exportQuantity: monthData.data.reduce(
-      (sum, item) => sum + (item.totalExportQuantityByPack || 0),
-      0
-    ),
-  })) || [];
+  const chartData =
+    data?.monthlyData.map((monthData) => ({
+      month: new Date(0, monthData.month - 1).toLocaleString('default', { month: 'long' }),
+      importQuantity: monthData.data.reduce(
+        (sum, item) => sum + (item.totalImportQuantityByPack || 0),
+        0
+      ),
+      exportQuantity: monthData.data.reduce(
+        (sum, item) => sum + (item.totalExportQuantityByPack || 0),
+        0
+      )
+    })) || [];
+  if (isLoading) {
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -90,43 +101,25 @@ export function ReceiptChart() {
             data={chartData}
             margin={{
               left: 12,
-              right: 12,
-            }}
-          >
+              right: 12
+            }}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
               <linearGradient id="fillImportQuantity" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-importQuantity)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-importQuantity)"
-                  stopOpacity={0.1}
-                />
+                <stop offset="5%" stopColor="var(--color-importQuantity)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--color-importQuantity)" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="fillExportQuantity" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-exportQuantity)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-exportQuantity)"
-                  stopOpacity={0.1}
-                />
+                <stop offset="5%" stopColor="var(--color-exportQuantity)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--color-exportQuantity)" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <Area
@@ -151,7 +144,6 @@ export function ReceiptChart() {
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
               January - September {new Date().getFullYear()}
             </div>
@@ -159,5 +151,5 @@ export function ReceiptChart() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
