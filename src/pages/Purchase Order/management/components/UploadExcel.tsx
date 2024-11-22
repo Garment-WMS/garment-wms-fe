@@ -15,15 +15,8 @@ import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { convertDate } from '@/helpers/convertDate';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious
-} from '@/components/ui/Pagination';
 import { ProductionPlan } from '@/types/ProductionPlan';
+import { ProductionPlanStatus, ProductionPlanStatusLabels } from '@/enums/productionPlan';
 
 const MAX_FILE_SIZE_KB = 500;
 
@@ -32,6 +25,11 @@ type UploadExcelProps = {
   triggerButtonLabel?: string;
 };
 
+const statusColors = {
+  [ProductionPlanStatus.PLANNING]: 'bg-blue-500 text-white',
+  [ProductionPlanStatus.IN_PROGRESS]: 'bg-yellow-500 text-black',
+  [ProductionPlanStatus.FINISHED]: 'bg-green-500 text-white'
+};
 const errorMessages = {
   invalidFileType: {
     statusCode: 400,
@@ -193,6 +191,13 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
     pagination
   });
 
+  const filteredPlans = productionPlanList?.data?.filter(
+    (plan) => plan.status === ProductionPlanStatus.PLANNING
+  );
+
+  console.log('filteredPlans');
+  console.log(filteredPlans);
+
   const renderProductionPlan = () => {
     const handlePageChange = (newPageIndex: number) => {
       setPagination((prev) => ({
@@ -213,40 +218,44 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
       );
     }
 
-    if (!productionPlanList || productionPlanList.data.length === 0) {
-      return <p className="text-gray-500 text-center">No production plans available.</p>;
-    }
-
     return (
       <div className="space-y-6">
         <h3 className="text-2xl font-semibold text-center">Select a Production Plan</h3>
         <div className="grid gap-6">
-          {productionPlanList.data.map((plan) => (
-            <Card
-              key={plan.id}
-              className={`cursor-pointer transition-all ${
-                selectedPlan?.id === plan.id ? 'ring-2 ring-primary' : ''
-              }`}
-              onClick={() => setSelectedPlan(plan)}>
-              <CardContent className="p-4 flex justify-between items-center">
-                <div className="space-y-2">
-                  <h4 className="font-semibold">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {plan.description || 'No description'}
-                  </p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Badge variant="outline">{plan.status || 'Pending'}</Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {convertDate(plan.expectedStartDate)} - {convertDate(plan.expectedEndDate)}
-                    </span>
+          {filteredPlans && filteredPlans.length > 0 ? (
+            filteredPlans.map((plan: ProductionPlan) => (
+              <Card
+                key={plan.id}
+                className={`cursor-pointer transition-all ${
+                  selectedPlan?.id === plan.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setSelectedPlan(plan)}>
+                <CardContent className="p-4 flex justify-between items-center">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</h4>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Badge
+                        className={`rounded-lg px-2 py-1 ${
+                          statusColors[plan.status as ProductionPlanStatus] ||
+                          'bg-gray-500 text-white'
+                        }`}>
+                        {ProductionPlanStatusLabels[plan.status as ProductionPlanStatus] ||
+                          'Unknown'}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {convertDate(plan.expectedStartDate)} - {convertDate(plan.expectedEndDate)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <Badge variant="secondary" className="text-base font-mono">
-                  {plan.code || `CODE-${plan.id.slice(0, 8)}`}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
+                  <Badge variant="secondary" className="text-base font-mono">
+                    {plan.code || `CODE-${plan.id.slice(0, 8)}`}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No production plans available.</p>
+          )}
         </div>
         {/* Custom Pagination */}
         <div className="mt-6 flex justify-center items-center space-x-6">
