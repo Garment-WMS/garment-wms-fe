@@ -75,7 +75,11 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
           fill="#8884d8"
           dataKey="value">
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            <Cell
+              style={{ outline: 'none' }}
+              key={`cell-${index}`}
+              fill={colors[index % colors.length]}
+            />
           ))}
         </Pie>
         <Tooltip />
