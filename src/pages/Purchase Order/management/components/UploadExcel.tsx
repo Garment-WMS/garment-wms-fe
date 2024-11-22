@@ -66,8 +66,15 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   const [poId, setPoID] = useState<string | null>(null);
   const [poNumber, setPoNumber] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [activeStep, setActiveStep] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState<ProductionPlan>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 2
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -180,22 +187,13 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
     }
   };
 
+  const { productionPlanList, isPending, isError, pageMeta } = useGetAllProductionPlans({
+    sorting,
+    columnFilters,
+    pagination
+  });
+
   const renderProductionPlan = () => {
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [pagination, setPagination] = useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 2
-    });
-
-    const { productionPlanList, isPending, isError, pageMeta } = useGetAllProductionPlans({
-      sorting,
-      columnFilters,
-      pagination
-    });
-
-    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-
     const handlePageChange = (newPageIndex: number) => {
       setPagination((prev) => ({
         ...prev,
@@ -227,9 +225,9 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
             <Card
               key={plan.id}
               className={`cursor-pointer transition-all ${
-                selectedPlan === plan.id ? 'ring-2 ring-primary' : ''
+                selectedPlan?.id === plan.id ? 'ring-2 ring-primary' : ''
               }`}
-              onClick={() => setSelectedPlan(plan.id)}>
+              onClick={() => setSelectedPlan(plan)}>
               <CardContent className="p-4 flex justify-between items-center">
                 <div className="space-y-2">
                   <h4 className="font-semibold">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</h4>
@@ -283,6 +281,16 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
 
   const renderUploadExcel = () => (
     <div>
+      {/* Display the selected plan's code */}
+      {selectedPlan && (
+        <div className="mb-4 bg-gray-100 p-4 rounded-lg shadow-md">
+          <p className="text-sm font-semibold text-gray-700">
+            <strong>Plan Selected:</strong> {selectedPlan?.code || 'N/A'}
+          </p>
+        </div>
+      )}
+
+      {/* File Upload Section */}
       {!selectedFile && !uploadError && (
         <div
           className={`flex flex-col gap-5 justify-center items-center border-2 ${
@@ -329,7 +337,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
           </div>
           <div className="px-4 w-full">
             {isUploading ? (
-              <div className="flex justify-center items-center ">
+              <div className="flex justify-center items-center">
                 <Loading />
               </div>
             ) : uploadError ? (
