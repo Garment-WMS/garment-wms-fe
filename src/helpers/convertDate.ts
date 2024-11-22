@@ -6,9 +6,9 @@
 export function convertDate(dateInput: string | Date): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
 
-  const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero, months are 0-based
-  const year = date.getFullYear();
+  const day = date?.getDate()?.toString()?.padStart(2, '0'); // Add leading zero if needed
+  const month = (date?.getMonth() + 1)?.toString()?.padStart(2, '0'); // Add leading zero, months are 0-based
+  const year = date?.getFullYear();
 
   return `${day}/${month}/${year}`;
 }

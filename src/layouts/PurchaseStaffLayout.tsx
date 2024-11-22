@@ -13,7 +13,6 @@ import {
   TbPackageExport
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
-import { GiRolledCloth } from 'react-icons/gi';
 
 type Props = {};
 const iconSize = 22;
@@ -54,14 +53,14 @@ const PurchaseStaffMenu: MenuProps[] = [
     link: '/export-request'
   },
   {
-    title: 'Product',
+    title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
-    link: '/product-variant'
+    link: '/material-variant'
   },
   {
-    title: 'Material',
-    renderIcon: <GiRolledCloth size={iconSize} />,
-    link: '/material-variant'
+    title: 'Product',
+    renderIcon: <TbShirt size={iconSize} />,
+    link: '/product-variant'
   },
   {
     title: 'Report',

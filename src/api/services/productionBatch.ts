@@ -3,6 +3,7 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { get, post } from './ApiCaller';
 import axios from 'axios';
+import { ApiResponse } from '@/types/ApiResponse';
 
 interface GetAllProductionBatchInput {
   sorting: SortingState;
@@ -62,5 +63,16 @@ export const getAllProductionBatch = async ({
   } catch (error) {
     console.error('Error fetching production batches:', error);
     throw new Error('Failed to fetch production batches');
+  }
+};
+
+export const getOneProductionBatchById = async (id: string): Promise<ApiResponse> => {
+  try {
+    const config = get(`/production-batch/${id}`);
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Failed to fetch production batch by ID:', error);
+    throw new Error('Failed to fetch production batch');
   }
 };

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import ProductStatistic from './components/ProductStatistic'
-import ProductList from './components/ProductList'
-import { Product } from '@/types/ProductType'
-import { filterType } from '@/types/Shared'
-import privateCall from '@/api/PrivateCaller'
-import { productApi } from '@/api/services/productApi'
-import { TypeChart } from './components/TypeChart'
+import { useEffect, useState } from 'react';
+import ProductList from './components/ProductList';
+import { Product } from '@/types/ProductType';
+import { filterType } from '@/types/Shared';
+import privateCall from '@/api/PrivateCaller';
+import { productApi } from '@/api/services/productApi';
+import { TypeChart } from './components/TypeChart';
+import ProductIntroduction from './components/Introduction';
 
-type Props = {}
+type Props = {};
 
 const ProductManagement = (props: Props) => {
   const [productType, setProductType] = useState<Product[]>([]);
-  const [productTypesToRender, setProductTypesToRender] = useState<filterType[]>([]); 
+  const [productTypesToRender, setProductTypesToRender] = useState<filterType[]>([]);
   const fetchProductTypes = async () => {
     try {
       const res = await privateCall(productApi.getAllProduct());
@@ -30,11 +30,12 @@ const ProductManagement = (props: Props) => {
     fetchProductTypes();
   }, []);
   return (
-    <div className='h-full w-full px-4 flex flex-col gap-4'>
-        <TypeChart productTypeList={productType}/>
-        <ProductList productTypes={productTypesToRender}/>
+    <div className="h-full w-full px-4 flex flex-col gap-4">
+      <ProductIntroduction />
+      <TypeChart productTypeList={productType} />
+      <ProductList productTypes={productTypesToRender} />
     </div>
-  )
-}
+  );
+};
 
-export default ProductManagement
+export default ProductManagement;
