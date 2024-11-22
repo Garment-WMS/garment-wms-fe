@@ -36,8 +36,6 @@ export const getIconAttributes = (name: string) => {
       return <Thermometer className={iconClassName} />;
     case 'storage temperature':
       return <Thermometer className={iconClassName} />;
-    case 'color':
-      return <Palette className={iconClassName} />;
     case 'viscosity':
       return <Droplet className={iconClassName} />;
     case 'density':
@@ -54,22 +52,20 @@ export const getIconAttributes = (name: string) => {
       return <Package className={iconClassName} />;
     case 'application':
       return <Shirt className={iconClassName} />;
-      case "color":
-        return <Palette className="h-5 w-5" />
-      case "material composition":
-        return <Shirt className="h-5 w-5" />
-      case "pattern":
-        return <Grid className="h-5 w-5" />
-      case "shrinkage":
-        return <Minimize className="h-5 w-5" />
-      case "weave type":
-        return <Waves className="h-5 w-5" />
-      case "dye type":
-        return <Droplet className="h-5 w-5" />
-      case "care instructions":
-        return <Scissors className="h-5 w-5" />
-      case "origin":
-        return <Globe className="h-5 w-5" />
+    case 'material composition':
+      return <Shirt className="h-5 w-5" />;
+    case 'pattern':
+      return <Grid className="h-5 w-5" />;
+    case 'shrinkage':
+      return <Minimize className="h-5 w-5" />;
+    case 'weave type':
+      return <Waves className="h-5 w-5" />;
+    case 'dye type':
+      return <Droplet className="h-5 w-5" />;
+    case 'care instructions':
+      return <Scissors className="h-5 w-5" />;
+    case 'origin':
+      return <Globe className="h-5 w-5" />;
     default:
       return <Info className={iconClassName} />;
   }

@@ -257,7 +257,7 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Waiting for approve', value: 'PENDING', variant: 'info' },
+  { label: 'Wait approve', value: 'ARRIVED', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
