@@ -5,6 +5,8 @@ import { FaHome, FaBoxOpen, FaCalendar } from 'react-icons/fa';
 import { GiClothes } from 'react-icons/gi';
 import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
+import { GiRolledCloth } from "react-icons/gi";
+
 
 type Props = {};
 const iconSize = 22;
@@ -33,11 +35,11 @@ const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Product',
     renderIcon: <GiClothes size={iconSize} />,
-    link: '/product'
+    link: '/product-variant'
   },
   {
     title: 'Material',
-    renderIcon: <GiClothes size={iconSize} />,
+    renderIcon: <GiRolledCloth size={iconSize} />,
     link: '/material-variant'
   },
   {

@@ -25,7 +25,13 @@ export default function ProductSizeAndFormula({ productSizes }: Props) {
               <Badge variant="outline">{productSize.code}</Badge>
               <Badge variant="outline">Size: {productSize.size}</Badge>
               <Badge variant="outline">
-                Dimensions: {productSize.width}x{productSize.height}x{productSize.length} m
+                Width: {productSize.width} m
+              </Badge>
+              <Badge variant="outline">
+                Height: {productSize.height} m
+              </Badge>
+              <Badge variant="outline">
+                Leight: {productSize.length} m
               </Badge>
               <Badge variant="outline">Weight: {productSize.weight} kg</Badge>
               <Badge variant="outline">Quantity: {productSize?.inventoryStock?.quantityByUom | 0}</Badge>
