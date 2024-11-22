@@ -73,14 +73,14 @@ const ProgressChart = () => {
             <ChartSkeleton />
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-9">
+          <div className="grid grid-cols-[1fr_2fr] gap-9">
             <PieChartComponent
               data={chartData}
               colors={colors}
-              width={450}
-              height={450}
+              width={300}
+              height={300}
               innerRadius={50}
-              outerRadius={180}
+              outerRadius={120}
               labelType="value"
               showLegend={false}
             />
