@@ -4,7 +4,6 @@ import { useGetInspectionRequestById } from '@/hooks/useGetInspectionRequestById
 import { useParams } from 'react-router-dom';
 import InspectionRequestInformation from './components/InspectionRequestInformation';
 import InspectionRequestChart from './components/InspectionRequestChart';
-import { InspectionDepartment } from '../../../types/InspectionDepartment';
 
 const InspectionRequestDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
