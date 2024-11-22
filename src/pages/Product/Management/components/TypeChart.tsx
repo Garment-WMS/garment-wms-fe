@@ -17,15 +17,16 @@ import {
 } from "@/components/ui/chart"
 import { generateColors } from "@/helpers/generateColors"
 import { Material } from "@/types/MaterialTypes"
+import { Product } from "@/types/ProductType"
 
 type Props = {
-  materialTypeList: Material[]
+  productTypeList: Product[]
 }
 
-export function TypeChart({ materialTypeList }: Props) {
-  const data = materialTypeList.map((type) => ({
+export function TypeChart({ productTypeList }: Props) {
+  const data = productTypeList.map((type) => ({
     name: type.name,
-    value: type.numberOfMaterialVariants,
+    value: type.numberOfProductVariants,
     internalRef: type.name,
   }))
   const COLORS = generateColors(data.length)
