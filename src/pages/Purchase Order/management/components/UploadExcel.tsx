@@ -10,6 +10,20 @@ import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverTrigger, PopoverContent } from '@radix-ui/react-popover';
 import { importPurchaseOrder } from '@/api/services/purchaseOrder';
 import Loading from '@/components/common/Loading';
+import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
+import { Badge } from '@/components/ui/Badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { convertDate } from '@/helpers/convertDate';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from '@/components/ui/Pagination';
+import { ProductionPlan } from '@/types/ProductionPlan';
 
 const MAX_FILE_SIZE_KB = 500;
 
@@ -52,7 +66,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   const [poId, setPoID] = useState<string | null>(null);
   const [poNumber, setPoNumber] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,12 +180,106 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
     }
   };
 
-  const renderProductionPlan = () => (
-    <div className="flex flex-col items-center justify-center">
-      <h1 className="text-xl">Production Plan</h1>
-      <Button onClick={() => setActiveStep((prevStep) => prevStep + 1)}>Next</Button>
-    </div>
-  );
+  const renderProductionPlan = () => {
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 2
+    });
+
+    const { productionPlanList, isPending, isError, pageMeta } = useGetAllProductionPlans({
+      sorting,
+      columnFilters,
+      pagination
+    });
+
+    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+    const handlePageChange = (newPageIndex: number) => {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: newPageIndex - 1 // Adjust for zero-based index
+      }));
+    };
+
+    if (isPending) {
+      return <Loading />;
+    }
+
+    if (isError) {
+      return (
+        <p className="text-red-500 text-center">
+          Failed to fetch production plans. Please try again.
+        </p>
+      );
+    }
+
+    if (!productionPlanList || productionPlanList.data.length === 0) {
+      return <p className="text-gray-500 text-center">No production plans available.</p>;
+    }
+
+    return (
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold text-center">Select a Production Plan</h3>
+        <div className="grid gap-6">
+          {productionPlanList.data.map((plan) => (
+            <Card
+              key={plan.id}
+              className={`cursor-pointer transition-all ${
+                selectedPlan === plan.id ? 'ring-2 ring-primary' : ''
+              }`}
+              onClick={() => setSelectedPlan(plan.id)}>
+              <CardContent className="p-4 flex justify-between items-center">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.description || 'No description'}
+                  </p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Badge variant="outline">{plan.status || 'Pending'}</Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {convertDate(plan.expectedStartDate)} - {convertDate(plan.expectedEndDate)}
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-base font-mono">
+                  {plan.code || `CODE-${plan.id.slice(0, 8)}`}
+                </Badge>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {/* Custom Pagination */}
+        <div className="mt-6 flex justify-center items-center space-x-6">
+          <Button
+            variant="secondary"
+            disabled={!productionPlanList?.pageMeta?.hasPrevious}
+            onClick={() => handlePageChange(productionPlanList?.pageMeta?.page - 1)}>
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground text-center">
+            Page {productionPlanList?.pageMeta?.page || 1} of{' '}
+            {productionPlanList?.pageMeta?.totalPages || 1}
+          </span>
+          <Button
+            variant="secondary"
+            disabled={!productionPlanList?.pageMeta?.hasNext}
+            onClick={() => handlePageChange(productionPlanList?.pageMeta?.page + 1)}>
+            Next
+          </Button>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <Button
+            onClick={() => setActiveStep((prev) => Math.min(prev + 1, 3))}
+            disabled={!selectedPlan}>
+            Next Step
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   const renderUploadExcel = () => (
     <div>
