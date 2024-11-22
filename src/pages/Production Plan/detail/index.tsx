@@ -1,5 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Loading from '@/components/common/Loading';
+import { Badge } from '@/components/ui/Badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -8,13 +11,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react';
 import { convertDate } from '@/helpers/convertDate';
-import { ProductionPlan } from '@/types/ProductionPlan';
+import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { ProductionPlanDetail as ProductionPlanDetailType } from '@/types/ProductionPlan'; // Update with your correct type path
 
 const getStatusBadgeStyle = (status: string) => {
   switch (status) {
@@ -30,19 +33,24 @@ const getStatusBadgeStyle = (status: string) => {
 };
 
 const ProductionPlanDetail = () => {
-  const location = useLocation();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const plan = location.state?.plan as ProductionPlan;
-  const breadcrumbItems = [
-    { label: 'Production Plan', href: '/production-plan' },
-    { label: `Production Plan #${plan.code}`, href: `/production-plan/${plan.id}`, disabled: true }
-  ];
-  if (!plan) {
+  const { data, isPending, isError } = useGetProductionPlanById(id!);
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (isError || !data?.data) {
     return (
       <div className="container mx-auto py-10">
         <Card className="p-6">
           <p className="text-lg font-medium text-red-500">
-            No production plan data available. Please go back and select a plan.
+            Failed to load production plan. Please go back and try again.
           </p>
           <button
             onClick={() => navigate(-1)}
@@ -53,6 +61,17 @@ const ProductionPlanDetail = () => {
       </div>
     );
   }
+
+  const plan = data.data;
+
+  const breadcrumbItems = [
+    { label: 'Production Plan', href: '/production-plan' },
+    {
+      label: `Production Plan #${plan.code}`,
+      href: `/production-plan/${plan.id}`,
+      disabled: true
+    }
+  ];
 
   return (
     <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 ring-gray-300 flex flex-col gap-8">
@@ -126,20 +145,22 @@ const ProductionPlanDetail = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {plan.productionPlanDetail.map((detail, index) => (
-                    <TableRow
-                      key={detail.id}
-                      className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
-                      <TableCell className="font-medium">
-                        {detail.productSize.productVariant.name}
-                      </TableCell>
-                      <TableCell>{detail.productSize.size}</TableCell>
-                      <TableCell>{detail.quantityToProduce}</TableCell>
-                      <TableCell className="font-mono">
-                        <Badge className="bg-gray-500">{detail.code}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {plan.productionPlanDetail.map(
+                    (detail: ProductionPlanDetailType, index: number) => (
+                      <TableRow
+                        key={detail.id}
+                        className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                        <TableCell className="font-medium">
+                          {detail.productSize.productVariant.name}
+                        </TableCell>
+                        <TableCell>{detail.productSize.size}</TableCell>
+                        <TableCell>{detail.quantityToProduce}</TableCell>
+                        <TableCell className="font-mono">
+                          <Badge className="bg-gray-500">{detail.code}</Badge>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -150,7 +171,7 @@ const ProductionPlanDetail = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="grid gap-6 md:grid-cols-2">
-                {plan.productionPlanDetail.map((detail) => (
+                {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => (
                   <Card key={detail.id} className="border-l-4 border-l-blue-500 shadow-sm">
                     <CardHeader className="bg-blue-50">
                       <CardTitle className="text-lg text-blue-800">
