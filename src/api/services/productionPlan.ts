@@ -1,9 +1,13 @@
-import { get } from './ApiCaller';
+import { get, patch } from './ApiCaller';
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
+
+interface StartProductionPlanInput {
+  id: string;
+}
 
 interface GetAllProductionPlansInput {
   sorting: SortingState;
@@ -63,5 +67,19 @@ export const getAllProductionPlans = async ({
   } catch (error) {
     console.error('Error fetching production plans:', error);
     throw new Error('Failed to fetch production plans');
+  }
+};
+
+export const startProductionPlan = async ({
+  id
+}: StartProductionPlanInput): Promise<ApiResponse> => {
+  const fullUrl = `/production-plan/${id}/start`;
+  try {
+    const config = patch(fullUrl, {});
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error) {
+    console.error(`Error starting production plan with ID ${id}:`, error);
+    throw new Error('Failed to start production plan');
   }
 };

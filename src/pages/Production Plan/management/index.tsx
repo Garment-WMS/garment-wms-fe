@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
 import {
   Table,
   TableBody,
@@ -14,11 +22,12 @@ import {
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { convertDate } from '@/helpers/convertDate';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
+import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { SortingState, ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import { ProductionPlan } from '@/types/ProductionPlan';
-import { CalendarArrowDown, CalendarArrowUp, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { AlertTriangle, CalendarArrowDown, CalendarArrowUp, PlayCircle, Plus } from 'lucide-react';
 import ProductionPlanIntroduction from './components/Introduction';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -34,18 +43,47 @@ const getStatusBadgeClass = (status: ProductionPlanStatus) => {
 };
 
 const ProductionPlanManagement = () => {
+  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10
   });
+  const [selectedPlan, setSelectedPlan] = useState<ProductionPlan | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { productionPlanList, pageMeta, isPending, isError } = useGetAllProductionPlans({
     sorting,
     columnFilters,
     pagination
   });
+
+  const { startPlan, isPending: isStartingPlan } = useStartProductionPlan();
+
+  const handleStartPlan = () => {
+    if (selectedPlan) {
+      startPlan(
+        { id: selectedPlan.id },
+        {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            navigate(`/production-plan/${selectedPlan.id}`);
+          }
+        }
+      );
+    }
+  };
+
+  const openModal = (plan: ProductionPlan) => {
+    setSelectedPlan(plan);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlan(null);
+  };
 
   if (isPending) {
     return (
@@ -88,12 +126,22 @@ const ProductionPlanManagement = () => {
                       {plan.code}
                     </Badge>
                   </span>
+                  <Badge
+                    className={`${getStatusBadgeClass(plan.status as ProductionPlanStatus)} px-2 mt-2 rounded`}>
+                    {ProductionPlanStatus[plan.status as ProductionPlanStatus]}
+                  </Badge>
                 </div>
               </CardTitle>
-              <Badge
-                className={`${getStatusBadgeClass(plan.status as ProductionPlanStatus)} px-2 py-1 rounded`}>
-                {plan.status}
-              </Badge>
+              {plan.status === ProductionPlanStatus.PLANNING && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => openModal(plan)}>
+                  <PlayCircle className="mr-2 h-4 w-4" />
+                  Start Plan
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>
@@ -153,6 +201,49 @@ const ProductionPlanManagement = () => {
           Next
         </Button>
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              Start Production Plan
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Are you sure you want to start the production plan ?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 bg-red-50 border-l-4 border-red-400 p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-red-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">
+                  This action will initiate the production process. Please ensure all prerequisites
+                  are met.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 sm:mt-8 sm:flex sm:flex-row-reverse gap-3">
+            <Button
+              variant="default"
+              className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+              onClick={handleStartPlan}
+              disabled={isStartingPlan}>
+              {isStartingPlan ? 'Starting...' : 'Yes, Start Plan'}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeModal}
+              className="mt-3 sm:mt-0 ring-1 ring-red-500 text-red-500 hover:text-red-300">
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

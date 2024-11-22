@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -35,7 +35,11 @@ const ProductionPlanDetail = () => {
   const plan = location.state?.plan as ProductionPlan;
   const breadcrumbItems = [
     { label: 'Production Plan', href: '/production-plan' },
-    { label: `Production Plan #${plan.code}`, href: `/production-plan/${plan.id}`, disabled: true }
+    {
+      label: `Production Plan #${plan?.code}`,
+      href: `/production-plan/${plan?.id}`,
+      disabled: true
+    }
   ];
   if (!plan) {
     return (
