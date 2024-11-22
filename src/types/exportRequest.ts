@@ -219,3 +219,13 @@ interface Account {
   deletedAt: string | null;
   updatedAt: string;
 }
+export const Status: { label: string; value: string; variant: any }[] = [
+  { label: 'Wait approval', value: 'ARRIVED', variant: 'info' },
+  { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
+  { label: 'Approved', value: 'APPROVED', variant: 'success' },
+  { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
+  { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
+  { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
+  { label: 'Imported', value: 'IMPORTED', variant: 'success' },
+  { label: 'Canceled', value: 'CANCELED', variant: 'danger' }
+];

@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
-import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
+import { Clock, ClipboardCheck, User, AlertCircle, Info, Receipt } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import Waiting from '@/assets/images/wait-2.svg';
+import { useEffect, useState } from 'react';
+import { getImportReceiptFn } from '@/api/purchase-staff/importRequestApi';
+import { TiDocument } from 'react-icons/ti';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
@@ -54,6 +57,18 @@ export default function WarehouseStaffAssignment({
   lastedUpdate
 }: WarehouseStaffAssignmentProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
+  const { id } = useParams();
+  const [importReceipt, setImportReceipt] = useState<any>();
+  useEffect(() => {
+    const getImportReceipt = async () => {
+      const response = await getImportReceiptFn(id as string);
+      setImportReceipt(response.data);
+    };
+
+    if (currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') {
+      getImportReceipt();
+    }
+  }, []);
 
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
@@ -105,13 +120,18 @@ export default function WarehouseStaffAssignment({
                   new Date(lastedUpdate).toLocaleTimeString()}
               </span>
             </div>
+            <div className="flex items-center text-sm">
+              <TiDocument className="mr-3 h-5 w-5 text-muted-foreground" />
+              <span className="font-medium w-32 text">Import Receipt:</span>
+              <span>{importReceipt && importReceipt[0]?.code}</span>
+            </div>
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && (
-            <Link to={``}>
+          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && importReceipt && (
+            <Link to={`/import-receipt/${importReceipt[0]?.id}`}>
               <Button variant={'default'} className="ml-4">
                 Go to Receipt
               </Button>
