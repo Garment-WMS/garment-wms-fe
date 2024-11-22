@@ -102,11 +102,11 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
 
   return (
     <div className="flex items-center justify-center">
-      <Carousel className="w-[90%] h-[80%]  max-w-[800px] max-h-[600px]" setApi={setCarouselApi}>
+      <Carousel className="w-[90%] h-[80%]  max-w-[800px] max-h-[500px]" setApi={setCarouselApi}>
         <CarouselContent>
           {stepsActions.map((action, index) => (
             <CarouselItem key={index}>
-              <div className="w-full h-full  max-w-[800px] max-h-[600px]">
+              <div className="w-full h-full  max-w-[800px] max-h-[500px]">
                 <div className="flex  items-center justify-center h-full ">{action.content}</div>
               </div>
             </CarouselItem>

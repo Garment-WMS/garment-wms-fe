@@ -34,6 +34,7 @@ import { useParams } from 'react-router-dom';
 import { statusOrder } from '@/pages/ImportRequests/constants';
 import { IoIosSearch } from 'react-icons/io';
 import AssignStaffPopup from './StaffAssignment';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
 
@@ -305,7 +306,7 @@ export default function WarehouseApproval({
             <div className="flex flex-col space-y-4 w-full">
               <div className="flex justify-between w-full"></div>
 
-              <div className="flex space-x-4 items-center w-full justify-center">
+              <WarehouseManagerGuardDiv className="flex space-x-4 items-center w-full justify-center">
                 <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
                   <AlertDialogTrigger asChild>
                     <Tooltip>
@@ -414,7 +415,7 @@ export default function WarehouseApproval({
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
+              </WarehouseManagerGuardDiv>
             </div>
           )}
         </CardFooter>

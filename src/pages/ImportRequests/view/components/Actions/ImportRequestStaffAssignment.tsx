@@ -1,10 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
-import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
+import { Clock, ClipboardCheck, User, AlertCircle, Info, Receipt } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
+import { Link, useParams } from 'react-router-dom';
+
 import Waiting from '@/assets/images/wait-2.svg';
+import { useEffect, useState } from 'react';
+import { getImportReceiptFn } from '@/api/purchase-staff/importRequestApi';
+import { TiDocument } from 'react-icons/ti';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
@@ -51,8 +56,19 @@ export default function WarehouseStaffAssignment({
   warehouseStaff,
   lastedUpdate
 }: WarehouseStaffAssignmentProps) {
-  console.log(currentStatus);
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
+  const { id } = useParams();
+  const [importReceipt, setImportReceipt] = useState<any>();
+  useEffect(() => {
+    const getImportReceipt = async () => {
+      const response = await getImportReceiptFn(id as string);
+      setImportReceipt(response.data);
+    };
+
+    if (currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') {
+      getImportReceipt();
+    }
+  }, []);
 
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
@@ -61,22 +77,26 @@ export default function WarehouseStaffAssignment({
         <p className="text-sm text-muted-foreground">Request #{requestId}</p>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
-          <Avatar className="">
-            <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
-            <AvatarFallback>
-              {warehouseStaff?.account.lastName.slice(0, 1) +
-                warehouseStaff?.account.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h1>{warehouseStaff?.account.lastName + ' ' + warehouseStaff?.account.firstName}</h1>
-          <div className="text-center">
-            <p className="text-sm font-medium">Warehouse assignment</p>
-            <p className="text-xs text-muted-foreground">
-              {warehouseManager?.account?.email || 'Not assigned'}
-            </p>
+        {warehouseStaff ? (
+          <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
+            <Avatar className="">
+              <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
+              <AvatarFallback>
+                {warehouseStaff?.account.lastName.slice(0, 1) +
+                  warehouseStaff?.account.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <h1>{warehouseStaff?.account.lastName + ' ' + warehouseStaff?.account.firstName}</h1>
+            <div className="text-center">
+              <p className="text-sm font-medium">Warehouse assignment</p>
+              <p className="text-xs text-muted-foreground">
+                {warehouseStaff?.account?.email || 'Not assigned'}
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <h3>Not yet</h3>
+        )}
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
           <h3 className="text-lg font-semibold mb-4">Assignment Status</h3>
           <div className="space-y-4">
@@ -100,15 +120,23 @@ export default function WarehouseStaffAssignment({
                   new Date(lastedUpdate).toLocaleTimeString()}
               </span>
             </div>
+            <div className="flex items-center text-sm">
+              <TiDocument className="mr-3 h-5 w-5 text-muted-foreground" />
+              <span className="font-medium w-32 text">Import Receipt:</span>
+              <span>{importReceipt && importReceipt[0]?.code}</span>
+            </div>
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          <Button variant={'outline'}>Re-Assign Staff</Button>
-          <Button variant={'default'} className="ml-4">
-            Go to Receipt
-          </Button>
+          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && importReceipt && (
+            <Link to={`/import-receipt/${importReceipt[0]?.id}`}>
+              <Button variant={'default'} className="ml-4">
+                Go to Receipt
+              </Button>
+            </Link>
+          )}
         </div>
       </CardFooter>
     </Card>

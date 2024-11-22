@@ -1,4 +1,4 @@
-import photo from '@/assets/images/productionBatch.jpg';
+import photo from '@/assets/images/productionBatch.svg';
 
 const ProductionBatchIntroduction = () => {
   const title = 'Production Batch';

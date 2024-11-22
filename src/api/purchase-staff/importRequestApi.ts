@@ -28,7 +28,8 @@ export const importRequestApi = {
         managerNote: managerNote != '' ? managerNote : undefined
       });
     }
-  }
+  },
+  getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`)
 };
 
 export const getAllImportRequestFn = async ({
@@ -42,29 +43,29 @@ export const getAllImportRequestFn = async ({
   // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
-  const filters = columnFilters.map(filter => {
+  const filters = columnFilters.map((filter) => {
     // Replace dots with underscores only if there are any dots in the id
     const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
 
     return {
-        id: fieldKey,
-        value: filter.value,
-    };
-});
-const sorts = sorting.map(sort => {
-  // Replace dots with underscores only if there are any dots in the id
-  const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
-
-  return {
       id: fieldKey,
-      desc: sort.desc,
-  };
-});
+      value: filter.value
+    };
+  });
+  const sorts = sorting.map((sort) => {
+    // Replace dots with underscores only if there are any dots in the id
+    const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
+
+    return {
+      id: fieldKey,
+      desc: sort.desc
+    };
+  });
 
   // Build filter array from columnFilters
   filters.forEach((filterItem) => {
     const { id, value } = filterItem;
-  
+
     let type: FilterOperationType;
     if (id === 'name' || id === 'code') {
       type = FilterOperationType.Ilike;
@@ -72,17 +73,17 @@ const sorts = sorting.map(sort => {
       type = FilterOperationType.In;
     }
     // Handle FilterOperationType.In as an array
-  if (type === FilterOperationType.In && Array.isArray(value)) {
-    // Push a single filter object with `value` as an array
-    filter.push({ field: id, type, value });
-  } else if (Array.isArray(value)) {
-    value.forEach((val) => {
-      filter.push({ field: id, type, value: val });
-    });
-  } else {
-    filter.push({ field: id, type, value });
-  }
-});
+    if (type === FilterOperationType.In && Array.isArray(value)) {
+      // Push a single filter object with `value` as an array
+      filter.push({ field: id, type, value });
+    } else if (Array.isArray(value)) {
+      value.forEach((val) => {
+        filter.push({ field: id, type, value: val });
+      });
+    } else {
+      filter.push({ field: id, type, value });
+    }
+  });
   sorts.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
     order.push({ field: sort.id, dir: direction });
@@ -117,5 +118,9 @@ export const importRequestApprovalFn = async (
       warehouseStaffId
     )
   );
+  return res.data;
+};
+export const getImportReceiptFn = async (id: string) => {
+  const res = await privateCall(importRequestApi.getImportReceipt(id));
   return res.data;
 };

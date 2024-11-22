@@ -55,11 +55,11 @@ const NewImportRequest = (props: Props) => {
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder>();
   const [selectedPoDelivery, setSelectedPoDelivery] = useState<PODelivery>();
   const [poDeliveryDetails, setPoDeliverydetails] = useState<PODeliveryDetail[]>([]);
+  const [isNewPoDelivery, setIsNewdelivery] = useState(false);
   const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof deliveryFormSchema>) => {
     try {
-      console.log('123');
       if (isEditDetail) {
         toast({
           variant: 'destructive',
@@ -79,7 +79,7 @@ const NewImportRequest = (props: Props) => {
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate('import-request'); // Navigate back after successful creation
+        navigate('/import-request'); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({
@@ -107,6 +107,7 @@ const NewImportRequest = (props: Props) => {
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Delivery</div>
           <WarehouseImportDialog
+            setIsNewdelivery={setIsNewdelivery}
             selectedPo={selectedPO}
             setSelectedPO={setSelectedPO}
             setSelectedPoDelivery={setSelectedPoDelivery}
@@ -161,6 +162,8 @@ const NewImportRequest = (props: Props) => {
       </div>
 
       <ImportRequestDetails
+        isNewPoDelivery={isNewPoDelivery}
+        setIsNewdelivery={setIsNewdelivery}
         data={poDeliveryDetails}
         setPoDeliverydetails={setPoDeliverydetails}
         setEditDetail={setEditDetail}

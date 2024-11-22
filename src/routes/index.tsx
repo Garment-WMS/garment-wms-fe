@@ -43,10 +43,13 @@ import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import CreateExportRequest from '@/pages/ExportRequest';
+import ViewExportRequest from '@/pages/ExportRequestDetail';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
 import ProductManagement from '@/pages/Product/Management';
 import ProductVariantDetails from '@/pages/Product/Details';
+import ExportRequestList from '@/pages/ExportRequestList/management';
 import ProductionBatchManagement from '@/pages/Production Batch/management';
 
 const RouterComponent: React.FC = () => {
@@ -73,7 +76,7 @@ const RouterComponent: React.FC = () => {
           element: <WarehouseManagerLayout />,
           children: [
             {
-              path: '/warehouse-manager/home',
+              path: '/home',
               element: <Home />
             }
           ]
@@ -111,8 +114,16 @@ const RouterComponent: React.FC = () => {
               element: <ImportRequestManagement />
             },
             {
+              path: '/export-request',
+              element: <ExportRequestList />
+            },
+            {
+              path: '/export-request/:id',
+              element: <ViewExportRequest />
+            },
+            {
               path: '/home',
-              element: <Home />
+              element: <MyTasks />
             },
             {
               path: '/stocktaking',
@@ -234,6 +245,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/production-plan/:id',
               element: <ProductionPlanDetail />
+            },
+            {
+              path: '/export-request/create',
+              element: <CreateExportRequest />
+            },
+            {
+              path: '/export-request/:id',
+              element: <ViewExportRequest />
             },
             { path: '/report', element: <InspectionRequestManagement /> },
             {

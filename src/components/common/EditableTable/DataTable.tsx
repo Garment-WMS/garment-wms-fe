@@ -28,12 +28,14 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isEdit: Boolean;
   setDetails: any;
+  setError: any;
 }
 const DataTable = <TData, TValue>({
   data,
   columns,
   isEdit,
-  setDetails
+  setDetails,
+  setError
 }: DataTableProps<TData, TValue>) => {
   const handleMaterialSelect = (rowIndex: number, material: any) => {
     setDetails((prevData: any) =>
@@ -88,9 +90,23 @@ const DataTable = <TData, TValue>({
   const handleInputChange = (rowIndex: number, columnId: string, value: any) => {
     const formattedValue =
       columnId === 'plannedQuantity' || columnId === 'actualQuantity' ? Number(value) : value;
+    setDetails((prevData: any) =>
+      prevData.map((row: any, index: number) =>
+        index === rowIndex ? { ...row, [columnId]: value } : row
+      )
+    );
     // Dynamically create the Zod schema for validation
     const schema = createZodSchema(columns);
-
+    if (columnId == 'actualQuantity') {
+      if (value > data[rowIndex]['plannedQuantity']) {
+        setError(true);
+        setValidationErrors((prev) => ({
+          ...prev,
+          [`${rowIndex}-${columnId}`]: 'Acutal Quantity must not exeed planned Quantity'
+        }));
+        return;
+      }
+    }
     const updatedRow = {
       ...data[rowIndex],
       [columnId]: formattedValue
@@ -100,6 +116,7 @@ const DataTable = <TData, TValue>({
     const result = schema.safeParse(updatedRow);
 
     if (!result.success) {
+      setError(true);
       // Find and display the validation error for the specific field
       const error = result.error.issues.find((issue) => issue.path[0] === columnId);
       if (error) {
@@ -110,17 +127,12 @@ const DataTable = <TData, TValue>({
         return;
       }
     }
+    setError(false);
     // Clear any previous error for the field if validation passes
     setValidationErrors((prev) => ({
       ...prev,
       [`${rowIndex}-${columnId}`]: ''
     }));
-
-    setDetails((prevData: any) =>
-      prevData.map((row: any, index: number) =>
-        index === rowIndex ? { ...row, [columnId]: formattedValue } : row
-      )
-    );
   };
   const [openPopovers, setOpenPopovers] = useState<{ [key: string]: boolean }>({});
   // Toggle open state for popovers
@@ -157,7 +169,7 @@ const DataTable = <TData, TValue>({
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row, rowIndex) => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
+                {row.getVisibleCells().map((cell: any) => (
                   <TableCell key={cell.id}>
                     {cell.column.columnDef.isEditable && isEdit ? (
                       cell.column.columnDef.isPopover ? (

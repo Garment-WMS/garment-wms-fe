@@ -40,13 +40,6 @@ export const getMaterialColumns = ({}: any): CustomColumnDef<any>[] => [
     cell: ({ row }) => <div className="text-center">{row.original.materialPackage.uomPerPack}</div>
   },
   {
-    accessorKey: 'uom',
-    header: ({ column }) => (
-      <DataTableColumnHeader className="text-center" column={column} title="Unit of packing" />
-    ),
-    cell: ({ row }) => <div className="text-center">123</div>
-  },
-  {
     accessorKey: 'plannedQuantity',
     header: ({ column }) => (
       <DataTableColumnHeader className="text-center" column={column} title="Planned Quantity" />
@@ -62,7 +55,7 @@ export const getMaterialColumns = ({}: any): CustomColumnDef<any>[] => [
     ),
     cell: ({ row }) => <div className="text-center">{row.original.actualQuantity}</div>,
     isEditable: true,
-    validation: z.number().positive('Actual Quantity have to be at least 1')
+    validation: z.number().positive('Actual Quantity has to be at least 1')
   },
 
   {

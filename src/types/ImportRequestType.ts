@@ -257,8 +257,8 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Arrived', value: 'ARRIVED', variant: 'info' },
-  { label: 'Rejected', value: 'REJECTED', variant: 'destructive' },
+  { label: 'Wait approve', value: 'ARRIVED', variant: 'info' },
+  { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
   { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
@@ -266,10 +266,15 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Imported', value: 'IMPORTED', variant: 'success' },
   { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
 ];
-type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default';
+type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default' | 'danger';
 export interface UseImportRequestsResponse {
   pageMeta: PageMetaData;
   data: ImportRequest[];
+}
+
+export interface UseExportRequestsResponse {
+  pageMeta: PageMetaData;
+  data: any[];
 }
 
 export const DeliveryType = [
@@ -282,6 +287,12 @@ export const DeliveryType = [
 ];
 
 export interface UseImportRequestsInput {
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  pagination: PaginationState;
+}
+
+export interface UseExportRequestsInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;

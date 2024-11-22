@@ -9,6 +9,7 @@ import { convertDate } from '@/helpers/convertDate';
 import { ProductionBatchStatus, ProductionBatchStatusLabels } from '@/enums/productionBatch';
 import { useGetAllProductionBatch } from '@/hooks/useGetAllProductionBatch';
 import { ProductionBatch } from '@/types/ProductionBatch';
+import { ProductionBatchDetailsModal } from './ProductionBatchDetailModal';
 
 const ProductionBatchList: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -46,13 +47,7 @@ const ProductionBatchList: React.FC = () => {
     {
       header: 'Batch Code',
       accessorKey: 'code',
-      cell: ({ row }) => (
-        <Link
-          to={`/production-batch/${row.original.id}`}
-          className="ml-2 font-semibold text-primary underline hover:opacity-50">
-          {mockCode(row.original.code, row.original.id)}
-        </Link>
-      ),
+      cell: ({ row }) => <ProductionBatchDetailsModal batchId={row.original.id} />,
       enableColumnFilter: false
     },
     {

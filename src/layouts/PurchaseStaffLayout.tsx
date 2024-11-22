@@ -8,10 +8,11 @@ import {
   TbHome,
   TbPackage,
   TbShirt,
-  TbShoppingCartCog
+  TbShoppingCartCog,
+  TbReceipt,
+  TbPackageExport
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
-import { GiRolledCloth } from 'react-icons/gi';
 
 type Props = {};
 const iconSize = 22;
@@ -42,14 +43,24 @@ const PurchaseStaffMenu: MenuProps[] = [
     link: '/import-request'
   },
   {
-    title: 'Product',
-    renderIcon: <TbPackage size={iconSize} />,
-    link: '/product-variant'
+    title: 'Import Receipt',
+    renderIcon: <TbReceipt size={iconSize} />,
+    link: '/import-receipt'
+  },
+  {
+    title: 'Export request',
+    renderIcon: <TbPackageExport size={iconSize} />,
+    link: '/export-request'
   },
   {
     title: 'Material',
-    renderIcon: <GiRolledCloth size={iconSize} />,
+    renderIcon: <TbPackage size={iconSize} />,
     link: '/material-variant'
+  },
+  {
+    title: 'Product',
+    renderIcon: <TbShirt size={iconSize} />,
+    link: '/product-variant'
   },
   {
     title: 'Report',
