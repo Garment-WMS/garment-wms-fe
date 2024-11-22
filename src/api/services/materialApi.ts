@@ -16,11 +16,13 @@ let materialType = '/material';
 export const materialApi = {
   getOne: (id: string) => get(`${materialVariant}/${id}`),
   getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
-  getAllNoArgument: () => get(`${materialVariant}`),
+  getAllWithoutFilter: () => get(`${materialVariant}/all`),
+  getOneReceipt: (id: string) => get(`${materialVariant}/${id}/receipt`),
   getOneImportReceipt: (id: string, queryString: string) =>
     get(`${materialVariant}/${id}/import-receipt/${queryString}`),
   getOneExportReceipt: (id: string, queryString: string) =>
     get(`${materialVariant}/${id}/export-receipt/${queryString}`),
+  getAllNoArgument: () => get(`${materialVariant}`),
   getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
   addImage: (id: string, data: FormData, config: any) =>
     post(`${materialVariant}/${id}/image`, data, undefined, config)
@@ -105,6 +107,10 @@ export const getOneMaterial = async (id: string): Promise<MaterialVariantRespons
   const res = await privateCall(materialApi.getOne(id));
   return res.data.data;
 };
+// export const getOneMaterialReceipt = async (id: string): Promise<MaterialReceiptResponse> => {
+//   const res = await axios(materialApi.getOneReceipt(id));
+//   return res.data.data;
+// }
 
 export const getOneMaterialImportReceiptFn = async (
   id: string,

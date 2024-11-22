@@ -1,6 +1,6 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { PageMeta } from './purchaseOrder';
-import { PageMetaData } from './ImportRequestType';
+import { PageMetaData } from './Shared';
 
 // Unit of Measure (UOM)
 export interface UOM {
@@ -78,6 +78,7 @@ export interface MaterialReceiptResponse {
 export interface MaterialReceipt {
   id: string;
   materialPackageId: string;
+  code:string;
   importReceiptId: string;
   quantityByPack: number;
   remainQuantityByPack: number;
@@ -159,7 +160,9 @@ export interface MaterialPackage {
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
-  inventoryStock: InventoryStock;
+  materialReceipt: MaterialReceipt[];
+  material: Material;
+  inventoryStock: InventoryStock
   materialVariant: MaterialVariant;
 }
 

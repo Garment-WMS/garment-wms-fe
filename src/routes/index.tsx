@@ -25,6 +25,18 @@ import MaterialVariantUpdate from '@/pages/Material/update';
 import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
+import StocktakingManagement from '@/pages/Stocktaking/management';
+import StocktakingDetails from '@/pages/Stocktaking/details';
+import CreateInventoryReport from '@/pages/Stocktaking/create';
+import CreateDynamicPlan from '@/pages/StocktakingPlan/create/CreateDynamicPlan';
+import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
+import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
+import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
+import { Router } from 'react-router-dom';
+import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktaking/management';
+import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
+import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
+import RoleBasedRedirect from './RoleBasedRedirected';
 import ImportReceipt from '@/pages/ImportReceiptDetail';
 import MyTasks from '@/pages/tasks';
 import TaskDetailPage from '@/pages/tasks/taskDetails';
@@ -112,6 +124,54 @@ const RouterComponent: React.FC = () => {
             {
               path: '/home',
               element: <MyTasks />
+            },
+            {
+              path: '/stocktaking',
+              element: <RoleBasedRedirect 
+              managerComponent={<StocktakingManagement />}
+              warehouseStaffComponent={<WarehouseStaffStocktakingManagement />}
+              />
+            },
+            {
+              path: '/stocktaking/:id',
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingDetails/>}
+              warehouseStaffComponent={<WarehousestaffStocktakingDetails/>}
+              />
+            },
+          
+            {
+              path: '/warehouse-staff/stocktaking/plan/:id',
+              element: <WarehouseStaffStocktakingPlanDetails/>
+            },
+            {
+              path: '/stocktaking/plan/:id',
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingPlanDetails/>}
+              warehouseStaffComponent={<WarehouseStaffStocktakingPlanDetails/>}
+              />
+            },
+            // {
+            //   path: '/stocktaking/create',
+            //   element: <CreateInventoryReport/>
+            // },
+            {
+              path: '/stocktaking/plan/create',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateStocktakingPlan/>}
+              />
+            },
+            {
+              path: '/stocktaking/plan/create/dynamic',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateDynamicPlan/>}
+              />
+            },
+            {
+              path: '/stocktaking/plan/create/overall',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateOverallPlan/>}
+              />
             },
             {
               path: '/tasks',

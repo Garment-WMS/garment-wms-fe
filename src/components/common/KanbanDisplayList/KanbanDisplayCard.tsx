@@ -4,16 +4,18 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-type Props = {};
+type Props = {
+  product : any
+};
 
-const KanbanDisplayCard: React.FC<any> = ({ product }) => {
+const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const handleMaterialViewClick = (requestId: string) => {
-    const basePath = location.pathname.split('/material-variant')[0]; // Get base path (either manager or purchase-staff)
+    // const basePath = location.pathname.split('/material')[0]; // Get base path (either manager or purchase-staff)
 
     // Navigate to the new route
-    navigate(`${basePath}/material-variant/${requestId}`);
+    navigate(`/material-variant/${requestId}`);
   };
 
   const handleProductViewClick = (requestId: string) => {

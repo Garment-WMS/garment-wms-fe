@@ -117,6 +117,7 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
         id: staff.id,
         email: staff.email,
         role: role,
+        roleId: staff.warehouseStaff.id || staff.productionDepartment.id || staff.inspectionDepartment.id || staff.purchasingStaff.id || staff.warehouseManager.id || staff.factoryDirector.id,
         accessToken: staff.accessToken,
         refreshToken: staff.refreshToken,
         name: staff.firstName + ' ' + staff.lastName,

@@ -24,8 +24,6 @@ export const getIconAttributes = (name: string) => {
   switch (name.toLowerCase()) {
     case 'diameter':
       return <Circle className={iconClassName} />;
-    case 'color':
-      return <Palette className={iconClassName} />;
     case 'shape':
       return <Hexagon className={iconClassName} />;
     case 'material':
@@ -52,6 +50,8 @@ export const getIconAttributes = (name: string) => {
       return <Package className={iconClassName} />;
     case 'application':
       return <Shirt className={iconClassName} />;
+    case 'color':
+      return <Palette className="h-5 w-5" />;
     case 'material composition':
       return <Shirt className="h-5 w-5" />;
     case 'pattern':
