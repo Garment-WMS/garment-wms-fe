@@ -71,7 +71,7 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
             </TableHeader>
             <TableBody>
               {defects.map((defect) => (
-                <TableRow key={defect?.id}>
+                <TableRow>
                   <TableCell className="font-medium">{defect.defectType}</TableCell>
                   <TableCell className="text-right">{defect.quantity}</TableCell>
                   <TableCell className="text-right">

@@ -5,6 +5,7 @@ import PieChartComponent from '@/components/common/PieChart';
 import Colors from '@/constants/color';
 import ChartSkeleton from '@/components/common/ChartSkeleton';
 import { Package, Shirt } from 'lucide-react';
+import EmptyDatacomponent from '@/components/common/EmptyData';
 
 const InspectionRequestChart = () => {
   const { data: materialStats, isPending: isMaterialLoading } = useGetInspectionRequestByType(
@@ -13,7 +14,6 @@ const InspectionRequestChart = () => {
   const { data: productStats, isPending: isProductLoading } = useGetInspectionRequestByType(
     InspectionRequestType.PRODUCT
   );
-
   const renderPieChart = (
     title: string,
     stats: any,
@@ -21,9 +21,18 @@ const InspectionRequestChart = () => {
     Icon: any,
     color: string
   ) => {
+    const headerHeightClass = 'h-20'; // Ensures consistent header height
+
     if (isLoading) {
       return (
         <Card className="w-full max-w-4xl mx-auto pb-7 border-gray-200 shadow-md">
+          <CardHeader
+            className={`flex flex-row items-center justify-between bg-gray-100 px-5 py-4 rounded-t-lg ${headerHeightClass}`}>
+            <div className="flex items-center space-x-3">
+              <Icon className={`h-8 w-8 ${color}`} />
+              <CardTitle className="text-2xl font-bold text-gray-800">{title}</CardTitle>
+            </div>
+          </CardHeader>
           <div className="flex justify-center items-center h-80">
             <ChartSkeleton />
           </div>
@@ -37,9 +46,27 @@ const InspectionRequestChart = () => {
       { name: 'Inspecting', value: inspecting }
     ];
 
+    if (total === 0 || (!inspected && !inspecting)) {
+      return (
+        <Card className="w-full max-w-4xl mx-auto pb-7 border-gray-200 shadow-md">
+          <CardHeader
+            className={`flex flex-row items-center justify-between bg-gray-100 px-5 py-4 rounded-t-lg ${headerHeightClass}`}>
+            <div className="flex items-center space-x-3">
+              <Icon className={`h-8 w-8 ${color}`} />
+              <CardTitle className="text-2xl font-bold text-gray-800">{title}</CardTitle>
+            </div>
+          </CardHeader>
+          <div className="flex justify-center items-center h-64">
+            <EmptyDatacomponent />
+          </div>
+        </Card>
+      );
+    }
+
     return (
       <Card className="w-full max-w-4xl mx-auto pb-7 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
-        <CardHeader className="flex flex-row items-center justify-between bg-gray-100 px-5 py-4 rounded-t-lg">
+        <CardHeader
+          className={`flex flex-row items-center justify-between bg-gray-100 px-5 py-4 rounded-t-lg ${headerHeightClass}`}>
           <div className="flex items-center space-x-3">
             <Icon className={`h-8 w-8 ${color}`} />
             <CardTitle className="text-2xl font-bold text-gray-800">{title}</CardTitle>
