@@ -141,18 +141,6 @@ export interface UseMaterialsInput {
 }
 
 // Material Variant
-export interface MaterialPackage {
-  id: string;
-  materialId: string;
-  image: string;
-  name: string;
-  code: string;
-  reorderLevel: number;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-  material: Material;
-}
 
 // Material Package Interface
 export interface MaterialPackage {
@@ -167,23 +155,20 @@ export interface MaterialPackage {
   packedLength: number;
   packedHeight: number;
   packedWeight: number;
-  createdAt: string;
-  updatedAt: string;
+  uom: UOM;
+  createdAt: string | null;
+  updatedAt: string | null;
   deletedAt: string | null;
+  inventoryStock: InventoryStock;
   materialVariant: MaterialVariant;
 }
 
-export type MaterialVariantResponse = {
-  materialReceipt: MaterialReceipt[];
-  material: Material;
-  uom: UOM;
-  inventoryStock: InventoryStock;
-}
 export interface InventoryStock {
   id: string;
   materialVariantId: string | null;
   productVariantId: string | null;
   quantityByPack: number;
+  quantityByUom: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;

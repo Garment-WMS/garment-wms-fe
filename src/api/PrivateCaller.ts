@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from '@/hooks/use-toast';
 
 const privateCall = axios.create({
-  timeout: 10000,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json'
   }

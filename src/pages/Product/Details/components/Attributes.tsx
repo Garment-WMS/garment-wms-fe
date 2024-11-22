@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import React from 'react'
 import { getIconAttributes } from '@/helpers/getIconAttributes'
+import { ProductAttribute } from '@/types/ProductType'
 
 type Props = {
-    attributes?: MaterialAttribute[]
+    attributes?: ProductAttribute[]
 }
 
 const Attributes: React.FC<Props> = ({attributes}) => {

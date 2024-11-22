@@ -24,6 +24,8 @@ import privateCall from '@/api/PrivateCaller';
 import { materialApi } from '@/api/services/materialApi';
 import { useParams } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
+import { ProductReceiptStatisticsResponse } from '@/types/ProductType';
+import { productVariantApi } from '@/api/services/productApi';
 
 const chartConfig = {
   importQuantity: {
@@ -42,18 +44,17 @@ export function ReceiptChart() {
     return;
   }
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [data, setData] = useState<MaterialReceiptStatisticsResponse>();
+  const [data, setData] = useState<ProductReceiptStatisticsResponse>();
   const fetchData = async () => {
     const getYear = new Date().getFullYear();
     try {
       setIsLoading(true);
       const body = {
         year: getYear,
-        materialVariantId: [id]
+        productVariantId: [id]
       };
-      const res = await privateCall(materialApi.getReceiptStatistics(body));
+      const res = await privateCall(productVariantApi.getReceiptStatistics(body));
       setData(res.data.data);
-      console.log('chart', res.data.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -70,11 +71,11 @@ export function ReceiptChart() {
     data?.monthlyData.map((monthData) => ({
       month: new Date(0, monthData.month - 1).toLocaleString('default', { month: 'long' }),
       importQuantity: monthData.data.reduce(
-        (sum, item) => sum + (item.totalImportQuantityByPack || 0),
+        (sum, item) => sum + (item.totalImportQuantityByUom || 0),
         0
       ),
       exportQuantity: monthData.data.reduce(
-        (sum, item) => sum + (item.totalExportQuantityByPack || 0),
+        (sum, item) => sum + (item.totalExportQuantityByUom || 0),
         0
       )
     })) || [];
@@ -91,7 +92,7 @@ export function ReceiptChart() {
       <CardHeader>
         <CardTitle>Import/Export receipt </CardTitle>
         <CardDescription>
-          Showing total imports and exports of this material variant in a 12 months
+          Showing total imports and exports of this product variant in a 12 months
         </CardDescription>
       </CardHeader>
       <CardContent className="">
