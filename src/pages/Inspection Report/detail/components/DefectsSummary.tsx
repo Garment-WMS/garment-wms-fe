@@ -8,7 +8,8 @@ import {
   TableRow
 } from '@/components/ui/Table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import PieChartComponent from '@/components/common/PieChart';
+import Colors from '@/constants/color';
 
 interface Defect {
   defectType: string;
@@ -25,55 +26,65 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
     name: defect.defectType,
     value: defect.quantity
   }));
+
+  // Define specific colors for each defect type
+  const defectColors = {
+    Tear: Colors.red[500],
+    Stain: Colors.yellow[500],
+    Misshaped: Colors.green[500],
+    Ugly: Colors.blue[500]
+  };
+
   return (
     <div className="space-y-6">
+      {/* Defects Overview with Updated PieChartComponent */}
       <Card>
         <CardHeader>
-          <CardTitle>Defects Overview</CardTitle>
+          <CardTitle className="text-bluePrimary font-bold">Defects Overview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value">
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="h-76 flex justify-center items-center">
+            <PieChartComponent
+              data={chartData}
+              colors={Object.values(defectColors)}
+              width={350}
+              height={290}
+              innerRadius={90}
+              outerRadius={130}
+              labelType="value"
+              showLegend={false}
+              legendHeight={50}
+            />
           </div>
         </CardContent>
       </Card>
 
+      {/* Defects Details */}
       <Card>
         <CardHeader>
-          <CardTitle>Defects Details</CardTitle>
+          <CardTitle className="text-bluePrimary font-bold">Defects Details</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Defect Type</TableHead>
-                <TableHead className="text-right">Quantity</TableHead>
-                <TableHead className="text-right">Percentage</TableHead>
+                <TableHead className="text-gray-700 font-semibold">Defect Type</TableHead>
+                <TableHead className="text-gray-700 font-semibold text-center">Quantity</TableHead>
+                <TableHead className="text-gray-700 font-semibold text-right">Percentage</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {defects.map((defect) => (
-                <TableRow>
-                  <TableCell className="font-medium">{defect.defectType}</TableCell>
-                  <TableCell className="text-right">{defect.quantity}</TableCell>
-                  <TableCell className="text-right">
+              {defects.map((defect, index) => (
+                <TableRow key={index}>
+                  <TableCell
+                    className="font-medium"
+                    style={{ color: defectColors[defect.defectType] || Colors.tertiaryTextColor }}>
+                    {defect.defectType}
+                  </TableCell>
+                  <TableCell className="text-center text-gray-600 font-medium">
+                    {defect.quantity}
+                  </TableCell>
+                  <TableCell className="text-right text-gray-600 font-medium">
                     {((defect.quantity / totalDefects) * 100).toFixed(2)}%
                   </TableCell>
                 </TableRow>
