@@ -65,7 +65,7 @@ const ProgressChart = () => {
     <>
       <section className="px-6 pt-6 pb-8 w-auto bg-white rounded-xl shadow-md border">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Report</h1>
+          <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Summary</h1>
         </div>
 
         {isLoadingData ? (
@@ -77,10 +77,10 @@ const ProgressChart = () => {
             <PieChartComponent
               data={chartData}
               colors={colors}
-              width={300}
+              width={250}
               height={300}
               innerRadius={50}
-              outerRadius={120}
+              outerRadius={118}
               labelType="value"
               showLegend={false}
             />
