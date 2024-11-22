@@ -36,6 +36,7 @@ import { Router } from 'react-router-dom';
 import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktaking/management';
 import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
 import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
+import RoleBasedRedirect from './RoleBasedRedirected';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -109,43 +110,51 @@ const RouterComponent: React.FC = () => {
             },
             {
               path: '/stocktaking',
-              element: <StocktakingManagement/>
+              element: <RoleBasedRedirect 
+              managerComponent={<StocktakingManagement />}
+              warehouseStaffComponent={<WarehouseStaffStocktakingManagement />}
+              />
             },
             {
               path: '/stocktaking/:id',
-              element: <StocktakingDetails/>
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingDetails/>}
+              warehouseStaffComponent={<WarehousestaffStocktakingDetails/>}
+              />
             },
-            {
-              path: '/warehouse-staff/stocktaking',
-              element: <WarehouseStaffStocktakingManagement/>
-            },
-            {
-              path: '/warehouse-staff/stocktaking/:id',
-              element: <WarehousestaffStocktakingDetails/>
-            },
+          
             {
               path: '/warehouse-staff/stocktaking/plan/:id',
               element: <WarehouseStaffStocktakingPlanDetails/>
             },
             {
               path: '/stocktaking/plan/:id',
-              element: <StocktakingPlanDetails/>
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingPlanDetails/>}
+              warehouseStaffComponent={<WarehouseStaffStocktakingPlanDetails/>}
+              />
             },
-            {
-              path: '/stocktaking/create',
-              element: <CreateInventoryReport/>
-            },
+            // {
+            //   path: '/stocktaking/create',
+            //   element: <CreateInventoryReport/>
+            // },
             {
               path: '/stocktaking/plan/create',
-              element: <CreateStocktakingPlan/>
+              element: <RoleBasedRedirect
+              managerComponent={<CreateStocktakingPlan/>}
+              />
             },
             {
               path: '/stocktaking/plan/create/dynamic',
-              element: <CreateDynamicPlan/>
+              element: <RoleBasedRedirect
+              managerComponent={<CreateDynamicPlan/>}
+              />
             },
             {
               path: '/stocktaking/plan/create/overall',
-              element: <CreateOverallPlan/>
+              element: <RoleBasedRedirect
+              managerComponent={<CreateOverallPlan/>}
+              />
             },
             {
               path: '/material-variant/:id',
