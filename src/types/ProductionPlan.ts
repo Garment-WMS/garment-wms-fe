@@ -1,6 +1,7 @@
 import { PurchaseOrder } from './purchaseOrder';
 import { Account } from './Account';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
+import { ProductionBatch } from './ProductionBatch';
 
 export interface ProductSize {
   id: string;
@@ -24,12 +25,10 @@ export interface ProductSize {
   inventoryStock?: any; // Placeholder for InventoryStock type
   InventoryReportPlanDetail: any[]; // Placeholder for InventoryReportPlanDetail type
 }
-
-// Define the ProductionBatch type
-export interface ProductionBatch {
-  id: string;
-  // Add more properties of ProductionBatch as per your schema
+export interface ImportRequestDetailForProduct{
+  
 }
+
 
 // Define the ProductionPlanDetail type
 export interface ProductionPlanDetail {

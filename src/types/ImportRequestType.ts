@@ -1,4 +1,6 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { ProductionBatch } from './ProductionBatch';
+import { ProductSize } from './ProductType';
 
 export interface ImportRequest {
   managerNote: string;
@@ -25,6 +27,7 @@ export interface ImportRequest {
   description: string;
   poDeliveryId: string;
   purchasingStaffId: string;
+  productionBatch: ProductionBatch | null;
   rejectAt: string | null;
   rejectReason: string | null;
   warehouseManagerId: string | null;
@@ -66,6 +69,7 @@ export interface ImportRequest {
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
+  productionDepartment: WarehouseStaff;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
   inspectionRequest: any;
@@ -81,6 +85,7 @@ export type ImportRequestDetail = {
   deletedAt: string | null;
   quantityByPack: number;
   materialPackage: MaterialPackage;
+  productSize: ProductSize;
 };
 
 export type MaterialPackage = {
@@ -276,9 +281,9 @@ export const DeliveryType = [
   { label: 'Material with Purchase Order', value: 'MATERIAL_BY_PO' },
   { label: 'Return Material', value: 'MATERIAL_RETURN' },
   { label: 'Material without Purchase Order', value: 'MATERIAL_NOT_BY_PO' },
-  { label: 'Product with Manufacturing Order', value: 'PRODUCT_BY_MO' },
+  { label: 'Product with Manufacturing Order', value: 'PRODUCT_BY_BATCH' },
   { label: 'Return Product', value: 'PRODUCT_RETURN' },
-  { label: 'Product without Manufacturing Order', value: 'PRODUCT_NOT_BY_MO' }
+  { label: 'Product without Manufacturing Order', value: 'PRODUCT_NOT_BY_BATCH' }
 ];
 
 export interface UseImportRequestsInput {

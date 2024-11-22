@@ -11,6 +11,7 @@ const ImportRequestStatus = (props: Props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
 
   const id = importRequest?.id.slice(0, 4);
+  const code = importRequest?.code
   const status = importRequest?.status;
   const createdDate = importRequest?.createdAt
     ? new Date(importRequest.createdAt).toLocaleDateString()
@@ -29,14 +30,16 @@ const ImportRequestStatus = (props: Props) => {
       case 'ARRIVED':
         return {
           role: 'Warehouse Manager',
-          avatar: importRequest?.warehouseManager?.account?.avatarUrl,
+          avatar: importRequest?.warehouseManager?.account?.avatarUrl || 'N/A',
           name:
-            importRequest?.warehouseManager?.account?.lastName +
+            (importRequest?.warehouseManager?.account?.lastName +
             ' ' +
-            importRequest?.warehouseManager?.account?.firstName
+            importRequest?.warehouseManager?.account?.firstName) || 'N/A'
         };
       case 'CANCELLED':
       case 'IMPORTED':
+        const isMaterial = importRequest.purchasingStaff
+        if(isMaterial) {
         return {
           role: 'Purchasing Staff',
           avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
@@ -47,7 +50,19 @@ const ImportRequestStatus = (props: Props) => {
           avatarFallback:
             importRequest?.purchasingStaff?.account?.lastName.slice(0, 1) +
             importRequest?.purchasingStaff?.account?.firstName.slice(0, 1)
-        };
+        }}else{
+          return {
+            role: 'Production Department',
+            avatar: importRequest?.productionDepartment?.account?.avatarUrl,
+            name:
+              importRequest?.productionDepartment?.account?.lastName +
+              ' ' +
+              importRequest?.productionDepartment?.account?.firstName,
+              avatarFallback:
+              importRequest?.productionDepartment?.account?.lastName.slice(0, 1) +
+              importRequest?.productionDepartment?.account?.firstName.slice(0, 1)
+          }
+        }
       case 'INSPECTING':
         return {
           role: 'Inspection Team',
@@ -80,7 +95,7 @@ const ImportRequestStatus = (props: Props) => {
     ">
       <div className="flex flex-col justify-center items-center gap-1">
         <div className="font-primary font-bold lg:text-xl">Import Request</div>
-        <span className="font-primary font-bold lg:text-xl">#{id}</span>
+        <span className="font-primary font-bold lg:text-xl">#{code}</span>
         <div className="font-primary text-sm">Assigned to</div>
         <Avatar>
           {assignedTo.avatar ? (
