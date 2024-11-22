@@ -9,5 +9,5 @@ export const PurchaseOrderDeliveryStatusLabels: Record<PurchaseOrderDeliveryStat
   [PurchaseOrderDeliveryStatus.PENDING]: 'Pending',
   [PurchaseOrderDeliveryStatus.CANCELLED]: 'Cancelled',
   [PurchaseOrderDeliveryStatus.FINISHED]: 'Finished',
-  [PurchaseOrderDeliveryStatus.IMPORTING]: 'IMPORTING'
+  [PurchaseOrderDeliveryStatus.IMPORTING]: 'Importing'
 };
