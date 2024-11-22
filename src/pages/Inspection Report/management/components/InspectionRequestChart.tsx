@@ -46,20 +46,20 @@ const InspectionRequestChart = () => {
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm text-gray-500">Total</span>
-            <span className="ml-2 text-3xl font-semibold text-blue-600">{total}</span>
+            <span className="ml-2 text-3xl font-bold text-blue-600">{total}</span>
           </div>
         </CardHeader>
         <div className="w-full py-5 flex justify-center">
           <PieChartComponent
             data={chartData}
             colors={[Colors.green[500], Colors.blue[500]]}
-            width={400}
-            height={400}
-            innerRadius={90}
-            outerRadius={150}
+            width={280}
+            height={280}
+            innerRadius={80}
+            outerRadius={120}
             labelType="value"
             showLegend={true}
-            legendHeight={20}
+            legendHeight={5}
           />
         </div>
       </Card>

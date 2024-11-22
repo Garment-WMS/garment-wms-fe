@@ -30,6 +30,7 @@ const statusColors = {
   [ProductionPlanStatus.IN_PROGRESS]: 'bg-yellow-500 text-black',
   [ProductionPlanStatus.FINISHED]: 'bg-green-500 text-white'
 };
+
 const errorMessages = {
   invalidFileType: {
     statusCode: 400,
@@ -107,8 +108,12 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   };
 
   const uploadFileToServer = async (file: File) => {
+    if (!selectedPlan) {
+      setUploadError('Please select a production plan.');
+      return;
+    }
     try {
-      const response = await importPurchaseOrder(file);
+      const response = await importPurchaseOrder(file, selectedPlan.id);
       console.log(response);
       if (response.statusCode !== 200 && response.statusCode !== 201) {
         handleUploadErrors(response);
@@ -185,18 +190,15 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
     }
   };
 
-  const { productionPlanList, isPending, isError, pageMeta } = useGetAllProductionPlans({
+  const { productionPlanList, isPending, isError } = useGetAllProductionPlans({
     sorting,
     columnFilters,
     pagination
   });
 
-  const filteredPlans = productionPlanList?.data?.filter(
-    (plan) => plan.status === ProductionPlanStatus.PLANNING
+  const filteredPlans: ProductionPlan = productionPlanList?.data?.filter(
+    (plan: ProductionPlan) => plan.status === ProductionPlanStatus.IN_PROGRESS
   );
-
-  console.log('filteredPlans');
-  console.log(filteredPlans);
 
   const renderProductionPlan = () => {
     const handlePageChange = (newPageIndex: number) => {
@@ -207,7 +209,11 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
     };
 
     if (isPending) {
-      return <Loading />;
+      return (
+        <div className="flex justify-center items-center h-full">
+          <Loading />
+        </div>
+      );
     }
 
     if (isError) {
@@ -290,7 +296,6 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
 
   const renderUploadExcel = () => (
     <div>
-      {/* Display the selected plan's code */}
       {selectedPlan && (
         <div className="mb-4 bg-gray-100 p-4 rounded-lg shadow-md">
           <p className="text-sm font-semibold text-gray-700">
