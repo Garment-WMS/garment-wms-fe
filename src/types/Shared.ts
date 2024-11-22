@@ -15,4 +15,7 @@ export interface InputType {
     hasNext?: boolean;
     hasPrevious?: boolean;
   }
-  
+  export interface filterType {
+    label: string;
+    value: string;
+  }

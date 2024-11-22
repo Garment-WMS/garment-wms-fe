@@ -1,38 +1,59 @@
-import {
-  MaterialExportReceiptResponse,
-  MaterialImportReceiptResponse,
-  MaterialReceiptResponse,
-  MaterialVariantResponse,
-  UseMaterialsInput
-} from '@/types/MaterialTypes';
+import { InputType } from '@/types/Shared';
 import { get, post } from '../ApiCaller';
-import { toast } from '@/hooks/use-toast';
-import axios from 'axios';
+import {
+  ProductExportReceiptResponse,
+  ProductImportReceiptResponse,
+  ProductVariantResponse
+} from '@/types/ProductType';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import privateCall from '../PrivateCaller';
 
-let materialVariant = '/material-variant';
-let materialType = '/material';
-export const materialApi = {
-  getOne: (id: string) => get(`${materialVariant}/${id}`),
-  getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
-  getAllNoArgument: () => get(`${materialVariant}`),
-  getOneImportReceipt: (id: string, queryString: string) =>
-    get(`${materialVariant}/${id}/import-receipt/${queryString}`),
-  getOneExportReceipt: (id: string, queryString: string) =>
-    get(`${materialVariant}/${id}/export-receipt/${queryString}`),
-  getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
-  addImage: (id: string, data: FormData, config: any) =>
-    post(`${materialVariant}/${id}/image`, data, undefined, config)
+const productPath = '/product';
+const productVariantPath = '/product-variant';
+export const productVariantApi = {
+  getAllProductVariant(queryString: string) {
+    return get(`${productVariantPath}${queryString}`);
+  },
+  getOneProductVariant(id: string) {
+    return get(`${productVariantPath}/${id}`);
+  },
+  uploadImage: (id: string, data: FormData, config: any) =>
+    post(`${productVariantPath}/${id}/image`, data, undefined, config),
+  getOneProductImportReceipt: (id: string, queryString: string) =>
+    get(`${productVariantPath}/${id}/import-receipt/${queryString}`),
+  getOneProductExportReceipt: (id: string, queryString: string) =>
+    get(`${productVariantPath}/${id}/export-receipt/${queryString}`),
+  getReceiptStatistics: (data: any) => post(`${productVariantPath}/chart`, data),
+  createProductFormula: (
+    productId: string,
+    name: string,
+    quantityRangeStart: number,
+    quantityRangeEnd: number,
+    productFormulaMaterials: any[]
+  ) =>
+    post(`/product-formula`, {
+      productSizeId: productId,
+      name,
+      quantityRangeStart,
+      quantityRangeEnd,
+      productFormulaMaterials
+    })
 };
-export const materialTypeApi = {
-  getAll: () => get(`${materialType}`)
+
+export const productApi = {
+  getAllProduct() {
+    return get(`${productPath}`);
+  },
+  getOneProduct(id: string) {
+    return get(`${productPath}/${id}`);
+  }
 };
-export const getAllMaterialFn = async ({
+
+export const getAllProductVariantFn = async ({
   sorting,
   columnFilters,
   pagination
-}: UseMaterialsInput): Promise<MaterialVariantResponse> => {
+}: InputType): Promise<ProductVariantResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
@@ -92,24 +113,14 @@ export const getAllMaterialFn = async ({
     order
   });
   // Make the API request
-  const res = await axios(materialApi.getAll(queryString));
+  const res = await privateCall(productVariantApi.getAllProductVariant(queryString));
   return res.data;
 };
 
-export const getAllMaterialNoArgumentFn = async (): Promise<any> => {
-  // Make the API request
-  const res = await axios(materialApi.getAllNoArgument());
-  return res.data;
-};
-export const getOneMaterial = async (id: string): Promise<MaterialVariantResponse> => {
-  const res = await privateCall(materialApi.getOne(id));
-  return res.data.data;
-};
-
-export const getOneMaterialImportReceiptFn = async (
+export const getOneProductImportReceiptFn = async (
   id: string,
-  { sorting, columnFilters, pagination }: UseMaterialsInput
-): Promise<MaterialImportReceiptResponse> => {
+  { sorting, columnFilters, pagination }: InputType
+): Promise<ProductImportReceiptResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
@@ -169,14 +180,14 @@ export const getOneMaterialImportReceiptFn = async (
     order
   });
   // Make the API request
-  const res = await privateCall(materialApi.getOneImportReceipt(id, queryString));
+  const res = await privateCall(productVariantApi.getOneProductImportReceipt(id, queryString));
   return res.data;
 };
 
-export const getOneMaterialExportReceiptFn = async (
+export const getOneProductExportReceiptFn = async (
   id: string,
-  { sorting, columnFilters, pagination }: UseMaterialsInput
-): Promise<MaterialExportReceiptResponse> => {
+  { sorting, columnFilters, pagination }: InputType
+): Promise<ProductExportReceiptResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
@@ -236,6 +247,34 @@ export const getOneMaterialExportReceiptFn = async (
     order
   });
   // Make the API request
-  const res = await privateCall(materialApi.getOneExportReceipt(id, queryString));
+  const res = await privateCall(productVariantApi.getOneProductExportReceipt(id, queryString));
+  return res.data;
+};
+
+export const createProductFormula: {
+  (
+    productId: string,
+    name: string,
+    quantityRangeStart: number,
+    quantityRangeEnd: number,
+    productFormulaMaterials: any[]
+  ): Promise<any>;
+} = async (
+  productId: string,
+  name: string,
+  quantityRangeStart: number,
+  quantityRangeEnd: number,
+  productFormulaMaterials: any[]
+) => {
+  const res = await privateCall(
+    productVariantApi.createProductFormula(
+      productId,
+      name,
+      quantityRangeStart,
+      quantityRangeEnd,
+      productFormulaMaterials
+    )
+  );
+
   return res.data;
 };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Check, Plus, X, Save, ArrowRight, Beaker, Camera } from 'lucide-react';
-
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -19,7 +19,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Table,
   TableBody,
@@ -43,6 +42,11 @@ import {
   getProductFormulaByProductionBatchFn
 } from '@/api/services/productionBatchApi';
 import { getAllMaterialNoArgumentFn } from '@/api/services/materialApi';
+import { createProductFormula } from '@/api/services/productApi';
+import { createMaterialExportRequest } from '@/api/services/exportRequestApi';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 type MaterialVariant = {
   id: string;
@@ -77,9 +81,11 @@ type ProductFormula = {
 type ProductionBatch = {
   id: string;
   name: string;
-  quantityToProduce: number;
+
   status: string;
   productionPlanDetail: {
+    quantityToProduce: number;
+    productSizeId: string;
     productSize: {
       name: string;
       productVariant: {
@@ -96,10 +102,43 @@ type Material = {
   code: string;
   numberOfMaterialVariants: number;
   image: string;
+  material: any;
 };
 type NewFormulaMaterial = {
   materialId: string;
   quantity: number;
+};
+
+type FormulaDetails = {
+  productSizeId: string;
+  name: string;
+  quantityRangeStart: number;
+  quantityRangeEnd: number;
+  isBaseFormula: boolean;
+  productFormulaMaterials: Array<{
+    materialVariantId: string;
+    quantityByUom: number;
+  }>;
+};
+type TemporaryFormula = {
+  id: string;
+  name: string;
+  quantityRangeStart: number;
+  quantityRangeEnd: number;
+  productFormulaMaterial: Array<{
+    id: string;
+    materialVariant: {
+      id: string;
+      name: string;
+      image: string;
+      material: {
+        materialUom: {
+          uomCharacter: string;
+        };
+      };
+    };
+    quantityByUom: number;
+  }>;
 };
 export default function ExportMaterialPage() {
   const [productionBatches, setProductionBatches] = useState<ProductionBatch[]>([]);
@@ -116,7 +155,242 @@ export default function ExportMaterialPage() {
   const [isSavingFormula, setIsSavingFormula] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showAddMaterialDialog, setShowAddMaterialDialog] = useState(false);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string>('');
+  const [newMaterialQuantity, setNewMaterialQuantity] = useState<number>(0);
+  const [showFormulaDetailsDialog, setShowFormulaDetailsDialog] = useState(false);
+  const [exportDescription, setExportDescription] = useState('');
+  const [isCreatingExportRequest, setIsCreatingExportRequest] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [formulaDetails, setFormulaDetails] = useState<FormulaDetails>({
+    productSizeId: '',
+    name: '',
+    quantityRangeStart: 0,
+    quantityRangeEnd: 0,
+    isBaseFormula: false,
+    productFormulaMaterials: []
+  });
+  const [temporaryFormula, setTemporaryFormula] = useState<TemporaryFormula | null>(null);
 
+  const handleSaveFormula = () => {
+    setShowSaveDialog(false);
+    setShowFormulaDetailsDialog(true);
+    setFormulaDetails({
+      ...formulaDetails,
+      name: newFormulaName,
+      productFormulaMaterials: newFormulaMaterials.map((material) => ({
+        materialVariantId: material.materialId,
+        quantityByUom: material.quantity
+      }))
+    });
+  };
+  const handleUseOnce = () => {
+    setTemporaryFormula({
+      id: 'temp-' + Date.now(),
+      name: newFormulaName || 'Temporary Formula',
+      quantityRangeStart: formulaDetails.quantityRangeStart,
+      quantityRangeEnd: formulaDetails.quantityRangeEnd,
+      productFormulaMaterial: newFormulaMaterials.map((material) => ({
+        id: 'temp-' + Date.now() + '-' + material.materialId,
+        materialVariant: {
+          id: material.materialId,
+          name: materials.find((m) => m.id === material.materialId)?.name || '',
+          image: materials.find((m) => m.id === material.materialId)?.image || '',
+          material: {
+            materialUom: {
+              uomCharacter:
+                materials.find((m) => m.id === material.materialId)?.material.materialUom
+                  .uomCharacter || ''
+            }
+          }
+        },
+        quantityByUom: material.quantity
+      }))
+    });
+    setShowSaveDialog(false);
+    setIsCreatingFormula(false);
+    setSelectedFormula('temp');
+  };
+  const handleFormulaDetailsSubmit = async () => {
+    setIsSavingFormula(true);
+    try {
+      const batch = productionBatches.find((item) => item.id === selectedBatch);
+      if (!batch) {
+        throw new Error('Selected batch not found');
+      }
+      const res = await createProductFormula(
+        batch.productionPlanDetail.productSizeId,
+        formulaDetails.name,
+        formulaDetails.quantityRangeStart,
+        formulaDetails.quantityRangeEnd,
+        formulaDetails.productFormulaMaterials
+      );
+      console.log('Formula saved successfully:', res);
+
+      // Re-fetch the product formulas to update the list
+      await fetchProductFormulas();
+
+      // Reset form fields after submission
+      setNewFormulaName('');
+      setNewFormulaMaterials([]);
+      setIsCreatingFormula(false);
+      setShowFormulaDetailsDialog(false);
+    } catch (error) {
+      console.error('Error saving formula:', error);
+      setError('Failed to save formula');
+    } finally {
+      setIsSavingFormula(false);
+    }
+  };
+  useEffect(() => {
+    if (selectedBatch) {
+      fetchProductFormulas();
+    }
+  }, [selectedBatch]);
+
+  const handleCreateExportRequest = async () => {
+    if (!selectedBatch || !selectedFormula) {
+      setError('Please select a production batch and a formula');
+      return;
+    }
+
+    setIsCreatingExportRequest(true);
+    try {
+      let response;
+      if (selectedFormula === 'temp' && temporaryFormula) {
+        // Handle temporary formula case
+        const materialExportRequestDetail = temporaryFormula.productFormulaMaterial.map(
+          (material) => ({
+            materialVariantId: material.materialVariant.id,
+            quantityByUom: material.quantityByUom * productQuantity
+          })
+        );
+        response = await createMaterialExportRequest(
+          selectedBatch,
+          exportDescription,
+          materialExportRequestDetail,
+          'custom'
+        );
+        if (response.statusCode === 201) {
+          toast({
+            variant: 'success',
+            title: 'Export request created',
+            description: 'Your material export request has been successfully created.'
+          });
+          navigate('/home');
+        } else {
+          throw new Error('Unexpected status code: ' + response.statusCode);
+        }
+      } else {
+        // Handle saved formula case
+        response = await createMaterialExportRequest(
+          selectedBatch,
+          exportDescription,
+          selectedFormula,
+          'formula'
+        );
+      }
+
+      console.log('Export request created:', response);
+      // Handle successful creation (e.g., show success message, reset form, etc.)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to create export request',
+          description: error.message || 'An unexpected error occurred. Please try again.'
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to create export request',
+          description: 'An unexpected error occurred. Please try again.'
+        });
+      }
+    } finally {
+      setIsCreatingExportRequest(false);
+    }
+  };
+
+  const fetchProductFormulas = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getProductFormulaByProductionBatchFn(selectedBatch as string);
+      const batch = productionBatches.find((b) => b.id === selectedBatch);
+      if (batch) {
+        setProductQuantity(batch.productionPlanDetail.quantityToProduce);
+        // Filter suitable formulas
+        const suitableFormulas = response.filter(
+          (formula: ProductFormula) =>
+            batch.productionPlanDetail.quantityToProduce >= formula.quantityRangeStart &&
+            batch.productionPlanDetail.quantityToProduce <= formula.quantityRangeEnd
+        );
+        setProductFormulas(suitableFormulas);
+      }
+    } catch (err) {
+      setError('Failed to fetch product formulas');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderFormulaDetailsDialog = () => (
+    <Dialog open={showFormulaDetailsDialog} onOpenChange={setShowFormulaDetailsDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Formula Details</DialogTitle>
+          <DialogDescription>
+            Please fill in the remaining details for your formula.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="formula-name">Formula Name</Label>
+            <Input
+              id="formula-name"
+              value={formulaDetails.name}
+              onChange={(e) => setFormulaDetails({ ...formulaDetails, name: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="quantity-range-start">Quantity Range Start</Label>
+            <Input
+              id="quantity-range-start"
+              type="number"
+              value={formulaDetails.quantityRangeStart}
+              onChange={(e) =>
+                setFormulaDetails({
+                  ...formulaDetails,
+                  quantityRangeStart: parseInt(e.target.value)
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="quantity-range-end">Quantity Range End</Label>
+            <Input
+              id="quantity-range-end"
+              type="number"
+              value={formulaDetails.quantityRangeEnd}
+              onChange={(e) =>
+                setFormulaDetails({ ...formulaDetails, quantityRangeEnd: parseInt(e.target.value) })
+              }
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowFormulaDetailsDialog(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleFormulaDetailsSubmit} disabled={isSavingFormula}>
+            {isSavingFormula ? 'Saving...' : 'Save Formula'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -145,19 +419,24 @@ export default function ExportMaterialPage() {
           setIsLoading(true);
           const response = await getProductFormulaByProductionBatchFn(selectedBatch);
           const batch = productionBatches.find((b) => b.id === selectedBatch);
+
           if (batch) {
-            setProductQuantity(batch.quantityToProduce);
+            setProductQuantity(batch.productionPlanDetail.quantityToProduce);
             // Filter suitable formulas
             const suitableFormulas = response.filter(
               (formula: any) =>
-                batch.quantityToProduce >= formula.quantityRangeStart &&
-                batch.quantityToProduce <= formula.quantityRangeEnd
+                batch.productionPlanDetail.quantityToProduce >= formula.quantityRangeStart &&
+                batch.productionPlanDetail.quantityToProduce <= formula.quantityRangeEnd
             );
-            // Simulate loading delay
-            setTimeout(() => {
-              setProductFormulas(suitableFormulas);
-              setIsLoading(false);
-            }, 1000);
+            setProductFormulas(suitableFormulas);
+
+            if (suitableFormulas && suitableFormulas.length > 0) {
+              setSelectedFormula(suitableFormulas[0].id);
+            } else {
+              setSelectedFormula('new');
+            }
+
+            setIsLoading(false);
           }
         } catch (err) {
           setError('Failed to fetch product formulas');
@@ -177,7 +456,16 @@ export default function ExportMaterialPage() {
     );
     if (appropriateFormula) {
       setSelectedFormula(appropriateFormula.id);
+    } else {
+      setSelectedFormula('new');
     }
+  };
+  const handleMaterialChange = (materialId: string, quantity: number) => {
+    setNewFormulaMaterials((prevMaterials) =>
+      prevMaterials.map((material) =>
+        material.materialId === materialId ? { ...material, quantity } : material
+      )
+    );
   };
 
   const getTotalMaterials = () => {
@@ -202,45 +490,38 @@ export default function ExportMaterialPage() {
     return totals;
   };
 
-  const handleAddNewFormulaMaterial = () => {
-    setNewFormulaMaterials([...newFormulaMaterials, { materialId: '', quantity: 0 }]);
-  };
+  // const handleAddNewFormulaMaterial = () => {
+  //   setNewFormulaMaterials([...newFormulaMaterials, { materialId: '', quantity: 0 }]);
+  // };
 
-  const handleRemoveNewFormulaMaterial = (index: number) => {
-    setNewFormulaMaterials(newFormulaMaterials.filter((_, i) => i !== index));
-  };
+  // const handleRemoveNewFormulaMaterial = (index: number) => {
+  //   setNewFormulaMaterials(newFormulaMaterials.filter((_, i) => i !== index));
+  // };
 
-  const handleNewFormulaMaterialChange = (
-    index: number,
-    field: 'materialId' | 'quantity',
-    value: string | number
-  ) => {
-    const updatedMaterials = [...newFormulaMaterials];
-    updatedMaterials[index][field] = value;
-    setNewFormulaMaterials(updatedMaterials);
-  };
+  // const handleNewFormulaMaterialChange = (
+  //   index: number,
+  //   field: 'materialId' | 'quantity',
+  //   value: string | number
+  // ) => {
+  //   const updatedMaterials = [...newFormulaMaterials];
+  //   updatedMaterials[index][field] = value;
+  //   setNewFormulaMaterials(updatedMaterials);
+  // };
 
   const handleCreateFormula = async () => {
     setIsCreatingFormula(true);
   };
 
-  const handleSaveFormula = async () => {
-    setIsSavingFormula(true);
-    // Implement the logic to save the new formula
-    console.log('Saving new formula:', {
-      name: newFormulaName,
-      materials: newFormulaMaterials
-    });
-    // Reset form fields after submission
-    setNewFormulaName('');
-    setNewFormulaMaterials([]);
-    setIsCreatingFormula(false);
-    setIsSavingFormula(false);
-    setShowSaveDialog(false);
-  };
-  const handleAddMaterial = (materialId: string) => {
-    setNewFormulaMaterials((prev) => [...prev, { materialId, quantity: 0 }]);
-    setShowAddMaterialDialog(false);
+  const handleAddMaterial = () => {
+    if (selectedMaterialId && newMaterialQuantity > 0) {
+      setNewFormulaMaterials((prev) => [
+        ...prev,
+        { materialId: selectedMaterialId, quantity: newMaterialQuantity }
+      ]);
+      setShowAddMaterialDialog(false);
+      setSelectedMaterialId('');
+      setNewMaterialQuantity(0);
+    }
   };
 
   const handleRemoveMaterial = (materialId: string) => {
@@ -261,12 +542,6 @@ export default function ExportMaterialPage() {
             <Label htmlFor="formula-name" className="w-24 shrink-0">
               Formula Name
             </Label>
-            <Input
-              id="formula-name"
-              value={newFormulaName}
-              onChange={(e) => setNewFormulaName(e.target.value)}
-              className="flex-grow"
-            />
           </div>
           <ScrollArea className="h-[400px] rounded-md border p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -303,8 +578,8 @@ export default function ExportMaterialPage() {
                           <Slider
                             id={`quantity-${material.id}`}
                             value={[formulaMaterial.quantity]}
-                            onValueChange={(value) => handleQuantityChange(material.id, value[0])}
-                            max={100}
+                            onValueChange={(value) => handleMaterialChange(material.id, value[0])}
+                            max={50}
                             step={1}
                             className="flex-grow"
                           />
@@ -338,22 +613,50 @@ export default function ExportMaterialPage() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Material</DialogTitle>
-          <DialogDescription>Select a material to add to your formula.</DialogDescription>
+          <DialogDescription>
+            Select a material and specify the quantity to add to your formula.
+          </DialogDescription>
         </DialogHeader>
-        <Select onValueChange={handleAddMaterial}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a material" />
-          </SelectTrigger>
-          <SelectContent>
-            {materials
-              .filter((m) => !newFormulaMaterials.some((fm) => fm.materialId === m.id))
-              .map((material) => (
-                <SelectItem key={material.id} value={material.id}>
-                  {material.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="material-select">Material</Label>
+            <Select onValueChange={setSelectedMaterialId} value={selectedMaterialId}>
+              <SelectTrigger id="material-select">
+                <SelectValue placeholder="Select a material" />
+              </SelectTrigger>
+              <SelectContent>
+                {materials
+                  .filter((m) => !newFormulaMaterials.some((fm) => fm.materialId === m.id))
+                  .map((material) => (
+                    <SelectItem key={material.id} value={material.id}>
+                      {material.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="material-quantity">Quantity</Label>
+            <Input
+              id="material-quantity"
+              type="number"
+              min="0"
+              step="0.01"
+              value={newMaterialQuantity}
+              onChange={(e) => setNewMaterialQuantity(parseFloat(e.target.value))}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowAddMaterialDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddMaterial}
+            disabled={!selectedMaterialId || newMaterialQuantity <= 0}>
+            Add Material
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -367,7 +670,7 @@ export default function ExportMaterialPage() {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+          <Button variant="outline" onClick={handleUseOnce}>
             Use Once
           </Button>
           <Button onClick={handleSaveFormula} disabled={isSavingFormula}>
@@ -404,7 +707,7 @@ export default function ExportMaterialPage() {
                 <SelectLabel>Production Batches</SelectLabel>
                 {productionBatches.map((batch) => (
                   <SelectItem key={batch.id} value={batch.id}>
-                    {batch.name} (Quantity: {batch.quantityToProduce})
+                    {batch.name} (Quantity: {batch.productionPlanDetail.quantityToProduce})
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -469,6 +772,9 @@ export default function ExportMaterialPage() {
                     {formula.name}
                   </TabsTrigger>
                 ))}
+                {temporaryFormula && (
+                  <TabsTrigger value="temp">{temporaryFormula.name}</TabsTrigger>
+                )}
                 <TabsTrigger value="new">
                   <Beaker className="mr-2 h-4 w-4" />
                   Create New Formula
@@ -505,7 +811,9 @@ export default function ExportMaterialPage() {
                               </TableCell>
                               <TableCell>{material.quantityByUom}</TableCell>
                               <TableCell>
-                                {material.materialVariant.material.materialUom.uomCharacter}
+                                {material.materialVariant.material.materialUom.uomCharacter +
+                                  ' ' +
+                                  `(${material.materialVariant.material.materialUom.name})`}
                               </TableCell>
                             </TableRow>
                           ))}
@@ -515,6 +823,49 @@ export default function ExportMaterialPage() {
                   </Card>
                 </TabsContent>
               ))}
+              {temporaryFormula && (
+                <TabsContent value="temp">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{temporaryFormula.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>
+                        Quantity Range: {temporaryFormula.quantityRangeStart} -{' '}
+                        {temporaryFormula.quantityRangeEnd}
+                      </p>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Material</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Unit</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {temporaryFormula.productFormulaMaterial.map((material) => (
+                            <TableRow key={material.id}>
+                              <TableCell className="flex items-center space-x-2">
+                                <img
+                                  src={material.materialVariant.image || '/placeholder.svg'}
+                                  alt={material.materialVariant.name}
+                                  className="rounded-full w-10 h-10"
+                                />
+                                <span>{material.materialVariant.name}</span>
+                              </TableCell>
+                              <TableCell>{material.quantityByUom}</TableCell>
+
+                              <TableCell>
+                                {material.materialVariant.material.materialUom.uomCharacter}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
               <TabsContent value="new">
                 <Card>
                   <CardHeader>
@@ -546,20 +897,39 @@ export default function ExportMaterialPage() {
                 </Badge>
               ))}
             </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="export-description">Description</Label>
+                <Textarea
+                  id="export-description"
+                  placeholder="Enter a description for this export request"
+                  value={exportDescription}
+                  onChange={(e: any) => setExportDescription(e.target.value)}
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
 
       <Card>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-between items-center pt-6">
           <Button variant="outline">Cancel</Button>
-          <Button>Create Material Request</Button>
+          <Button onClick={handleCreateExportRequest}>Create Material Request</Button>
         </CardFooter>
       </Card>
 
       {renderFormulaCreator()}
       {renderAddMaterialDialog()}
       {renderSaveDialog()}
+      {renderFormulaDetailsDialog()}
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

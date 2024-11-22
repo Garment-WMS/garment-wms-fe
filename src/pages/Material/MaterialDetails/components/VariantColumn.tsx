@@ -11,7 +11,7 @@ export const DetailsColumn: ColumnDef<MaterialPackage>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Variant Code
+          Package Code
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -26,7 +26,7 @@ export const DetailsColumn: ColumnDef<MaterialPackage>[] = [
           <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Variant Name
+          Package Name
           <CaretSortIcon className="ml-2 h-4 w-4" />
         </Button>
         </div>

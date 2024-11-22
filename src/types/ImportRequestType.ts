@@ -272,6 +272,11 @@ export interface UseImportRequestsResponse {
   data: ImportRequest[];
 }
 
+export interface UseExportRequestsResponse {
+  pageMeta: PageMetaData;
+  data: any[];
+}
+
 export const DeliveryType = [
   { label: 'Material with Purchase Order', value: 'MATERIAL_BY_PO' },
   { label: 'Return Material', value: 'MATERIAL_RETURN' },
@@ -282,6 +287,12 @@ export const DeliveryType = [
 ];
 
 export interface UseImportRequestsInput {
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  pagination: PaginationState;
+}
+
+export interface UseExportRequestsInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;

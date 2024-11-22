@@ -35,6 +35,9 @@ import CreateExportRequest from '@/pages/ExportRequest';
 import ViewExportRequest from '@/pages/ExportRequestDetail';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
+import ProductManagement from '@/pages/Product/Management';
+import ProductVariantDetails from '@/pages/Product/Details';
+import ExportRequestList from '@/pages/ExportRequestList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -60,7 +63,7 @@ const RouterComponent: React.FC = () => {
           element: <WarehouseManagerLayout />,
           children: [
             {
-              path: '/warehouse-manager/home',
+              path: '/home',
               element: <Home />
             }
           ]
@@ -98,8 +101,12 @@ const RouterComponent: React.FC = () => {
               element: <ImportRequestManagement />
             },
             {
+              path: '/export-request',
+              element: <ExportRequestList />
+            },
+            {
               path: '/home',
-              element: <Home />
+              element: <MyTasks />
             },
             {
               path: '/tasks',
@@ -128,6 +135,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/material-variant',
               element: <MaterialManagement />
+            },
+            {
+              path: '/product-variant',
+              element: <ProductManagement />
+            },
+            {
+              path: '/product-variant/:id',
+              element: <ProductVariantDetails />
             },
             {
               path: '/dashboard',
