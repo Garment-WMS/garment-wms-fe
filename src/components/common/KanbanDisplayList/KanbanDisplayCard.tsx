@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -11,19 +11,26 @@ type Props = {
 const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const handleViewClick = (requestId: string) => {
+  const handleMaterialViewClick = (requestId: string) => {
     // const basePath = location.pathname.split('/material')[0]; // Get base path (either manager or purchase-staff)
 
     // Navigate to the new route
     navigate(`/material-variant/${requestId}`);
   };
 
+  const handleProductViewClick = (requestId: string) => {
+    const basePath = location.pathname.split('/product-variant')[0];
+
+    // Navigate to the new route
+    navigate(`${basePath}/product-variant/${requestId}`);
+  }
+
   return (
-    <Link to="#" key={product.id} onClick={() => product.id && handleViewClick(product.id)}>
+    <Link to="#" key={product.id} onClick={() => (product.id && product.material) ? handleMaterialViewClick(product.id) : handleProductViewClick(product.id)}>
       <Card key={product.id} className="overflow-hidden">
         <CardContent className="p-4">
-          <div className="flex justify-between items-start gap-4">
-            <div className="w-full max-w-[130px] truncate">
+          <div className="flex justify-between items-start">
+            <div className='w-full max-w-[130px] truncate'>
               <h3 className="font-semibold text-sm truncate">{product.name}</h3>
               {product.code && <p className="text-xs text-gray-500 truncate">[{product.code}]</p>}
               {product.materialPackage && (
@@ -33,7 +40,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
               )}
               {product.productSize && (
                 <p className="text-xs text-gray-500">
-                  {product.productSize.length} Size 
+                  {product.productSize.length} Sizes
                 </p>
               )}
 

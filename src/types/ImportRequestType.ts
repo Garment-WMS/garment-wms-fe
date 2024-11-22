@@ -292,4 +292,6 @@ export interface PageMetaData {
   limit: number;
   page: number;
   totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }

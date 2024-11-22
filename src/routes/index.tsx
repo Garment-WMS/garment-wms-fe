@@ -37,15 +37,21 @@ import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktak
 import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
 import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
 import RoleBasedRedirect from './RoleBasedRedirected';
+import ImportReceipt from '@/pages/ImportReceiptDetail';
+import MyTasks from '@/pages/tasks';
+import TaskDetailPage from '@/pages/tasks/taskDetails';
+import ProductionPlanManagement from '@/pages/Production Plan/management';
+import ProductionPlanDetail from '@/pages/Production Plan/detail';
+import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import InspectionRequestDetails from '@/pages/Inspection Report/detail';
+import InspectionRequestManagement from '@/pages/Inspection Report/management';
+import ProductManagement from '@/pages/Product/Management';
+import ProductVariantDetails from '@/pages/Product/Details';
+import ProductionBatchManagement from '@/pages/Production Batch/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
     { path: '/', element: <Navigate to="home" /> },
-
-    {
-      path: '/home',
-      element: <Home />
-    },
 
     {
       path: '/demo',
@@ -58,7 +64,7 @@ const RouterComponent: React.FC = () => {
     },
     {
       path: '/login',
-      element: <Login />,
+      element: <Login />
     },
     {
       element: <WarehouseManagerRoute />,
@@ -97,15 +103,15 @@ const RouterComponent: React.FC = () => {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/import-request/:id',
+              path: '/import-request/:id',
               element: <ViewImportRequest />
             },
             {
-              path: '/purchase-staff/import-request',
+              path: '/import-request',
               element: <ImportRequestManagement />
             },
             {
-              path: '/purchase-staff/home',
+              path: '/home',
               element: <Home />
             },
             {
@@ -157,42 +163,84 @@ const RouterComponent: React.FC = () => {
               />
             },
             {
+              path: '/tasks',
+              element: <MyTasks />
+            },
+            {
+              path: '/tasks/:id',
+              element: <TaskDetailPage />
+            },
+            {
+              path: '/import-receipt/:id',
+              element: <ImportReceipt />
+            },
+            {
+              path: '/import-receipt/',
+              element: <ImportReceiptList />
+            },
+            {
               path: '/material-variant/:id',
-              element: <MaterialDetails/>
+              element: <MaterialDetails />
             },
             {
               path: '/material-variant/update/:id',
-              element: <MaterialVariantUpdate/>
+              element: <MaterialVariantUpdate />
             },
             {
               path: '/material-variant',
-              element: <MaterialManagement/>
+              element: <MaterialManagement />
             },
+            {
+              path: '/product-variant',
+              element: <ProductManagement />
+            },
+            {
+              path: '/product-variant/:id',
+              element: <ProductVariantDetails />
+            },
+            {
+              path: '/dashboard',
+              element: <Home />
+            }
           ]
         },
         {
           element: <PurchaseStaffLayout />,
           children: [
             {
-              path: '/purchase-staff/purchase-order',
+              path: '/purchase-order',
               element: <PurchaseOrderManagement />
             },
             {
-              path: '/purchase-staff/purchase-order/:id',
+              path: '/purchase-order/:id',
               element: <PurchaseOrderDetails />
             },
             {
-              path: '/purchase-staff/purchase-order/:poId/po-delivery/:deliveryId',
+              path: '/purchase-order/:poId/po-delivery/:deliveryId',
               element: <PurchaseOrderDeliveryDetails />
             },
             {
-              path: '/purchase-staff/import-request/create/material',
+              path: '/import-request/create/material',
               element: <CreateImportRequest />
             },
             {
-              path: '/purchase-staff/import-request/create',
+              path: '/import-request/create',
               element: <CreateImportRequestMenu />
-            }
+            },
+            {
+              path: '/production-plan',
+              element: <ProductionPlanManagement />
+            },
+            {
+              path: '/production-plan/:id',
+              element: <ProductionPlanDetail />
+            },
+            { path: '/report', element: <InspectionRequestManagement /> },
+            {
+              path: '/report/:id',
+              element: <InspectionRequestDetails />
+            },
+            { path: '/production-batch', element: <ProductionBatchManagement /> }
           ]
         }
       ]
@@ -226,6 +274,5 @@ const RouterComponent: React.FC = () => {
     // { path: '*', element: <ErrorPage /> },
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
-    
 };
 export default RouterComponent;

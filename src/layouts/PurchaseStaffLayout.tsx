@@ -1,45 +1,60 @@
 import SideBar from '@/components/SideBar';
 import { MenuProps } from '@/constants/interface';
-import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { FaHome, FaBoxOpen } from 'react-icons/fa';
-import { GiClothes } from 'react-icons/gi';
-import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
+import {
+  TbCalendarCog,
+  TbClipboardData,
+  TbHome,
+  TbPackage,
+  TbShirt,
+  TbShoppingCartCog
+} from 'react-icons/tb';
+import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
+import { GiRolledCloth } from 'react-icons/gi';
 
 type Props = {};
 const iconSize = 22;
 const PurchaseStaffMenu: MenuProps[] = [
   {
-    title: 'Home',
-    renderIcon: <FaHome size={iconSize} />,
-    link: '/purchase-staff/home'
+    title: 'Dashboard',
+    renderIcon: <TbHome size={iconSize} />,
+    link: '/dashboard'
+  },
+  {
+    title: 'Production Plan',
+    renderIcon: <TbCalendarCog size={iconSize} />,
+    link: '/production-plan'
+  },
+  {
+    title: 'Production Batch',
+    renderIcon: <LuContainer size={iconSize} />,
+    link: '/production-batch'
   },
   {
     title: 'Purchase Order',
-    renderIcon: <FaBoxOpen size={iconSize} />,
-    link: '/purchase-staff/purchase-order'
+    renderIcon: <TbShoppingCartCog size={iconSize} />,
+    link: '/purchase-order'
   },
   {
-    title: 'Delivery Note',
-    renderIcon: <FaBoxOpen size={iconSize} />,
-    link: '/purchase-staff/import-request'
+    title: 'Import Request',
+    renderIcon: <LuClipboardCopy size={iconSize} />,
+    link: '/import-request'
   },
   {
     title: 'Product',
-    renderIcon: <GiClothes size={iconSize} />,
-    link: '/material-variant'
+    renderIcon: <TbPackage size={iconSize} />,
+    link: '/product-variant'
   },
   {
     title: 'Material',
-    renderIcon: <GiClothes size={iconSize} />,
+    renderIcon: <GiRolledCloth size={iconSize} />,
     link: '/material-variant'
   },
   {
     title: 'Report',
-    renderIcon: <RiFilePaper2Fill size={iconSize} />,
-
-    link: '/purchase-staff/report'
+    renderIcon: <TbClipboardData size={iconSize} />,
+    link: '/report'
   }
 ];
 const PurchaseStaffLayout = (props: Props) => {

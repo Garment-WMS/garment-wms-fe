@@ -1,4 +1,3 @@
-import materialSample from '@/assets/images/material.jpg';
 import { PODeliveryDetail } from '@/types/purchaseOrder';
 
 interface MaterialListProps {
@@ -6,25 +5,27 @@ interface MaterialListProps {
 }
 
 const MaterialList: React.FC<MaterialListProps> = ({ detail }) => {
-  const { materialVariant, quantityByPack, totalAmount } = detail;
-
+  const { materialPackage, quantityByPack, totalAmount } = detail;
+  const { materialVariant } = materialPackage;
+  const { material } = materialVariant;
   return (
     <main className="flex items-center justify-between pb-4">
       <div className="flex items-center gap-4">
         <img
-          src={materialSample}
+          src={materialVariant.image}
           alt="Material Image"
           className="w-16 h-16 object-cover rounded-lg"
         />
         <div className="flex flex-col">
-          <h1 className="text-lg font-semibold">{materialVariant.name}</h1>
+          <h1 className="text-lg font-semibold">{materialPackage.name}</h1>
           <div className="text-gray-500 text-sm flex gap-2">
-            <span>{materialVariant.material.materialType.name}</span>
+            {<span>{material.code}</span>}
             <span>
-              | {materialVariant.packedLength} x {materialVariant.packedWidth} x{' '}
-              {materialVariant.packedHeight} {materialVariant.material.materialUom.name}
+              | {materialPackage.packedLength} x {materialPackage.packedWidth} x{' '}
+              {materialPackage.packedHeight}{' '}
+              {materialPackage.materialVariant.material.materialUom.name}
             </span>
-            <span>| {materialVariant.packedWeight} kg</span>
+            <span>| {materialPackage.packedWeight} kg</span>
           </div>
         </div>
       </div>

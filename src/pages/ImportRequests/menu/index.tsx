@@ -11,7 +11,7 @@ const CreateImportRequestMenu: React.FC = () => {
     {
       label: 'Material with Purchase Order',
       image: Import1,
-      link: '/purchase-staff/import-request/create/material'
+      link: '/import-request/create/material'
     },
     { label: 'Return Material', image: Import2, link: '/return-material' },
     { label: 'Material without Purchase Order', image: Import3, link: '/material-without-po' },

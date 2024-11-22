@@ -10,6 +10,7 @@ interface PieChartComponentProps {
   outerRadius?: number;
   labelType?: 'percentage' | 'value';
   showLegend?: boolean;
+  legendHeight?: number; // Added legendHeight property
 }
 
 const RADIAN = Math.PI / 180;
@@ -29,7 +30,7 @@ const renderCustomizedLabel = (
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
       style={{
-        fontSize: '20px',
+        fontSize: '16px',
         fontWeight: 'bold',
         stroke: 'black',
         strokeWidth: '0.5px',
@@ -48,8 +49,16 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   innerRadius = 100,
   outerRadius = 180,
   labelType = 'percentage',
-  showLegend = false
+  showLegend = false,
+  legendHeight = 40 // Default legend height
 }) => {
+  // Enforce legendHeight when showLegend is true
+  if (showLegend && !legendHeight) {
+    throw new Error(
+      'If "showLegend" is true, "legendHeight" must be provided. Please specify a legendHeight value.'
+    );
+  }
+
   const filteredData = data.filter((entry) => entry.value !== 0);
   return (
     <div className="flex justify-center">
@@ -66,7 +75,11 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
           fill="#8884d8"
           dataKey="value">
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            <Cell
+              style={{ outline: 'none' }}
+              key={`cell-${index}`}
+              fill={colors[index % colors.length]}
+            />
           ))}
         </Pie>
         <Tooltip />
@@ -75,7 +88,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
             iconType="circle"
             layout="vertical"
             verticalAlign="bottom"
-            height={80}
+            height={legendHeight}
             align="center"
           />
         )}

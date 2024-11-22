@@ -4,6 +4,7 @@ import { ApiResponse } from '@/types/ApiResponse';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
+import privateCall from '../PrivateCaller';
 
 interface GetAllPurchaseOrdersInput {
   sorting: SortingState;
@@ -65,6 +66,18 @@ export const getAllPurchaseOrders = async ({
     throw new Error('Failed to fetch purchase orders');
   }
 };
+export const getAllPurchaseOrderNoQuerry = async (): Promise<PurchaseOrderListResponse> => {
+  const fullUrl = `/purchase-order`;
+
+  try {
+    const config = get(fullUrl);
+    const response = await privateCall(config);
+    return response.data.data as PurchaseOrderListResponse;
+  } catch (error) {
+    console.error('Error fetching purchase orders:', error);
+    throw new Error('Failed to fetch purchase orders');
+  }
+};
 
 export const getPurchaseOrderById = async (id: string): Promise<ApiResponse> => {
   try {
@@ -77,12 +90,20 @@ export const getPurchaseOrderById = async (id: string): Promise<ApiResponse> => 
   }
 };
 
-export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
+export const importPurchaseOrder = async (
+  file: File,
+  productionPlanId: string
+): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('productionPlanId', productionPlanId);
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
   const config = post('/purchase-order', formData, {}, { 'Content-Type': 'multipart/form-data' });
   try {
-    const response = await axios(config);
+    const response = await privateCall(config);
     return response.data as ApiResponse;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

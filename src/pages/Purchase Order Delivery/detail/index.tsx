@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/Badge';
 import { Truck } from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
@@ -11,7 +11,6 @@ const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
   const { delivery, poNumber } = location.state as { delivery: PODelivery; poNumber: string };
   const { poId } = useParams();
-
   const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
     (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
     0
@@ -20,7 +19,6 @@ const PurchaseOrderDeliveryDetails = () => {
     (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
     0
   );
-
   const breadcrumbItems = [
     { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
     { label: `Purchase Order #${poNumber}`, href: `/purchase-staff/purchase-order/${poId}` },
@@ -47,8 +45,9 @@ const PurchaseOrderDeliveryDetails = () => {
   };
 
   return (
-    <main className="w-full h-screen bg-white rounded-xl shadow-xl  px-8 pt-6 pb-8 pl-5">
+    <main className="w-full h-screen bg-white rounded-xl shadow-xl px-8 pt-6 pb-8 pl-5">
       <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={3} />
+
       {/* Header */}
       <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6 mt-5">
         <div className="flex flex-col gap-4">
@@ -66,9 +65,21 @@ const PurchaseOrderDeliveryDetails = () => {
           </div>
         </div>
 
-        <Badge className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
-          {delivery.status}
-        </Badge>
+        <div className="items-center flex flex-col justify-center">
+          <Badge
+            className={`px-3 py-1 rounded-md text-lg mb-2 ${getStatusBadgeClass(delivery.status)}`}>
+            {delivery.status}
+          </Badge>
+
+          {delivery && delivery?.importRequest && delivery?.importRequest[0]?.id ? (
+            <Link to={`/import-request/${delivery.importRequest[0].id}`}>
+              <Badge
+                className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
+                View Import Request
+              </Badge>{' '}
+            </Link>
+          ) : null}
+        </div>
       </section>
 
       {/* Material List */}
@@ -101,19 +112,18 @@ const PurchaseOrderDeliveryDetails = () => {
       </section>
 
       {/* Order Summary */}
-      <section className="border-t border-gray-200 pt-6 mt-8">
+      <section className="border-t border-gray-200 pt-6 -mt-9">
         <h2 className="text-xl font-semibold text-primaryDark mb-4">Order Summary</h2>
 
-        <div className="flex justify-between items-center text-lg">
-          {/* Flexbox for aligning Total Quantity and Total Amount on the same line */}
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap justify-between items-center text-lg">
+          <div className="flex items-center gap-2 flex-1">
             <span className="text-gray-500 block">Total Quantity: </span>
             <span className="text-gray-700 font-medium">{totalQuantity} items</span>
           </div>
 
-          <div className="text-right">
+          <div className="text-right flex-1">
             <span className="text-gray-500 block">Total Amount</span>
-            <span className="text-4xl font-bold text-blue-600">
+            <span className="text-4xl font-bold text-blue-600 break-words">
               {totalMaterialAmount.toLocaleString()} VND
             </span>
           </div>

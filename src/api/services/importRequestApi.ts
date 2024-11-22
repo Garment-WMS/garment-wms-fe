@@ -1,6 +1,7 @@
 import { ApiResponse } from '@/types/ApiResponse';
 import { post } from './ApiCaller';
 import axios from 'axios';
+import privateCall from '../PrivateCaller';
 
 export const importRequestApi = {
   create: async (
@@ -10,7 +11,7 @@ export const importRequestApi = {
     type: string
   ): Promise<any> => {
     // Example API call
-    return axios(
+    return privateCall(
       post('/import-request', {
         poDeliveryId,
         description,

@@ -1,28 +1,27 @@
 import DataTableColumnHeader from '@/components/common/EditableTable/DataTableColumnHeader';
 
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { ImportRequestDetailTableTypes } from '@/types/ImportRequestType';
 import { z } from 'zod';
 
-export const getMaterialColumns = ({}: any): CustomColumnDef<ImportRequestDetailTableTypes>[] => [
+export const getMaterialColumns = ({}: any): CustomColumnDef<any>[] => [
   {
     accessorKey: 'code',
     header: 'Code',
-    cell: ({ row }) => <div className="text-center">{row.original.materialVariant.code}</div>
+    cell: ({ row }) => <div className="text-center">{row.original.materialPackage.code}</div>
   },
   {
     accessorKey: 'name',
     header: ({ column }) => (
       <DataTableColumnHeader className="text-center" column={column} title="Name" />
     ),
-    cell: ({ row }) => <div className="text-center">{row.original.materialVariant.name}</div>
+    cell: ({ row }) => <div className="text-center">{row.original.materialPackage.name}</div>
   },
   {
     accessorKey: 'packUnit',
     header: ({ column }) => (
       <DataTableColumnHeader className="text-center" column={column} title="Packing Unit" />
     ),
-    cell: ({ row }) => <div className="text-center">{row.original.materialVariant.packUnit}</div>
+    cell: ({ row }) => <div className="text-center">{row.original.materialPackage.packUnit}</div>
   },
   {
     accessorKey: 'size',
@@ -30,7 +29,7 @@ export const getMaterialColumns = ({}: any): CustomColumnDef<ImportRequestDetail
       <DataTableColumnHeader className="text-center" column={column} title="Size" />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{`${row.original.materialVariant.packedLength}x${row.original.materialVariant.packedWidth}x${row.original.materialVariant.packedHeight}`}</div>
+      <div className="text-center">{`${row.original.materialPackage.packedLength}x${row.original.materialPackage.packedWidth}x${row.original.materialPackage.packedHeight}`}</div>
     )
   },
   {
@@ -38,16 +37,14 @@ export const getMaterialColumns = ({}: any): CustomColumnDef<ImportRequestDetail
     header: ({ column }) => (
       <DataTableColumnHeader className="text-center" column={column} title="UOM Per Pack" />
     ),
-    cell: ({ row }) => <div className="text-center">{row.original.materialVariant.uomPerPack}</div>
+    cell: ({ row }) => <div className="text-center">{row.original.materialPackage.uomPerPack}</div>
   },
   {
     accessorKey: 'uom',
     header: ({ column }) => (
       <DataTableColumnHeader className="text-center" column={column} title="Unit of packing" />
     ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.original.materialVariant.material.materialUom.name}</div>
-    )
+    cell: ({ row }) => <div className="text-center">123</div>
   },
   {
     accessorKey: 'plannedQuantity',

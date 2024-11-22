@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// const defaultURL = import.meta.env.VITE_LOCALHOST_URL as string;
 const defaultURL = 'https://garment-wms-be-1.onrender.com';
+
 const serverURL = 'http://localhost:8000';
 export interface ApiCallerParams {
   method: string;
@@ -53,6 +55,14 @@ export const put = (
   return ApiCaller('PUT', endpoint, headers, params, body);
 };
 
+export const patch = (
+  endpoint: string,
+  body?: any,
+  params?: Record<string, any>,
+  headers?: Record<string, string>
+): ApiCallerParams => {
+  return ApiCaller('PATCH', endpoint, headers, params, body);
+};
 export const remove = (
   endpoint: string,
   body?: any,
