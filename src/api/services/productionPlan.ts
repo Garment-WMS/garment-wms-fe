@@ -9,6 +9,10 @@ interface StartProductionPlanInput {
   id: string;
 }
 
+interface GetProductionPlanByIdInput {
+  id: string;
+}
+
 interface GetAllProductionPlansInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
@@ -81,5 +85,19 @@ export const startProductionPlan = async ({
   } catch (error) {
     console.error(`Error starting production plan with ID ${id}:`, error);
     throw new Error('Failed to start production plan');
+  }
+};
+
+export const getProductionPlanById = async ({
+  id
+}: GetProductionPlanByIdInput): Promise<ApiResponse> => {
+  const fullUrl = `/production-plan/${id}`;
+  try {
+    const config = get(fullUrl);
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error) {
+    console.error(`Error fetching production plan with ID ${id}:`, error);
+    throw new Error('Failed to fetch production plan');
   }
 };
