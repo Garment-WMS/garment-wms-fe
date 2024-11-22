@@ -47,6 +47,19 @@ const Colors = {
     900: '#7f1d1d',
     950: '#651616'
   },
+  yellow: {
+    50: '#fefce8',
+    100: '#fef9c3',
+    200: '#fef08a',
+    300: '#fde047',
+    400: '#facc15',
+    500: '#eab308',
+    600: '#ca8a04',
+    700: '#a16207',
+    800: '#854d0e',
+    900: '#713f12',
+    950: '#5a2e0a'
+  },
   commonBtnText: '#FFFFFF',
   btnBackground: '#FFFFFF',
   btnText: '#0866FF',

@@ -92,13 +92,13 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
           <PieChartComponent
             data={chartData}
             colors={[Colors.red[500], Colors.green[500]]}
-            width={400}
-            height={400}
-            innerRadius={90}
-            outerRadius={150}
+            width={280}
+            height={280}
+            innerRadius={80}
+            outerRadius={120}
             labelType="value"
             showLegend={true}
-            legendHeight={20}
+            legendHeight={5}
           />
         </div>
       </Card>
