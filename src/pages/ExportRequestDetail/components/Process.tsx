@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import ProcessIcon from './ProcessIcon';
-import { importRequestStatusList } from '../../constants';
+import { importRequestStatusList } from '../constants';
 
 type Props = {
   currentStatus: string;

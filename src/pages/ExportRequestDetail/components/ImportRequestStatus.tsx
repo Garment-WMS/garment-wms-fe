@@ -2,8 +2,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
-import importRequestSelector from '../../slice/selector';
-import { getSatusName, getStatusBadgeVariant } from '../../management/helper';
+import importRequestSelector from '../slice/selector';
+import { getSatusName, getStatusBadgeVariant } from '../helper';
 
 type Props = {};
 

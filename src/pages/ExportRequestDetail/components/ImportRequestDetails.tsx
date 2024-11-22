@@ -2,7 +2,7 @@ import { DataTable } from '@/components/ui/DataTable';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
-import importRequestSelector from '../../slice/selector';
+import importRequestSelector from '../slice/selector';
 
 type Props = {};
 

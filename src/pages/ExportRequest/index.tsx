@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check, Plus, X } from 'lucide-react';
+import { Check, Plus, X, Save, ArrowRight, Beaker, Camera } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,14 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/Table';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -29,269 +37,354 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/Dialog';
+import { Slider } from '@/components/ui/Slider';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/Table';
+  getProductionBatchFn,
+  getProductFormulaByProductionBatchFn
+} from '@/api/services/productionBatchApi';
+import { getAllMaterialNoArgumentFn } from '@/api/services/materialApi';
 
-// Mock data
-const productionBatches = [
-  { id: 'PB001', name: 'Summer Collection 2024', quantity: 1000 },
-  { id: 'PB002', name: 'Winter Essentials 2024', quantity: 800 },
-  { id: 'PB003', name: 'Spring Fashion 2025', quantity: 1200 }
-];
+type MaterialVariant = {
+  id: string;
+  name: string;
+  code: string;
+  image: string;
+  material: {
+    name: string;
+    materialUom: {
+      name: string;
+      uomCharacter: string;
+    };
+  };
+};
 
-const products = [
-  {
-    id: 'P001',
-    name: 'Gucci T-Shirt',
-    defaultFormula: 'F001',
-    formulas: [
-      {
-        id: 'F001',
-        name: 'Standard Cotton',
-        materials: [
-          {
-            id: 'M001',
-            name: 'Cotton A',
-            amount: 0.5,
-            unit: 'kg',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M002',
-            name: 'Standard Button',
-            amount: 10,
-            unit: 'pcs',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M003',
-            name: 'Cotton Thread',
-            amount: 100,
-            unit: 'm',
-            image: '/placeholder.svg?height=100&width=100'
-          }
-        ]
-      },
-      {
-        id: 'F002',
-        name: 'Luxury Blend',
-        materials: [
-          {
-            id: 'M004',
-            name: 'Organic Cotton',
-            amount: 0.4,
-            unit: 'kg',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M005',
-            name: 'Luxury Button',
-            amount: 8,
-            unit: 'pcs',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M006',
-            name: 'Silk Thread',
-            amount: 80,
-            unit: 'm',
-            image: '/placeholder.svg?height=100&width=100'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'P002',
-    name: 'Designer Jeans',
-    defaultFormula: 'F003',
-    formulas: [
-      {
-        id: 'F003',
-        name: 'Classic Denim',
-        materials: [
-          {
-            id: 'M007',
-            name: 'Standard Denim',
-            amount: 1.5,
-            unit: 'm',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M008',
-            name: 'Metal Zipper',
-            amount: 1,
-            unit: 'pc',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M009',
-            name: 'Copper Rivets',
-            amount: 8,
-            unit: 'pcs',
-            image: '/placeholder.svg?height=100&width=100'
-          }
-        ]
-      },
-      {
-        id: 'F004',
-        name: 'Stretch Comfort',
-        materials: [
-          {
-            id: 'M010',
-            name: 'Stretch Denim',
-            amount: 1.4,
-            unit: 'm',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M011',
-            name: 'Plastic Zipper',
-            amount: 1,
-            unit: 'pc',
-            image: '/placeholder.svg?height=100&width=100'
-          },
-          {
-            id: 'M012',
-            name: 'Brass Rivets',
-            amount: 8,
-            unit: 'pcs',
-            image: '/placeholder.svg?height=100&width=100'
-          }
-        ]
-      }
-    ]
-  }
-];
+type ProductFormulaMaterial = {
+  id: string;
+  quantityByUom: number;
+  materialVariant: MaterialVariant;
+};
+
+type ProductFormula = {
+  id: string;
+  name: string;
+  code: string;
+  isBaseFormula: boolean;
+  quantityRangeStart: number;
+  quantityRangeEnd: number;
+  productFormulaMaterial: ProductFormulaMaterial[];
+};
+
+type ProductionBatch = {
+  id: string;
+  name: string;
+  quantityToProduce: number;
+  status: string;
+  productionPlanDetail: {
+    productSize: {
+      name: string;
+      productVariant: {
+        name: string;
+      };
+    };
+  };
+};
 
 type Material = {
   id: string;
   name: string;
-  amount: number;
-  unit: string;
+  materialUomId: string;
+  code: string;
+  numberOfMaterialVariants: number;
   image: string;
 };
-
-type Formula = {
-  id: string;
-  name: string;
-  materials: Material[];
+type NewFormulaMaterial = {
+  materialId: string;
+  quantity: number;
 };
-
-type Product = {
-  id: string;
-  name: string;
-  defaultFormula: string;
-  formulas: Formula[];
-};
-
 export default function ExportMaterialPage() {
+  const [productionBatches, setProductionBatches] = useState<ProductionBatch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<string | undefined>();
-  const [selectedFormulas, setSelectedFormulas] = useState<Record<string, string>>({});
-  const [customProducts, setCustomProducts] = useState<Product[]>([]);
-  const [newFormulaName, setNewFormulaName] = useState('');
-  const [newMaterials, setNewMaterials] = useState<Material[]>([]);
+  const [productFormulas, setProductFormulas] = useState<ProductFormula[]>([]);
+  const [selectedFormula, setSelectedFormula] = useState<string | undefined>();
+  const [productQuantity, setProductQuantity] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [newFormulaMaterials, setNewFormulaMaterials] = useState<NewFormulaMaterial[]>([]);
   const [isCreatingFormula, setIsCreatingFormula] = useState(false);
-  const [productQuantities, setProductQuantities] = useState<Record<string, number>>({});
+  const [newFormulaName, setNewFormulaName] = useState('');
+  const [isSavingFormula, setIsSavingFormula] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showAddMaterialDialog, setShowAddMaterialDialog] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [batchesResponse, materialsResponse] = await Promise.all([
+          getProductionBatchFn(),
+          getAllMaterialNoArgumentFn()
+        ]);
+        setProductionBatches(batchesResponse.data);
+        setMaterials(materialsResponse.data.data);
+      } catch (err) {
+        setError('Failed to fetch data');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (selectedBatch) {
-      const initialQuantities = products.reduce(
-        (acc, product) => {
-          acc[product.id] = Math.floor(getSelectedBatchQuantity() / products.length);
-          return acc;
-        },
-        {} as Record<string, number>
-      );
-      setProductQuantities(initialQuantities);
+      const fetchProductFormulas = async () => {
+        try {
+          setIsLoading(true);
+          const response = await getProductFormulaByProductionBatchFn(selectedBatch);
+          const batch = productionBatches.find((b) => b.id === selectedBatch);
+          if (batch) {
+            setProductQuantity(batch.quantityToProduce);
+            // Filter suitable formulas
+            const suitableFormulas = response.filter(
+              (formula: any) =>
+                batch.quantityToProduce >= formula.quantityRangeStart &&
+                batch.quantityToProduce <= formula.quantityRangeEnd
+            );
+            // Simulate loading delay
+            setTimeout(() => {
+              setProductFormulas(suitableFormulas);
+              setIsLoading(false);
+            }, 1000);
+          }
+        } catch (err) {
+          setError('Failed to fetch product formulas');
+          console.error(err);
+        }
+      };
+
+      fetchProductFormulas();
     }
-  }, [selectedBatch]);
+  }, [selectedBatch, productionBatches]);
 
-  const handleFormulaSelect = (productId: string, formulaId: string) => {
-    setSelectedFormulas((prev) => ({ ...prev, [productId]: formulaId }));
-  };
-
-  const getSelectedBatchQuantity = () => {
-    const batch = productionBatches.find((b) => b.id === selectedBatch);
-    return batch ? batch.quantity : 0;
+  const handleQuantityChange = (quantity: number) => {
+    setProductQuantity(Math.max(0, quantity));
+    // Automatically select the appropriate formula based on the new quantity
+    const appropriateFormula = productFormulas.find(
+      (formula) => quantity >= formula.quantityRangeStart && quantity <= formula.quantityRangeEnd
+    );
+    if (appropriateFormula) {
+      setSelectedFormula(appropriateFormula.id);
+    }
   };
 
   const getTotalMaterials = () => {
     const totals: Record<string, { amount: number; unit: string }> = {};
-    const batchQuantity = getSelectedBatchQuantity();
 
-    const allProducts = [...products, ...customProducts];
-
-    allProducts.forEach((product) => {
-      const selectedFormulaId = selectedFormulas[product.id] || product.defaultFormula;
-      const formula = product.formulas.find((f) => f.id === selectedFormulaId);
+    if (selectedFormula) {
+      const formula = productFormulas.find((f) => f.id === selectedFormula);
       if (formula) {
-        formula.materials.forEach((material) => {
-          const totalAmount = material.amount * (productQuantities[product.id] || 0);
-          if (totals[material.name]) {
-            totals[material.name].amount += totalAmount;
+        formula.productFormulaMaterial.forEach((material) => {
+          const totalAmount = material.quantityByUom * productQuantity;
+          const materialName = material.materialVariant.name;
+          const unit = material.materialVariant.material.materialUom.uomCharacter;
+          if (totals[materialName]) {
+            totals[materialName].amount += totalAmount;
           } else {
-            totals[material.name] = { amount: totalAmount, unit: material.unit };
+            totals[materialName] = { amount: totalAmount, unit };
           }
         });
       }
-    });
+    }
+
     return totals;
   };
 
-  const handleAddMaterial = () => {
-    const newMaterial: Material = {
-      id: `M${Date.now()}`,
-      name: '',
-      amount: 0,
-      unit: '',
-      image: '/placeholder.svg?height=100&width=100'
-    };
-    setNewMaterials([...newMaterials, newMaterial]);
+  const handleAddNewFormulaMaterial = () => {
+    setNewFormulaMaterials([...newFormulaMaterials, { materialId: '', quantity: 0 }]);
   };
 
-  const handleRemoveMaterial = (id: string) => {
-    setNewMaterials(newMaterials.filter((m) => m.id !== id));
+  const handleRemoveNewFormulaMaterial = (index: number) => {
+    setNewFormulaMaterials(newFormulaMaterials.filter((_, i) => i !== index));
   };
 
-  const handleMaterialChange = (id: string, field: keyof Material, value: string | number) => {
-    setNewMaterials(newMaterials.map((m) => (m.id === id ? { ...m, [field]: value } : m)));
+  const handleNewFormulaMaterialChange = (
+    index: number,
+    field: 'materialId' | 'quantity',
+    value: string | number
+  ) => {
+    const updatedMaterials = [...newFormulaMaterials];
+    updatedMaterials[index][field] = value;
+    setNewFormulaMaterials(updatedMaterials);
   };
 
-  const handleCreateFormula = (productId: string) => {
-    if (!newFormulaName || newMaterials.length === 0) {
-      alert('Please fill in all fields and add at least one material.');
-      return;
-    }
+  const handleCreateFormula = async () => {
+    setIsCreatingFormula(true);
+  };
 
-    const newFormula: Formula = {
-      id: `F${Date.now()}`,
+  const handleSaveFormula = async () => {
+    setIsSavingFormula(true);
+    // Implement the logic to save the new formula
+    console.log('Saving new formula:', {
       name: newFormulaName,
-      materials: newMaterials
-    };
-
-    const updatedProducts = [...products, ...customProducts].map((p) =>
-      p.id === productId ? { ...p, formulas: [...p.formulas, newFormula] } : p
-    );
-
-    setCustomProducts(updatedProducts.filter((p) => !products.some((op) => op.id === p.id)));
+      materials: newFormulaMaterials
+    });
+    // Reset form fields after submission
     setNewFormulaName('');
-    setNewMaterials([]);
+    setNewFormulaMaterials([]);
     setIsCreatingFormula(false);
+    setIsSavingFormula(false);
+    setShowSaveDialog(false);
+  };
+  const handleAddMaterial = (materialId: string) => {
+    setNewFormulaMaterials((prev) => [...prev, { materialId, quantity: 0 }]);
+    setShowAddMaterialDialog(false);
   };
 
-  const handleQuantityChange = (productId: string, quantity: number) => {
-    setProductQuantities((prev) => ({
-      ...prev,
-      [productId]: Math.max(0, quantity)
-    }));
+  const handleRemoveMaterial = (materialId: string) => {
+    setNewFormulaMaterials((prev) => prev.filter((m) => m.materialId !== materialId));
   };
+
+  const renderFormulaCreator = () => (
+    <Dialog open={isCreatingFormula} onOpenChange={setIsCreatingFormula}>
+      <DialogContent className="sm:max-w-[900px]">
+        <DialogHeader>
+          <DialogTitle>Create New Formula</DialogTitle>
+          <DialogDescription>
+            Mix your materials to create a new formula. Adjust quantities using the sliders.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Label htmlFor="formula-name" className="w-24 shrink-0">
+              Formula Name
+            </Label>
+            <Input
+              id="formula-name"
+              value={newFormulaName}
+              onChange={(e) => setNewFormulaName(e.target.value)}
+              className="flex-grow"
+            />
+          </div>
+          <ScrollArea className="h-[400px] rounded-md border p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {newFormulaMaterials.map((formulaMaterial) => {
+                const material = materials.find((m) => m.id === formulaMaterial.materialId);
+                if (!material) return null;
+                return (
+                  <Card key={material.id} className="overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="w-16 h-16 relative rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                          {material.image ? (
+                            <img src={material.image} alt={material.name} className="w-10 h-10" />
+                          ) : (
+                            <Camera className="w-8 h-8 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-semibold">{material.name}</h3>
+                          <p className="text-sm text-gray-500">{material.code}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveMaterial(material.id)}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`quantity-${material.id}`} className="text-sm">
+                          Quantity
+                        </Label>
+                        <div className="flex items-center space-x-2">
+                          <Slider
+                            id={`quantity-${material.id}`}
+                            value={[formulaMaterial.quantity]}
+                            onValueChange={(value) => handleQuantityChange(material.id, value[0])}
+                            max={100}
+                            step={1}
+                            className="flex-grow"
+                          />
+                          <span className="w-12 text-center">{formulaMaterial.quantity}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </ScrollArea>
+          <Button onClick={() => setShowAddMaterialDialog(true)} className="w-full">
+            <Plus className="mr-2 h-4 w-4" /> Add Material
+          </Button>
+        </div>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => setIsCreatingFormula(false)}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={() => setShowSaveDialog(true)}>
+            Confirm Formula
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const renderAddMaterialDialog = () => (
+    <Dialog open={showAddMaterialDialog} onOpenChange={setShowAddMaterialDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Material</DialogTitle>
+          <DialogDescription>Select a material to add to your formula.</DialogDescription>
+        </DialogHeader>
+        <Select onValueChange={handleAddMaterial}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a material" />
+          </SelectTrigger>
+          <SelectContent>
+            {materials
+              .filter((m) => !newFormulaMaterials.some((fm) => fm.materialId === m.id))
+              .map((material) => (
+                <SelectItem key={material.id} value={material.id}>
+                  {material.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </DialogContent>
+    </Dialog>
+  );
+  const renderSaveDialog = () => (
+    <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Save Formula</DialogTitle>
+          <DialogDescription>
+            Do you want to save this formula for later use or use it just this once?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+            Use Once
+          </Button>
+          <Button onClick={handleSaveFormula} disabled={isSavingFormula}>
+            {isSavingFormula ? 'Saving...' : 'Save for Later'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="container mx-auto py-6">
@@ -311,7 +404,7 @@ export default function ExportMaterialPage() {
                 <SelectLabel>Production Batches</SelectLabel>
                 {productionBatches.map((batch) => (
                   <SelectItem key={batch.id} value={batch.id}>
-                    {batch.name} (Quantity: {batch.quantity})
+                    {batch.name} (Quantity: {batch.quantityToProduce})
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -323,57 +416,42 @@ export default function ExportMaterialPage() {
       {selectedBatch && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Products in Batch</CardTitle>
+            <CardTitle>Product Details</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product Name</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={productQuantities[product.id] || 0}
-                        onChange={(e) =>
-                          handleQuantityChange(product.id, parseInt(e.target.value, 10))
-                        }
-                        className="w-20"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handleQuantityChange(product.id, (productQuantities[product.id] || 0) + 1)
-                        }>
-                        +
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handleQuantityChange(
-                            product.id,
-                            Math.max(0, (productQuantities[product.id] || 0) - 1)
-                          )
-                        }
-                        className="ml-2">
-                        -
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="product-name">Product Name</Label>
+                <Input
+                  id="product-name"
+                  value={
+                    productionBatches.find((b) => b.id === selectedBatch)?.productionPlanDetail
+                      .productSize.productVariant.name || ''
+                  }
+                  readOnly
+                />
+              </div>
+              <div>
+                <Label htmlFor="product-size">Size</Label>
+                <Input
+                  id="product-size"
+                  value={
+                    productionBatches.find((b) => b.id === selectedBatch)?.productionPlanDetail
+                      .productSize.name || ''
+                  }
+                  readOnly
+                />
+              </div>
+              <div>
+                <Label htmlFor="product-quantity">Quantity</Label>
+                <Input
+                  id="product-quantity"
+                  type="number"
+                  value={productQuantity}
+                  onChange={(e) => handleQuantityChange(parseInt(e.target.value, 10))}
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -381,148 +459,81 @@ export default function ExportMaterialPage() {
       {selectedBatch && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Select Formulas for Products</CardTitle>
+            <CardTitle>Product Formulas</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={products[0].id} className="w-full">
-              <TabsList className="mb-4">
-                {[...products, ...customProducts].map((product) => (
-                  <TabsTrigger key={product.id} value={product.id}>
-                    {product.name}
+            <Tabs value={selectedFormula} onValueChange={setSelectedFormula}>
+              <TabsList>
+                {productFormulas.map((formula) => (
+                  <TabsTrigger key={formula.id} value={formula.id}>
+                    {formula.name}
                   </TabsTrigger>
                 ))}
+                <TabsTrigger value="new">
+                  <Beaker className="mr-2 h-4 w-4" />
+                  Create New Formula
+                </TabsTrigger>
               </TabsList>
-              {[...products, ...customProducts].map((product) => (
-                <TabsContent key={product.id} value={product.id}>
-                  <ScrollArea className="h-[400px] rounded-md border p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {product.formulas.map((formula) => (
-                        <Card
-                          key={formula.id}
-                          className={`cursor-pointer transition-all ${selectedFormulas[product.id] === formula.id ? 'ring-2 ring-primary' : ''}`}
-                          onClick={() => handleFormulaSelect(product.id, formula.id)}>
-                          <CardHeader>
-                            <CardTitle className="flex items-center justify-between">
-                              {formula.name}
-                              {(selectedFormulas[product.id] === formula.id ||
-                                (!selectedFormulas[product.id] &&
-                                  product.defaultFormula === formula.id)) && (
-                                <Check className="h-5 w-5 text-primary" />
-                              )}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid grid-cols-2 gap-2">
-                              {formula.materials.map((material) => (
-                                <div key={material.id} className="flex items-center space-x-2">
-                                  <img
-                                    src={material.image}
-                                    alt={material.name}
-                                    className="rounded-md h-[50px] w-[50px]"
-                                  />
-                                  <div>
-                                    <p className="font-medium">{material.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                      {material.amount} {material.unit}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="mt-4" onClick={() => setIsCreatingFormula(true)}>
-                          <Plus className="mr-2 h-4 w-4" /> Create Custom Formula
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Create Custom Formula</DialogTitle>
-                          <DialogDescription>
-                            Add a new custom formula for this product. Please ensure it's suitable
-                            for manufacturing.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <Alert className="mb-4">
-                          <AlertTitle>Warning</AlertTitle>
-                          <AlertDescription>
-                            Please ensure that your custom formula is suitable for manufacturing.
-                            Incorrect formulas may lead to production issues.
-                          </AlertDescription>
-                        </Alert>
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="formula-name">Formula Name</Label>
-                            <Input
-                              id="formula-name"
-                              value={newFormulaName}
-                              onChange={(e) => setNewFormulaName(e.target.value)}
-                              placeholder="Enter formula name"
-                            />
-                          </div>
-                          <div>
-                            <Label>Materials</Label>
-                            {newMaterials.map((material, index) => (
-                              <div key={material.id} className="flex items-center space-x-2 mt-2">
-                                <Input
-                                  value={material.name}
-                                  onChange={(e) =>
-                                    handleMaterialChange(material.id, 'name', e.target.value)
-                                  }
-                                  placeholder="Material name"
+              {productFormulas.map((formula) => (
+                <TabsContent key={formula.id} value={formula.id}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{formula.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>
+                        Quantity Range: {formula.quantityRangeStart} - {formula.quantityRangeEnd}
+                      </p>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Material</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Unit</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {formula.productFormulaMaterial.map((material) => (
+                            <TableRow key={material.id}>
+                              <TableCell className="flex items-center space-x-2">
+                                <img
+                                  src={material.materialVariant.image}
+                                  alt={material.materialVariant.name}
+                                  className="rounded-full w-10 h-10"
                                 />
-                                <Input
-                                  type="number"
-                                  value={material.amount}
-                                  onChange={(e) =>
-                                    handleMaterialChange(
-                                      material.id,
-                                      'amount',
-                                      parseFloat(e.target.value)
-                                    )
-                                  }
-                                  placeholder="Amount"
-                                />
-                                <Input
-                                  value={material.unit}
-                                  onChange={(e) =>
-                                    handleMaterialChange(material.id, 'unit', e.target.value)
-                                  }
-                                  placeholder="Unit"
-                                />
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => handleRemoveMaterial(material.id)}>
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                            <Button onClick={handleAddMaterial} className="mt-2">
-                              <Plus className="mr-2 h-4 w-4" /> Add Material
-                            </Button>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={() => handleCreateFormula(product.id)}>
-                            Create Custom Formula
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </ScrollArea>
+                                <span>{material.materialVariant.name}</span>
+                              </TableCell>
+                              <TableCell>{material.quantityByUom}</TableCell>
+                              <TableCell>
+                                {material.materialVariant.material.materialUom.uomCharacter}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
               ))}
+              <TabsContent value="new">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create New Formula</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button onClick={handleCreateFormula}>
+                      <Beaker className="mr-2 h-4 w-4" />
+                      Start Mixing Materials
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
       )}
 
-      {selectedBatch && (
+      {selectedBatch && selectedFormula && (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Total Materials Needed</CardTitle>
@@ -545,6 +556,10 @@ export default function ExportMaterialPage() {
           <Button>Create Material Request</Button>
         </CardFooter>
       </Card>
+
+      {renderFormulaCreator()}
+      {renderAddMaterialDialog()}
+      {renderSaveDialog()}
     </div>
   );
 }

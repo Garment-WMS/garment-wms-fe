@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ImportRequestDetails from './ImportRequestDetails';
 import SupplierWarehouseInfo from './SupplierWarehouseInfo';
-import importRequestSelector from '../../slice/selector';
-import { getLabelOfImportType } from '../../management/helper';
+import importRequestSelector from '../slice/selector';
+import { getLabelOfImportType } from '../helper';
 
 type Props = {};
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Process from './Process';
 import { useSelector } from 'react-redux';
-import importRequestSelector from '../../slice/selector';
+import importRequestSelector from '../slice/selector';
 import { ImportRequest } from '@/types/ImportRequestType';
 import InspectionStep from './Actions/Inspection';
 
