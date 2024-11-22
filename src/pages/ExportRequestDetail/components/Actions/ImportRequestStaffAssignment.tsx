@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 
 import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
-import Waiting from '@/assets/images/wait-2.svg';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
@@ -80,7 +79,19 @@ export default function WarehouseStaffAssignment({
             </div>
           </div>
         ) : (
-          <h3>Not yet</h3>
+          <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
+            <Avatar className="">
+              <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
+              <AvatarFallback>NY</AvatarFallback>
+            </Avatar>
+            <h1>Not Reached</h1>
+            <div className="text-center">
+              <p className="text-sm font-medium">Warehouse assignment</p>
+              <p className="text-xs text-muted-foreground">
+                {warehouseStaff?.account?.email || 'Not assigned'}
+              </p>
+            </div>
+          </div>
         )}
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
           <h3 className="text-lg font-semibold mb-4">Assignment Status</h3>

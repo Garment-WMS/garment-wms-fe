@@ -257,7 +257,7 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Arrived', value: 'ARRIVED', variant: 'info' },
+  { label: 'Waiting for approve', value: 'PENDING', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
@@ -272,6 +272,11 @@ export interface UseImportRequestsResponse {
   data: ImportRequest[];
 }
 
+export interface UseExportRequestsResponse {
+  pageMeta: PageMetaData;
+  data: any[];
+}
+
 export const DeliveryType = [
   { label: 'Material with Purchase Order', value: 'MATERIAL_BY_PO' },
   { label: 'Return Material', value: 'MATERIAL_RETURN' },
@@ -282,6 +287,12 @@ export const DeliveryType = [
 ];
 
 export interface UseImportRequestsInput {
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  pagination: PaginationState;
+}
+
+export interface UseExportRequestsInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;

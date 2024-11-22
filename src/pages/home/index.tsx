@@ -1,14 +1,11 @@
 'use client';
 
-import React, { Fragment } from 'react';
-import { ArrowDownIcon, ArrowUpIcon, BellIcon, SearchIcon, SettingsIcon } from 'lucide-react';
+import React from 'react';
+import { ArrowUpIcon } from 'lucide-react';
 import { Bar, BarChart, Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 // Fake data for charts
@@ -47,25 +44,7 @@ const weeklyProductionData = Array.from({ length: 9 }, (_, i) => ({
 export default function Home() {
   return (
     <div className="flex flex-col h-[2000px]">
-      <div className="border-b">
-        <div className="flex h-16 items-center px-4 gap-4">
-          <div className="relative w-96">
-            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input className="w-full bg-muted pl-8" placeholder="Search..." type="search" />
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <BellIcon className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <SettingsIcon className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <img src="/placeholder-user.jpg" alt="Avatar" className="rounded-full" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <div className="border-b"></div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
@@ -134,7 +113,7 @@ export default function Home() {
                           key={key}
                           className="rounded"
                           style={{
-                            backgroundColor: `rgba(59, 130, 246, ${value / 100})`,
+                            backgroundColor: `rgba(59, 130, 246, ${(value as number) / 100})`,
                             height: '24px'
                           }}
                         />
