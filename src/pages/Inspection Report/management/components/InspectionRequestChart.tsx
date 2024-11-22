@@ -83,7 +83,7 @@ const InspectionRequestChart = () => {
             width={280}
             height={280}
             innerRadius={80}
-            outerRadius={120}
+            outerRadius={110}
             labelType="value"
             showLegend={true}
             legendHeight={5}

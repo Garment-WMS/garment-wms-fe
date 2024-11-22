@@ -30,7 +30,7 @@ const renderCustomizedLabel = (
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
       style={{
-        fontSize: '20px',
+        fontSize: '16px',
         fontWeight: 'bold',
         stroke: 'black',
         strokeWidth: '0.5px',

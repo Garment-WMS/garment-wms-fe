@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/Table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import Colors from '@/constants/color';
 
 interface Defect {
   defectType: string;
