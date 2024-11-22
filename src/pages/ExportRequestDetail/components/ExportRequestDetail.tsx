@@ -1,10 +1,8 @@
 import { DataTable } from '@/components/ui/DataTable';
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
-import importRequestSelector from '../slice/selector';
-
-type Props = {};
+import exportRequestSelector from '../slice/selector';
+import { MaterialExportRequest } from '@/types/exportRequest';
 
 interface ColumnType {
   id: string;
@@ -18,24 +16,23 @@ interface ColumnType {
   materialType: any; // Fallback for nested materialType
 }
 
-const ImportRequestDetails = (props: Props) => {
-  const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
-  let details = importRequest?.importRequestDetail ?? [];
-  let formattedDetails: ColumnType[] = [];
+const ExportRequestDetail = () => {
+  const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
+  let details = exportRequest?.materialExportRequestDetail ?? [];
+  let formattedDetails: any[] = [];
   if (details) {
     formattedDetails = details.map((detail) => {
-      const materialPackage = detail.materialPackage;
+      const materialPackage = detail;
 
       return {
         id: materialPackage?.id ?? 'N/A',
-        name: materialPackage?.name ?? 'N/A', // Fallback to 'N/A' if undefined
-        code: materialPackage?.code ?? 'N/A',
-        packUnit: materialPackage?.packUnit ?? 'N/A',
-        materialName: materialPackage?.materialVariant.material.name ?? 'N/A', // Fallback for nested material
-        uomPerPack: materialPackage?.uomPerPack ?? 0, // Default to 0 if undefined
-        quantityByPack: detail.quantityByPack ?? 0, // Default to 0 if undefined
+        code: materialPackage?.materialVariant.code ?? 'N/A',
+        packUnit: materialPackage?.quantityByUom ?? 'N/A',
+        materialName: materialPackage?.materialVariant.name ?? 'N/A', // Fallback for nested material
+        uomPerPack: materialPackage?.materialVariant.material.materialUom.name ?? 0, // Default to 0 if undefined
+        quantityByPack: detail.quantityByUom ?? 0, // Default to 0 if undefined
         materialCode: materialPackage?.materialVariant.material?.code ?? 'N/A', // Fallback for nested material
-        materialType: materialPackage?.materialVariant.material.code ?? 'N/A' // Fallback for nested materialType
+        materialType: materialPackage?.materialVariant.material.name ?? 'N/A' // Fallback for nested materialType
       };
     });
   }
@@ -44,39 +41,39 @@ const ImportRequestDetails = (props: Props) => {
     {
       header: 'Material Code',
       accessorKey: 'code',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.code}</div>;
+      }
     },
     {
-      header: 'Material Name',
-      accessorKey: 'materialName',
+      header: 'Variant Name',
+      accessorKey: 'name',
       enableColumnFilter: false,
       cell: ({ row }) => {
         return <div className="text-left">{row.original.materialName}</div>;
       }
     },
     {
-      header: 'Variant Name',
+      header: 'Material Name',
       accessorKey: 'name',
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.materialType}</div>;
+      }
+    },
+    {
+      header: 'Material Code',
+      accessorKey: 'materialCode',
       enableColumnFilter: false
     },
     {
-      header: 'Material Type',
-      accessorKey: 'materialType',
+      header: 'Quantity',
+      accessorKey: 'quantityByPack',
       enableColumnFilter: false
     },
     {
       header: 'Unit of measure',
-      accessorKey: 'packUnit',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Quantity per pack',
       accessorKey: 'uomPerPack',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Quantity By Pack',
-      accessorKey: 'quantityByPack',
       enableColumnFilter: false
     }
   ];
@@ -92,4 +89,4 @@ const ImportRequestDetails = (props: Props) => {
   );
 };
 
-export default ImportRequestDetails;
+export default ExportRequestDetail;

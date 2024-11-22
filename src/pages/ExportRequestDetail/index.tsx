@@ -1,4 +1,3 @@
-import { importRequestApi } from '@/api/purchase-staff/importRequestApi';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import Loading from '@/components/common/Loading';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +10,7 @@ import ImportRequestSheet from './components/ImportRequestSheet';
 import ImportRequestStatus from './components/ImportRequestStatus';
 import { actions } from './slice';
 import IRProcessAndAction from './components/IRProcessAndAction';
+import { exportRequestApi } from '@/api/services/exportRequestApi';
 type Props = {};
 
 const ViewExportRequest = (props: Props) => {
@@ -21,18 +21,18 @@ const ViewExportRequest = (props: Props) => {
   const dispatch = useDispatch();
   const { toast } = useToast();
   const breadcrumbItems = [
-    { href: '/purchase-staff/import-request', label: 'Import Request' },
-    { href: `/purchase-staff/import-request/${id}`, label: `Details of Request` }
+    { href: '/export-request', label: 'Export Request' },
+    { href: `/export-request/${id}`, label: `Details of Request` }
   ];
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); // Start loading
 
       try {
-        const res = await axios(importRequestApi.getOne(id as string));
+        const res = await axios(exportRequestApi.getOne(id as string));
         if (res.status === 200) {
           const data = res.data.data;
-          dispatch(actions.setImportRequest(data));
+          dispatch(actions.setExportRequest(data));
         } else {
           setError('Something went wrong');
           toast({

@@ -38,6 +38,7 @@ import InspectionRequestManagement from '@/pages/Inspection Report/management';
 import ProductManagement from '@/pages/Product/Management';
 import ProductVariantDetails from '@/pages/Product/Details';
 import ExportRequestList from '@/pages/ExportRequestList/management';
+import ProductionBatchManagement from '@/pages/Production Batch/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -103,6 +104,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/export-request',
               element: <ExportRequestList />
+            },
+            {
+              path: '/export-request/:id',
+              element: <ViewExportRequest />
             },
             {
               path: '/home',
@@ -193,7 +198,8 @@ const RouterComponent: React.FC = () => {
             {
               path: '/report/:id',
               element: <InspectionRequestDetails />
-            }
+            },
+            { path: '/production-batch', element: <ProductionBatchManagement /> }
           ]
         }
       ]

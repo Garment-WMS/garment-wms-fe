@@ -1,27 +1,26 @@
-import { injectReducer } from "@/store";
-import { ImportRequest } from "@/types/ImportRequestType";
-import { createSlice } from "@reduxjs/toolkit";
-import generateActions from "./generateActions";
-
+import { injectReducer } from '@/store';
+import { createSlice } from '@reduxjs/toolkit';
+import generateActions from './generateActions';
+import { MaterialExportRequestDetail } from '@/types/exportRequest';
 
 interface userState {
-    importRequest: ImportRequest | null;
+  exportRequest: MaterialExportRequestDetail | null;
 }
 export const initialState: userState = {
-    importRequest: null
+  exportRequest: null
 };
 
-export const name = "importRequest";
+export const name = 'exportRequest';
 
 const slice = createSlice({
-    name,
-    initialState,
-    reducers: {
-        ...generateActions(initialState),
-        setImportRequest: (state: any, action: { payload: any }) => {
-            state.importRequest = action.payload ;
-        },
-    },
+  name,
+  initialState,
+  reducers: {
+    ...generateActions(initialState),
+    setExportRequest: (state: any, action: { payload: any }) => {
+      state.exportRequest = action.payload;
+    }
+  }
 });
 
 injectReducer(name, slice.reducer);

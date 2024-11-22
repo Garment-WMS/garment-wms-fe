@@ -1,4 +1,3 @@
-import React from 'react';
 import Report from '@/assets/images/Report.svg';
 type Props = {};
 

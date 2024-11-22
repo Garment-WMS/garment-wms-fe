@@ -1,11 +1,20 @@
 import { Badge } from '@/components/ui/Badge';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { convertDate } from '@/helpers/convertDate';
+import { cn } from '@/lib/utils';
+import { CheckCircle, Package, XCircle } from 'lucide-react';
 import React from 'react';
 
 interface KeyValueDisplayProps {
   name: string;
   value: string;
+}
+
+interface ImportQuantityCardProps {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  variant?: 'success' | 'warning' | 'info';
 }
 
 interface OrderOverviewProps {
@@ -18,7 +27,37 @@ interface OrderOverviewProps {
   expectedFinishDate: string;
   status: PurchaseOrderStatus;
   currency: string;
+  totalImportQuantity: number;
+  totalFailImportQuantity: number | null;
+  totalQuantityToImport: number;
 }
+
+const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
+  title,
+  value,
+  icon,
+  variant = 'info'
+}) => {
+  const variantStyles = {
+    success: 'bg-green-50 border-green-200 text-green-700',
+    warning: 'bg-red-50 border-red-200 text-red-700',
+    info: 'bg-blue-50 border-blue-200 text-blue-700'
+  };
+
+  return (
+    <div
+      className={cn(
+        'rounded-lg p-4 flex items-center space-x-4 border transition-colors duration-200',
+        variantStyles[variant]
+      )}>
+      <div className="flex-shrink-0">{icon}</div>
+      <div className="flex-grow">
+        <h3 className="text-sm font-medium opacity-80">{title}</h3>
+        <p className="text-lg font-semibold">{value}</p>
+      </div>
+    </div>
+  );
+};
 
 const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({ name, value }) => {
   return (
@@ -59,7 +98,10 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   orderDate,
   expectedFinishDate,
   status,
-  currency
+  currency,
+  totalImportQuantity,
+  totalFailImportQuantity,
+  totalQuantityToImport
 }) => {
   const totalAmount =
     (subTotalAmount || 0) + (taxAmount || 0) + (shippingAmount || 0) + (otherAmount || 0);
@@ -116,9 +158,34 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
       <div className="flex justify-end items-center mt-6">
         <div className="text-right">
           <div className="text-lg text-gray-600 font-medium">Total Amount</div>
-          <div className="text-3xl font-bold text-blue-700">
+          <div className="text-xl font-bold text-blue-700">
             {totalAmount.toLocaleString()} {currency}
           </div>
+        </div>
+      </div>
+
+      {/* Import Quantities */}
+      <div className="mt-8 border-t pt-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Import Quantities</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <ImportQuantityCard
+            title="Total Imported"
+            value={totalImportQuantity.toString()}
+            icon={<CheckCircle className="w-6 h-6" />}
+            variant="success"
+          />
+          <ImportQuantityCard
+            title="Total Failed"
+            value={totalFailImportQuantity !== null ? totalFailImportQuantity.toString() : '0'}
+            icon={<XCircle className="w-6 h-6" />}
+            variant="warning"
+          />
+          <ImportQuantityCard
+            title="Total to Import"
+            value={totalQuantityToImport.toString()}
+            icon={<Package className="w-6 h-6" />}
+            variant="info"
+          />
         </div>
       </div>
     </div>

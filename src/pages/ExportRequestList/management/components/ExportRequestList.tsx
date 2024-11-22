@@ -10,17 +10,14 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/hooks/useDebouce';
-import { useGetImportRequests } from '@/hooks/useGetImportRequest';
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { AvatarFallback } from '@radix-ui/react-avatar';
 import { useGetMaterialExportRequest } from '@/hooks/useGetMaterialExportRequest';
-import { formatDate } from 'date-fns';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
@@ -31,7 +28,7 @@ const ExportRequestTable = (props: Props) => {
     const basePath = location.pathname.split('/')[0];
 
     // Navigate to the new route
-    navigate(`${basePath}/import-receipt/${requestId}`);
+    navigate(`${basePath}/export-request/${requestId}`);
   };
 
   // sorting state of the table
@@ -135,7 +132,12 @@ const ExportRequestTable = (props: Props) => {
     {
       header: 'Created At',
       accessorKey: 'createdAt',
-      cell: ({ row }) => <div>{row.original.createdAt}</div>
+      cell: ({ row }) => <div>{new Date(row.original.createdAt).toDateString()}</div>
+    },
+    {
+      header: 'Code',
+      accessorKey: 'code',
+      cell: ({ row }) => <div>{row.original.productFormula?.code || 'N/A'}</div>
     },
     {
       header: 'Description',

@@ -4,67 +4,64 @@ import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../slice/selector';
 import { getSatusName, getStatusBadgeVariant } from '../helper';
+import exportRequestSelector from '../slice/selector';
+import { MaterialExportRequest, MaterialExportRequestDetail } from '@/types/exportRequest';
 
 type Props = {};
 
 const ImportRequestStatus = (props: Props) => {
-  const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
+  const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
 
-  const id = importRequest?.id.slice(0, 4);
-  const status = importRequest?.status;
-  const createdDate = importRequest?.createdAt
-    ? new Date(importRequest.createdAt).toLocaleDateString()
+  const id = exportRequest?.id.slice(0, 4);
+  const status = exportRequest?.status;
+  const createdDate = exportRequest?.createdAt
+    ? new Date(exportRequest.createdAt).toLocaleDateString() +
+      ` ` +
+      new Date(exportRequest.createdAt).toLocaleTimeString()
     : 'N/A';
-  const lastUpdated = importRequest?.updatedAt
-    ? new Date(importRequest.updatedAt).toLocaleDateString()
+  const lastUpdated = exportRequest?.updatedAt
+    ? new Date(exportRequest.updatedAt).toLocaleDateString() +
+      ` ` +
+      new Date(exportRequest.createdAt).toLocaleTimeString()
     : 'N/A';
-  const closedAt = importRequest?.finishAt
-    ? new Date(importRequest.finishAt).toLocaleDateString()
+  const closedAt = exportRequest?.finishAt
+    ? new Date(exportRequest.finishAt).toLocaleDateString()
     : 'N/A';
 
-  const getAssignedTo = (status: ImportRequest['status']) => {
+  const getAssignedTo = (status: any) => {
     switch (status) {
-      case 'REJECTED':
+      case 'AAA':
       case 'APPROVED':
       case 'ARRIVED':
         return {
           role: 'Warehouse Manager',
-          avatar: importRequest?.warehouseManager?.account?.avatarUrl,
+          avatar: exportRequest?.warehouseManager?.account?.avatarUrl,
           name:
-            importRequest?.warehouseManager?.account?.lastName +
+            exportRequest?.warehouseManager?.account?.lastName +
             ' ' +
-            importRequest?.warehouseManager?.account?.firstName
+            exportRequest?.warehouseManager?.account?.firstName
         };
-      case 'CANCELLED':
+      case 'PENDING':
       case 'IMPORTED':
         return {
           role: 'Purchasing Staff',
-          avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
+          avatar: exportRequest?.productionDepartment?.account?.avatarUrl,
           name:
-            importRequest?.purchasingStaff?.account?.lastName +
+            exportRequest?.productionDepartment?.account?.lastName +
             ' ' +
-            importRequest?.purchasingStaff?.account?.firstName,
+            exportRequest?.productionDepartment?.account?.firstName,
           avatarFallback:
-            importRequest?.purchasingStaff?.account?.lastName.slice(0, 1) +
-            importRequest?.purchasingStaff?.account?.firstName.slice(0, 1)
-        };
-      case 'INSPECTING':
-        return {
-          role: 'Inspection Team',
-          avatar: importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.avatarUrl,
-          name:
-            importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.lastName +
-            ' ' +
-            importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.firstName
+            exportRequest?.productionDepartment?.account?.lastName.slice(0, 1) +
+            exportRequest?.productionDepartment?.account?.firstName.slice(0, 1)
         };
       case 'IMPORTING':
         return {
           role: 'Warehouse Stafff',
-          avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
+          avatar: exportRequest?.warehouseStaff?.account?.avatarUrl,
           name:
-            importRequest?.purchasingStaff?.account?.lastName +
+            exportRequest?.warehouseStaff?.account?.lastName +
             ' ' +
-            importRequest?.purchasingStaff?.account?.firstName
+            exportRequest?.warehouseStaff?.account?.firstName
         };
       default:
         return { role: 'Unassigned', avatar: null };
@@ -86,7 +83,7 @@ const ImportRequestStatus = (props: Props) => {
           {assignedTo.avatar ? (
             <AvatarImage src={assignedTo.avatar} alt={assignedTo.role} />
           ) : (
-            <AvatarFallback>NA</AvatarFallback>
+            <AvatarFallback>{assignedTo.name?.slice(0, 2)}</AvatarFallback>
           )}
         </Avatar>
         <div className="font-primary text-sm">{assignedTo.name}</div>

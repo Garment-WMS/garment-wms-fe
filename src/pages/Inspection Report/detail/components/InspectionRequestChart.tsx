@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import EmptyDatacomponent from '@/components/common/EmptyData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
@@ -18,12 +19,19 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import Colors from '@/constants/color';
 import PieChartComponent from '@/components/common/PieChart';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+import DefectsSummary from './DefectsSummary';
 
 interface InspectionRequestChartProps {
   inspectionReport: InspectionReport | null;
 }
 
 const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspectionReport }) => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedDefectDetails, setSelectedDefectDetails] = useState<any[]>([]);
+
   if (!inspectionReport) {
     return (
       <Card className="md:col-span-2">
@@ -31,6 +39,14 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
       </Card>
     );
   }
+
+  // Mock defect data
+  const mockDefectDetails = [
+    { id: 1, defectType: 'Tear', quantity: 5 },
+    { id: 2, defectType: 'Stain', quantity: 3 },
+    { id: 3, defectType: 'Misshaped', quantity: 2 },
+    { id: 4, defectType: 'Ugly', quantity: 6 }
+  ];
 
   // Calculate total inspected materials
   const totalFail = inspectionReport.inspectionReportDetail.reduce(
@@ -54,6 +70,11 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
     [InspectionRequestStatus.INSPECTED]: 'bg-green-500 text-white'
   };
 
+  const handleViewDefects = (defectDetails: any[]) => {
+    setSelectedDefectDetails(defectDetails);
+    setOpenDialog(true);
+  };
+
   return (
     <div className="grid grid-cols-[1fr_2fr] w-full">
       {/* Pie Chart */}
@@ -61,7 +82,7 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">Inspection Report Summary</CardTitle>
           <CardTitle className="font-bold">
-            <div className="flex items-center flex-col ">
+            <div className="flex items-center flex-col">
               Total
               <span className="ml-2 text-2xl text-blue-600">{totalInspected}</span>
             </div>
@@ -71,13 +92,13 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
           <PieChartComponent
             data={chartData}
             colors={[Colors.red[500], Colors.green[500]]}
-            width={400}
-            height={400}
-            innerRadius={90}
-            outerRadius={150}
+            width={280}
+            height={280}
+            innerRadius={80}
+            outerRadius={120}
             labelType="value"
             showLegend={true}
-            legendHeight={20}
+            legendHeight={5}
           />
         </div>
       </Card>
@@ -89,34 +110,6 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {/* Report Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Report Code</p>
-                <Badge className="bg-primaryLight">{inspectionReport.code}</Badge>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Status</p>
-                <Badge className={`mt-1 ${statusClass[inspectionReport.inspectionRequest.status]}`}>
-                  {InspectionRequestStatusLabels[inspectionReport.inspectionRequest.status]}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Requested At</p>
-                <p className="text-lg font-semibold flex items-center">
-                  <CalendarArrowUp className="mr-2 h-5 w-5" />
-                  {convertDate(inspectionReport?.inspectionRequest?.createdAt || '')}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Inspected At</p>
-                <p className="text-lg font-semibold flex items-center">
-                  <CalendarArrowDown className="mr-2 h-5 w-5" />
-                  {convertDate(inspectionReport.createdAt || '')}
-                </p>
-              </div>
-            </div>
-
             {/* Inspection Details */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Inspection Details</h3>
@@ -179,10 +172,21 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
                           </span>
                         </TableCell>
                         <TableCell className="py-3 px-6 text-sm text-center align-middle">
-                          <span className="flex items-center text-lg justify-end text-red-800 font-semibold">
-                            <XCircleIcon className="mr-2 h-6 w-6 text-red-500" />
-                            {detail.defectQuantityByPack}
-                          </span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="flex items-center text-lg justify-end text-red-800 font-semibold cursor-pointer underline hover:opacity-80 transition-opacity"
+                                  onClick={() => handleViewDefects(mockDefectDetails)}>
+                                  <XCircleIcon className="mr-2 h-6 w-6 text-red-500" />
+                                  {detail.defectQuantityByPack}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Click to view defect details</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -193,6 +197,14 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal for Defect Details */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogTitle>Defect Details</DialogTitle>
+          <DefectsSummary defects={selectedDefectDetails} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

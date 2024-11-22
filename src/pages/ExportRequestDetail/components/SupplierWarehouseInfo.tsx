@@ -1,6 +1,7 @@
 import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../slice/selector';
+import exportRequestSelector from '../slice/selector';
 
 type Props = {};
 const WarehouseInfo = {
@@ -11,7 +12,7 @@ const WarehouseInfo = {
   fax: '1234567890'
 };
 const SupplierWarehouseInfo = (props: Props) => {
-  const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
+  const importRequest: ImportRequest = useSelector(exportRequestSelector.exportRequest);
   let supplier = importRequest?.poDelivery?.purchaseOrder.supplier;
   return (
     <div

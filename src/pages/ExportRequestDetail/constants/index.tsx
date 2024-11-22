@@ -1,29 +1,29 @@
 export const importRequestStatusList = [
   {
-    title: 'At Depot',
-    state: ['ARRIVED']
+    title: 'Request created',
+    state: ['PENDING']
   },
   {
-    title: 'Import request approval',
+    title: 'Request approval',
     state: ['REJECTED', 'CANCELED', 'APPROVED']
   },
   {
-    title: 'In Inspection',
-    state: ['INSPECTING', 'INSPECTED']
+    title: 'Material Delivery',
+    state: ['IMPORTING', 'IMPORTED']
   },
-
   {
-    title: 'Import To Warehouse',
+    title: 'Production Confirmation',
     state: ['IMPORTING', 'IMPORTED']
   }
 ];
 export const statusOrder = [
-  'ARRIVED',
+  'PENDING',
   'CANCELED',
   'REJECTED',
   'APPROVED',
-  'INSPECTING',
-  'INSPECTED',
-  'IMPORTING',
-  'IMPORTED'
+  'DELIVERING',
+  'DELIVERED',
+  'PRODUCTION_APPROVED',
+  'PRODUCTION_REJECTED',
+  'RETURNED'
 ];

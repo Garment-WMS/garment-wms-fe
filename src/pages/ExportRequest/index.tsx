@@ -291,7 +291,6 @@ export default function ExportMaterialPage() {
         );
       }
 
-      console.log('Export request created:', response);
       // Handle successful creation (e.g., show success message, reset form, etc.)
     } catch (error) {
       if (error instanceof Error) {

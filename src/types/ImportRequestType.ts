@@ -257,7 +257,7 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Arrived', value: 'ARRIVED', variant: 'info' },
+  { label: 'Waiting for approve', value: 'PENDING', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
@@ -303,4 +303,6 @@ export interface PageMetaData {
   limit: number;
   page: number;
   totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }

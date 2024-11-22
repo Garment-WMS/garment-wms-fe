@@ -13,7 +13,8 @@ export const exportRequestApi = {
     description: string,
     materialExportRequestDetail: any
   ) => post(`${url}`, { productionBatchId: id, description, materialExportRequestDetail }),
-  getAll: (queryString: string) => get(`${url}${queryString}`)
+  getAll: (queryString: string) => get(`${url}${queryString}`),
+  getOne: (id: string) => get(`${url}/${id}`)
 };
 
 export const createMaterialExportRequest = async (
@@ -103,4 +104,8 @@ export const getAllExportRequestFn = async ({
   // Make the API request
   const res = await privateCall(exportRequestApi.getAll(queryString));
   return res.data.data;
+};
+export const getExportRequestDetailFn = async (id: string) => {
+  const res = await privateCall(exportRequestApi.getOne(id));
+  return res.data;
 };

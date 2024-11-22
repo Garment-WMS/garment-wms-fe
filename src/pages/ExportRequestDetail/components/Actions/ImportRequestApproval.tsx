@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -31,11 +31,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import { importRequestApprovalFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
-import { statusOrder } from '@/pages/ImportRequests/constants';
-import { IoIosSearch } from 'react-icons/io';
 import AssignStaffPopup from './StaffAssignment';
+import { statusOrder } from '../../constants';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 
-type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
+type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'PENDING' | 'REJECTED' | 'INSPECTED';
 
 interface WarehouseApprovalProps {
   requestId: string;
@@ -56,7 +56,7 @@ interface StaffMember {
 }
 
 const getStatusDetails = (status: ApprovalStatus) => {
-  if (status == 'ARRIVED') {
+  if (status == 'PENDING') {
     return {
       label: 'Waiting for Approval',
       color: 'bg-blue-500 text-blue-950',
@@ -99,9 +99,9 @@ export default function WarehouseApproval({
   currentStatus,
   requestDetails,
   requestDate,
-  warehouseStaff,
-  inspectionDepartment
+  warehouseStaff
 }: WarehouseApprovalProps) {
+  console.log(requestDate);
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as ApprovalStatus);
   const [approveNote, setApproveNote] = useState('');
   const [declineReason, setDeclineReason] = useState('');
@@ -263,46 +263,23 @@ export default function WarehouseApproval({
                   <h4>Not yet</h4>
                 )}
               </div>
-              <div className="flex items-center text-sm ">
-                <IoIosSearch className="mr-3 h-5 w-5 text-muted-foreground" />
-                <span className="font-medium w-24">Inspect by:</span>
-                {inspectionDepartment?.account ? (
-                  <Badge variant={'outline'}>
-                    <Avatar className="h-8 w-8 mr-2">
-                      <AvatarImage
-                        src={inspectionDepartment?.account?.avaUrl}
-                        alt="Profile picture"
-                      />
-                      <AvatarFallback>Inspec</AvatarFallback>
-                    </Avatar>
-                    {inspectionDepartment?.account?.lastName +
-                      ' ' +
-                      inspectionDepartment?.account?.firstName}
-                  </Badge>
-                ) : (
-                  <h4>Not Yet</h4>
-                )}
-              </div>
+
               <div className="flex items-center text-sm ">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
-                <span>
-                  {new Date(requestDate).toLocaleDateString() +
-                    ' ' +
-                    new Date(requestDate).toLocaleTimeString()}
-                </span>
+                <span>{new Date(requestDate).toLocaleString()}</span>
               </div>
               <div className="flex items-start text-sm">
                 <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground " />
                 <span className="font-medium w-24">Notes:</span>
-                <span className="flex-1">{requestDetails || 'Not yet'}</span>
+                <span className="flex-1">{requestDetails || 'Nothing'}</span>
               </div>
             </div>
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
-          {currentStatus == 'ARRIVED' && (
-            <div className="flex flex-col space-y-4 w-full">
+          {currentStatus == 'PENDING' && (
+            <WarehouseManagerGuardDiv className="flex flex-col space-y-4 w-full">
               <div className="flex justify-between w-full"></div>
 
               <div className="flex space-x-4 items-center w-full justify-center">
@@ -415,7 +392,7 @@ export default function WarehouseApproval({
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-            </div>
+            </WarehouseManagerGuardDiv>
           )}
         </CardFooter>
       </Card>

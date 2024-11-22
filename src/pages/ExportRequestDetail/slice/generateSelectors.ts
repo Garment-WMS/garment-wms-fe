@@ -1,4 +1,4 @@
-import { createSelector } from "@reduxjs/toolkit";
+import { createSelector } from '@reduxjs/toolkit';
 
 const generateSelectors = (initialState: any, selectDomain: any) => {
   const keys = Object.keys(initialState);
@@ -6,7 +6,7 @@ const generateSelectors = (initialState: any, selectDomain: any) => {
   return keys.reduce((acc, key) => {
     return {
       ...acc,
-      [key]: createSelector([selectDomain], (state) => state[key]),
+      [key]: createSelector([selectDomain], (state) => state[key])
     };
   }, {});
 };

@@ -4,7 +4,10 @@ import DataTable from '@/components/common/EditableTable/DataTable';
 import { Button } from '@/components/ui/button';
 import { PODeliveryDetail } from '@/types/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
+import { boolean } from 'zod';
 type Props = {
+  isNewPoDelivery: boolean;
+  setIsNewdelivery: any;
   data: PODeliveryDetail[] | undefined;
   setPoDeliverydetails: React.Dispatch<React.SetStateAction<PODeliveryDetail[]>>;
   setEditDetail: React.Dispatch<React.SetStateAction<Boolean>>;
@@ -12,10 +15,12 @@ type Props = {
 };
 
 const ImportRequestDetails = ({
+  isNewPoDelivery,
   data,
   setPoDeliverydetails,
   setEditDetail,
-  isEditDetail
+  isEditDetail,
+  setIsNewdelivery
 }: Props) => {
   const { toast } = useToast();
   const initializeDetails = (data: PODeliveryDetail[] | undefined) => {
@@ -27,28 +32,43 @@ const ImportRequestDetails = ({
     }));
   };
   const [details, setDetails] = useState(initializeDetails(data));
-
-  // Use effect to update details when data changes
+  const [initialDetails, setInitialDetails] = useState(initializeDetails(data));
+  const [isError, setError] = useState(boolean);
   useEffect(() => {
-    setDetails(initializeDetails(data));
+    if (isNewPoDelivery) {
+      const newDetails = initializeDetails(data);
+      setDetails(newDetails);
+      setInitialDetails(newDetails);
+      setIsNewdelivery(false);
+    }
   }, [data]);
+
   const handleToogleDialog = () => {
-    if (initializeDetails(data).length <= 0) {
+    if (initialDetails.length <= 0) {
       toast({
         variant: 'destructive',
         title: 'Please choose a Purchase Order and Purchase Order batch first',
         description: ''
       });
     } else if (isEditDetail) {
-      setDetails(initializeDetails(data)); // Reset details to the original data, handling undefined case
+      setDetails(initialDetails); // Reset to initial details when cancelling
       setEditDetail(false);
     } else {
       setEditDetail(true);
     }
   };
   const handleSave = () => {
-    setEditDetail(false);
-    setPoDeliverydetails(details);
+    if (!isError) {
+      setEditDetail(false);
+      setPoDeliverydetails(details);
+      setInitialDetails(details); // Update initialDetails with the new saved state
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Please handle error',
+        description: 'Please resolve all the error before saving the details'
+      });
+    }
   };
   const columns = useMemo(() => getMaterialColumns({}), []);
   return (
@@ -67,7 +87,13 @@ const ImportRequestDetails = ({
       </div>
 
       {details && (
-        <DataTable data={details} columns={columns} isEdit={isEditDetail} setDetails={setDetails} />
+        <DataTable
+          data={details}
+          columns={columns}
+          isEdit={isEditDetail}
+          setDetails={setDetails}
+          setError={setError}
+        />
       )}
     </div>
   );

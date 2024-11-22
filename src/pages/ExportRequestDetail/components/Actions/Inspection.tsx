@@ -9,11 +9,13 @@ import {
   CarouselApi
 } from '@/components/ui/Carousel';
 import WarehouseApproval from './ImportRequestApproval';
-import ImportRequestCreation from './ImportRequestCreation';
 import WarehouseStaffAssignment from './ImportRequestStaffAssignment';
 import { useSelector } from 'react-redux';
 import { ImportRequest } from '@/types/ImportRequestType';
 import importRequestSelector from '@/pages/ImportRequests/slice/selector';
+import ExportRequestCreation from './exportRequestCreation';
+import exportRequestSelector from '../../slice/selector';
+import { MaterialExportRequest } from '@/types/exportRequest';
 
 interface Props {
   selectedStep: number | null;
@@ -22,25 +24,15 @@ interface Props {
 }
 
 const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, currentStatus }) => {
-  const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
+  const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null); // Store carousel API
 
   // Step actions data (can be dynamic)
   const stepsActions = [
     {
       title: '123',
-      content: <ImportRequestCreation />
+      content: <ExportRequestCreation />
     },
-
-    // {
-    //   title: 'No Inspection Report',
-    //   content: (
-    //     <div className="w-full flex items-center justify-center flex-col">
-    //       <img src={empty} className="w-[250px] h-[250px]" />
-    //       <h2 className="font-bold text-xl text-gray-700">No Inspection Report Created</h2>
-    //     </div>
-    //   )
-    // },
 
     {
       title: 'Pending Approval',
@@ -48,27 +40,23 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
         <WarehouseApproval
           requestId="123"
           currentStatus={currentStatus}
-          manager={importRequest?.warehouseManager}
-          requestDetails={importRequest?.managerNote}
-          requestDate={importRequest?.createdAt}
-          warehouseStaff={importRequest?.warehouseStaff}
-          inspectionDepartment={importRequest?.inspectionRequest[0]?.inspectionDepartment}
+          manager={exportRequest?.warehouseManager}
+          requestDetails={exportRequest?.managerNote as string}
+          requestDate={exportRequest?.createdAt}
+          warehouseStaff={exportRequest?.warehouseStaff}
         />
       )
     },
-    {
-      title: 'Chart Report',
-      content: <Chart currentStatus={currentStatus} />
-    },
+
     {
       title: 'Pending Approval',
       content: (
         <WarehouseStaffAssignment
           currentStatus={currentStatus}
-          requestId={importRequest?.code}
-          warehouseManager={importRequest?.warehouseManager}
-          warehouseStaff={importRequest?.warehouseStaff}
-          lastedUpdate={importRequest?.updatedAt}
+          requestId={exportRequest?.code}
+          warehouseManager={exportRequest?.warehouseManager}
+          warehouseStaff={exportRequest?.warehouseStaff}
+          lastedUpdate={exportRequest?.updatedAt}
         />
       )
     }
