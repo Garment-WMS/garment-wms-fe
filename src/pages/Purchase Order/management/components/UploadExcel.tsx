@@ -192,13 +192,11 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
 
   const { productionPlanList, isPending, isError } = useGetAllProductionPlans({
     sorting,
-    columnFilters,
+    columnFilters: [{ id: 'status', value: 'IN_PROGRESS' }],
     pagination
   });
 
-  const filteredPlans: ProductionPlan = productionPlanList?.data?.filter(
-    (plan: ProductionPlan) => plan.status === ProductionPlanStatus.IN_PROGRESS
-  );
+  const filteredPlans = productionPlanList?.data;
 
   const renderProductionPlan = () => {
     const handlePageChange = (newPageIndex: number) => {
@@ -297,10 +295,16 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   const renderUploadExcel = () => (
     <div>
       {selectedPlan && (
-        <div className="mb-4 bg-gray-100 p-4 rounded-lg shadow-md">
+        <div className="mb-4 bg-gray-100 p-4 rounded-lg shadow-md flex items-center justify-between flex-row">
           <p className="text-sm font-semibold text-gray-700">
             <strong>Plan Selected:</strong> {selectedPlan?.code || 'N/A'}
           </p>
+          <Badge
+            className={`rounded-lg px-2 py-1 ${
+              statusColors[selectedPlan?.status as ProductionPlanStatus] || 'bg-gray-500 text-white'
+            }`}>
+            {ProductionPlanStatusLabels[selectedPlan?.status as ProductionPlanStatus] || 'Unknown'}
+          </Badge>
         </div>
       )}
 
@@ -479,7 +483,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
               className="w-40"
               onClick={() => {
                 if (poId) {
-                  navigate(`/purchase-staff/purchase-order/${poId}`);
+                  navigate(`/purchase-order/${poId}`);
                 }
               }}>
               View purchase order
