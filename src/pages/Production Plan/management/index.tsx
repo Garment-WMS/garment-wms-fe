@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
@@ -42,7 +42,7 @@ const ProductionPlanManagement = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 5
   });
   const [selectedPlan, setSelectedPlan] = useState<ProductionPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -179,7 +179,7 @@ const ProductionPlanManagement = () => {
         </Card>
       ))}
 
-      {/* Pagination Controls */}
+      {/* Complete Pagination Controls */}
       <div className="flex justify-between items-center mt-4">
         <Button
           onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }))}
@@ -187,11 +187,14 @@ const ProductionPlanManagement = () => {
           Previous
         </Button>
         <p>
-          Page {pagination.pageIndex + 1} of {pageMeta?.totalPages || 1}
+          Page {pagination.pageIndex + 1} of {productionPlanList?.pageMeta?.totalPages || 1}
         </p>
         <Button
           onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }))}
-          disabled={!pageMeta || pagination.pageIndex + 1 >= pageMeta.totalPages}>
+          disabled={
+            !productionPlanList?.pageMeta ||
+            pagination.pageIndex + 1 >= productionPlanList?.pageMeta?.totalPages
+          }>
           Next
         </Button>
       </div>
