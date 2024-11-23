@@ -141,102 +141,90 @@ export default function WarehouseImportDialog({
         </div>
       );
     }
-        return (
-          <ScrollArea className="h-[400px]  rounded-md border p-2 my-4">
-            {productionBatches &&
-              productionBatches.map((batch) => (
-                // <div
-                //   key={batch.id}
-                //   className={`mb-4 p-4 rounded-lg ${
-                //     batch.status != 'EXECUTING'
-                //       ? 'bg-muted cursor-not-allowed'
-                //       : selectedProductionBatch?.id === batch.id
-                //         ? 'bg-primary text-primary-foreground cursor-pointer'
-                //         : 'bg-secondary cursor-pointer'
-                //   }`}
-                //   onClick={() => !(batch.status != 'EXECUTING') && handleSelectProductionBatch(batch)}>
-                //   <div className="flex justify-between items-center">
-                //     <div>
-                //       <h3 className="font-semibold">{batch.name} - {batch.code}</h3>
-                //       <h4>Quantity to produce {batch.quantityToProduce}</h4>
-                //     </div>
-                    
-
-                //     {batch.status != 'EXECUTING' ? (
-                //       <AlertCircle className="text-yellow-500" />
-                //     ) : (
-                //       <CheckCircle className="text-green-500" />
-                //     )}
-                //   </div>
-                //   {batch.status != 'EXECUTING' && (
-                //     <p className="text-sm text-muted-foreground mt-2">
-                //       Import request already exists
-                //     </p>
-                //   )}
-                // </div>
-                <Card 
-                   className={`mb-4 p-4 rounded-lg ${
-                    batch.status != 'EXECUTING'
-                      ? 'bg-muted cursor-not-allowed'
-                      : selectedProductionBatch?.id === batch.id
-                        ? 'bg-primary text-white cursor-pointer'
-                        : 'bg-secondary cursor-pointer'
-                  }`}
-                  onClick={() => !(batch.status != 'EXECUTING') && handleSelectProductionBatch(batch)}>
-                
-                <CardHeader>
-                  <div className="flex justify-between items-center gap-4">
-                    <div>
-                      <CardTitle className="text-2xl">{batch.name}</CardTitle>
-                      <CardDescription>{batch.code || "No code assigned"}</CardDescription>
-                    </div>
-                    <Badge className={`${getStatusColor(batch.status)} text-white`}>
-                      {batch.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="font-semibold">Quantity to Produce</h3>
-                      <p>{batch.quantityToProduce} {batch.productionPlanDetail?.productSize?.productVariant?.product?.productUom?.uomCharacter}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Production Plan Code</h3>
-                      <p>{batch.productionPlanDetail?.code || 'No code available'}</p>
-                    </div>
-                  </div>
-          
+    return (
+      <ScrollArea className="h-[400px] rounded-md border p-2 my-4">
+        {productionBatches?.length > 0 ? (
+          productionBatches.map((batch) => (
+            <Card
+              key={batch.id}
+              className={`mb-4 p-4 rounded-lg ${
+                batch.status !== 'EXECUTING'
+                  ? 'bg-muted cursor-not-allowed'
+                  : selectedProductionBatch?.id === batch.id
+                  ? 'bg-primary text-white cursor-pointer'
+                  : 'bg-secondary cursor-pointer'
+              }`}
+              onClick={() =>
+                batch.status === 'EXECUTING' && handleSelectProductionBatch(batch)
+              }
+            >
+              <CardHeader>
+                <div className="flex justify-between items-center gap-4">
                   <div>
-                    <h3 className="font-semibold mb-2">Product Details</h3>
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={batch?.productionPlanDetail?.productSize?.productVariant?.image}
-                        alt={batch?.productionPlanDetail?.productSize.productVariant.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                      <div>
-                        <p className="font-medium">{batch?.productionPlanDetail?.productSize.productVariant.product.name}</p>
-                        <p>{batch?.productionPlanDetail?.productSize.productVariant.name}</p>
-                        <p>Size: {batch?.productionPlanDetail?.productSize.size}</p>
-                      </div>
+                    <CardTitle className="text-2xl">{batch.name}</CardTitle>
+                    <CardDescription>{batch.code || 'No code assigned'}</CardDescription>
+                  </div>
+                  <Badge className={`${getStatusColor(batch.status)} text-white`}>
+                    {batch.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold">Quantity to Produce</h3>
+                    <p>
+                      {batch.quantityToProduce}{' '}
+                      {batch.productionPlanDetail?.productSize?.productVariant?.product?.productUom?.uomCharacter}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Production Plan Code</h3>
+                    <p>{batch.productionPlanDetail?.code || 'No code available'}</p>
+                  </div>
+                </div>
+    
+                <div>
+                  <h3 className="font-semibold mb-2">Product Details</h3>
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={
+                        batch?.productionPlanDetail?.productSize?.productVariant?.image ||
+                        'placeholder.jpg'
+                      }
+                      alt={
+                        batch?.productionPlanDetail?.productSize?.productVariant?.name ||
+                        'Product Image'
+                      }
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div>
+                      <p className="font-medium">
+                        {batch?.productionPlanDetail?.productSize?.productVariant?.product?.name}
+                      </p>
+                      <p>{batch?.productionPlanDetail?.productSize?.productVariant?.name}</p>
+                      <p>Size: {batch?.productionPlanDetail?.productSize?.size}</p>
                     </div>
                   </div>
-          
-          
-                  {batch.description && (
-                    <div>
-                      <h3 className="font-semibold">Description</h3>
-                      <p>{batch.description}</p>
-                    </div>
-                  )}
-                </CardContent>
-
-              </Card>
-            
-              ))}
-          </ScrollArea>
-        );
+                </div>
+    
+                {batch.description && (
+                  <div>
+                    <h3 className="font-semibold">Description</h3>
+                    <p>{batch.description}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <div className="flex justify-center items-center">
+            No production batch available at the moment
+          </div>
+        )}
+      </ScrollArea>
+    );
+    
     }
   
 

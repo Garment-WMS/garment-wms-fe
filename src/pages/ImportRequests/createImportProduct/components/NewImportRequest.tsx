@@ -80,7 +80,7 @@ const NewImportRequest = (props: Props) => {
       if (!selectedProductionBatch ) {
         toast({
           variant: 'destructive',
-          title: 'Please choose a Production Plan and Production Batch first',
+          title: 'Please choose a Production Batch',
           description: ''
         });
         return;
