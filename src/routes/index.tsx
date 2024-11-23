@@ -47,6 +47,7 @@ import CreateExportRequest from '@/pages/ExportRequest';
 import ViewExportRequest from '@/pages/ExportRequestDetail';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
+import CreateImportRequestProduct from '@/pages/ImportRequests/createImportProduct';
 import ProductManagement from '@/pages/Product/Management';
 import ProductVariantDetails from '@/pages/Product/Details';
 import ExportRequestList from '@/pages/ExportRequestList/management';
@@ -233,6 +234,10 @@ const RouterComponent: React.FC = () => {
             {
               path: '/import-request/create/material',
               element: <CreateImportRequest />
+            },
+            {
+              path: '/import-request/create/product',
+              element: <CreateImportRequestProduct />
             },
             {
               path: '/import-request/create',

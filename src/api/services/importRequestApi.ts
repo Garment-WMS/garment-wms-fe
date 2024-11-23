@@ -1,7 +1,8 @@
 import { post } from './ApiCaller';
 import privateCall from '../PrivateCaller';
-
+const importRequestPath = '/import-request';
 export const importRequestApi = {
+  createImportProduct:(body:any) => post(`${importRequestPath}/product`,body),
   create: async (
     poDeliveryId: string,
     description: string,

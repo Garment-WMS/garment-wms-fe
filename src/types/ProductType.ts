@@ -62,6 +62,7 @@ export interface ProductVariantResponse {
     size: string;
     productFormula: productFormula[];
     productReceipt: ProductReceipt[];
+    productVariant: ProductVariant;
     inventoryStock: InventoryStock;
     createdAt: string;
     updatedAt: string;
