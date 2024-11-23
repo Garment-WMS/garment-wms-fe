@@ -11,14 +11,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
-import { CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Edit } from 'lucide-react';
+import { CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Edit, CalendarIcon } from 'lucide-react';
 import { getAllProductionPlanFn } from '@/api/services/productionPlanApi';
-import { ProductionPlanData, PurchaseOrder, PODelivery, ProductionPlanDetail } from '@/types/ProductionPlan';
+import {  ProductionPlanDetail } from '@/types/ProductionPlan';
 import Loading from '@/components/common/Loading';
 import { PoDeliveryStatus } from '@/types/tempFile';
 import { ProductionBatch } from '@/types/ProductionBatch';
+import { ColumnFilter, ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { getAllProductionBatch } from '@/api/services/productionBatch';
+import { useDebounce } from '@/hooks/useDebouce';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import { ClockIcon } from '@radix-ui/react-icons';
 export interface Props {
   selectedPlanDetails: any;
   setSelectedPlanDetails: any;
@@ -26,13 +32,9 @@ export interface Props {
   setSelectedProductionBatch: any;
 }
 function SelectionSummary({
-  selectedPlan,
-  selectedPlanDetails,
   selectedProductionBatch,
   onEdit
 }: {
-  selectedPlan: ProductionPlanData | null;
-  selectedPlanDetails: ProductionPlanDetail | null;
   selectedProductionBatch: ProductionBatch | null;
   onEdit: (step: number) => void;
 }) {
@@ -48,38 +50,10 @@ function SelectionSummary({
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between items-center">
-          <span>Production Plan:</span>
-          {selectedPlan ? (
-            <Badge variant="outline" className="flex items-center gap-2">
-              {selectedPlan.name} - {selectedPlan.code}
-              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(1)}>
-                <Edit className="h-3 w-3" />
-                <span className="sr-only">Edit Production Plan</span>
-              </Button>
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">Not selected</span>
-          )}
-        </div>
-        <div className="flex justify-between items-center">
-          <span>Plan details:</span>
-          {selectedPlanDetails ? (
-            <Badge variant="outline" className="flex items-center gap-2">
-              {selectedPlanDetails.code}
-              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(2)}>
-                <Edit className="h-3 w-3" />
-                <span className="sr-only">Edit Purchase Order</span>
-              </Button>
-            </Badge>
-          ) : (
-            <span className="text-muted-foreground">Not selected</span>
-          )}
-        </div>
-        <div className="flex justify-between items-center">
           <span>Production Batch:</span>
           {selectedProductionBatch ? (
             <Badge variant="outline" className="flex items-center gap-2">
-              {selectedProductionBatch?.name} - {selectedPlanDetails?.productSize?.name}
+              {selectedProductionBatch?.name} 
               <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(3)}>
                 <Edit className="h-3 w-3" />
                 <span className="sr-only">Edit Production Batch</span>
@@ -95,109 +69,71 @@ function SelectionSummary({
 }
 
 export default function WarehouseImportDialog({
-  selectedPlanDetails,
-  setSelectedPlanDetails,
   selectedProductionBatch,
   setSelectedProductionBatch,
 
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState(1);
-  const [productionPlans, setProductionPlan] = useState<ProductionPlanData[] | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<ProductionPlanData | null>(null);
-  const [planDetails, setPlanDetails] = useState<ProductionPlanDetail[] | null>(null);
+
   const [productionBatches, setProductionBatches] = useState<ProductionBatch[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const handleNext = (selectedDetail: ProductionPlanDetail) => {
-    if (step < 3) setStep(step + 1);
-    else {
-      setSelectedProductionBatch(selectedProductionBatch);
-      setIsOpen(false);
-      //   resetSelection();
-    }
-  };
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // column filters state of the table
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: 'status', value: 'EXECUTING' }]);
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      if (step === 3) setSelectedProductionBatch(null);
-      if (step === 2) setSelectedPlanDetails(null);
-    }
-  };
+  const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
 
+  const debouncedSorting: SortingState = useDebounce(sorting, 1000);
+  // pagination state of the table
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0, //initial page index
+    pageSize: 500 //default page size
+  });
+ 
+ 
   useEffect(() => {
-    const getAllProductionPlan = async () => {
+    const fetchAllProductionBatch = async () => {
       try {
-        setLoading(true);
-        const data = await getAllProductionPlanFn();
-        setProductionPlan(data);
-      } catch (err) {
-      } finally {
-        setLoading(false);
+        const res = await getAllProductionBatch({
+          pagination,
+          sorting: debouncedSorting,
+          columnFilters: debouncedColumnFilters
+        })
+        setProductionBatches(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.error(error);
       }
-    };
-
-    getAllProductionPlan();
+    }
+    fetchAllProductionBatch();
   }, []);
 
-  const handleSelectProductionPlan = (plan: ProductionPlanData) => {
-    setSelectedPlan(plan);
-    setPlanDetails(plan.productionPlanDetail);
+ const handleChooseStep = () => {
+    setIsOpen(true);
   };
-  const handleSelectPlanDetails = (details: ProductionPlanDetail) => {
-    setSelectedPlanDetails(details);
-    setProductionBatches(details.productionBatch);
-  };
+  const handleNext = (selectedBatch: ProductionBatch) => {
+    setIsOpen(false);
+    setSelectedProductionBatch(selectedBatch);
+    }
+  
   const handleSelectProductionBatch = (batch: ProductionBatch) => {
     setSelectedProductionBatch(batch); // Set a single batch
   };
-  // const resetSelection = () => {
-  //   setStep(1);
-  //   setSelectedPlan(null);
-  //   setSelectedPO(null);
-  //   setSelectedPoDelivery(null);
-  // };
-
-  const handleChooseStep = (selectedStep: number) => {
-    if (selectedStep <= step) {
-      setStep(selectedStep);
-      setIsOpen(true);
-      if (selectedStep === 1) {
-        setSelectedPlanDetails(null);
-        setSelectedProductionBatch(null);
-      } else if (selectedStep === 2) {
-        setSelectedProductionBatch(null);
-      }
-    }
-  };
-
-  const renderStepIndicator = () => {
-    return (
-      <div className="flex justify-center items-center mb-4">
-        {[1, 2,3].map((stepNumber) => (
-          <div
-            key={stepNumber}
-            className={`flex items-center ${
-              stepNumber < step
-                ? 'text-primary'
-                : stepNumber === step
-                  ? 'text-primary font-bold'
-                  : 'text-muted-foreground'
-            }`}>
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                stepNumber <= step ? 'border-primary' : 'border-muted-foreground'
-              }`}>
-              {stepNumber}
-            </div>
-            {stepNumber < 3 && <ChevronRight className="mx-2" />}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  
 
   const renderStepContent = (isLoading: boolean) => {
+    const getStatusColor = (status: string) => {
+      switch (status) {
+        case "EXECUTING":
+          return "bg-blue-500"
+        case "COMPLETED":
+          return "bg-green-500"
+        case "CANCELED":
+          return "bg-red-500"
+        default:
+          return "bg-gray-500"
+      }
+    }
     if (isLoading) {
       return (
         <div className="flex justify-between items-center h-[300px]">
@@ -205,136 +141,133 @@ export default function WarehouseImportDialog({
         </div>
       );
     }
-
-    switch (step) {
-      case 1:
         return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            {productionPlans &&
-              productionPlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`mb-4 p-4 rounded-lg cursor-pointer ${
-                    selectedPlan?.id === plan.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary'
-                  }`}
-                  onClick={() => handleSelectProductionPlan(plan)}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <h3 className="font-semibold">{plan.name} - {plan.code}</h3>
-                      <h4 className="text-sm">
-                        {new Date(plan.expectedStartDate).toLocaleDateString()} To{' '}
-                        {new Date(plan.expectedEndDate).toLocaleDateString()}
-                      </h4>
-                    </div>
-                    <span>{90}%</span>
-                  </div>
-                  <Progress value={90} className="w-full" />
-                </div>
-              ))}
-          </ScrollArea>
-        );
-      case 2:
-        return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            {planDetails &&
-              planDetails.map((detail) => detail.productionBatch.length>0 && (
-                <div
-                  key={detail.id}
-                  className={`mb-4 p-4 rounded-lg cursor-pointer ${
-                    selectedPlanDetails?.id === detail.id ? 'bg-primary text-primary-foreground' : 'bg-secondary'
-                  }`}
-                  onClick={() => handleSelectPlanDetails(detail)}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <h3 className="font-semibold">Plan detail: {detail?.code}</h3>
-                    <h4>Product size: {detail.productSize.name}</h4>
-                    <h4>Quantity to produce: {detail.quantityToProduce}</h4>
-                    </div>
-                    
-                    <span>{90}%</span>
-                  </div>
-                  <Progress value={90} className="w-full" />
-                </div>
-              ))}
-          </ScrollArea>
-        );
-      case 3:
-        return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+          <ScrollArea className="h-[400px]  rounded-md border p-2 my-4">
             {productionBatches &&
               productionBatches.map((batch) => (
-                <div
-                  key={batch.id}
-                  className={`mb-4 p-4 rounded-lg ${
+                // <div
+                //   key={batch.id}
+                //   className={`mb-4 p-4 rounded-lg ${
+                //     batch.status != 'EXECUTING'
+                //       ? 'bg-muted cursor-not-allowed'
+                //       : selectedProductionBatch?.id === batch.id
+                //         ? 'bg-primary text-primary-foreground cursor-pointer'
+                //         : 'bg-secondary cursor-pointer'
+                //   }`}
+                //   onClick={() => !(batch.status != 'EXECUTING') && handleSelectProductionBatch(batch)}>
+                //   <div className="flex justify-between items-center">
+                //     <div>
+                //       <h3 className="font-semibold">{batch.name} - {batch.code}</h3>
+                //       <h4>Quantity to produce {batch.quantityToProduce}</h4>
+                //     </div>
+                    
+
+                //     {batch.status != 'EXECUTING' ? (
+                //       <AlertCircle className="text-yellow-500" />
+                //     ) : (
+                //       <CheckCircle className="text-green-500" />
+                //     )}
+                //   </div>
+                //   {batch.status != 'EXECUTING' && (
+                //     <p className="text-sm text-muted-foreground mt-2">
+                //       Import request already exists
+                //     </p>
+                //   )}
+                // </div>
+                <Card 
+                   className={`mb-4 p-4 rounded-lg ${
                     batch.status != 'EXECUTING'
                       ? 'bg-muted cursor-not-allowed'
                       : selectedProductionBatch?.id === batch.id
-                        ? 'bg-primary text-primary-foreground cursor-pointer'
+                        ? 'bg-primary text-white cursor-pointer'
                         : 'bg-secondary cursor-pointer'
                   }`}
                   onClick={() => !(batch.status != 'EXECUTING') && handleSelectProductionBatch(batch)}>
-                  <div className="flex justify-between items-center">
+                
+                <CardHeader>
+                  <div className="flex justify-between items-center gap-4">
                     <div>
-                      <h3 className="font-semibold">{batch.name} - {batch.code}</h3>
-                      <h4>Quantity to produce {batch.quantityToProduce}</h4>
+                      <CardTitle className="text-2xl">{batch.name}</CardTitle>
+                      <CardDescription>{batch.code || "No code assigned"}</CardDescription>
                     </div>
-                    
-
-                    {batch.status != 'EXECUTING' ? (
-                      <AlertCircle className="text-yellow-500" />
-                    ) : (
-                      <CheckCircle className="text-green-500" />
-                    )}
+                    <Badge className={`${getStatusColor(batch.status)} text-white`}>
+                      {batch.status}
+                    </Badge>
                   </div>
-                  {batch.status != 'EXECUTING' && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Import request already exists
-                    </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="font-semibold">Quantity to Produce</h3>
+                      <p>{batch.quantityToProduce} {batch.productionPlanDetail?.productSize?.productVariant?.product?.productUom?.uomCharacter}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Production Plan Code</h3>
+                      <p>{batch.productionPlanDetail?.code || 'No code available'}</p>
+                    </div>
+                  </div>
+          
+                  <div>
+                    <h3 className="font-semibold mb-2">Product Details</h3>
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={batch?.productionPlanDetail?.productSize?.productVariant?.image}
+                        alt={batch?.productionPlanDetail?.productSize.productVariant.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div>
+                        <p className="font-medium">{batch?.productionPlanDetail?.productSize.productVariant.product.name}</p>
+                        <p>{batch?.productionPlanDetail?.productSize.productVariant.name}</p>
+                        <p>Size: {batch?.productionPlanDetail?.productSize.size}</p>
+                      </div>
+                    </div>
+                  </div>
+          
+          
+                  {batch.description && (
+                    <div>
+                      <h3 className="font-semibold">Description</h3>
+                      <p>{batch.description}</p>
+                    </div>
                   )}
-                </div>
+                </CardContent>
+
+              </Card>
+            
               ))}
           </ScrollArea>
         );
     }
-  };
+  
 
   return (
     <div className="space-y-4">
       <SelectionSummary
-        selectedPlan={selectedPlan}
-        selectedPlanDetails={selectedPlanDetails}
         selectedProductionBatch={selectedProductionBatch}
         onEdit={handleChooseStep}
       />
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className=" w-full">
           <DialogHeader>
             <DialogTitle>
-              {step === 1 && 'Select Production Plan'}
-              {step === 2 && 'Select Purchase Order'}
-              {step === 3 && 'Select Production Batch'}
+              Select Production Batch
             </DialogTitle>
           </DialogHeader>
-          {renderStepIndicator()}
-          {renderStepContent(isLoading)}
+          <div className='w-full'>
+            {renderStepContent(isLoading)}
+          </div>
+          
           <DialogFooter className="flex justify-between">
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <Button variant="outline" onClick={handleBack} disabled={step === 1}>
                 <ChevronLeft className="mr-2 h-4 w-4" /> Back
               </Button>
-            </div>
+            </div> */}
             <Button
-              onClick={() => handleNext(selectedPlanDetails)}
-              disabled={
-                (step === 1 && !selectedPlan) ||
-                (step === 2 && !selectedPlanDetails) ||
-                (step === 3 && !selectedProductionBatch)
-                }
-                >
-              {step < 3 ? 'Next' : 'Confirm'}
+              onClick={() => handleNext(selectedProductionBatch)}
+              >
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>

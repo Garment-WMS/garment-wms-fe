@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { getProductColumns } from './ProductColumns';
+import { getProductColumns } from './MaterialColumns';
 import DataTable from '@/components/common/EditableTable/DataTable';
 import { Button } from '@/components/ui/button';
 import { PODeliveryDetail } from '@/types/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
+import { boolean } from 'zod';
 type Props = {
   data: PODeliveryDetail[] | undefined;
   setPoDeliverydetails: React.Dispatch<React.SetStateAction<PODeliveryDetail[]>>;
@@ -27,6 +28,7 @@ const ImportRequestDetails = ({
     }));
   };
   const [details, setDetails] = useState(initializeDetails(data));
+  const [isError, setError] = useState(boolean);
 
   // Use effect to update details when data changes
   useEffect(() => {
@@ -47,8 +49,17 @@ const ImportRequestDetails = ({
     }
   };
   const handleSave = () => {
-    setEditDetail(false);
+    if(!isError){
+      setEditDetail(false);
     setPoDeliverydetails(details);
+    }else {
+      toast({
+        variant: 'destructive',
+        title: 'Please handle error',
+        description: 'Please resolve all the error before saving the details'
+      });
+    }
+    
   };
   const columns = useMemo(() => getProductColumns({}), []);
   return (
@@ -67,7 +78,7 @@ const ImportRequestDetails = ({
       </div>
 
       {details && (
-        <DataTable data={details} columns={columns} isEdit={isEditDetail} setDetails={setDetails} />
+        <DataTable data={details} columns={columns} isEdit={isEditDetail} setDetails={setDetails} setError={setError} />
       )}
     </div>
   );

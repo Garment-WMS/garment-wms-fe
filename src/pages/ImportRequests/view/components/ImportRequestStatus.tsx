@@ -28,6 +28,7 @@ const ImportRequestStatus = (props: Props) => {
       case 'REJECTED':
       case 'APPROVED':
       case 'ARRIVED':
+        if(!importRequest?.warehouseManager)return null
         return {
           role: 'Warehouse Manager',
           avatar: importRequest?.warehouseManager?.account?.avatarUrl || 'N/A',
@@ -98,14 +99,14 @@ const ImportRequestStatus = (props: Props) => {
         <span className="font-primary font-bold lg:text-xl">#{code}</span>
         <div className="font-primary text-sm">Assigned to</div>
         <Avatar>
-          {assignedTo.avatar ? (
+          {assignedTo?.avatar ? (
             <AvatarImage src={assignedTo.avatar} alt={assignedTo.role} />
           ) : (
             <AvatarFallback>NA</AvatarFallback>
           )}
         </Avatar>
-        <div className="font-primary text-sm">{assignedTo.name}</div>
-        <div className="font-primary text-sm">{assignedTo.role}</div>
+        <div className="font-primary text-sm">{assignedTo?.name}</div>
+        <div className="font-primary text-sm">{assignedTo?.role}</div>
       </div>
 
       <div className="flex flex-col gap-2 items-start">

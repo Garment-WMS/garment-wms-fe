@@ -19,13 +19,10 @@ import {
 import { Button } from '@/components/ui/button';
 import DeliveryForm from './DeliveryForm';
 import ImportRequestDetails from './ImportRequestDetails';
-import { PODeliveryDetail } from '@/types/PurchaseOrder';
 import WarehouseImportDialog from './WarehouseImportDialog';
 import {
-  PODelivery,
   ProductionPlanDetail,
   ProductSize,
-  PurchaseOrder
 } from '@/types/ProductionPlan';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import privateCall from '@/api/PrivateCaller';
@@ -73,16 +70,14 @@ const NewImportRequest = (props: Props) => {
   const [selectedProductionPlanDetails, setSelectedProductionPlanDetails] =
     useState<ProductionPlanDetail>();
   const [selectedProductionBatch, setSelectedProductionBatch] = useState<ProductionBatch>();
-
-  const [poDeliveryDetails, setPoDeliverydetails] = useState<PODeliveryDetail[]>([]);
   const [description, setDescription] = useState<string>('');
   const { toast } = useToast();
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
   };
-  const onSubmit = async (quantityData: z.infer<typeof formSchema>) => {
+  const onSubmit = async () => {
     try {
-      if (!selectedProductionBatch || !selectedProductionPlanDetails) {
+      if (!selectedProductionBatch ) {
         toast({
           variant: 'destructive',
           title: 'Please choose a Production Plan and Production Batch first',
@@ -90,35 +85,26 @@ const NewImportRequest = (props: Props) => {
         });
         return;
       }
-      if (
-        selectedProductionBatch &&
-        quantityData.number > selectedProductionBatch.quantityToProduce
-      ) {
-        toast({
-          variant: 'destructive',
-          title: 'Please Quantity must be less than or equal to the quantity to produce',
-          description: ''
-        });
-        return;
-      }
+
       const response = await privateCall(
         importRequestApi.createImportProduct({
           productionBatchId: selectedProductionBatch?.id,
           description: description,
           importRequestDetail: {
-            productSizeId: selectedProductionPlanDetails?.productSize.id,
-            quantityByPack: quantityData.number
+            productSizeId: selectedProductionBatch?.productionPlanDetail?.productSize.id,
+            quantityByPack: selectedProductionBatch?.productionPlanDetail?.quantityToProduce
           },
           type: 'PRODUCT_BY_BATCH'
         })
       );
       if (response.status === 201) {
+        const responseData = response.data.data.data;  
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate('/import-request'); // Navigate back after successful creation
+        navigate(`/import-request/${responseData.id}`); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({
@@ -130,10 +116,9 @@ const NewImportRequest = (props: Props) => {
   };
 
   // Re-render ImportRequestDetails when poDeliveryDetails changes
-  useEffect(() => {}, [poDeliveryDetails]);
 
   const handleFormSubmit = () => {
-    validateQuantityform.handleSubmit(onSubmit)();
+    onSubmit();
     setDialogOpen(false); // Close the dialog after submit
   };
 
@@ -181,7 +166,7 @@ const NewImportRequest = (props: Props) => {
             </div>
           )}
         </div> */}
-        <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
+       
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Warehouse</div>
           <div className="flex flex-col gap-4">
@@ -196,6 +181,7 @@ const NewImportRequest = (props: Props) => {
             <div className="font-primary font-semibold text-sm">Fax: {WarehouseInfo.fax}</div>
           </div>
         </div>
+        <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
       </div>
 
       {/* <ImportRequestDetails
@@ -205,11 +191,8 @@ const NewImportRequest = (props: Props) => {
         isEditDetail={isEditDetail}
       /> */}
 
-      {selectedProductionPlanDetails && selectedProductionBatch ? (
+      {selectedProductionBatch ? (
         <ProductImportDetail
-          form={validateQuantityform}
-          onSubmit={onSubmit}
-          selectedDetails={selectedProductionPlanDetails}
           selectedProductionBatch={selectedProductionBatch}
         />
       ) : (

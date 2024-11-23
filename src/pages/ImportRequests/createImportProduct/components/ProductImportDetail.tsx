@@ -14,10 +14,7 @@ import { useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 type Props = {
-    selectedDetails: ProductionPlanDetail,
     selectedProductionBatch: ProductionBatch,
-    form: UseFormReturn<z.infer<typeof formSchema>>;
-    onSubmit: any
 }
 const formSchema = z.object({
     number: z
@@ -30,14 +27,9 @@ const formSchema = z.object({
       .lte(10000, "Number must be less than or equal to 10000"),
   })
 const ProductImportDetail = ({
-    form,
-    selectedDetails,
     selectedProductionBatch,
-
-    onSubmit
 }:Props) => {
 
-    const productSize =selectedDetails.productSize
   return (
     <>
 
@@ -53,30 +45,30 @@ const ProductImportDetail = ({
               <h3 className="text-lg font-semibold">Product Information</h3>
               <div className="flex items-center space-x-4">
                 <img
-                  src={selectedDetails.productSize.productVariant.image}
-                  alt={selectedDetails.productSize.productVariant.name}
+                  src={selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.image}
+                  alt={selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.name}
                   width={100}
                   height={100}
                   className="rounded-md"
                 />
                 <div>
-                  <p className="font-medium">{selectedDetails.productSize.productVariant.name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedDetails.productSize.name}</p>
-                  <p className="text-sm text-muted-foreground">Size: {selectedDetails.productSize.size}</p>
+                  <p className="font-medium">{selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedProductionBatch?.productionPlanDetail?.productSize.name}</p>
+                  <p className="text-sm text-muted-foreground">Size: {selectedProductionBatch?.productionPlanDetail?.productSize.size}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <p>Width: {selectedDetails.productSize.width}m</p>
-                <p>Height: {selectedDetails.productSize.height}m</p>
-                <p>Length: {selectedDetails.productSize.length}m</p>
-                <p>Weight: {selectedDetails.productSize.weight}kg</p>
+                <p>Width: {selectedProductionBatch?.productionPlanDetail?.productSize.width}m</p>
+                <p>Height: {selectedProductionBatch?.productionPlanDetail?.productSize.height}m</p>
+                <p>Length: {selectedProductionBatch?.productionPlanDetail?.productSize.length}m</p>
+                <p>Weight: {selectedProductionBatch?.productionPlanDetail?.productSize.weight}kg</p>
               </div>
             </div>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Production Details</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <p>Plan Code: {selectedDetails.code}</p>
-                <p>Quantity: {selectedDetails.quantityToProduce} {selectedDetails.productSize.productVariant.product.productUom.uomCharacter}</p>
+                <p>Plan Code: {selectedProductionBatch?.productionPlanDetail?.code}</p>
+                <p>Quantity: {selectedProductionBatch?.productionPlanDetail?.quantityToProduce} {selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.product.productUom.uomCharacter}</p>
               </div>
             </div>
           </div>
@@ -90,33 +82,9 @@ const ProductImportDetail = ({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <p>Batch ID: {selectedProductionBatch.id}</p>
-                  <p>Quantity: {selectedProductionBatch.quantityToProduce} {selectedDetails.productSize.productVariant.product.productUom.uomCharacter}</p>
-                  <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Import Quantity</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter a number"
-                  {...field}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    field.onChange(value === "" ? undefined : Number(value));
-                  }}
-                />
-              </FormControl>
-
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+                  <p>Batch ID: {selectedProductionBatch.code}</p>
+                  <p>Quantity: {selectedProductionBatch.quantityToProduce} {selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.product.productUom.uomCharacter}</p>
+                  
                 </div>
               </CardContent>
             </Card>

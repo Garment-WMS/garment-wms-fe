@@ -23,6 +23,7 @@ interface ColumnTypeForProduct {
   code: string;
   size: any;
   productName: any;
+  type: string; // Add this line
   quantityByPack: any;
 }
 const ImportRequestDetails = (props: Props) => {
