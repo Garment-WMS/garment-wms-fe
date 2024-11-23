@@ -58,6 +58,7 @@ type InspectionRequest = {
   deletedAt: string | null;
   importRequestId: string;
   note: string | null;
+  inspectionDepartment: any;
 };
 
 type InspectionReport = {

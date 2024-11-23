@@ -19,6 +19,7 @@ import { ProductionPlanData, PurchaseOrder, PODelivery } from '@/types/Productio
 import Loading from '@/components/common/Loading';
 import { PoDeliveryStatus } from '@/types/tempFile';
 export interface Props {
+  setIsNewdelivery: any;
   selectedPo: any;
   setSelectedPO: any;
   setSelectedPoDelivery: any;
@@ -99,7 +100,8 @@ export default function WarehouseImportDialog({
   selectedPoDelivery,
   setSelectedPO,
   setSelectedPoDelivery,
-  setPoDeliverydetails
+  setPoDeliverydetails,
+  setIsNewdelivery
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
@@ -112,7 +114,7 @@ export default function WarehouseImportDialog({
     if (step < 3) setStep(step + 1);
     else {
       setPoDeliverydetails(selectedPoDelivery.poDeliveryDetail);
-      console.log(selectedPoDelivery.poDeliveryDetail);
+      setIsNewdelivery(true);
       setIsOpen(false);
       //   resetSelection();
     }

@@ -25,16 +25,33 @@ import MaterialVariantUpdate from '@/pages/Material/update';
 import MaterialManagement from '@/pages/Material/management';
 import Login from '@/pages/login';
 import Home from '@/pages/home';
-import ImportReceipt from '@/pages/ImportReceiptDetail';
+import StocktakingManagement from '@/pages/Stocktaking/management';
+import StocktakingDetails from '@/pages/Stocktaking/details';
+import CreateInventoryReport from '@/pages/Stocktaking/create';
+import CreateDynamicPlan from '@/pages/StocktakingPlan/create/CreateDynamicPlan';
+import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
+import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
+import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
 import { Router } from 'react-router-dom';
+import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktaking/management';
+import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
+import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
+import RoleBasedRedirect from './RoleBasedRedirected';
+import ImportReceipt from '@/pages/ImportReceiptDetail';
 import MyTasks from '@/pages/tasks';
 import TaskDetailPage from '@/pages/tasks/taskDetails';
 import ProductionPlanManagement from '@/pages/Production Plan/management';
 import ProductionPlanDetail from '@/pages/Production Plan/detail';
 import ImportReceiptList from '@/pages/ImportReceiptList/management';
+import CreateExportRequest from '@/pages/ExportRequest';
+import ViewExportRequest from '@/pages/ExportRequestDetail';
 import InspectionRequestDetails from '@/pages/Inspection Report/detail';
 import InspectionRequestManagement from '@/pages/Inspection Report/management';
 import CreateImportRequestProduct from '@/pages/ImportRequests/createImportProduct';
+import ProductManagement from '@/pages/Product/Management';
+import ProductVariantDetails from '@/pages/Product/Details';
+import ExportRequestList from '@/pages/ExportRequestList/management';
+import ProductionBatchManagement from '@/pages/Production Batch/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -60,7 +77,7 @@ const RouterComponent: React.FC = () => {
           element: <WarehouseManagerLayout />,
           children: [
             {
-              path: '/warehouse-manager/home',
+              path: '/home',
               element: <Home />
             }
           ]
@@ -98,8 +115,64 @@ const RouterComponent: React.FC = () => {
               element: <ImportRequestManagement />
             },
             {
+              path: '/export-request',
+              element: <ExportRequestList />
+            },
+            {
+              path: '/export-request/:id',
+              element: <ViewExportRequest />
+            },
+            {
               path: '/home',
-              element: <Home />
+              element: <MyTasks />
+            },
+            {
+              path: '/stocktaking',
+              element: <RoleBasedRedirect 
+              managerComponent={<StocktakingManagement />}
+              warehouseStaffComponent={<WarehouseStaffStocktakingManagement />}
+              />
+            },
+            {
+              path: '/stocktaking/:id',
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingDetails/>}
+              warehouseStaffComponent={<WarehousestaffStocktakingDetails/>}
+              />
+            },
+          
+            {
+              path: '/warehouse-staff/stocktaking/plan/:id',
+              element: <WarehouseStaffStocktakingPlanDetails/>
+            },
+            {
+              path: '/stocktaking/plan/:id',
+              element: <RoleBasedRedirect
+              managerComponent={<StocktakingPlanDetails/>}
+              warehouseStaffComponent={<WarehouseStaffStocktakingPlanDetails/>}
+              />
+            },
+            // {
+            //   path: '/stocktaking/create',
+            //   element: <CreateInventoryReport/>
+            // },
+            {
+              path: '/stocktaking/plan/create',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateStocktakingPlan/>}
+              />
+            },
+            {
+              path: '/stocktaking/plan/create/dynamic',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateDynamicPlan/>}
+              />
+            },
+            {
+              path: '/stocktaking/plan/create/overall',
+              element: <RoleBasedRedirect
+              managerComponent={<CreateOverallPlan/>}
+              />
             },
             {
               path: '/tasks',
@@ -128,6 +201,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/material-variant',
               element: <MaterialManagement />
+            },
+            {
+              path: '/product-variant',
+              element: <ProductManagement />
+            },
+            {
+              path: '/product-variant/:id',
+              element: <ProductVariantDetails />
             },
             {
               path: '/dashboard',
@@ -170,11 +251,20 @@ const RouterComponent: React.FC = () => {
               path: '/production-plan/:id',
               element: <ProductionPlanDetail />
             },
+            {
+              path: '/export-request/create',
+              element: <CreateExportRequest />
+            },
+            {
+              path: '/export-request/:id',
+              element: <ViewExportRequest />
+            },
             { path: '/report', element: <InspectionRequestManagement /> },
             {
               path: '/report/:id',
               element: <InspectionRequestDetails />
-            }
+            },
+            { path: '/production-batch', element: <ProductionBatchManagement /> }
           ]
         }
       ]

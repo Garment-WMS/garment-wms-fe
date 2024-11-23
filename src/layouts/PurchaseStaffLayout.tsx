@@ -1,48 +1,70 @@
 import SideBar from '@/components/SideBar';
 import { MenuProps } from '@/constants/interface';
 import { Outlet } from 'react-router-dom';
-import { FaHome, FaBoxOpen, FaCalendar } from 'react-icons/fa';
-import { GiClothes } from 'react-icons/gi';
-import { RiFilePaper2Fill } from 'react-icons/ri';
 import TopBar from '@/components/TopBar';
+import {
+  TbCalendarCog,
+  TbClipboardData,
+  TbHome,
+  TbPackage,
+  TbShirt,
+  TbShoppingCartCog,
+  TbReceipt,
+  TbPackageExport
+} from 'react-icons/tb';
+import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 
 type Props = {};
 const iconSize = 22;
 const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Dashboard',
-    renderIcon: <FaHome size={iconSize} />,
+    renderIcon: <TbHome size={iconSize} />,
     link: '/dashboard'
   },
   {
     title: 'Production Plan',
-    renderIcon: <FaCalendar size={iconSize} />,
+    renderIcon: <TbCalendarCog size={iconSize} />,
     link: '/production-plan'
   },
-
+  {
+    title: 'Production Batch',
+    renderIcon: <LuContainer size={iconSize} />,
+    link: '/production-batch'
+  },
   {
     title: 'Purchase Order',
-    renderIcon: <FaBoxOpen size={iconSize} />,
+    renderIcon: <TbShoppingCartCog size={iconSize} />,
     link: '/purchase-order'
   },
   {
     title: 'Import Request',
-    renderIcon: <FaBoxOpen size={iconSize} />,
+    renderIcon: <LuClipboardCopy size={iconSize} />,
     link: '/import-request'
   },
   {
-    title: 'Product',
-    renderIcon: <GiClothes size={iconSize} />,
-    link: '/product'
+    title: 'Import Receipt',
+    renderIcon: <TbReceipt size={iconSize} />,
+    link: '/import-receipt'
+  },
+  {
+    title: 'Export request',
+    renderIcon: <TbPackageExport size={iconSize} />,
+    link: '/export-request'
   },
   {
     title: 'Material',
-    renderIcon: <GiClothes size={iconSize} />,
+    renderIcon: <TbPackage size={iconSize} />,
     link: '/material-variant'
   },
   {
+    title: 'Product',
+    renderIcon: <TbShirt size={iconSize} />,
+    link: '/product-variant'
+  },
+  {
     title: 'Report',
-    renderIcon: <RiFilePaper2Fill size={iconSize} />,
+    renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
   }
 ];

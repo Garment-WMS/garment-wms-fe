@@ -113,10 +113,18 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
       staff.refreshToken = refreshToken;
       Cookies.set('accessToken', accessToken);
       Cookies.set('refreshToken', refreshToken);
+
       const userToStore = {
         id: staff.id,
         email: staff.email,
         role: role,
+        roleId:
+          staff?.warehouseStaff?.id ||
+          staff?.productionDepartment?.id ||
+          staff?.inspectionDepartment?.id ||
+          staff?.purchasingStaff?.id ||
+          staff?.warehouseManager?.id ||
+          staff?.factoryDirector?.id,
         accessToken: staff.accessToken,
         refreshToken: staff.refreshToken,
         name: staff.firstName + ' ' + staff.lastName,
@@ -131,6 +139,7 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
     } catch (error: any) {
       // Handle login errors
       const message = error.response?.data?.message || 'UNKNOWN_ERROR';
+      console.log(error);
       switch (message) {
         case HTTP_MESSAGE.INVALID_EMAIL:
           toast({

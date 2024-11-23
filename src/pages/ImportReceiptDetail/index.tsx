@@ -205,7 +205,7 @@ export default function MaterialReceipt() {
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <Card>
               <CardHeader>
-                <CardTitle>Import Receipt Creator</CardTitle>
+                <CardTitle>Import Inspector </CardTitle>
               </CardHeader>
               <CardContent>
                 <div>
@@ -219,10 +219,26 @@ export default function MaterialReceipt() {
                       <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-center">
-                      <p className="text-xl font-bold">John Doe</p>
-                      <p className="text-md text-muted-foreground">Import Manager</p>
-                      <p className="text-md text-muted-foreground">nguyenducbaodh3@gmail.com</p>
-                      <p className="text-md text-muted-foreground">+84838631706</p>
+                      <p className="text-xl font-bold">
+                        {importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                          .account.firstName +
+                          ' ' +
+                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                            .account.lastName}
+                      </p>
+                      <p className="text-md text-muted-foreground"></p>
+                      <p className="text-md text-muted-foreground">
+                        {
+                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                            .account.email
+                        }
+                      </p>
+                      <p className="text-md text-muted-foreground">
+                        {
+                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                            .account.phoneNumber
+                        }
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -293,7 +309,8 @@ export default function MaterialReceipt() {
                         </Link>
                       </p>
                       <p>
-                        <strong>Receipt Date:</strong> 11/25/2024
+                        <strong>Receipt Date:</strong>{' '}
+                        {new Date(importReceipt.createdAt).toLocaleString()}
                       </p>
                       <p>
                         <strong>Provider:</strong> Cong Ty Vai A

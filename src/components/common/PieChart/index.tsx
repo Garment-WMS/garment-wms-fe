@@ -30,7 +30,7 @@ const renderCustomizedLabel = (
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
       style={{
-        fontSize: '20px',
+        fontSize: '16px',
         fontWeight: 'bold',
         stroke: 'black',
         strokeWidth: '0.5px',
@@ -75,7 +75,11 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
           fill="#8884d8"
           dataKey="value">
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            <Cell
+              style={{ outline: 'none' }}
+              key={`cell-${index}`}
+              fill={colors[index % colors.length]}
+            />
           ))}
         </Pie>
         <Tooltip />

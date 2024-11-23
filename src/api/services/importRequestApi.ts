@@ -1,6 +1,4 @@
-import { ApiResponse } from '@/types/ApiResponse';
 import { post } from './ApiCaller';
-import axios from 'axios';
 import privateCall from '../PrivateCaller';
 const importRequestPath = '/import-request';
 export const importRequestApi = {
