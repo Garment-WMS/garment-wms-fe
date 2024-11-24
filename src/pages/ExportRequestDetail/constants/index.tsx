@@ -9,11 +9,11 @@ export const importRequestStatusList = [
   },
   {
     title: 'Material Delivery',
-    state: ['IMPORTING', 'IMPORTED']
+    state: ['EXPORTING', 'EXPORTED']
   },
   {
     title: 'Production Confirmation',
-    state: ['IMPORTING', 'IMPORTED']
+    state: ['PRODUCTION_APPROVED', 'PRODUCTION_REJECTED']
   }
 ];
 export const statusOrder = [

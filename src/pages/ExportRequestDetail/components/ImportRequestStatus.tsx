@@ -42,7 +42,8 @@ const ImportRequestStatus = (props: Props) => {
             exportRequest?.warehouseManager?.account?.firstName
         };
       case 'PENDING':
-      case 'IMPORTED':
+      case 'PRODUCTION_APPROVED':
+      case 'PRODUCTION_REJECTED':
         return {
           role: 'Purchasing Staff',
           avatar: exportRequest?.productionDepartment?.account?.avatarUrl,
