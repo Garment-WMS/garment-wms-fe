@@ -17,7 +17,7 @@ import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 
 type Props = {};
 const iconSize = 22;
-const PurchaseStaffMenu: MenuProps[] = [
+const FactoryDirectorMenu: MenuProps[] = [
   {
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
@@ -77,7 +77,7 @@ const PurchaseStaffMenu: MenuProps[] = [
 const FactoryDirectorLayout = (props: Props) => {
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-row">
-      <SideBar menu={PurchaseStaffMenu} />
+      <SideBar menu={FactoryDirectorMenu} />
       <div className="flex flex-col gap-4 w-full h-full">
         <TopBar />
         <div className="flex-1 p-4 min-h-0 overflow-scroll">
