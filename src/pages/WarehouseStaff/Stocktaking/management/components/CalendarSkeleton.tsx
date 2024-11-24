@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/Skeleton"
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CalendarSkeleton() {
   return (
@@ -13,11 +13,13 @@ export default function CalendarSkeleton() {
 
         {/* Calendar days */}
         {Array.from({ length: 35 }, (_, i) => (
-          <div key={i} className="p-2 border bg-white rounded-sm cursor-pointer shadow-sm flex flex-col gap-2 items-end ">
+          <div
+            key={i}
+            className="p-2 border bg-white rounded-sm cursor-pointer shadow-sm flex flex-col gap-2 items-end ">
             <Skeleton className="h-8 w-8 rounded-sm" />
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
