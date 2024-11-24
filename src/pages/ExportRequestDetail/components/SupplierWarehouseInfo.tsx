@@ -5,45 +5,60 @@ import exportRequestSelector from '../slice/selector';
 
 type Props = {};
 const WarehouseInfo = {
-  name: 'Warehouse 1',
-  address: '123, abc, xyz',
-  phone: '1234567890',
-  email: 'warehouse@gmail.com',
-  fax: '1234567890'
+  name: 'Garment Official warehouse',
+  address: ' 429TL8 Street, Phuoc Vinh An ward, Cu Chi District, Ho Chi Minh city, Viet Nam',
+  phone: '+84838631706',
+  email: 'garmentwarehousef@gmail.com',
+  fax: '833-367-0171'
 };
 const SupplierWarehouseInfo = (props: Props) => {
-  const importRequest: ImportRequest = useSelector(exportRequestSelector.exportRequest);
-  let supplier = importRequest?.poDelivery?.purchaseOrder.supplier;
   return (
-    <div
-      className="
-        flex flex-col gap-4
-        md:grid grid-cols-2 w-full">
+    <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full">
+      {/* Manufacturer Section */}
       <div className="flex flex-col gap-4">
-        <div className="font-primary font-bold text-2xl mb-4">Supplier</div>
-
-        {/* <SuppierForm/> */}
+        <div className="font-primary font-bold text-2xl mb-4">Manufacturer</div>
         <div className="flex flex-col gap-4">
           <div className="font-primary font-semibold text-sm">
-            Supplier name: {supplier?.supplierName}
+            Manufacturer name:{' '}
+            <span className="text-gray-600">Garment Official Factory Ward 7</span>
           </div>
-          <div className="font-primary font-semibold text-sm">Address: {supplier?.address}</div>
-          <div className="font-primary font-semibold text-sm">Phone: {supplier?.phoneNumber}</div>
-          <div className="font-primary font-semibold text-sm">Email: {supplier?.email}</div>
-          <div className="font-primary font-semibold text-sm">Fax: {supplier?.fax}</div>
+          <div className="font-primary font-semibold text-sm">
+            Address:{' '}
+            <span className="text-gray-600">
+              99 Industrial Zone, Tan Phu Ward, District 7, Ho Chi Minh City, Vietnam
+            </span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Phone: <span className="text-gray-600">+84838631706</span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Email: <span className="text-gray-600">garmentfactory@gmail.com</span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Fax: <span className="text-gray-600">833-987-6543</span>
+          </div>
         </div>
       </div>
 
+      {/* Warehouse Section */}
       <div className="flex flex-col gap-4">
         <div className="font-primary font-bold text-2xl mb-4">Warehouse</div>
         <div className="flex flex-col gap-4">
           <div className="font-primary font-semibold text-sm">
-            Warehouse name: {WarehouseInfo.name}
+            Warehouse name: <span className="text-gray-600">{WarehouseInfo.name}</span>
           </div>
-          <div className="font-primary font-semibold text-sm">Address: {WarehouseInfo.address}</div>
-          <div className="font-primary font-semibold text-sm">Phone: {WarehouseInfo.phone}</div>
-          <div className="font-primary font-semibold text-sm">Email: {WarehouseInfo.email}</div>
-          <div className="font-primary font-semibold text-sm">Fax: {WarehouseInfo.fax}</div>
+          <div className="font-primary font-semibold text-sm">
+            Address: <span className="text-gray-600">{WarehouseInfo.address}</span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Phone: <span className="text-gray-600">{WarehouseInfo.phone}</span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Email: <span className="text-gray-600">{WarehouseInfo.email}</span>
+          </div>
+          <div className="font-primary font-semibold text-sm">
+            Fax: <span className="text-gray-600">{WarehouseInfo.fax}</span>
+          </div>
         </div>
       </div>
     </div>
