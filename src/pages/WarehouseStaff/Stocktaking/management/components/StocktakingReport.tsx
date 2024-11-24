@@ -47,7 +47,7 @@ interface StocktakingReportProps {
         cell: ({ row }) => {
           return (
             <div>
-              <div>{row.original.inventoryReportPlanDetail[0].inventoryReportPlan.code}</div>
+              <div>{row.original?.inventoryReportPlanDetail?.[0]?.inventoryReportPlan?.code}</div>
             </div>
           );
         }
