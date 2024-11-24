@@ -33,7 +33,7 @@ const RoleBasedRedirect = ({
     case 'FACTORY_DIRECTOR':
         return factoryDirectorComponent;
     default:
-      return <Navigate to="/login" />;
+      return <Navigate to="/403" />;
   }
 };
 

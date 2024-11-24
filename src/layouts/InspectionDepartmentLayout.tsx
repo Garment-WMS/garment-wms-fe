@@ -1,5 +1,7 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import SideBar from '@/components/SideBar';
+import { MenuProps } from '@/constants/interface';
+import { Outlet } from 'react-router-dom';
+import TopBar from '@/components/TopBar';
 import {
   TbCalendarCog,
   TbClipboardData,
@@ -11,37 +13,15 @@ import {
   TbPackageExport,
   TbReceiptRefund 
 } from 'react-icons/tb';
-import { MenuProps } from '@/constants/interface';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
-import SideBar from '@/components/SideBar';
-import TopBar from '@/components/TopBar';
-type Props = {}
+
+type Props = {};
 const iconSize = 22;
-const WarehouseManagerMenu: MenuProps[] = [
+const InspectionDepartmentMenu: MenuProps[] = [
   {
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
     link: '/dashboard'
-  },
-  {
-    title: 'Stocktaking Management',
-    renderIcon: <TbCalendarCog size={iconSize} />,
-    link: '/stocktaking'
-  },
-  {
-    title: 'Production Plan',
-    renderIcon: <TbCalendarCog size={iconSize} />,
-    link: '/production-plan'
-  },
-  {
-    title: 'Production Batch',
-    renderIcon: <LuContainer size={iconSize} />,
-    link: '/production-batch'
-  },
-  {
-    title: 'Purchase Order',
-    renderIcon: <TbShoppingCartCog size={iconSize} />,
-    link: '/purchase-order'
   },
   {
     title: 'Import Request',
@@ -53,16 +33,7 @@ const WarehouseManagerMenu: MenuProps[] = [
     renderIcon: <TbReceipt size={iconSize} />,
     link: '/import-receipt'
   },
-  {
-    title: 'Export request',
-    renderIcon: <TbPackageExport size={iconSize} />,
-    link: '/export-request'
-  },
-  {
-    title: 'Export Receipt',
-    renderIcon: <TbReceiptRefund  size={iconSize} />,
-    link: '/export-receipt'
-  },
+
   {
     title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
@@ -79,10 +50,10 @@ const WarehouseManagerMenu: MenuProps[] = [
     link: '/report'
   }
 ];
-const WarehouseManagerLayout = (props: Props) => {
+const InspectionDepartmentLayout = (props: Props) => {
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-row">
-      <SideBar menu={WarehouseManagerMenu} />
+      <SideBar menu={InspectionDepartmentMenu} />
       <div className="flex flex-col gap-4 w-full h-full">
         <TopBar />
         <div className="flex-1 p-4 min-h-0 overflow-scroll">
@@ -90,7 +61,7 @@ const WarehouseManagerLayout = (props: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WarehouseManagerLayout
+export default InspectionDepartmentLayout;

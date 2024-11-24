@@ -262,7 +262,7 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Wait approve', value: 'ARRIVED', variant: 'info' },
+  { label: 'Arrived', value: 'PENDING', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
@@ -285,8 +285,10 @@ export interface UseExportRequestsResponse {
 export const DeliveryType = [
   { label: 'Material with Purchase Order', value: 'MATERIAL_BY_PO' },
   { label: 'Return Material', value: 'MATERIAL_RETURN' },
+  { label: 'Material without Purchase Order', value: 'MATERIAL_NOT_BY_PO' },
   { label: 'Product with Manufacturing Order', value: 'PRODUCT_BY_BATCH' },
   { label: 'Return Product', value: 'PRODUCT_RETURN' },
+  { label: 'Product without Manufacturing Order', value: 'PRODUCT_NOT_BY_BATCH' }
 ];
 
 export interface UseImportRequestsInput {

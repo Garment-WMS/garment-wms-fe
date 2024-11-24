@@ -37,24 +37,10 @@ const ImportRequestSheet: React.FC = () => {
               {productionBatch?.code || 'N/A'}
             </Link>
           </div>
-          <div className="font-primary font-semibold text-sm">
-            PO delivery:{' '}
-            <Link to={'/'} className="text-bluePrimary underline underline-offset-2">
-              {poDelivery?.id?.slice(0, 8) || 'N/A'}
-            </Link>
-          </div>
         </div>
         <div className="flex flex-col gap-2">
           <div className="font-primary font-semibold text-sm">
-            Good Exoirt Type: Material For Production
-          </div>
-          <div className="font-primary font-semibold text-sm">
-            Plan Delivery Date:{' '}
-            {planDeliveryDate ? new Date(planDeliveryDate).toLocaleDateString() : 'Not yet'}
-          </div>
-          <div className="font-primary font-semibold text-sm">
-            Actual Delivery Date:{' '}
-            {actualDeliveryDate ? new Date(actualDeliveryDate).toLocaleDateString() : 'Not yet'}
+            Good Export Type: <span className=" text-gray-600">Material For Production</span>
           </div>
         </div>
       </div>
