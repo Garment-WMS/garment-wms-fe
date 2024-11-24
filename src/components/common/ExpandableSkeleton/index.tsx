@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ExpandableSectionSkeletonProps {
   title?: string;
