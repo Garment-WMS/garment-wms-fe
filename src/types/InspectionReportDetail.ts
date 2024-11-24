@@ -13,6 +13,7 @@ export interface InspectionReportDetail {
   deletedAt?: string | null;
   materialPackage?: MaterialPackage | null;
   productSize?: ProductSize | null;
+  inspectionReportDetailDefect?: any[] | null;
 }
 
 export interface ProductSize {

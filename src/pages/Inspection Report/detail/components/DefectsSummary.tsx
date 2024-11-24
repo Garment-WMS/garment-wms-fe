@@ -10,9 +10,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PieChartComponent from '@/components/common/PieChart';
 import Colors from '@/constants/color';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import EmptyDatacomponent from '@/components/common/EmptyData';
 
 interface Defect {
-  defectType: string;
+  id: string;
+  description: string;
   quantity: number;
 }
 
@@ -22,75 +25,113 @@ interface DefectsSummaryProps {
 
 const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
   const totalDefects = defects.reduce((sum, defect) => sum + defect.quantity, 0);
+
+  // Generate chart data
   const chartData = defects.map((defect) => ({
-    name: defect.defectType,
+    name: defect.description,
     value: defect.quantity
   }));
 
-  // Define specific colors for each defect type
-  const defectColors = {
-    Tear: Colors.red[500],
-    Stain: Colors.yellow[500],
-    Misshaped: Colors.green[500],
-    Ugly: Colors.blue[500]
+  const colors = [
+    Colors.red[500],
+    Colors.green[500],
+    Colors.blue[500],
+    Colors.yellow[500],
+    Colors.purple[500],
+    Colors.orange[500]
+  ];
+
+  const defectColors = defects.map((defect, index) => ({
+    id: defect.id,
+    color: colors[index % colors.length]
+  }));
+
+  const getColorForDefect = (defectId: string) => {
+    const foundColor = defectColors.find((item) => item.id === defectId);
+    return foundColor ? foundColor.color : Colors.greyText;
   };
+
+  // Check if all quantities are zero
+  const isAllZero = chartData.every((data) => data.value === 0);
 
   return (
     <div className="space-y-6">
-      {/* Defects Overview with Updated PieChartComponent */}
+      {/* Pie Chart Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-bluePrimary font-bold">Defects Overview</CardTitle>
+          <CardTitle>Defects Overview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-76 flex justify-center items-center">
+          {!isAllZero ? (
             <PieChartComponent
               data={chartData}
-              colors={Object.values(defectColors)}
-              width={350}
-              height={290}
+              colors={colors}
+              width={300}
+              height={300}
               innerRadius={90}
               outerRadius={130}
-              labelType="value"
-              showLegend={false}
-              legendHeight={50}
+              showLegend
             />
-          </div>
+          ) : (
+            <EmptyDatacomponent />
+          )}
         </CardContent>
       </Card>
 
-      {/* Defects Details */}
+      {/* Table Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-bluePrimary font-bold">Defects Details</CardTitle>
+          <CardTitle>Defects Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-gray-700 font-semibold">Defect Type</TableHead>
-                <TableHead className="text-gray-700 font-semibold text-center">Quantity</TableHead>
-                <TableHead className="text-gray-700 font-semibold text-right">Percentage</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {defects.map((defect, index) => (
-                <TableRow key={index}>
-                  <TableCell
-                    className="font-medium"
-                    style={{ color: defectColors[defect.defectType] || Colors.tertiaryTextColor }}>
-                    {defect.defectType}
-                  </TableCell>
-                  <TableCell className="text-center text-gray-600 font-medium">
-                    {defect.quantity}
-                  </TableCell>
-                  <TableCell className="text-right text-gray-600 font-medium">
-                    {((defect.quantity / totalDefects) * 100).toFixed(2)}%
-                  </TableCell>
+          {defects.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="text-right">Quantity</TableHead>
+                  <TableHead className="text-right">Percentage</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {defects.map((defect) => (
+                  <TableRow
+                    key={defect.id}
+                    className="hover:bg-gray-50 transition-colors duration-150">
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span
+                              style={{
+                                color: getColorForDefect(defect.id),
+                                fontWeight: 'bold',
+                                cursor: 'pointer'
+                              }}>
+                              {defect.description.length > 20
+                                ? `${defect.description.slice(0, 20)}...`
+                                : defect.description}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{defect.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                    <TableCell className="text-right">{defect.quantity || 0}</TableCell>
+                    <TableCell className="text-right">
+                      {totalDefects > 0
+                        ? `${Math.round((defect.quantity / totalDefects) * 100)}%`
+                        : '0%'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <EmptyDatacomponent />
+          )}
         </CardContent>
       </Card>
     </div>
