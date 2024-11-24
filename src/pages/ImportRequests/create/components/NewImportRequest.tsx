@@ -162,6 +162,7 @@ const NewImportRequest = (props: Props) => {
       </div>
 
       <ImportRequestDetails
+        selectedPoDelivery={selectedPoDelivery}
         isNewPoDelivery={isNewPoDelivery}
         setIsNewdelivery={setIsNewdelivery}
         data={poDeliveryDetails}

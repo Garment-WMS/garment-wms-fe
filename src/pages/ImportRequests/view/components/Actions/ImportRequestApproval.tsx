@@ -29,12 +29,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/Label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { importRequestApprovalFn } from '@/api/purchase-staff/importRequestApi';
+import { importRequestApprovalFn, postChatFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
 import { statusOrder } from '@/pages/ImportRequests/constants';
 import { IoIosSearch } from 'react-icons/io';
 import AssignStaffPopup from './StaffAssignment';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
+import { useSelector } from 'react-redux';
+import importRequestSelector from '@/pages/ImportRequests/slice/selector';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
 
@@ -46,6 +48,7 @@ interface WarehouseApprovalProps {
   requestDate: string;
   warehouseStaff?: any;
   inspectionDepartment?: any;
+  onApproval: () => void;
 }
 
 interface StaffMember {
@@ -101,7 +104,8 @@ export default function WarehouseApproval({
   requestDetails,
   requestDate,
   warehouseStaff,
-  inspectionDepartment
+  inspectionDepartment,
+  onApproval
 }: WarehouseApprovalProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as ApprovalStatus);
   const [approveNote, setApproveNote] = useState('');
@@ -113,6 +117,7 @@ export default function WarehouseApproval({
   const [isConfirmDeclineDialogOpen, setIsConfirmDeclineDialogOpen] = useState(false);
   const [selectedInspector, setSelectedInspector] = useState<StaffMember | null>(null);
   const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
+  const chat: any = useSelector(importRequestSelector.importRequest);
   const { toast } = useToast();
   const { id } = useParams();
   const handleApprove = async () => {
@@ -149,6 +154,10 @@ export default function WarehouseApproval({
           description: 'The warehouse request has been successfully approved.',
           duration: 5000
         });
+        if (chat?.discussion) {
+          const response = await postChatFn(chat?.discussion?.id, 'status:Arrvied->Approved');
+        }
+        onApproval();
       } else {
         throw new Error(res.errors[0] || 'Unknown error occurred');
       }
@@ -195,6 +204,10 @@ export default function WarehouseApproval({
           description: 'The warehouse request has been successfully declined.',
           duration: 5000
         });
+        if (chat?.discussion) {
+          const response = await postChatFn(chat?.discussion?.id, 'status:Arrvied->Rejected');
+        }
+        onApproval();
       } else {
         throw new Error(res.errors[0] || 'Unknown error occurred');
       }

@@ -147,3 +147,39 @@
     --chart-5: 340 75% 55%;
   }
 }
+
+/* Custom styles for react-big-calendar */
+.rbc-calendar {
+  @apply font-sans;
+}
+
+.rbc-header {
+  @apply bg-secondary text-secondary-foreground py-2 font-semibold;
+}
+
+.rbc-time-header-content {
+  @apply bg-secondary;
+}
+
+.rbc-event {
+  @apply bg-primary text-primary-foreground rounded-md;
+}
+
+.rbc-today {
+  @apply bg-accent;
+}
+
+.rbc-time-content {
+  @apply border-accent;
+}
+.rbc-event.rbc-selected,
+.rbc-day-slot .rbc-selected.rbc-background-event {
+  @apply bg-primary text-primary-foreground rounded-md;
+}
+/* .rbc-time-view {
+  @apply border-accent;
+} */
+/* 
+.rbc-timeslot-group {
+  @apply border-muted;
+} */

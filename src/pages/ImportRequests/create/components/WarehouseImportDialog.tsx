@@ -18,6 +18,7 @@ import { getAllProductionPlanFn } from '@/api/services/productionPlanApi';
 import { ProductionPlanData, PurchaseOrder, PODelivery } from '@/types/ProductionPlan';
 import Loading from '@/components/common/Loading';
 import { PoDeliveryStatus } from '@/types/tempFile';
+
 export interface Props {
   setIsNewdelivery: any;
   selectedPo: any;
@@ -110,9 +111,13 @@ export default function WarehouseImportDialog({
   const [poBatches, setPoBatch] = useState<PODelivery[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<ProductionPlanData | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [isAlert, setAlert] = useState<boolean>(false);
   const handleNext = (selectedPoDelivery: PODelivery) => {
     if (step < 3) setStep(step + 1);
     else {
+      if (selectedPoDelivery.isExtra) {
+        setAlert(true);
+      }
       setPoDeliverydetails(selectedPoDelivery.poDeliveryDetail);
       setIsNewdelivery(true);
       setIsOpen(false);
@@ -228,9 +233,7 @@ export default function WarehouseImportDialog({
                         {new Date(plan.expectedEndDate).toLocaleDateString()}
                       </h4>
                     </div>
-                    <span>{90}%</span>
                   </div>
-                  <Progress value={90} className="w-full" />
                 </div>
               ))}
           </ScrollArea>
@@ -248,7 +251,7 @@ export default function WarehouseImportDialog({
                   onClick={() => handleSelectPurchaseOrder(po)}>
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="font-semibold">Purchase Order: {po.poNumber}</h3>
-                    <span>{90}%</span>
+                    <span>{po.totalQuantityToProduce}%</span>
                   </div>
                   <Progress value={90} className="w-full" />
                 </div>
@@ -266,8 +269,8 @@ export default function WarehouseImportDialog({
                     batch.status != 'PENDING'
                       ? 'bg-muted cursor-not-allowed'
                       : selectedPoDelivery?.id === batch.id
-                        ? 'bg-primary text-primary-foreground cursor-pointer'
-                        : 'bg-secondary cursor-pointer'
+                        ? 'bg-primary text-primary-foreground cursor-pointer text-white'
+                        : 'bg-secondary cursor-pointer '
                   }`}
                   onClick={() => !(batch.status != 'PENDING') && setSelectedPoDelivery(batch)}>
                   <div className="flex justify-between items-center">
@@ -282,6 +285,9 @@ export default function WarehouseImportDialog({
                     <p className="text-sm text-muted-foreground mt-2">
                       Import request already exists
                     </p>
+                  )}
+                  {batch.isExtra == true && (
+                    <p className="text-sm  mt-2"> This is a make-up import</p>
                   )}
                 </div>
               ))}
@@ -298,6 +304,39 @@ export default function WarehouseImportDialog({
         selectedPoDelivery={selectedPoDelivery}
         onEdit={handleChooseStep}
       />
+
+      <Dialog open={isAlert} onOpenChange={setAlert}>
+        <DialogContent className="sm:max-w-[450px] bg-white rounded-lg shadow-lg p-6">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-lg font-bold text-gray-800 flex items-center justify-center space-x-2">
+              <span>🚨 Heads Up!</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-4 text-sm text-gray-600">
+            <p className="leading-6">
+              This is the <span className="font-medium text-red-500">final import request</span> for
+              this purchase order.
+            </p>
+            <p className="leading-6">
+              In this import, all missing items from the previous import requests will be included.
+              Ensure the quantities match the required items to complete the purchase order.
+            </p>
+          </div>
+          <div className="mt-6 flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setAlert(false)} className="text-gray-700">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                // Add confirm action here
+                setAlert(false);
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white">
+              Confirm
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px]">

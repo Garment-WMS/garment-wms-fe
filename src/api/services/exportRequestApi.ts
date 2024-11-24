@@ -14,9 +14,43 @@ export const exportRequestApi = {
     materialExportRequestDetail: any
   ) => post(`${url}`, { productionBatchId: id, description, materialExportRequestDetail }),
   getAll: (queryString: string) => get(`${url}${queryString}`),
-  getOne: (id: string) => get(`${url}/${id}`)
+  getOne: (id: string) => get(`${url}/${id}`),
+  getRecommend: (id: string, type: string) =>
+    post(`/material-export-receipt/recommend`, { materialExportRequestId: id, algorithm: type }),
+  approveRequest: (
+    id: string,
+    action: string,
+    managerNote: string,
+    warehouseStaffId: string,
+    data: any
+  ) =>
+    post(`/material-export-request/${id}/manager-approve`, {
+      action,
+      managerNote,
+      warehouseStaffId,
+      materialExportReceipt: data
+    })
 };
-
+export const approveExportRequestFn = async (
+  id: string,
+  action: string,
+  managerNote: string,
+  warehouseStaffId: string,
+  data: any
+) => {
+  const res = await privateCall(
+    exportRequestApi.approveRequest(id, action, managerNote, warehouseStaffId, data)
+  );
+  return res.data;
+};
+export const getRecommendedMaterialReceiptFn = async (id: string, type: string) => {
+  const res = await privateCall(exportRequestApi.getRecommend(id, type));
+  return res.data;
+};
+export const getExportRequestDetailFn = async (id: string) => {
+  const res = await privateCall(exportRequestApi.getOne(id));
+  return res.data;
+};
 export const createMaterialExportRequest = async (
   id: string,
   description: string,
@@ -104,8 +138,4 @@ export const getAllExportRequestFn = async ({
   // Make the API request
   const res = await privateCall(exportRequestApi.getAll(queryString));
   return res.data.data;
-};
-export const getExportRequestDetailFn = async (id: string) => {
-  const res = await privateCall(exportRequestApi.getOne(id));
-  return res.data;
 };
