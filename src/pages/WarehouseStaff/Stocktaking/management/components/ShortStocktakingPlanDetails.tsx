@@ -1,10 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/Label'
-import React from 'react'
 
-type Props = {}
-
-const ShortStockingPlanDetails = (props: Props) => {
+const ShortStockingPlanDetails = () => {
   return (
     <div>
         <Label className='text-xl'>Stocktaking Plan</Label>

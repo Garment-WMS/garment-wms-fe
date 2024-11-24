@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { useParams } from 'react-router-dom';
 import privateCall from '@/api/PrivateCaller';
 import { inventoryReportApi } from '@/api/services/inventoryReportApi,';
@@ -15,13 +14,12 @@ import {
   ProductDetailsToRender,
   ProductSizeOfInventoryReport
 } from '@/types/InventoryReport';
-import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import {  formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import axios from 'axios';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/Label';
 import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 import { Badge, badgeVariants } from '@/components/ui/Badge';
-import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import {
   Table,
@@ -64,9 +62,9 @@ interface DetailsToApprove {
 
 export default function WarehousestaffStocktakingDetails() {
   const { id } = useParams();
-  const [notes, setNotes] = useState('');
+  // const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  // const [error, setError] = useState<string>();
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string | null }>({});
 
   const [inventoryReport, setInventoryReport] = useState<InventoryReportToRender>();
@@ -356,7 +354,7 @@ export default function WarehousestaffStocktakingDetails() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                        {pkg.inventoryReportDetails.map((reportDetail, idx) => (
+                                        {pkg.inventoryReportDetails.map((reportDetail) => (
                                           <>
                                             {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>
@@ -509,7 +507,7 @@ export default function WarehousestaffStocktakingDetails() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                        {pkg.inventoryReportDetails.map((reportDetail, idx) => (
+                                        {pkg.inventoryReportDetails.map((reportDetail) => (
                                           <>
                                             {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>

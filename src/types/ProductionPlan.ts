@@ -1,7 +1,7 @@
-import { PurchaseOrder } from './purchaseOrder';
 import { Account } from './Account';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { ProductionBatch } from './ProductionBatch';
+import { PurchaseOrder } from './PurchaseOrder';
 
 export interface ProductSize {
   id: string;
@@ -76,3 +76,4 @@ export interface ProductionPlan {
   productionPlanDetail: ProductionPlanDetail[]; // Association with ProductionPlanDetail
   factoryDirector: FactoryDirector; // Reference to the FactoryDirector
 }
+

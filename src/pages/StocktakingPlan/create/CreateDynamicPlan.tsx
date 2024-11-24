@@ -12,7 +12,6 @@ import {
   FormMessage
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { format, set } from 'date-fns';
 
 import { Label } from '@/components/ui/Label';
 
@@ -29,22 +28,20 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { MaterialVariant } from '@/types/MaterialTypes';
 import { useDebounce } from '@/hooks/useDebouce';
 import SelectTasks from './components/SelectTasks';
-import { useGetMaterial, useGetMaterialWithReceipt } from '@/hooks/useGetMaterial';
+import { useGetMaterialWithReceipt } from '@/hooks/useGetMaterial';
 import { SelectStaff } from './components/SelectStaff';
 import { ProductVariant } from '@/types/ProductType';
-import { useGetProductVariants, useGetProductVariantsWithReceipt } from '@/hooks/useGetProductVariants';
+import {  useGetProductVariantsWithReceipt } from '@/hooks/useGetProductVariants';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
-import { InventoryReportPlanToCreate, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {};
-interface inventoryReportPlanDetais {
-  warehouseStaffId: string;
-  materialPackageId: string[];
-}
+// interface inventoryReportPlanDetais {
+//   warehouseStaffId: string;
+//   materialPackageId: string[];
+// }
 export interface Assignment {
   staffId: string;
   materialSelectedVariants: MaterialVariant[];
@@ -53,10 +50,10 @@ export interface Assignment {
 const CreateDynamicPlan = (props: Props) => {
   const [warehouseStaffList, setWarehouseStaffList] = useState<User[]>([]);
   const [choosenStaff, setChoosenStaff] = useState<User[]>([]);
-  const [inventoryReportPlanDetais, setInventoryReportPlanDetails] = useState<any>({
-    warehouseStaffId: '',
-    materialPackageId: []
-  });
+  // const [inventoryReportPlanDetais, setInventoryReportPlanDetails] = useState<any>({
+  //   warehouseStaffId: '',
+  //   materialPackageId: []
+  // });
   const [assignments, setAssignments] = useState<Assignment[]>([
     { staffId: '', materialSelectedVariants: [], productSelectedVariants: [] }
   ]);

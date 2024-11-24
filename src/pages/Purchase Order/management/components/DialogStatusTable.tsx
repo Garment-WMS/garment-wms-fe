@@ -6,7 +6,7 @@ import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { convertDate } from '@/helpers/convertDate';
-import { PurchaseOrder } from '@/types/purchaseOrder';
+import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
 

@@ -1,5 +1,5 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { PageMeta } from './purchaseOrder';
+import { PageMeta } from './PurchaseOrder';
 import { PageMetaData } from './Shared';
 
 // Unit of Measure (UOM)

@@ -51,7 +51,6 @@ import { ErrorDialog } from './components/ErrorDialog';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { MaterialExportRequest } from '@/types/exportRequest';
 
-type Props = {};
 
 // const breadcrumbItems = [
 //   {
@@ -338,7 +337,7 @@ const StocktakingPlanDetails = () => {
                                     <ScrollArea className="w-full ">
                                       <div className="flex gap-2 ">
                                         {productVariant.map((variant, idx) => (
-                                          <div className="w-[250px] h-[100px]">
+                                          <div key={idx} className="w-[250px] h-[100px]">
                                             <KanbanDisplayCard product={variant.productVariant} />
                                           </div>
                                         ))}

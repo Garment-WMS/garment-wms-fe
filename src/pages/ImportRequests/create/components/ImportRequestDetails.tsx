@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getMaterialColumns } from './MaterialColumns';
 import DataTable from '@/components/common/EditableTable/DataTable';
 import { Button } from '@/components/ui/button';
-import { PODeliveryDetail } from '@/types/purchaseOrder';
+import { PODeliveryDetail } from '@/types/PurchaseOrder';
 import { useToast } from '@/hooks/use-toast';
 import { boolean } from 'zod';
 type Props = {

@@ -1,5 +1,6 @@
 import { PageMetaData } from './ImportRequestType';
-import { ProductionBatch } from './ProductionPlan';
+import { ProductionBatch } from './ProductionBatch';
+
 
 export interface ProductionBatchListResponse {
   pageMeta: PageMetaData;

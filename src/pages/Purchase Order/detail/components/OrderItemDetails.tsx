@@ -4,7 +4,7 @@ import { ExternalLink, Eye, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialTable from './MaterialTable';
-import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
+import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import {
   PurchaseOrderDeliveryStatusLabels,
   PurchaseOrderDeliveryStatus

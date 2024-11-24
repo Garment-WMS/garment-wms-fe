@@ -1,5 +1,5 @@
 import { PODelivery } from './PurchaseOrder';
-import { Supplier } from './Supplier';
+import { Supplier } from './SupplierTypes';
 
 export interface PurchaseOrder {
   id: string;

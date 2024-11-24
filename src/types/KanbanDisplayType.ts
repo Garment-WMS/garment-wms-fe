@@ -1,8 +1,8 @@
-import { ColumnFiltersState, PaginationState } from '@tanstack/react-table';
+// import { ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import { UseGetTableResponseType } from './CompositeTable';
-import { Dispatch, SetStateAction } from 'react';
-import { PageMeta } from './purchaseOrder';
-import { PageMetaData } from './ImportRequestType';
+// import { Dispatch, SetStateAction } from 'react';
+// import { PageMeta } from './PurchaseOrder';
+// import { PageMetaData } from './ImportRequestType';
 
 export interface KanbanDisplayProps<TData> {
   isLoading: boolean;
