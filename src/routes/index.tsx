@@ -32,7 +32,6 @@ import CreateDynamicPlan from '@/pages/StocktakingPlan/create/CreateDynamicPlan'
 import CreateStocktakingPlan from '@/pages/StocktakingPlan/create';
 import CreateOverallPlan from '@/pages/StocktakingPlan/create/CreateOverallPlan';
 import StocktakingPlanDetails from '@/pages/StocktakingPlan/details';
-import { Router } from 'react-router-dom';
 import WarehouseStaffStocktakingManagement from '@/pages/WarehouseStaff/Stocktaking/management';
 import WarehousestaffStocktakingDetails from '@/pages/WarehouseStaff/Stocktaking/details';
 import WarehouseStaffStocktakingPlanDetails from '@/pages/WarehouseStaff/StocktakingPlan/details';
@@ -57,17 +56,8 @@ import ExportReceiptList from '@/pages/ExportReceiptList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
-    { path: '/', element: <Navigate to="home" /> },
+    { path: '/', element: <Navigate to="login" /> },
 
-    {
-      path: '/demo',
-      element: <Demo />
-    },
-
-    {
-      path: '/test',
-      element: <TestPage />
-    },
     {
       path: '/login',
       element: <Login />
@@ -130,29 +120,35 @@ const RouterComponent: React.FC = () => {
             },
             {
               path: '/stocktaking',
-              element: <RoleBasedRedirect 
-              managerComponent={<StocktakingManagement />}
-              warehouseStaffComponent={<WarehouseStaffStocktakingManagement />}
-              />
+              element: (
+                <RoleBasedRedirect
+                  managerComponent={<StocktakingManagement />}
+                  warehouseStaffComponent={<WarehouseStaffStocktakingManagement />}
+                />
+              )
             },
             {
               path: '/stocktaking/:id',
-              element: <RoleBasedRedirect
-              managerComponent={<StocktakingDetails/>}
-              warehouseStaffComponent={<WarehousestaffStocktakingDetails/>}
-              />
+              element: (
+                <RoleBasedRedirect
+                  managerComponent={<StocktakingDetails />}
+                  warehouseStaffComponent={<WarehousestaffStocktakingDetails />}
+                />
+              )
             },
-          
+
             {
               path: '/warehouse-staff/stocktaking/plan/:id',
-              element: <WarehouseStaffStocktakingPlanDetails/>
+              element: <WarehouseStaffStocktakingPlanDetails />
             },
             {
               path: '/stocktaking/plan/:id',
-              element: <RoleBasedRedirect
-              managerComponent={<StocktakingPlanDetails/>}
-              warehouseStaffComponent={<WarehouseStaffStocktakingPlanDetails/>}
-              />
+              element: (
+                <RoleBasedRedirect
+                  managerComponent={<StocktakingPlanDetails />}
+                  warehouseStaffComponent={<WarehouseStaffStocktakingPlanDetails />}
+                />
+              )
             },
             // {
             //   path: '/stocktaking/create',
@@ -160,21 +156,15 @@ const RouterComponent: React.FC = () => {
             // },
             {
               path: '/stocktaking/plan/create',
-              element: <RoleBasedRedirect
-              managerComponent={<CreateStocktakingPlan/>}
-              />
+              element: <RoleBasedRedirect managerComponent={<CreateStocktakingPlan />} />
             },
             {
               path: '/stocktaking/plan/create/dynamic',
-              element: <RoleBasedRedirect
-              managerComponent={<CreateDynamicPlan/>}
-              />
+              element: <RoleBasedRedirect managerComponent={<CreateDynamicPlan />} />
             },
             {
               path: '/stocktaking/plan/create/overall',
-              element: <RoleBasedRedirect
-              managerComponent={<CreateOverallPlan/>}
-              />
+              element: <RoleBasedRedirect managerComponent={<CreateOverallPlan />} />
             },
             {
               path: '/tasks',
@@ -243,6 +233,10 @@ const RouterComponent: React.FC = () => {
             },
             {
               path: '/import-request/create/material',
+              element: <CreateImportRequest />
+            },
+            {
+              path: '/import-request/create/material/:id',
               element: <CreateImportRequest />
             },
             {
