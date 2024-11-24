@@ -8,7 +8,11 @@ import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'luci
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
-import { finishImportReceiptFn, importReceiptApi } from '@/api/ImportReceiptApi';
+import {
+  finishImportReceiptFn,
+  getImportRequestFn,
+  importReceiptApi
+} from '@/api/ImportReceiptApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../ImportReceiptList/slice';
 import { useToast } from '@/hooks/use-toast';
@@ -47,6 +51,7 @@ import {
 import Barcode from 'react-barcode';
 import MaterialReceiptLabels from './components/MaterialreceiptLabels';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import privateCall from '@/api/PrivateCaller';
 import { DataTable } from '@/components/ui/DataTable';
 import { materialImportReceiptColumn } from './components/ReceiptColumn';
 
@@ -68,6 +73,7 @@ export default function MaterialReceipt() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
+  const [importRequest, setImportRequest] = useState<any>(null);
   const { id } = useParams();
   const dispatch = useDispatch();
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
@@ -75,6 +81,9 @@ export default function MaterialReceipt() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const handleFinishImport = async () => {
     setShowLabelModal(true);
+  };
+  const calculateTotalItemsReceived = (materialReceipt: any[]) => {
+    return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
   };
   const handleConfirmFinishImport = async () => {
     setIsLoading(true);
@@ -132,8 +141,37 @@ export default function MaterialReceipt() {
         setIsLoading(false); // Stop loading
       }
     };
+    const fetchImportRequestData = async () => {
+      setIsLoading(true); // Start loading
+
+      try {
+        const res = await getImportRequestFn(id as string);
+
+        if (res.statusCode === 200) {
+          const data = res.data;
+          setImportRequest(data);
+        } else {
+          setError('Something went wrong');
+          toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description: 'There was a problem with your request.'
+          });
+        }
+      } catch (error) {
+        setError('Something went wrong');
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request.'
+        });
+      } finally {
+        setIsLoading(false); // Stop loading
+      }
+    };
 
     if (id) {
+      fetchImportRequestData();
       fetchData();
     }
   }, [id, dispatch]);
@@ -161,8 +199,10 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12,500</div>
-                <p className="text-xs text-muted-foreground">+2% from last receipt</p>
+                {importReceipt?.materialReceipt
+                  ? calculateTotalItemsReceived(importReceipt.materialReceipt)
+                  : 0}
+                <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
             <Card>
@@ -181,8 +221,13 @@ export default function MaterialReceipt() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">Completed</div>
-                <p className="text-xs text-muted-foreground">All processes finished</p>
+                <div className="text-2xl font-bold">{importReceipt?.status}</div>
+                <p className="text-xs text-muted-foreground">
+                  {' '}
+                  {importReceipt?.status == 'IMPORTED'
+                    ? 'All processed finished'
+                    : ' Warehouse Staff importing'}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -217,50 +262,48 @@ export default function MaterialReceipt() {
               <CardContent>
                 {importReceipt?.inspectionReportId ? (
                   <div>
-                  <div className="flex items-center space-x-4 flex-col justify-center">
-                    <Avatar className="w-[80px] h-[80px]">
-                      <AvatarImage
-                        src={'/placeholder.svg?height=100&width=100'}
-                        alt="John Doe"
-                        className="w-[80px] h-[80px]"
-                      />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-center">
-                      <p className="text-xl font-bold">
-                        {importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                          .account.firstName +
-                          ' ' +
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.lastName}
-                      </p>
-                      <p className="text-md text-muted-foreground"></p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.email
-                        }
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.phoneNumber
-                        }
-                      </p>
+                    <div className="flex items-center space-x-4 flex-col justify-center">
+                      <Avatar className="w-[80px] h-[80px]">
+                        <AvatarImage
+                          src={'/placeholder.svg?height=100&width=100'}
+                          alt="John Doe"
+                          className="w-[80px] h-[80px]"
+                        />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center">
+                        <p className="text-xl font-bold">
+                          {importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                            .account.firstName +
+                            ' ' +
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.lastName}
+                        </p>
+                        <p className="text-md text-muted-foreground"></p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.email
+                          }
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.phoneNumber
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                ):
-                (<div>
-                  <div className="flex items-center space-x-4 flex-col justify-center h-full">
-                   
-                    <div className="flex flex-col items-center">
-                      <p className="text-base font-semibold">
-                       No inspection report yet
-                      </p>
+                ) : (
+                  <div>
+                    <div className="flex items-center space-x-4 flex-col justify-center h-full">
+                      <div className="flex flex-col items-center">
+                        <p className="text-base font-semibold">No inspection report yet</p>
+                      </div>
                     </div>
                   </div>
-                </div>)}
+                )}
               </CardContent>
             </Card>
             <Card>
@@ -317,26 +360,39 @@ export default function MaterialReceipt() {
                     <div className="grid gap-2">
                       <p>
                         <strong>Import Request:</strong>{' '}
-                        <Link to="/" className="text-primary underline underline-offset-2">
-                          IR-000123
+                        <Link
+                          to={`/import-requests/${importRequest?.id}`}
+                          className="text-primary underline underline-offset-2">
+                          {importRequest?.code}
                         </Link>
                       </p>
                       <p>
                         <strong>Purchase Order:</strong>{' '}
-                        <Link to="/" className="text-primary underline underline-offset-2">
-                          PO-000001
+                        <Link
+                          to={`/purchase-orders/${importRequest?.poDelivery?.purchaseOrder?.id}`}
+                          className="text-primary underline underline-offset-2">
+                          {importRequest?.poDelivery?.purchaseOrder?.poNumber}
                         </Link>
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(importReceipt?.createdAt).toLocaleString()}
+                        {new Date(importRequest?.createdAt).toLocaleString()}
                       </p>
                       <p>
-                        <strong>Provider:</strong> Cong Ty Vai A
+                        <strong>Provider:</strong>{' '}
+                        {importRequest?.poDelivery?.purchaseOrder?.supplier?.supplierName}
                       </p>
                       <p>
-                        <strong>Warehouse:</strong> Warehouse 1
+                        <strong>Status:</strong> {importRequest?.status}
                       </p>
+                      <p>
+                        <strong>Type:</strong> {importRequest?.type}
+                      </p>
+                      {importRequest?.description && (
+                        <p>
+                          <strong>Description:</strong> {importRequest.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -374,11 +430,9 @@ export default function MaterialReceipt() {
                 <CardTitle>Material Receipt Details</CardTitle>
               </CardHeader>
               <CardContent>
-            
                 <DataTable
-                columns={materialImportReceiptColumn}
-                data={importReceipt?.materialReceipt || []}
-                
+                  columns={materialImportReceiptColumn}
+                  data={importReceipt?.materialReceipt || []}
                 />
               </CardContent>
             </Card>
