@@ -75,6 +75,7 @@ const ExportRequestTable = (props: Props) => {
     {
       header: 'Code',
       accessorKey: 'code',
+      enableColumnFilter: false,
       cell: ({ row }) => <div>{row.original.code}</div>
     },
     {
@@ -89,10 +90,12 @@ const ExportRequestTable = (props: Props) => {
     {
       header: 'Production Batch',
       accessorKey: 'productionBatch.name',
+      enableColumnFilter: false,
       cell: ({ row }) => <div>{row.original.productionBatch?.name || 'N/A'}</div>
     },
     {
       header: 'Created By',
+      enableColumnFilter: false,
       accessorKey: 'productionDepartment.account',
       cell: ({ row }) => (
         <div className="flex items-center">
@@ -112,6 +115,7 @@ const ExportRequestTable = (props: Props) => {
     },
     {
       header: 'Assigned By',
+      enableColumnFilter: false,
       accessorKey: 'productionDepartment.account',
       cell: ({ row }) => (
         <div className="flex items-center">
@@ -131,19 +135,22 @@ const ExportRequestTable = (props: Props) => {
     },
     {
       header: 'Created At',
+      enableColumnFilter: false,
       accessorKey: 'createdAt',
       cell: ({ row }) => <div>{new Date(row.original.createdAt).toDateString()}</div>
     },
     {
       header: 'Code',
       accessorKey: 'code',
+      enableColumnFilter: false,
       cell: ({ row }) => <div>{row.original.productFormula?.code || 'N/A'}</div>
     },
-    {
-      header: 'Description',
-      accessorKey: 'description',
-      cell: ({ row }) => <div>{row.original.description || 'N/A'}</div>
-    },
+    // {
+    //   header: 'Description',
+    //   enableColumnFilter: false,
+    //   accessorKey: 'description',
+    //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
+    // },
     {
       id: 'actions',
       cell: ({ row }) => (

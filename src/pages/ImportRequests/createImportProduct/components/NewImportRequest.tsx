@@ -92,7 +92,7 @@ const NewImportRequest = (props: Props) => {
           description: description,
           importRequestDetail: {
             productSizeId: selectedProductionBatch?.productionPlanDetail?.productSize.id,
-            quantityByPack: selectedProductionBatch?.productionPlanDetail?.quantityToProduce
+            quantityByPack: selectedProductionBatch?.quantityToProduce
           },
           type: 'PRODUCT_BY_BATCH'
         })

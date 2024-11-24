@@ -14,7 +14,7 @@ const CreateImportRequestMenu: React.FC = () => {
       link: '/import-request/create/material'
     },
     { label: 'Return Material', image: Import2, link: '/return-material' },
-    { label: 'Product with Manufacturing Order', image: Import4, link: '/product-by-mo' },
+    { label: 'Product with Manufacturing Order', image: Import4, link: '/import-request/create/product' },
     { label: 'Return Product', image: Import5, link: '/return-product' }
   ];
 

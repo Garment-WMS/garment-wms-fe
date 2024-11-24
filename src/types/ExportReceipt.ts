@@ -1,7 +1,36 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { PageMetaData } from './ImportRequestType';
 import { MaterialPackage } from './MaterialTypes';
+import { User } from './User';
+import { PageMetaData } from './Shared';
+import { MaterialExportRequest } from './exportRequest';
 
+
+export type MaterialExportReceipt = {
+  id: string,
+  code: string,
+  materialExportRequestId: string,
+  warehouseStaffId: string,
+  type: string,
+  status: string,
+  note: string,
+  startAt: string,
+  finishedAt: string,
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  warehouseStaff:User
+  materialExportReceiptDetail: MaterialExportReceiptDetail[]
+}
+export interface MaterialExportReceiptDetail{
+  id: string;
+  materialExportReceiptId: string;
+  materialReceiptId: string;
+  quantityByPack: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  materialReceipt: MaterialReceipt
+}
 export type MaterialReceipt = {
   id: string;
   materialPackageId: string;
@@ -73,14 +102,14 @@ type InspectionReport = {
   inspectionRequest: InspectionRequest;
 };
 
-export type ImportReceipt = {
+export type ExportReceipt = {
   id: string;
   warehouseStaffId: string;
   warehouseManagerId: string;
   inspectionReportId: string | null;
   code: string;
-  status: 'IMPORTING' | 'IMPORTED' | 'CANCELED';
-  type: 'MATERIAL' | 'PRODUCT';
+  status: 'EXPORTING' | 'EXPORTED' | 'CANCELED';
+  type: 'PRODUCTION' | 'DISCHARGE';
   note: string | null;
   startedAt: string;
   finishedAt: string | null;
@@ -89,17 +118,37 @@ export type ImportReceipt = {
   deletedAt: string | null;
   warehouseManager: WarehouseStaff;
   warehouseStaff: WarehouseStaff;
-  materialReceipt: MaterialReceipt[];
+  productionDepartment: WarehouseStaff;
+  materialReceipt: MaterialExportReceipt[];
+  materialExportRequest: MaterialExportRequest
+  materialExportReceiptDetail: MaterialExportReceiptDetail[];
   productReceipt: any[]; // Replace with appropriate type if productReceipt has a defined structure
   inspectionReport: InspectionReport | null;
 };
+export const ExportReceiptType = [
+  { label: 'For Production', value: 'PRODUCTION',variant:'default' },
+  { label: 'Canceled', value: 'DISCHARGE',variant:'destructive' },
 
-export interface UseImportReceiptResponse {
-  pageMeta: PageMetaData;
-  data: ImportReceipt[];
+];
+
+export const ExportReceiptStatus = [
+  { label: 'Exported', value: 'EXPORTED', variant: 'success' },
+  { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
+  { label: 'Canceled', value: 'CANCELLED', variant: 'destructive' },
+
+
+];
+export interface UseExportReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialExportReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
 }
 
-export interface UseImportReceiptInput {
+export interface UseExportReceiptInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
   pagination: PaginationState;
