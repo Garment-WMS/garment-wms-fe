@@ -21,7 +21,7 @@ const PurchaseStaffMenu: MenuProps[] = [
   {
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
-    link: '/dashboard'
+    link: '/'
   },
   {
     title: 'Production Plan',
