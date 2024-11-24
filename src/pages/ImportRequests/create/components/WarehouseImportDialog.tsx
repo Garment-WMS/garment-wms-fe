@@ -26,6 +26,7 @@ export interface Props {
   setSelectedPoDelivery: any;
   selectedPoDelivery: any;
   setPoDeliverydetails: any;
+  defaultPodeliveryId: string | undefined;
 }
 function SelectionSummary({
   selectedPlan,
@@ -102,7 +103,8 @@ export default function WarehouseImportDialog({
   setSelectedPO,
   setSelectedPoDelivery,
   setPoDeliverydetails,
-  setIsNewdelivery
+  setIsNewdelivery,
+  defaultPodeliveryId
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
@@ -133,12 +135,38 @@ export default function WarehouseImportDialog({
     }
   };
 
+  const findPoDeliveryById = (plans: ProductionPlanData[], deliveryId: string) => {
+    for (const plan of plans) {
+      for (const po of plan.purchaseOrder) {
+        const poDelivery = po.poDelivery.find((delivery: any) => delivery.id === deliveryId);
+        if (poDelivery) {
+          return { plan, po, poDelivery };
+        }
+      }
+    }
+    return null;
+  };
   useEffect(() => {
     const getAllProductionPlan = async () => {
       try {
         setLoading(true);
         const data = await getAllProductionPlanFn();
         setProductionPlan(data);
+        if (defaultPodeliveryId) {
+          if (defaultPodeliveryId) {
+            const selectedDelivery = findPoDeliveryById(data, defaultPodeliveryId);
+            if (selectedDelivery) {
+              const { plan, po, poDelivery } = selectedDelivery;
+              setSelectedPlan(plan);
+              setSelectedPO(po);
+              setSelectedPoDelivery(poDelivery);
+              setPurchaseOrder(plan.purchaseOrder);
+              setPoBatch(po.poDelivery);
+              setPoDeliverydetails(poDelivery.poDeliveryDetail);
+              setIsNewdelivery(true);
+            }
+          }
+        }
       } catch (err) {
       } finally {
         setLoading(false);

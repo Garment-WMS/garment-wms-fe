@@ -118,7 +118,7 @@ const AnalystSection: React.FC<Props> = () => {
 
   return (
     <div className="space-y-8">
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center mt-8">
         <CardTitle>Import Status Distribution</CardTitle>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -159,7 +159,7 @@ const AnalystSection: React.FC<Props> = () => {
               className="w-4 h-4 rounded-full"
             />
             <div>
-              {entry.name}: {entry.value}
+              {entry.name}: {entry.value} {'request(s)'}
             </div>
           </div>
         ))}

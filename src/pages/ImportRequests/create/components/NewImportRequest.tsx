@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { importRequestApi } from '@/api/services/importRequestApi';
 import {
@@ -57,6 +57,7 @@ const NewImportRequest = (props: Props) => {
   const [poDeliveryDetails, setPoDeliverydetails] = useState<PODeliveryDetail[]>([]);
   const [isNewPoDelivery, setIsNewdelivery] = useState(false);
   const { toast } = useToast();
+  const { id } = useParams();
 
   const onSubmit = async (data: z.infer<typeof deliveryFormSchema>) => {
     try {
@@ -107,6 +108,7 @@ const NewImportRequest = (props: Props) => {
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Delivery</div>
           <WarehouseImportDialog
+            defaultPodeliveryId={id}
             setIsNewdelivery={setIsNewdelivery}
             selectedPo={selectedPO}
             setSelectedPO={setSelectedPO}

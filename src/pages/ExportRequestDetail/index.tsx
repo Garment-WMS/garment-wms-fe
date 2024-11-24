@@ -86,7 +86,7 @@ const ViewExportRequest = (props: Props) => {
                 <IRProcessAndAction onApproval={handleRefresh} />
               </div>
               <div className="flex lg:col-span-6 order-3 lg:order-none">
-                <Disscussion />
+                <Disscussion onApproval={handleRefresh} />
               </div>
             </div>
           </div>

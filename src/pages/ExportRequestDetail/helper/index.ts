@@ -1,4 +1,4 @@
-import { DeliveryType, Status } from '@/types/ImportRequestType';
+import { DeliveryType, Status } from '@/types/ExportRequestType';
 
 export const getLabelOfImportType = (type: string) => {
   const typeObj = DeliveryType.find((s) => s.value === type);
