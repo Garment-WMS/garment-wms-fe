@@ -19,9 +19,15 @@ interface Props {
   selectedStep: number | null;
   setSelectedStep: React.Dispatch<React.SetStateAction<number | null>>;
   currentStatus: string;
+  onApproval: () => void;
 }
 
-const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, currentStatus }) => {
+const InspectionStep: React.FC<Props> = ({
+  selectedStep,
+  setSelectedStep,
+  currentStatus,
+  onApproval
+}) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null); // Store carousel API
 
@@ -46,6 +52,7 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
       title: 'Pending Approval',
       content: (
         <WarehouseApproval
+          onApproval={onApproval}
           requestId="123"
           currentStatus={currentStatus}
           manager={importRequest?.warehouseManager}

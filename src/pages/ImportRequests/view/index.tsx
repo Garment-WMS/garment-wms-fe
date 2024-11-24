@@ -15,11 +15,11 @@ type Props = {};
 
 const ViewImportRequest = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const [error, setError] = useState<string>('');
   const { id } = useParams();
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const breadcrumbItems = [
     { href: '/purchase-staff/import-request', label: 'Import Request' },
     { href: `/purchase-staff/import-request/${id}`, label: `Details of Request` }
@@ -56,8 +56,10 @@ const ViewImportRequest = (props: Props) => {
     if (id) {
       fetchData();
     }
-  }, [id, dispatch]);
-
+  }, [id, dispatch, refreshTrigger]);
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
   return (
     <>
       {isLoading ? (
@@ -81,10 +83,10 @@ const ViewImportRequest = (props: Props) => {
                 <ImportRequestStatus />
               </div>
               <div className="flex lg:col-span-6 order-3 lg:order-none">
-                <IRProcessAndAction />
+                <IRProcessAndAction onApproval={handleRefresh} />
               </div>
               <div className="flex lg:col-span-6 order-3 lg:order-none">
-                <Disscussion />
+                <Disscussion onApproval={handleRefresh} />
               </div>
             </div>
           </div>

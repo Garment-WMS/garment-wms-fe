@@ -30,7 +30,12 @@ export const importRequestApi = {
     }
   },
   getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`),
-  getStatistic: () => get(`/import-request/statistic`)
+  getStatistic: () => get(`/import-request/statistic`),
+  postChat: (id: string, message: string) => post(`/chat`, { discussionId: id, message })
+};
+export const postChatFn = async (id: string, message: string) => {
+  const res = await privateCall(importRequestApi.postChat(id, message));
+  return res.data;
 };
 export const getImportStatistic = async () => {
   const res = await privateCall(importRequestApi.getStatistic());
