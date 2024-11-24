@@ -11,12 +11,11 @@ import {
 import WarehouseApproval from './ImportRequestApproval';
 import WarehouseStaffAssignment from './ImportRequestStaffAssignment';
 import { useSelector } from 'react-redux';
-import { ImportRequest } from '@/types/ImportRequestType';
-import importRequestSelector from '@/pages/ImportRequests/slice/selector';
-import ExportRequestCreation from './exportRequestCreation';
+
 import exportRequestSelector from '../../slice/selector';
 import { MaterialExportRequest } from '@/types/exportRequest';
 import { useParams } from 'react-router-dom';
+import ExportRequestCreation from './ExportRequestCreation';
 
 interface Props {
   selectedStep: number | null;
