@@ -12,10 +12,10 @@ export interface ImportRequest {
     | 'CANCELLED'
     | 'REJECTED'
     | 'APPROVED'
-    | 'INSPECTING'
-    | 'INSPECTED'
-    | 'IMPORTING'
-    | 'IMPORTED'; // Expanded statuses
+    | 'EXPORTED'
+    | 'EXPORTING'
+    | 'PRODUCTION_REJECTED'
+    | 'PRODUCTION_APPROVED'; // Expanded statuses
   type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Extended as needed
   startAt: string | null;
   finishAt: string | null;
@@ -265,10 +265,10 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Arrived', value: 'PENDING', variant: 'info' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
-  { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
-  { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
-  { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
-  { label: 'Imported', value: 'IMPORTED', variant: 'success' },
+  { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
+  { label: 'Exported', value: 'EXPORTED', variant: 'success' },
+  { label: 'Production Rejected', value: 'PRODUCTION_REJECTED', variant: 'destructive' },
+  { label: 'Production Approved', value: 'PRODUCTION_APPROVED', variant: 'success' },
   { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
 ];
 type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default' | 'danger';
