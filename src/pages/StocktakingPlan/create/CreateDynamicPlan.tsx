@@ -29,10 +29,10 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { MaterialVariant } from '@/types/MaterialTypes';
 import { useDebounce } from '@/hooks/useDebouce';
 import SelectTasks from './components/SelectTasks';
-import { useGetMaterial } from '@/hooks/useGetMaterial';
+import { useGetMaterial, useGetMaterialWithReceipt } from '@/hooks/useGetMaterial';
 import { SelectStaff } from './components/SelectStaff';
 import { ProductVariant } from '@/types/ProductType';
-import { useGetProductVariants } from '@/hooks/useGetProductVariants';
+import { useGetProductVariants, useGetProductVariantsWithReceipt } from '@/hooks/useGetProductVariants';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
 import { InventoryReportPlanToCreate, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
@@ -173,7 +173,6 @@ const CreateDynamicPlan = (props: Props) => {
           )
         ]
       };
-      console.log(formattedValues);
 
       try {
         const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
@@ -238,7 +237,7 @@ const CreateDynamicPlan = (props: Props) => {
     materialList,
     pageMeta: materialPageMeta,
     isLoading: materialIsLoading
-  } = useGetMaterial({
+  } = useGetMaterialWithReceipt({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination: materialPagination
@@ -270,7 +269,7 @@ const CreateDynamicPlan = (props: Props) => {
     productList,
     pageMeta: productPageMeta,
     isLoading: productIsLoading
-  } = useGetProductVariants({
+  } = useGetProductVariantsWithReceipt({
     sorting: productDebouncedSorting,
     columnFilters: productDebouncedColumnFilters,
     pagination: materialPagination

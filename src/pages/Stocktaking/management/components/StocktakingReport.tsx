@@ -45,7 +45,7 @@ interface StocktakingReportProps {
         accessorKey: 'code',
         enableColumnFilter: false,
         cell: ({ row }) => {
-          const code = row.original?.inventoryReportPlanDetail[0]?.inventoryReportPlan?.code;
+          const code = row.original?.inventoryReportPlanDetail?.[0]?.inventoryReportPlan?.code;
           return (
             <div>
               <div>{code ? code : 'N/A' }</div>
