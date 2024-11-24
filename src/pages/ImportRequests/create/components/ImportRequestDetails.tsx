@@ -35,7 +35,7 @@ const ImportRequestDetails = ({
   };
   const [details, setDetails] = useState(initializeDetails(data));
   const [initialDetails, setInitialDetails] = useState(initializeDetails(data));
-  const [isError, setError] = useState(boolean);
+  const [isError, setError] = useState(false);
   useEffect(() => {
     if (isNewPoDelivery) {
       const newDetails = initializeDetails(data);
