@@ -48,6 +48,11 @@ const errorMessages = {
     message: 'Invalid format, POInfo table header is invalid',
     clientMessage: 'The uploaded file contains invalid data. The POInfo table header is incorrect.'
   },
+  invalidProductionPlan: {
+    statusCode: 415,
+    message: 'Invalid Production Plan, the production plan is not available',
+    clientMessage: 'The uploaded file contains invalid Production Plan.'
+  },
   errorInFile: {
     message: 'There is error in the file',
     clientMessage:
@@ -111,25 +116,25 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
       }
       setSelectedFile(file);
       setIsUploading(true);
-      setActiveStep(1);
+      setActiveStep(0);
       uploadFileToServer(file);
     }
   };
 
   const uploadFileToServer = async (file: File) => {
-    if (!selectedPlan) {
-      setUploadError('Please select a production plan.');
-      return;
-    }
+    // if (!selectedPlan) {
+    //   setUploadError('Please select a production plan.');
+    //   return;
+    // }
     try {
-      const response = await importPurchaseOrder(file, selectedPlan.id);
+      const response = await importPurchaseOrder(file, 'selectedPlan.id');
       console.log(response);
       if (response.statusCode !== 200 && response.statusCode !== 201) {
         handleUploadErrors(response);
-        setActiveStep(1);
+        setActiveStep(0);
       } else {
         setIsUploadComplete(true);
-        setActiveStep(2);
+        setActiveStep(1);
         if (response.data?.id) {
           setPoID(response.data?.id);
         }
@@ -139,9 +144,9 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
         console.log('Import success ');
         console.log(response.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       setUploadError('Failed to upload file. Please try again.');
-      setActiveStep(1);
+      setActiveStep(0);
     } finally {
       setIsUploading(false);
     }
@@ -152,7 +157,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
       response.statusCode === errorMessages.invalidFileType.statusCode &&
       response.message === errorMessages.invalidFileType.message
     ) {
-      setUploadError(errorMessages.invalidFileType.clientMessage);
+      setUploadError(errorMessages.invalidFileType.message);
     } else if (
       response.statusCode === errorMessages.invalidFormat.statusCode &&
       response.message === errorMessages.invalidFormat.message
@@ -165,6 +170,11 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
       setUploadError(errorMessages.invalidPOInfoHeader.clientMessage);
     } else if (response.message === errorMessages.errorInFile.message && response.errors) {
       setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
+    } else if (
+      response.statusCode === errorMessages.invalidProductionPlan.statusCode &&
+      response.message.includes(errorMessages.invalidProductionPlan.message)
+    ) {
+      setUploadError(errorMessages.invalidProductionPlan.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
@@ -304,29 +314,29 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
   const renderUploadExcel = () => (
     <div>
       <div className="mb-4 flex justify-between items-center">
-        <Button
+        {/* <Button
           variant="outline"
           onClick={handleBackToStep1}
           className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-gray-300  text-white shadow-sm transition-all duration-300 hover:shadow-md bg-primaryLight hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50">
           <ArrowLeft size={16} />
           <span className="font-semibold">Back</span>
-        </Button>
+        </Button> */}
 
-        {selectedPlan && (
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md flex items-center justify-between flex-1 ml-4">
-            <p className="text-sm font-semibold text-gray-700">
-              <strong>Plan Selected:</strong> {selectedPlan?.code || 'N/A'}
-            </p>
-            <Badge
+        {/* {selectedPlan && ( */}
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md flex items-center justify-between flex-1 ml-4">
+          <p className="text-sm font-semibold text-gray-700">
+            {/* <strong>Plan Selected:</strong> {selectedPlan?.code || 'N/A'} */}
+          </p>
+          {/* <Badge
               className={`rounded-lg px-2 py-1 ${
                 statusColors[selectedPlan?.status as ProductionPlanStatus] ||
                 'bg-gray-500 text-white'
               }`}>
               {ProductionPlanStatusLabels[selectedPlan?.status as ProductionPlanStatus] ||
                 'Unknown'}
-            </Badge>
-          </div>
-        )}
+            </Badge> */}
+        </div>
+        {/* )} */}
       </div>
 
       {/* File Upload Section */}
@@ -471,7 +481,7 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
           activeStep={activeStep}
           styleConfig={{
             activeBgColor:
-              uploadError && activeStep === 1 ? 'red' : Colors.primaryLightBackgroundColor,
+              uploadError && activeStep === 0 ? 'red' : Colors.primaryLightBackgroundColor,
             activeTextColor: Colors.commonBtnText,
             completedBgColor: Colors.primaryDarkBackgroundColor,
             completedTextColor: Colors.commonBtnText,
@@ -483,16 +493,16 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
             borderRadius: '20px',
             fontWeight: '300'
           }}>
-          <Step label="Choose production plan" />
+          {/* <Step label="Choose production plan" /> */}
           <Step label="Upload Excel" />
           <Step label="Upload successfully" />
         </Stepper>
 
-        {activeStep === 0 && renderProductionPlan()}
-        {activeStep === 1 && renderUploadExcel()}
-        {activeStep === 2 && renderUploadSuccessfully()}
+        {/* {activeStep === 0 && renderProductionPlan()} */}
+        {activeStep === 0 && renderUploadExcel()}
+        {activeStep === 1 && renderUploadSuccessfully()}
 
-        {activeStep === 2 && (
+        {activeStep === 1 && (
           <div className="flex justify-center items-center gap-5 mt-6">
             <Button
               className="bg-white text-red-500 ring-1 ring-red-500 w-32"
