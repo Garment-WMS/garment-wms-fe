@@ -54,6 +54,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import privateCall from '@/api/PrivateCaller';
 import { DataTable } from '@/components/ui/DataTable';
 import { materialImportReceiptColumn } from './components/ReceiptColumn';
+import { InspectionReportDetail } from '@/types/InspectionReportDetail';
+import { Badge } from '@/components/ui/Badge';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -63,11 +65,11 @@ const chartData = [
   { name: 'White Cable', quantity: 5000 }
 ];
 
-const qualityData = [
-  { name: 'Passed', value: 95 },
-  { name: 'Minor Issues', value: 4 },
-  { name: 'Failed', value: 1 }
-];
+// const qualityData = [
+//   { name: 'Passed', value: 95 },
+//   { name: 'Minor Issues', value: 4 },
+//   { name: 'Failed', value: 1 }
+// ];
 
 export default function MaterialReceipt() {
   const [isLoading, setIsLoading] = useState(false);
@@ -176,6 +178,41 @@ export default function MaterialReceipt() {
     }
   }, [id, dispatch]);
   console.log(importReceipt?.materialReceipt);
+  const calculateQualityData = (inspectionReportDetails: InspectionReportDetail[]) => {
+    if (!inspectionReportDetails || inspectionReportDetails.length === 0) {
+      return [
+        { name: 'Passed', value: 0 },
+        { name: 'Failed', value: 0 }
+      ];
+    }
+
+    const totalApproved = inspectionReportDetails.reduce(
+      (sum, detail) => sum + detail.approvedQuantityByPack,
+      0
+    );
+    const totalDefects = inspectionReportDetails.reduce(
+      (sum, detail) =>
+        sum +
+        detail?.inspectionReportDetailDefect?.reduce(
+          (defectSum, defect) => defectSum + defect.quantityByPack,
+          0
+        ),
+      0
+    );
+
+    const total = totalApproved + totalDefects;
+    const passedPercentage = ((totalApproved / total) * 100).toFixed(1);
+    const minorIssuesPercentage = ((totalDefects / total) * 100).toFixed(1);
+
+    return [
+      { name: 'Passed', value: parseFloat(passedPercentage) },
+      { name: 'Failed', value: parseFloat(minorIssuesPercentage) }
+    ];
+  };
+
+  const inspectionReport: InspectionReport | undefined = importReceipt?.inspectionReport;
+  const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
+
   return (
     <div className="container mx-auto p-4">
       {isLoading && importReceipt ? (
@@ -402,24 +439,85 @@ export default function MaterialReceipt() {
               <CardHeader>
                 <CardTitle>Quality Check Results</CardTitle>
               </CardHeader>
-              <CardContent className="w-full flex items-center justify-center">
-                <ChartContainer
-                  config={{
-                    value: {
-                      label: 'Percentage',
-                      color: 'hsl(var(--chart-2))'
-                    }
-                  }}
-                  className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={qualityData}>
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="value" fill="var(--color-value)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                  {/* Inspection Report Details */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Inspection Report Summary
+                    </h3>
+                    <div className="grid gap-2">
+                      <p>
+                        <strong>Report Code:</strong>{' '}
+                        <span className="text-primary font-semibold">
+                          {inspectionReport?.code || 'N/A'}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Type:</strong>{' '}
+                        <Badge className="bg-slate-500">
+                          {inspectionReport?.type === 'MATERIAL' ? 'Material' : 'Product'}
+                        </Badge>
+                      </p>
+                      <p>
+                        <strong>Approved Quantity (By Pack):</strong>{' '}
+                        <span className="text-green-600 font-bold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum + detail.approvedQuantityByPack,
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Defected Quantity (By Pack):</strong>{' '}
+                        <span className="text-red-600 font-bold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum +
+                              detail?.inspectionReportDetailDefect?.reduce(
+                                (defectSum: number, defect: any) =>
+                                  defectSum + defect.quantityByPack,
+                                0
+                              ),
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Total Items:</strong>{' '}
+                        <span className="text-primaryLight font-semibold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quality Check Results Chart */}
+                  <div className="w-full flex items-center justify-center">
+                    <ChartContainer
+                      config={{
+                        value: {
+                          label: 'Percentage',
+                          color: 'hsl(var(--chart-2))'
+                        }
+                      }}
+                      className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={qualityData}>
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Bar dataKey="value" fill="var(--color-value)" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
