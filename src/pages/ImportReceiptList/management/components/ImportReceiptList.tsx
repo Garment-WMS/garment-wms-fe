@@ -187,7 +187,7 @@ const ImportReceiptTable = (props: Props) => {
         return (
           <div>
             <Link
-              to={`inspection/${row.original.inspectionReportId}`}
+              to={`/report/${row.original.inspectionReportId}`}
               className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
               {row.original?.inspectionReport?.code || 'None'}
             </Link>
