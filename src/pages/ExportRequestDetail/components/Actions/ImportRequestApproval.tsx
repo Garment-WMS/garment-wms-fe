@@ -222,11 +222,11 @@ export default function WarehouseApproval({
         description: 'Material export recommendations have been retrieved.',
         duration: 5000
       });
-    } catch (error) {
-      console.error('Error fetching recommendations:', error);
+    } catch (error: any) {
+      console.error('Error fetching recommendations:', error.response);
       toast({
         title: 'Error',
-        description: 'Failed to fetch material export recommendations.',
+        description: `${error.response.data.message}`,
         variant: 'destructive',
         duration: 5000
       });
