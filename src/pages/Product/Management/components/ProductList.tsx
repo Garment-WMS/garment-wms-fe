@@ -50,7 +50,7 @@ const ProductList: React.FC<Props> = ({productTypes}) => {
   }
   const handleViewClick = (requestId: string) => {
 
-    navigate(`/material-variant/${requestId}`);
+    navigate(`/product-variant/${requestId}`);
   };
   const productColumn: CustomColumnDef<ProductVariant>[]=[
     {
