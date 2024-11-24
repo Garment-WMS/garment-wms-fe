@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent } from "@/components/ui/Card"
+import { Skeleton } from "@/components/ui/Skeleton"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/button"
 import { Search, Grid, List, ChevronLeft, ChevronRight } from "lucide-react"

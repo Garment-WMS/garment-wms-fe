@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/Card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/Input"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { Button } from "@/components/ui/button"

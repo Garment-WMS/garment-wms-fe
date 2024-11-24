@@ -1,8 +1,8 @@
 import privateCall from '@/api/PrivateCaller';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import { toast } from '@/hooks/use-toast';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,14 +15,13 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
 import { NotebookPen, PackageSearch } from 'lucide-react';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { Badge, badgeVariants } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
@@ -46,7 +45,6 @@ import { Label } from '@/components/ui/Label';
 import KanbanDisplayCard from '@/components/common/KanbanDisplayList/KanbanDisplayCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScrollBar } from '@/components/ui/ScrollArea';
-import InventoryReportDialog from './components/InventoryReportDialog';
 import Loading from '@/components/common/Loading';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import { ErrorDialog } from './components/ErrorDialog';
@@ -55,13 +53,13 @@ import { MaterialExportRequest } from '@/types/exportRequest';
 
 type Props = {};
 
-const breadcrumbItems = [
-  {
-    label: 'Stocktaking Plans',
-    href: '/stocktaking'
-  }
-];
-const StocktakingPlanDetails = (props: Props) => {
+// const breadcrumbItems = [
+//   {
+//     label: 'Stocktaking Plans',
+//     href: '/stocktaking'
+//   }
+// ];
+const StocktakingPlanDetails = () => {
   const { id } = useParams();
   const breadcrumbItems = [
     {
@@ -69,7 +67,6 @@ const StocktakingPlanDetails = (props: Props) => {
       href: '/stocktaking'
     }
   ];
-  const navigate = useNavigate();
   const [planData, setPlanData] = useState<InventoryReportPlanToRender>();
   const [isLoading, setIsLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -315,7 +312,7 @@ const StocktakingPlanDetails = (props: Props) => {
                       </ul> */}
                                     <ScrollArea className="w-full h-[110px]">
                                       <div className="flex gap-2 ">
-                                        {materialVariant.map((variant, idx) => (
+                                        {materialVariant.map((variant) => (
                                           <div className="w-[250px] h-[100px]">
                                             <KanbanDisplayCard product={variant.materialVariant} />
                                           </div>

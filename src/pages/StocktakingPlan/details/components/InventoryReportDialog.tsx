@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,7 +12,7 @@ import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 type Props = {}
 
-const InventoryReportDialog = (props: Props) => {
+const InventoryReportDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
