@@ -16,17 +16,24 @@ import importRequestSelector from '@/pages/ImportRequests/slice/selector';
 import ExportRequestCreation from './exportRequestCreation';
 import exportRequestSelector from '../../slice/selector';
 import { MaterialExportRequest } from '@/types/exportRequest';
+import { useParams } from 'react-router-dom';
 
 interface Props {
   selectedStep: number | null;
   setSelectedStep: React.Dispatch<React.SetStateAction<number | null>>;
   currentStatus: string;
+  onApproval: () => void;
 }
 
-const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, currentStatus }) => {
+const InspectionStep: React.FC<Props> = ({
+  selectedStep,
+  setSelectedStep,
+  currentStatus,
+  onApproval
+}) => {
   const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null); // Store carousel API
-
+  const { id } = useParams();
   // Step actions data (can be dynamic)
   const stepsActions = [
     {
@@ -38,12 +45,13 @@ const InspectionStep: React.FC<Props> = ({ selectedStep, setSelectedStep, curren
       title: 'Pending Approval',
       content: (
         <WarehouseApproval
-          requestId="123"
+          requestId={id as string}
           currentStatus={currentStatus}
           manager={exportRequest?.warehouseManager}
           requestDetails={exportRequest?.managerNote as string}
           requestDate={exportRequest?.createdAt}
           warehouseStaff={exportRequest?.warehouseStaff}
+          onApproval={onApproval}
         />
       )
     },

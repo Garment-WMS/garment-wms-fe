@@ -6,9 +6,11 @@ import InspectionStep from './Actions/Inspection';
 import exportRequestSelector from '../slice/selector';
 import { MaterialExportRequest } from '@/types/exportRequest';
 
-interface Props {}
+interface Props {
+  onApproval: () => void;
+}
 
-const IRProcessAndAction: React.FC<Props> = (props) => {
+const IRProcessAndAction: React.FC<Props> = ({ onApproval }) => {
   const [selectedStep, setSelectedStep] = useState<number | null>(0); // State for the selected step
   const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
 
@@ -24,6 +26,7 @@ const IRProcessAndAction: React.FC<Props> = (props) => {
         selectedStep={selectedStep}
         setSelectedStep={setSelectedStep}
         currentStatus={exportRequest?.status as string}
+        onApproval={onApproval}
       />
     </div>
   );

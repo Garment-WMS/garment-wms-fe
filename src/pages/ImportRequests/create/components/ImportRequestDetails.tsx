@@ -12,9 +12,11 @@ type Props = {
   setPoDeliverydetails: React.Dispatch<React.SetStateAction<PODeliveryDetail[]>>;
   setEditDetail: React.Dispatch<React.SetStateAction<Boolean>>;
   isEditDetail: Boolean;
+  selectedPoDelivery: any;
 };
 
 const ImportRequestDetails = ({
+  selectedPoDelivery,
   isNewPoDelivery,
   data,
   setPoDeliverydetails,
@@ -70,21 +72,23 @@ const ImportRequestDetails = ({
       });
     }
   };
+
   const columns = useMemo(() => getMaterialColumns({}), []);
   return (
     <div className="px-4">
       <div className="flex flex-col gap-4">
         <div className="font-primary font-bold text-xl mb-4">Import Request Details</div>
       </div>
-
-      <div className="flex justify-end mb-4">
-        {isEditDetail && (
-          <Button className="mr-4" onClick={handleSave}>
-            Save
-          </Button>
-        )}
-        <Button onClick={handleToogleDialog}>{isEditDetail ? 'Cancel' : 'Edit'}</Button>
-      </div>
+      {selectedPoDelivery && !selectedPoDelivery.isExtra && (
+        <div className="flex justify-end mb-4">
+          {isEditDetail && (
+            <Button className="mr-4" onClick={handleSave}>
+              Save
+            </Button>
+          )}
+          <Button onClick={handleToogleDialog}>{isEditDetail ? 'Cancel' : 'Edit'}</Button>
+        </div>
+      )}
 
       {details && (
         <DataTable

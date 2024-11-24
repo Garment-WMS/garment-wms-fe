@@ -23,7 +23,6 @@ const ExportRequestDetail = () => {
   if (details) {
     formattedDetails = details.map((detail) => {
       const materialPackage = detail;
-
       return {
         id: materialPackage?.id ?? 'N/A',
         code: materialPackage?.materialVariant.code ?? 'N/A',
@@ -56,7 +55,7 @@ const ExportRequestDetail = () => {
     },
     {
       header: 'Material Name',
-      accessorKey: 'name',
+      accessorKey: 'materialName',
       cell: ({ row }) => {
         return <div className="text-left">{row.original.materialType}</div>;
       }

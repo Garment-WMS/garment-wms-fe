@@ -157,7 +157,7 @@ const ImportRequestList = (props: Props) => {
   ];
 
   return (
-    <div className="pb-4">
+    <div className="pb-4 ">
       <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border flex flex-col items-center">
         <div className="w-full">
           <TanStackBasicTable
