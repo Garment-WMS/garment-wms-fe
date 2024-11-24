@@ -233,9 +233,7 @@ export default function WarehouseImportDialog({
                         {new Date(plan.expectedEndDate).toLocaleDateString()}
                       </h4>
                     </div>
-                    <span>{90}%</span>
                   </div>
-                  <Progress value={90} className="w-full" />
                 </div>
               ))}
           </ScrollArea>
