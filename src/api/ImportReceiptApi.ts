@@ -9,9 +9,13 @@ let importRequestUrl = '/import-receipt';
 export const importReceiptApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
   getAll: (queryString: string) => get(`/import-receipt${queryString}`),
-  finish: (id: string) => patch(`${importRequestUrl}/${id}/finish`)
+  finish: (id: string) => patch(`${importRequestUrl}/${id}/finish`),
+  getImportRequest: (id: string) => get(`/import-request/by-import-receipt/${id}`)
 };
-
+export const getImportRequestFn = async (id: string) => {
+  const res = await privateCall(importReceiptApi.getImportRequest(id));
+  return res.data;
+};
 export const getAllImportReceiptFn = async ({
   sorting,
   columnFilters,
