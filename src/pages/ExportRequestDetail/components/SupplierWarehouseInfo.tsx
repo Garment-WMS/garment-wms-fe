@@ -35,7 +35,7 @@ const SupplierWarehouseInfo = (props: Props) => {
             Email: <span className="text-gray-600">garmentfactory@gmail.com</span>
           </div>
           <div className="font-primary font-semibold text-sm">
-            Fax: <span className="text-gray-600">833-987-6543</span>
+            Fax: <span className="text-gray-600">833-520-0223</span>
           </div>
         </div>
       </div>
