@@ -310,7 +310,7 @@ export default function MaterialReceipt() {
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(importReceipt.createdAt).toLocaleString()}
+                        {new Date(importReceipt?.createdAt).toLocaleString()}
                       </p>
                       <p>
                         <strong>Provider:</strong> Cong Ty Vai A

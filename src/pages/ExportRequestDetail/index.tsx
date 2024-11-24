@@ -15,7 +15,7 @@ type Props = {};
 
 const ViewExportRequest = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [error, setError] = useState<string>('');
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -24,40 +24,42 @@ const ViewExportRequest = (props: Props) => {
     { href: '/export-request', label: 'Export Request' },
     { href: `/export-request/${id}`, label: `Details of Request` }
   ];
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true); // Start loading
+  const fetchExportData = async () => {
+    setIsLoading(true); // Start loading
 
-      try {
-        const res = await axios(exportRequestApi.getOne(id as string));
-        if (res.status === 200) {
-          const data = res.data.data;
-          dispatch(actions.setExportRequest(data));
-        } else {
-          setError('Something went wrong');
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: 'There was a problem with your request.'
-          });
-        }
-      } catch (error) {
+    try {
+      const res = await axios(exportRequestApi.getOne(id as string));
+      if (res.status === 200) {
+        const data = res.data.data;
+        dispatch(actions.setExportRequest(data));
+      } else {
         setError('Something went wrong');
         toast({
           variant: 'destructive',
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem with your request.'
         });
-      } finally {
-        setIsLoading(false); // Stop loading
       }
-    };
-
-    if (id) {
-      fetchData();
+    } catch (error) {
+      setError('Something went wrong');
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.'
+      });
+    } finally {
+      setIsLoading(false); // Stop loading
     }
-  }, [id, dispatch]);
+  };
+  useEffect(() => {
+    if (id) {
+      fetchExportData();
+    }
+  }, [id, refreshTrigger]);
 
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
   return (
     <>
       {isLoading ? (
@@ -81,7 +83,7 @@ const ViewExportRequest = (props: Props) => {
                 <ImportRequestStatus />
               </div>
               <div className="flex lg:col-span-6 order-3 lg:order-none">
-                <IRProcessAndAction />
+                <IRProcessAndAction onApproval={handleRefresh} />
               </div>
               <div className="flex lg:col-span-6 order-3 lg:order-none">
                 <Disscussion />

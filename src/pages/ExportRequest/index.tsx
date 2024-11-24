@@ -277,7 +277,7 @@ export default function ExportMaterialPage() {
             title: 'Export request created',
             description: 'Your material export request has been successfully created.'
           });
-          navigate('/home');
+          navigate('/export-request');
         } else {
           throw new Error('Unexpected status code: ' + response.statusCode);
         }

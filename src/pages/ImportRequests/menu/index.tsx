@@ -14,10 +14,8 @@ const CreateImportRequestMenu: React.FC = () => {
       link: '/import-request/create/material'
     },
     { label: 'Return Material', image: Import2, link: '/return-material' },
-    { label: 'Material without Purchase Order', image: Import3, link: '/material-without-po' },
     { label: 'Product with Manufacturing Order', image: Import4, link: '/product-by-mo' },
-    { label: 'Return Product', image: Import5, link: '/return-product' },
-    { label: 'Product without Manufacturing Order', image: Import6, link: '/product-without-mo' }
+    { label: 'Return Product', image: Import5, link: '/return-product' }
   ];
 
   return (
@@ -30,7 +28,7 @@ const CreateImportRequestMenu: React.FC = () => {
       </div>
 
       {/* Grid of Import Request Types with Images */}
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 gap-8">
         {items.map((item, index) => (
           <Link to={item.link} key={index} className="cursor-pointer">
             <div

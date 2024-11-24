@@ -29,7 +29,12 @@ export const importRequestApi = {
       });
     }
   },
-  getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`)
+  getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`),
+  getStatistic: () => get(`/import-request/statistic`)
+};
+export const getImportStatistic = async () => {
+  const res = await privateCall(importRequestApi.getStatistic());
+  return res.data;
 };
 
 export const getAllImportRequestFn = async ({
