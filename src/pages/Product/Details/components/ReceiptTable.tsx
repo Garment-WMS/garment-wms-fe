@@ -24,7 +24,6 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
   const [state, setState] = useState<displayState>('import');
 
   const handleDisplayChange = (state: displayState) => {
-    console.log(state);
     setState(state);
   };
   if (!id) {
@@ -113,7 +112,7 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <TooltipProvider>
+          {/* <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={() => handleDisplayChange('export')} variant="outline" size="icon">
@@ -124,7 +123,7 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
                 <p>Export</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
         </div>
         {state === 'import' ? (
           <div className="">

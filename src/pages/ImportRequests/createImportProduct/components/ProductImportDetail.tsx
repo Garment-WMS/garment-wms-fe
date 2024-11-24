@@ -78,12 +78,17 @@ const ProductImportDetail = ({
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{selectedProductionBatch.name}</CardTitle>
-                <Badge>{selectedProductionBatch.status}</Badge>
+                <Badge className='w-fit'>{selectedProductionBatch.status}</Badge>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <p>Batch ID: {selectedProductionBatch.code}</p>
-                  <p>Quantity: {selectedProductionBatch.quantityToProduce} {selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.product.productUom.uomCharacter}</p>
+                  <p className=' flex gap-2'>Quantity to import: 
+                    <div className='font-semibold  text-green-400'>
+                    {selectedProductionBatch.quantityToProduce} {selectedProductionBatch?.productionPlanDetail?.productSize.productVariant.product.productUom.uomCharacter}
+                      </div>
+                    
+                    </p>
                   
                 </div>
               </CardContent>

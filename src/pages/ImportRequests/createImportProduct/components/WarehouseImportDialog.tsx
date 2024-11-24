@@ -79,7 +79,7 @@ export default function WarehouseImportDialog({
   const [isLoading, setLoading] = useState<boolean>(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: 'status', value: 'EXECUTING' }]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: 'status', value: 'MANUFACTURING' }]);
 
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
 
@@ -124,7 +124,7 @@ export default function WarehouseImportDialog({
   const renderStepContent = (isLoading: boolean) => {
     const getStatusColor = (status: string) => {
       switch (status) {
-        case "EXECUTING":
+        case "MANUFACTURING":
           return "bg-blue-500"
         case "COMPLETED":
           return "bg-green-500"
@@ -148,14 +148,14 @@ export default function WarehouseImportDialog({
             <Card
               key={batch.id}
               className={`mb-4 p-4 rounded-lg ${
-                batch.status !== 'EXECUTING'
+                batch.status !== 'MANUFACTURING'
                   ? 'bg-muted cursor-not-allowed'
                   : selectedProductionBatch?.id === batch.id
                   ? 'bg-primary text-white cursor-pointer'
                   : 'bg-secondary cursor-pointer'
               }`}
               onClick={() =>
-                batch.status === 'EXECUTING' && handleSelectProductionBatch(batch)
+                batch.status === 'MANUFACTURING' && handleSelectProductionBatch(batch)
               }
             >
               <CardHeader>
