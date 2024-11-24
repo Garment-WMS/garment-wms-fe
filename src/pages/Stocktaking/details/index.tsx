@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useParams } from 'react-router-dom';
 import privateCall from '@/api/PrivateCaller';
@@ -31,7 +31,17 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
 import {
   Accordion,
   AccordionContent,
@@ -69,8 +79,10 @@ export default function StocktakingDetails() {
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string | null }>({});
 
   const [inventoryReport, setInventoryReport] = useState<InventoryReportToRender>();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const [approvedDetails, setApprovedDetails] = useState<DetailsToApproveChange>({ details: [] });
   const [materialDetails, setMaterialDetails] = useState<MaterialDetailsToRender[]>([]);
@@ -81,26 +93,56 @@ export default function StocktakingDetails() {
       href: '/stocktaking'
     },
   ]
+  const validateQuantity = (value: number | null): string | null => {
+    if (value === null || value=== undefined || value < 0 || value > 99999) {
+      return 'Quantity must be between 0 and 99999.';
+    }
+    return null;
+  };
   async function onSubmit() {
-  
+  console.log('ap',approvedDetails)
     try {
+
+// Validate all fields when submitting
+const newFieldErrors: { [key: string]: string | null } = {};
+let hasErrors = false;
+
+approvedDetails.details.forEach((detail) => {
+  const error = validateQuantity(detail.managerQuantityConfirm);
+  if (error) {
+    newFieldErrors[detail.inventoryReportDetailId] = error;
+    hasErrors = true; // Mark that there are validation errors
+  }
+});
+
+setFieldErrors(newFieldErrors); // Update field errors state
+
+if (hasErrors) {
+  toast({
+    variant: 'destructive',
+    title: 'Validation Error',
+    description: 'Please ensure all quantities are valid (between 0 and 99999).',
+  });
+  return; 
+}
+
       // Validation: Ensure all details have valid quantities
-      const hasErrors = approvedDetails.details.some(
-        (detail) =>
-          detail.managerQuantityConfirm === null ||
-          detail.managerQuantityConfirm === undefined ||
-          detail.managerQuantityConfirm <= 0 ||
-          detail.managerQuantityConfirm > 99999
-      );
+      // const hasErrors = approvedDetails.details.some(
+      //   (detail) =>
+      //     detail.managerQuantityConfirm === null ||
+      //     detail.managerQuantityConfirm === undefined ||
+      //     detail.managerQuantityConfirm <= 0 ||
+      //     detail.managerQuantityConfirm > 99999
+      // );
   
-      if (hasErrors) {
-        toast({
-          variant: 'destructive',
-          title: 'Validation Error',
-          description: 'Please ensure all quantities are valid (between 0 and 99999).',
-        });
-        return; // Stop execution if validation fails
-      }
+      // if (hasErrors) {
+      //   toast({
+      //     variant: 'destructive',
+      //     title: 'Validation Error',
+      //     description: 'Please ensure all quantities are valid (between 0 and 99999).',
+      //   });
+      //   return; // Stop execution if validation fails
+      // }
   
       setIsLoading(true);
   
@@ -136,11 +178,12 @@ export default function StocktakingDetails() {
    
 
 
-    // Clear error if valid
-    setError((prev) => {
-      const { [id]: _, ...rest } = prev; // Remove error for this id
-      return rest;
-    });
+    const errorMessage = validateQuantity(value);
+    // Update field errors
+    setFieldErrors((prev) => ({
+      ...prev,
+      [id]: errorMessage
+    }));
     setApprovedDetails((prev) => {
       // Find the index of the item to be updated
       const existingIndex = prev.details.findIndex(
@@ -387,10 +430,10 @@ export default function StocktakingDetails() {
                                                       }
                                                     }}
                                                   />
-                                                  {error[reportDetail.id] && (
-                                                    <p className="text-red-500 text-xs">
-                                                      {error[reportDetail.id]}
-                                                    </p>
+                                                   {fieldErrors[reportDetail.id] && (
+                                                    <div className="text-red-500 text-xs">
+                                                      {fieldErrors[reportDetail.id]}
+                                                    </div>
                                                   )}
                                                 </TableCell>
                                               </TableRow>
@@ -535,10 +578,10 @@ export default function StocktakingDetails() {
                                                       }
                                                     }}
                                                   />
-                                                  {error[reportDetail.id] && (
-                                                    <p className="text-red-500 text-xs">
-                                                      {error[reportDetail.id]}
-                                                    </p>
+                                                   {fieldErrors[reportDetail.id] && (
+                                                    <div className="text-red-500 text-xs">
+                                                      {fieldErrors[reportDetail.id]}
+                                                    </div>
                                                   )}
                                                 </TableCell>
                                               </TableRow>
@@ -634,9 +677,28 @@ export default function StocktakingDetails() {
               )}
             </div>
             {inventoryReport.status === 'REPORTED' && (
-              <Button type="submit" onClick={onSubmit} className="mt-4 w-full">
-                Balance inventory
-              </Button>
+               <div className="flex justify-center items-center mt-4 w-full">
+               <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                 <AlertDialogTrigger asChild>
+                   <Button type="button"> Balanced Inventory</Button>
+                 </AlertDialogTrigger>
+                 <AlertDialogContent>
+                   <AlertDialogHeader>
+                     <AlertDialogTitle>Confirm Balanced Inventory </AlertDialogTitle>
+                     <AlertDialogDescription>
+                       Are you sure you want to balence inventory. It will automatically adjust
+                       inventory receipt base on your input quantity
+                     </AlertDialogDescription>
+                   </AlertDialogHeader>
+                   <AlertDialogFooter>
+                     <AlertDialogCancel>Cancel</AlertDialogCancel>
+                     <AlertDialogAction onClick={onSubmit} type="submit">
+                       Continue
+                     </AlertDialogAction>
+                   </AlertDialogFooter>
+                 </AlertDialogContent>
+               </AlertDialog>
+             </div>
             )}
           </CardContent>
         </Card>

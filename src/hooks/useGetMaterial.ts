@@ -1,4 +1,4 @@
-import { getAllMaterialFn } from '@/api/services/materialApi';
+import { getAllMaterialFn, getAllMaterialHasReceiptFn } from '@/api/services/materialApi';
 import { MaterialVariantResponse } from '@/types/MaterialTypes';
 import { InputType } from '@/types/Shared';
 import { useQuery } from '@tanstack/react-query';
@@ -19,6 +19,37 @@ export const useGetMaterial = ({
       queryKey: ['MaterialVariant', sorting, columnFilters, pagination],
       queryFn: () =>
         getAllMaterialFn({
+          sorting,
+          columnFilters,
+          pagination,
+        }),
+
+    });
+    let materialList = data?.data.data;
+    const pageMeta = data?.data.pageMeta;
+
+    // if(AxiosError.){
+    //     materialList = [];
+
+    // }
+
+    return {pageMeta, materialList,isFetching, isLoading };
+  };
+
+  export const useGetMaterialWithReceipt = ({
+    sorting,
+    columnFilters,
+    pagination,
+  }: InputType) => {
+        
+    const {
+      data,
+      isLoading,
+      isFetching
+    } = useQuery<MaterialVariantResponse, AxiosError>({
+      queryKey: ['MaterialVariantWithReceipt', sorting, columnFilters, pagination],
+      queryFn: () =>
+        getAllMaterialHasReceiptFn({
           sorting,
           columnFilters,
           pagination,

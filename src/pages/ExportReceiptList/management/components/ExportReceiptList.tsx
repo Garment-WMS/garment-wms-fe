@@ -12,19 +12,21 @@ import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/hooks/useDebouce';
 import { useGetImportRequests } from '@/hooks/useGetImportRequest';
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
+import { DeliveryType, } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt } from '@/types/ImportReceipt';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { AvatarFallback } from '@radix-ui/react-avatar';
+import { useGetAllExportReceipt } from '@/hooks/useGetAllExportReceipt';
+import { ExportReceiptStatus, ExportReceiptType, MaterialExportReceipt } from '@/types/ExportReceipt';
+import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 type Props = {};
 
-const ImportReceiptTable = (props: Props) => {
+const ExportReceiptTable = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,7 +34,7 @@ const ImportReceiptTable = (props: Props) => {
     const basePath = location.pathname.split('/')[0];
 
     // Navigate to the new route
-    navigate(`${basePath}/import-receipt/${requestId}`);
+    navigate(`${basePath}/export-receipt/${requestId}`);
   };
 
   // sorting state of the table
@@ -49,20 +51,20 @@ const ImportReceiptTable = (props: Props) => {
     pageSize: 10 //default page size
   });
 
-  const { pageMeta, importReceiptData, isimportRequestLoading, isFetching } = useGetImportReceipts({
+  const { pageMeta, exportReceiptsList, isLoading, isFetching } = useGetAllExportReceipt({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
   });
 
   const paginatedTableData =
-    importReceiptData && pageMeta
+    exportReceiptsList && pageMeta
       ? {
-          data: importReceiptData,
-          limit: pageMeta.limit,
-          page: pageMeta.page,
-          total: pageMeta.total,
-          totalFiltered: pageMeta.totalPages
+          data: exportReceiptsList,
+          limit: pageMeta.limit ?? 0,
+          page: pageMeta.page ?? 0,
+          total: pageMeta.total ?? 0,
+          totalFiltered: pageMeta.totalPages ?? 0
         }
       : undefined;
 
@@ -79,38 +81,29 @@ const ImportReceiptTable = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
+  console.log('exportReceiptsList', paginatedTableData);
+
+  const importRequestColumn: CustomColumnDef<MaterialExportReceipt>[] = [
     {
-      header: 'Import request code',
+      header: 'Export receipt code',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        const code = row.original.code || "N/A";
         return (
+          
           <div>
-            <div>{row.original.code}</div>
+            <div>{code}</div>
           </div>
         );
       }
     },
 
-    {
-      header: 'Import Receipt Type',
-      accessorKey: 'type',
-      enableColumnFilter: true,
-      filterOptions: DeliveryType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
-      cell: ({ row }) => <div>{row.original.type}</div>
-    },
+    
     {
       header: 'Assigned to',
       accessorKey: 'creator',
       enableColumnFilter: false,
-      filterOptions: DeliveryType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
           <Avatar className="mr-2 ">
@@ -130,33 +123,34 @@ const ImportReceiptTable = (props: Props) => {
         </Link>
       )
     },
-    {
-      header: 'Approved by',
-      accessorKey: 'creator',
-      enableColumnFilter: false,
-      filterOptions: DeliveryType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
-      cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
-          <Avatar className="mr-2 ">
-            <AvatarImage
-              src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseManager?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseManager?.account?.firstName}
-          </h4>
-        </Link>
-      )
-    },
+    // {
+    //   header: 'Approved by',
+    //   accessorKey: 'creator',
+    //   enableColumnFilter: false,
+    //   en
+    //   filterOptions: DeliveryType.map((delivery) => ({
+    //     label: delivery.label,
+    //     value: delivery.value
+    //   })),
+    //   cell: ({ row }) => (
+    //     <Link className="flex text-blue-500 underline" to="">
+    //       <Avatar className="mr-2 ">
+    //         <AvatarImage
+    //           src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
+    //         />
+    //         <AvatarFallback className="w-full h-full text-center">
+    //           {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
+    //             row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
+    //         </AvatarFallback>
+    //       </Avatar>
+    //       <h4>
+    //         {row?.original?.warehouseManager?.account?.lastName +
+    //           ' ' +
+    //           row?.original?.warehouseManager?.account?.firstName}
+    //       </h4>
+    //     </Link>
+    //   )
+    // },
     {
       header: 'Create date',
       accessorKey: 'createdAt',
@@ -179,21 +173,36 @@ const ImportReceiptTable = (props: Props) => {
         );
       }
     },
+    // {
+    //   header: 'Inspection report',
+    //   accessorKey: 'inspectionReport',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div>
+    //         <Link
+    //           to={`inspection/${row.original.inspectionReportId}`}
+    //           className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
+    //           {row.original?.inspectionReport?.code || 'None'}
+    //         </Link>
+    //       </div>
+    //     );
+    //   }
+    // },
     {
-      header: 'Inspection report',
-      accessorKey: 'inspectionReport',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <Link
-              to={`inspection/${row.original.inspectionReportId}`}
-              className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
-              {row.original?.inspectionReport?.code || 'None'}
-            </Link>
-          </div>
-        );
-      }
+      header: 'Export Receipt Type',
+      accessorKey: 'type',
+      enableColumnFilter: true,
+      filterOptions: ExportReceiptType.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => (
+        <div
+          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.type ?? '', ExportReceiptType) })}>
+          {formatString(row.original.type ?? 'N/A')}
+        </div>
+      ),
     },
     {
       header: 'Status',
@@ -201,11 +210,11 @@ const ImportReceiptTable = (props: Props) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '', ExportReceiptStatus) })}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
-      filterOptions: Status.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: ExportReceiptStatus.map((status) => ({ label: status.label, value: status.value }))
     },
     {
       id: 'actions',
@@ -235,7 +244,7 @@ const ImportReceiptTable = (props: Props) => {
     <div className="pb-4">
       <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
         <TanStackBasicTable
-          isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
+          isTableDataLoading={isLoading && isFetching} // Use the persistent loading state
           paginatedTableData={paginatedTableData ?? undefined}
           columns={importRequestColumn}
           pagination={pagination}
@@ -252,4 +261,4 @@ const ImportReceiptTable = (props: Props) => {
   );
 };
 
-export default ImportReceiptTable;
+export default ExportReceiptTable;

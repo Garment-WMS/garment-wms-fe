@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from '@/components/ui/Card';
+} from '@/components/ui/card';
 
 import {
   InventoryReportPlanToRender,
@@ -173,6 +173,7 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
           <div>
             <h3 className="text-md font-medium">Note</h3>
             <p className="text-md text-muted-foreground">{planData?.note ? <div></div> : 'N/A'}</p>
+
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">Inventory Items</h3>
@@ -248,7 +249,7 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
                                 Inventory Report
                               </h3>
                             </div>
-                            {detail.inventoryReport != null ? (
+                            {detail.inventoryReport != null && (
                               <Label
                                 onClick={() => {
                                   const url = `/stocktaking/${detail.inventoryReport.id}`;
@@ -257,8 +258,8 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
                                 className="underline text-bluePrimary cursor-pointer">
                                 {detail.inventoryReport.code}
                               </Label>
-                            ) : (
-                              <Button onClick={() => createReport(planData.id)}>Create your report</Button>
+                            // ) : (
+                            //   <Button onClick={() => createReport(planData.id)}>Create your report</Button>
                             )}
                           </div>
                         )}

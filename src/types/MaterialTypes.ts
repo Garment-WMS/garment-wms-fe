@@ -121,6 +121,7 @@ export interface MaterialExportReceipt {
   expireDate: string;
   quantityByPack: number;
   remainQuantityByPack: number;
+  materialReceipt: MaterialReceipt;
   materialPackage: MaterialPackage;
   createdAt: string | null;
   updatedAt: string | null;

@@ -22,7 +22,6 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
   const [state, setState] = useState<displayState>('import');
 
   const handleDisplayChange = (state: displayState) => {
-    console.log(state);
     setState(state);
   };
   if (!id) {

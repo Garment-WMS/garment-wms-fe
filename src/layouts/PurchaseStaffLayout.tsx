@@ -10,7 +10,8 @@ import {
   TbShirt,
   TbShoppingCartCog,
   TbReceipt,
-  TbPackageExport
+  TbPackageExport,
+  TbReceiptRefund 
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 
@@ -51,6 +52,11 @@ const PurchaseStaffMenu: MenuProps[] = [
     title: 'Export request',
     renderIcon: <TbPackageExport size={iconSize} />,
     link: '/export-request'
+  },
+  {
+    title: 'Export Receipt',
+    renderIcon: <TbReceiptRefund  size={iconSize} />,
+    link: '/export-receipt'
   },
   {
     title: 'Material',

@@ -52,6 +52,8 @@ import ProductManagement from '@/pages/Product/Management';
 import ProductVariantDetails from '@/pages/Product/Details';
 import ExportRequestList from '@/pages/ExportRequestList/management';
 import ProductionBatchManagement from '@/pages/Production Batch/management';
+import ExportReceiptDetail from '@/pages/ExportReceiptDetail';
+import ExportReceiptList from '@/pages/ExportReceiptList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -189,6 +191,14 @@ const RouterComponent: React.FC = () => {
             {
               path: '/import-receipt/',
               element: <ImportReceiptList />
+            },
+            {
+              path: '/export-receipt/:id',
+              element: <ExportReceiptDetail />
+            },
+            {
+              path: '/export-receipt/',
+              element: <ExportReceiptList />
             },
             {
               path: '/material-variant/:id',
