@@ -225,7 +225,10 @@ export default function ExportMaterialPage() {
         formulaDetails.quantityRangeEnd,
         formulaDetails.productFormulaMaterials
       );
-      console.log('Formula saved successfully:', res);
+        if(res.statusCode === 201){
+          navigate('/export-request');
+          toast({variant: 'success', title: 'Formula created', description: 'Your formula has been successfully created.'});
+        }
 
       // Re-fetch the product formulas to update the list
       await fetchProductFormulas();
@@ -289,6 +292,16 @@ export default function ExportMaterialPage() {
           selectedFormula,
           'formula'
         );
+        if (response.statusCode === 201) {
+          toast({
+            variant: 'success',
+            title: 'Export request created',
+            description: 'Your material export request has been successfully created.'
+          });
+          navigate('/export-request');
+        } else {
+          throw new Error('Unexpected status code: ' + response.statusCode);
+        }
       }
 
       // Handle successful creation (e.g., show success message, reset form, etc.)
