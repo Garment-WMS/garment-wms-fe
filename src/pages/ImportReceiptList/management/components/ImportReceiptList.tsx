@@ -184,10 +184,11 @@ const ImportReceiptTable = (props: Props) => {
       accessorKey: 'inspectionReport',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        console.log(row?.original);
         return (
           <div>
             <Link
-              to={`/report/${row.original.inspectionReportId}`}
+              to={`/report/${row?.original?.inspectionReport?.inspectionRequest?.id}`}
               className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
               {row.original?.inspectionReport?.code || 'None'}
             </Link>
