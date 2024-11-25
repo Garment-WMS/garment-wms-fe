@@ -133,6 +133,10 @@ const RouterComponent: React.FC = () => {
           element: <ImportRequestManagement />
         },
         {
+          path: '/import-request/create',
+          element: <CreateImportRequestMenu />
+        },
+        {
           path: '/import-request/create/material',
           element: <CreateImportRequest />
         },
