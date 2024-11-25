@@ -14,6 +14,7 @@ import {
   TbReceiptRefund 
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
+import { MdOutlineInventory } from 'react-icons/md';
 
 type Props = {};
 const iconSize = 22;
@@ -22,6 +23,11 @@ const PurchaseStaffMenu: MenuProps[] = [
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
     link: '/dashboard'
+  },
+  {
+    title: 'Stocktaking Management',
+    renderIcon: <MdOutlineInventory size={iconSize} />,
+    link: '/stocktaking'
   },
   {
     title: 'Production Plan',
