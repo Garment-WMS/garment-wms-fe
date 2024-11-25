@@ -15,6 +15,7 @@ import { MenuProps } from '@/constants/interface';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 import SideBar from '@/components/SideBar';
 import TopBar from '@/components/TopBar';
+import { MdOutlineInventory } from 'react-icons/md';
 type Props = {}
 const iconSize = 22;
 const WarehouseManagerMenu: MenuProps[] = [
@@ -25,7 +26,7 @@ const WarehouseManagerMenu: MenuProps[] = [
   },
   {
     title: 'Stocktaking Management',
-    renderIcon: <TbCalendarCog size={iconSize} />,
+    renderIcon: <MdOutlineInventory size={iconSize} />,
     link: '/stocktaking'
   },
   {

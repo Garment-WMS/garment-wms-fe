@@ -33,7 +33,16 @@ const ProductionStaffMenu: MenuProps[] = [
     renderIcon: <TbReceipt size={iconSize} />,
     link: '/import-receipt'
   },
-
+  {
+    title: 'Export request',
+    renderIcon: <TbPackageExport size={iconSize} />,
+    link: '/export-request'
+  },
+  {
+    title: 'Export Receipt',
+    renderIcon: <TbReceiptRefund  size={iconSize} />,
+    link: '/export-receipt'
+  },
   {
     title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
