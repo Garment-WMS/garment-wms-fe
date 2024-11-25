@@ -141,6 +141,10 @@ const RouterComponent: React.FC = () => {
           element: <CreateImportRequest />
         },
         {
+          path: '/import-request/create/material/:id',
+          element: <CreateImportRequest />
+        },
+        {
           path: '/import-request/create/product',
           element: <CreateImportRequestProduct />
         },
