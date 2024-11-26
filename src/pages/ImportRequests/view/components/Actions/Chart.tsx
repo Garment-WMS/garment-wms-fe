@@ -58,7 +58,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   useEffect(() => {
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; percentage: number }[] = [];
-      const staticDefects = defectsData.data;
+      const staticDefects = defectsData?.data;
 
       // Map over static defects and combine with inspectionRequest data
       staticDefects.forEach((staticDefect: { description: string }) => {
