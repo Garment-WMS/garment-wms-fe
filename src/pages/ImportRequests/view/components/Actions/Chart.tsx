@@ -32,11 +32,6 @@ const COLORS = {
   pending: 'hsl(var(--chart-3))'
 };
 
-const chartData = [
-  { status: 'passed', quantity: 750, fill: COLORS.passed },
-  { status: 'failed', quantity: 180, fill: COLORS.failed }
-];
-
 const chartConfig = {
   quantity: {
     label: 'Quantity'
@@ -61,31 +56,32 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   const { data: defectsData } = useGetAllDefects();
 
   useEffect(() => {
-    if (defectsData && defectsData.data && inspectionRequest && inspectionRequest.length > 0) {
+    if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; percentage: number }[] = [];
       const staticDefects = defectsData.data;
 
       // Map over static defects and combine with inspectionRequest data
       staticDefects.forEach((staticDefect: { description: string }) => {
         const matchingDefect = inspectionRequest
-          .flatMap((request) =>
-            request.inspectionReport?.inspectionReportDetail?.flatMap(
-              (detail: any) => detail.inspectionReportDetailDefect || []
-            )
+          ?.flatMap(
+            (request) =>
+              request?.inspectionReport?.inspectionReportDetail?.flatMap(
+                (detail: any) => detail?.inspectionReportDetailDefect ?? []
+              ) ?? []
           )
-          .find(
+          ?.find(
             (detailDefect: any) =>
-              detailDefect.description?.toLowerCase() === staticDefect.description?.toLowerCase()
+              detailDefect?.description?.toLowerCase() === staticDefect?.description?.toLowerCase()
           );
 
         if (matchingDefect) {
           defects.push({
-            type: staticDefect.description,
+            type: staticDefect?.description ?? 'Unknown Defect',
             percentage: Math.floor(Math.random() * 30) + 10 // Mock percentage for now
           });
         } else {
           defects.push({
-            type: staticDefect.description,
+            type: staticDefect?.description ?? 'Unknown Defect',
             percentage: Math.floor(Math.random() * 30) + 10 // Mock percentage if not found
           });
         }
@@ -99,15 +95,16 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
     inspectionRequest?.reduce((total, request) => {
       return (
         total +
-        request.inspectionReport?.inspectionReportDetail?.reduce((sum: number, detail: any) => {
-          return sum + detail.approvedQuantityByPack;
-        }, 0)
+        (request?.inspectionReport?.inspectionReportDetail?.reduce(
+          (sum: number, detail: any) => sum + (detail?.approvedQuantityByPack ?? 0),
+          0
+        ) ?? 0)
       );
-    }, 0) || 0;
+    }, 0) ?? 0;
 
   const passRate = React.useMemo(() => {
-    const passed = totalMaterials;
-    const total = passed + defectTypes.length;
+    const passed = totalMaterials ?? 0;
+    const total = passed + (defectTypes?.length ?? 0);
     return total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
   }, [totalMaterials, defectTypes]);
 
@@ -116,9 +113,9 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Material Inspection Report</CardTitle>
         <CardDescription>
-          Total reports:{'  '}
+          Total reports:{' '}
           <span className="font-bold text-lg text-primaryLight">
-            {inspectionRequest?.length || 0}
+            {inspectionRequest?.length ?? 0}
           </span>
         </CardDescription>
       </CardHeader>
@@ -144,7 +141,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                   <Pie
                     data={[
                       { status: 'passed', quantity: totalMaterials, fill: COLORS.passed },
-                      { status: 'failed', quantity: defectTypes.length, fill: COLORS.failed }
+                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: COLORS.failed }
                     ]}
                     dataKey="quantity"
                     nameKey="status"
@@ -153,13 +150,13 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                     paddingAngle={2}>
                     {[
                       { status: 'passed', quantity: totalMaterials, fill: COLORS.passed },
-                      { status: 'failed', quantity: defectTypes.length, fill: COLORS.failed }
+                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: COLORS.failed }
                     ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                      <Cell key={`cell-${index}`} fill={entry?.fill} />
                     ))}
                     <Label
                       content={({ viewBox }) => {
-                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                        if (viewBox?.cx && viewBox?.cy) {
                           return (
                             <text
                               x={viewBox.cx}
@@ -174,7 +171,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                               </tspan>
                               <tspan
                                 x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 20}
+                                y={(viewBox.cy ?? 0) + 20}
                                 className="fill-muted-foreground text-xs">
                                 Pass Rate
                               </tspan>
@@ -191,22 +188,24 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
             <div className="col-span-3 sm:col-span-2 flex flex-col justify-center">
               <h3 className="text-lg font-semibold mb-4">Defect Analysis</h3>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                {defectTypes.map((defect, index) => (
+                {defectTypes?.map((defect, index) => (
                   <div key={index} className="flex flex-col space-y-1">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="flex justify-between text-sm font-medium cursor-pointer">
-                            <span className="truncate">{defect.type}</span>
-                            <span className="text-muted-foreground">{defect.percentage}%</span>
+                            <span className="truncate">{defect?.type ?? 'Unknown Defect'}</span>
+                            <span className="text-muted-foreground">
+                              {defect?.percentage ?? 0}%
+                            </span>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{defect.type}</p>
+                          <p>{defect?.type ?? 'Unknown Defect'}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <Progress value={defect.percentage} className="h-2 rounded-full" />
+                    <Progress value={defect?.percentage ?? 0} className="h-2 rounded-full" />
                   </div>
                 ))}
               </div>
@@ -215,7 +214,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
         )}
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm">
-        {currentStatus == 'INSPECTED' && (
+        {currentStatus === 'INSPECTED' && (
           <>
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
@@ -224,13 +223,13 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
               </div>
               <div className="flex items-center gap-2">
                 <XCircle className="h-5 w-5 text-red-500" />
-                <span>Failed: {defectTypes.length}</span>
+                <span>Failed: {defectTypes?.length ?? 0}</span>
               </div>
             </div>
             <div className="flex items-center justify-between w-full text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                <span>Total Inspected: {totalMaterials + defectTypes.length}</span>
+                <span>Total Inspected: {totalMaterials + (defectTypes?.length ?? 0)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Cog className="h-5 w-5" />
