@@ -209,6 +209,9 @@ export default function MaterialReceipt() {
       { name: 'Failed', value: parseFloat(minorIssuesPercentage) }
     ];
   };
+  const handleCloseDialog = () => {
+    setShowLabelModal(false);
+  };
 
   const inspectionReport: InspectionReport | undefined = importReceipt?.inspectionReport;
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
@@ -535,7 +538,7 @@ export default function MaterialReceipt() {
               </CardContent>
             </Card>
           </div>
-          <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
+          <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
             <DialogContent className="max-w-4xl">
               <DialogHeader>
                 <DialogTitle>Material Labels</DialogTitle>
@@ -561,13 +564,17 @@ export default function MaterialReceipt() {
                   {importReceipt?.materialReceipt.map((item: any) => (
                     <div key={item.id} className="border p-4 rounded-md">
                       <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p> Material Code: {item.materialPackage.code}</p>
                       <p>
                         Quantity: {item.quantityByPack * item.materialPackage.uomPerPack}{' '}
                         {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
                       </p>
                       <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
                       <div className="mt-2">
+                        <h3 className="font-semibold">Material barcode: </h3>
+                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
+                      </div>
+                      <div className="mt-2">
+                        <h3 className="font-semibold">Material Receipt Barcode: </h3>
                         <Barcode value={item.code} width={1.5} height={50} />
                       </div>
                     </div>

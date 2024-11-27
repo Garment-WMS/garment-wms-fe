@@ -55,7 +55,7 @@ export const getMaterialColumns = ({}: any): CustomColumnDef<any>[] => [
     ),
     cell: ({ row }) => <div className="text-center">{row.original.actualQuantity}</div>,
     isEditable: true,
-    validation: z.number().positive('Actual Quantity has to be at least 1')
+    validation: z.number().nonnegative('Actual Quantity has to be at least 0')
   },
 
   {
