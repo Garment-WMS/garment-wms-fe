@@ -176,6 +176,9 @@
 .rbc-day-slot .rbc-selected.rbc-background-event {
   @apply bg-primary text-primary-foreground rounded-md;
 }
+.rbc-event-label {
+  display: none;
+}
 /* .rbc-time-view {
   @apply border-accent;
 } */

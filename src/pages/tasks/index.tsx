@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,16 +16,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import {
-  Package,
-  ClipboardCheck,
-  Truck,
-  CheckCircle,
-  XCircle,
-  Clock,
-  LayoutGrid,
-  List
-} from 'lucide-react';
+import { ClipboardCheck, Truck, CheckCircle, XCircle, Clock, LayoutGrid, List } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getMytaskFn } from '@/api/services/taskApi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';

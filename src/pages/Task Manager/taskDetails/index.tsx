@@ -22,6 +22,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 // Assuming you have an API function to fetch task details
 import { getTaskDetailFn } from '@/api/services/taskApi';
+import Loading from '@/components/common/Loading';
 
 type Todo = {
   id: string;
@@ -75,7 +76,7 @@ const TaskTypeIcon = ({ type }: { type: string }) => {
   }
 };
 
-export default function TaskDetailPage() {
+export default function TaskDetailManagingPage() {
   const { id } = useParams();
   const [task, setTask] = useState<Task | null | any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -120,20 +121,10 @@ export default function TaskDetailPage() {
     });
   };
 
-  const handleFinishJob = async () => {
-    if (!task) return;
-    // Here you would typically update the task status on the server
-    // For now, we'll just update it locally
-    setTask({
-      ...task,
-      status: 'COMPLETED'
-    });
-  };
-
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex justify-center items-center h-full">
+        <Loading size="100" />
       </div>
     );
   }
@@ -167,7 +158,9 @@ export default function TaskDetailPage() {
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
-        <Link to="/tasks" className="flex items-center text-primary hover:underline">
+        <Link
+          to={`/tasks-management/${staff.id}`}
+          className="flex items-center text-primary hover:underline">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Tasks
         </Link>

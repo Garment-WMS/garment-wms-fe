@@ -14,7 +14,6 @@ import PurchaseOrderDeliveryDetails from '@/pages/Purchase Order Delivery/detail
 import CreateImportRequest from '@/pages/ImportRequests/create';
 import CreateImportRequestMenu from '@/pages/ImportRequests/menu';
 
-
 import Loading from '@/components/common/Loading';
 import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
@@ -54,6 +53,8 @@ import FactoryDirectorLayout from '@/layouts/FactoryDirectorLayout';
 import ExportReceiptList from '@/pages/ExportReceiptList/management';
 import ExportReceiptDetail from '@/pages/ExportReceiptDetail';
 import NotfoundPage from '@/pages/404';
+import TaskManagers from '@/pages/Task Manager';
+import TaskDetailManagingPage from '@/pages/Task Manager/taskDetails';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -79,7 +80,6 @@ const RouterComponent: React.FC = () => {
         //   path: '/',
         //   element: <Home />,
         // },
-
 
         {
           path: '/dashboard',
@@ -159,6 +159,18 @@ const RouterComponent: React.FC = () => {
         {
           path: '/tasks',
           element: <MyTasks />
+        },
+        {
+          path: '/tasks-management',
+          element: <TaskManagers />
+        },
+        {
+          path: '/tasks-management-detail/:id',
+          element: <TaskDetailManagingPage />
+        },
+        {
+          path: '/tasks-management/:id',
+          element: <TaskManagers />
         },
         {
           path: '/tasks/:id',
@@ -244,7 +256,7 @@ const RouterComponent: React.FC = () => {
       path: '/unauthorized',
       element: <NotfoundPage />
     },
-              
+
     { path: '*', element: <NotfoundPage /> }
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
