@@ -50,8 +50,9 @@ import placeholder from '@/assets/images/null_placeholder.jpg';
 import Loading from '@/components/common/Loading';
 import { toast } from '@/hooks/use-toast';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import SearchFunction from './components/SearchFunction';
 
-interface DetailsToApproveChange {
+export interface DetailsToApproveChange {
   details: DetailsToApprove[];
 }
 
@@ -111,24 +112,6 @@ export default function WarehousestaffStocktakingDetails() {
       });
       return; 
     }
-
-      // const hasErrors = approvedDetails.details.some(
-      //   (detail) =>
-      //     detail.actualQuantity === null ||
-      //     detail.actualQuantity === undefined ||
-      //     detail.actualQuantity < 0 ||
-      //     detail.actualQuantity > 99999
-      // );
-
-      // if (hasErrors) {
-      //   setError('Invalid');
-      //   toast({
-      //     variant: 'destructive',
-      //     title: 'Validation Error',
-      //     description: 'Please ensure all quantities are valid (between 0 and 99999).'
-      //   });
-      //   return; 
-      // }
 
       setIsLoading(true);
 
@@ -269,6 +252,7 @@ export default function WarehousestaffStocktakingDetails() {
       </div>
     );
   }
+  console.log(approvedDetails);
   return (
     <div className="container mx-auto p-4 w-full  bg-white rounded-xl shadow-sm border">
       <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
@@ -287,6 +271,12 @@ export default function WarehousestaffStocktakingDetails() {
           <CardContent>
             {materialDetails.length > 0 && (
               <div className="pt-4">
+                <SearchFunction
+                materialDetails={materialDetails}
+                productDetails={productDetails}
+                approvedDetails={approvedDetails}
+                setApprovedDetails={setApprovedDetails}
+                />
                 <Label className="text-xl font-bold ">Material Variant</Label>
                 {materialDetails.map((detail, idx) => (
                   <div className="w-full">
