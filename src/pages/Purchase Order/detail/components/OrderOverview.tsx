@@ -30,6 +30,7 @@ interface OrderOverviewProps {
   totalImportQuantity: number;
   totalFailImportQuantity: number | null;
   totalQuantityToImport: number;
+  prodcutionPlanCode: string;
 }
 
 const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
@@ -101,7 +102,8 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   currency,
   totalImportQuantity,
   totalFailImportQuantity,
-  totalQuantityToImport
+  totalQuantityToImport,
+  prodcutionPlanCode
 }) => {
   const totalAmount =
     (subTotalAmount || 0) + (taxAmount || 0) + (shippingAmount || 0) + (otherAmount || 0);
@@ -118,7 +120,7 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
       <div className="grid grid-cols-2 gap-8 border-b pb-4 mb-4">
         <div className="space-y-3">
           <KeyValueDisplay name="Purchase Order" value={poNumber} />
-          <KeyValueDisplay name="Production Plan" value="PL #12" />
+          <KeyValueDisplay name="Production Plan" value={prodcutionPlanCode} />
         </div>
         <div className="space-y-3 text-right">
           <KeyValueDisplay name="Purchase Order Date" value={convertDate(orderDate)} />
