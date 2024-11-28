@@ -313,32 +313,6 @@ const UploadExcel: React.FC<UploadExcelProps> = ({ fileName, triggerButtonLabel 
 
   const renderUploadExcel = () => (
     <div>
-      <div className="mb-4 flex justify-between items-center">
-        {/* <Button
-          variant="outline"
-          onClick={handleBackToStep1}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-gray-300  text-white shadow-sm transition-all duration-300 hover:shadow-md bg-primaryLight hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50">
-          <ArrowLeft size={16} />
-          <span className="font-semibold">Back</span>
-        </Button> */}
-
-        {/* {selectedPlan && ( */}
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md flex items-center justify-between flex-1 ml-4">
-          <p className="text-sm font-semibold text-gray-700">
-            {/* <strong>Plan Selected:</strong> {selectedPlan?.code || 'N/A'} */}
-          </p>
-          {/* <Badge
-              className={`rounded-lg px-2 py-1 ${
-                statusColors[selectedPlan?.status as ProductionPlanStatus] ||
-                'bg-gray-500 text-white'
-              }`}>
-              {ProductionPlanStatusLabels[selectedPlan?.status as ProductionPlanStatus] ||
-                'Unknown'}
-            </Badge> */}
-        </div>
-        {/* )} */}
-      </div>
-
       {/* File Upload Section */}
       {!selectedFile && !uploadError && (
         <div
