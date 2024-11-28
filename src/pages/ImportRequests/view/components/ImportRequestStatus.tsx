@@ -9,9 +9,10 @@ type Props = {};
 
 const ImportRequestStatus = (props: Props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
+  console.log(importRequest);
 
   const id = importRequest?.id.slice(0, 4);
-  const code = importRequest?.code
+  const code = importRequest?.code;
   const status = importRequest?.status;
   const createdDate = importRequest?.createdAt
     ? new Date(importRequest.createdAt).toLocaleDateString()
@@ -28,30 +29,31 @@ const ImportRequestStatus = (props: Props) => {
       case 'REJECTED':
       case 'APPROVED':
       case 'ARRIVED':
-        if(!importRequest?.warehouseManager)return null
+        if (!importRequest?.warehouseManager) return null;
         return {
           role: 'Warehouse Manager',
           avatar: importRequest?.warehouseManager?.account?.avatarUrl || 'N/A',
           name:
-            (importRequest?.warehouseManager?.account?.lastName +
-            ' ' +
-            importRequest?.warehouseManager?.account?.firstName) || 'N/A'
+            importRequest?.warehouseManager?.account?.lastName +
+              ' ' +
+              importRequest?.warehouseManager?.account?.firstName || 'N/A'
         };
       case 'CANCELLED':
       case 'IMPORTED':
-        const isMaterial = importRequest.purchasingStaff
-        if(isMaterial) {
-        return {
-          role: 'Purchasing Staff',
-          avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
-          name:
-            importRequest?.purchasingStaff?.account?.lastName +
-            ' ' +
-            importRequest?.purchasingStaff?.account?.firstName,
-          avatarFallback:
-            importRequest?.purchasingStaff?.account?.lastName.slice(0, 1) +
-            importRequest?.purchasingStaff?.account?.firstName.slice(0, 1)
-        }}else{
+        const isMaterial = importRequest.purchasingStaff;
+        if (isMaterial) {
+          return {
+            role: 'Purchasing Staff',
+            avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
+            name:
+              importRequest?.purchasingStaff?.account?.lastName +
+              ' ' +
+              importRequest?.purchasingStaff?.account?.firstName,
+            avatarFallback:
+              importRequest?.purchasingStaff?.account?.lastName.slice(0, 1) +
+              importRequest?.purchasingStaff?.account?.firstName.slice(0, 1)
+          };
+        } else {
           return {
             role: 'Production Department',
             avatar: importRequest?.productionDepartment?.account?.avatarUrl,
@@ -59,19 +61,19 @@ const ImportRequestStatus = (props: Props) => {
               importRequest?.productionDepartment?.account?.lastName +
               ' ' +
               importRequest?.productionDepartment?.account?.firstName,
-              avatarFallback:
+            avatarFallback:
               importRequest?.productionDepartment?.account?.lastName.slice(0, 1) +
               importRequest?.productionDepartment?.account?.firstName.slice(0, 1)
-          }
+          };
         }
       case 'INSPECTING':
         return {
           role: 'Inspection Team',
-          avatar: importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.avatarUrl,
+          avatar: importRequest?.inspectionRequest[0]?.inspectionDepartment?.account?.avatarUrl,
           name:
-            importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.lastName +
+            importRequest?.inspectionRequest[0]?.inspectionDepartment?.account?.lastName +
             ' ' +
-            importRequest?.inspectionRequest[0]?.inspectionDepartment.account?.firstName
+            importRequest?.inspectionRequest[0]?.inspectionDepartment?.account?.firstName
         };
       case 'IMPORTING':
         return {

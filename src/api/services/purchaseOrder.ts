@@ -5,7 +5,16 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
 import privateCall from '../PrivateCaller';
+export const purchaseOrderApi = {
+  getOne: (id: string) => get(`/purchase-order/${id}`),
+  getAll: () => get('/purchase-order/all')
+}
 
+export const getAllPurchaseOrdersNoPage = async (): Promise<any> => {
+  // Make the API request
+  const res = await privateCall(purchaseOrderApi.getAll());
+  return res.data.data;
+};
 interface GetAllPurchaseOrdersInput {
   sorting: SortingState;
   columnFilters: ColumnFiltersState;
@@ -90,13 +99,9 @@ export const getPurchaseOrderById = async (id: string): Promise<ApiResponse> => 
   }
 };
 
-export const importPurchaseOrder = async (
-  file: File,
-  productionPlanId: string
-): Promise<ApiResponse> => {
+export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('productionPlanId', productionPlanId);
   console.log('FormData contents:');
   for (const [key, value] of formData.entries()) {
     console.log(`${key}:`, value);

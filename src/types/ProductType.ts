@@ -1,4 +1,5 @@
-import { InventoryStock, MaterialVariant } from "./MaterialTypes";
+import { InspectionReport } from "./InspectionReport";
+import { InventoryStock, MaterialVariant, ReceiptAdjustment } from "./MaterialTypes";
 import { PageMetaData } from "./Shared";
 
 export interface ProductVariantResponse {
@@ -39,11 +40,16 @@ export interface ProductVariantResponse {
     id: string;
     productSizeId: string;
     code: string;
+    isDefect: boolean
     importReceiptId: string;
     expireDate: string;
     importDate: string;
     quantityByUom: number;
     remainQuantityByUom: number;
+    productSize: ProductSize;
+    importReceipt: ProductImportReceipt;
+    receiptAdjustment: ReceiptAdjustment[];
+    inspectionReport: InspectionReport;
     status: string;
     createdAt: string | null;
     updatedAt: string | null;
@@ -101,6 +107,15 @@ export interface ProductVariantResponse {
   statusCode: number;
   data: {
     data: ProductVariant[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface ProductReceiptResponse{
+  statusCode: number;
+  data: {
+    data: ProductReceipt[];
     pageMeta: PageMetaData;
   };
   message: string;

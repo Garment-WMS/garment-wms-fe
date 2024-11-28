@@ -13,6 +13,8 @@ import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
 import { useGetAllSupplier } from '@/hooks/useGetAllSupplier';
 import { Supplier } from '@/types/SupplierTypes';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
+import { ProductionPlan } from '@/types/ProductionPlan';
 
 const PurchaseOrderList: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -30,6 +32,12 @@ const PurchaseOrderList: React.FC = () => {
     pagination
   });
   const { data: supplierData, isFetching: isFetchingSuppliers } = useGetAllSupplier();
+  const {
+    data,
+    pageMeta: productionPlanPageMeta,
+    isPending: isFetchingProductionPlan,
+    isError
+  } = useGetAllProductionPlans({});
 
   const paginatedTableData =
     purchaseOrderList && pageMeta
@@ -56,11 +64,15 @@ const PurchaseOrderList: React.FC = () => {
       enableColumnFilter: false
     },
     {
-      header: 'Production Plan ID',
-      accessorKey: 'quarterlyProductionPlanId',
-      enableColumnFilter: false,
-      cell: ({ getValue }) => {
-        const value = getValue<string>();
+      header: 'Production Plan Code',
+      accessorKey: 'productionPlanId',
+      enableColumnFilter: true,
+      filterOptions: data?.data.data.map((productionPlan: ProductionPlan) => ({
+        label: productionPlan.code,
+        value: productionPlan.id
+      })),
+      cell: ({ row }) => {
+        const value = row.original?.productionPlan?.code;
         return <div className="ml-9 font-semibold">{value ? value : 'PL123'}</div>;
       }
     },
@@ -72,7 +84,6 @@ const PurchaseOrderList: React.FC = () => {
         label: supplier.supplierName,
         value: supplier.id
       })),
-
       cell: ({ row }) => <div className="mr-5">{row.original.supplier?.supplierName}</div>
     },
     {
@@ -192,7 +203,7 @@ const PurchaseOrderList: React.FC = () => {
       {/* Set fixed height for the table */}
       <div className="overflow-auto h-[700px]">
         <TanStackBasicTable
-          isTableDataLoading={isFetching || isFetchingSuppliers}
+          isTableDataLoading={isFetching || isFetchingSuppliers || isFetchingProductionPlan}
           paginatedTableData={paginatedTableData}
           columns={purchaseOrderColumns}
           pagination={pagination}

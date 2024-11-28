@@ -1,29 +1,190 @@
-import { DataTable } from '@/components/ui/DataTable';
 import React, { useState } from 'react';
 import { ReceiptChart } from './ReceiptChart';
-
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
-import { Button } from '@/components/ui/button';
-import importIcon from '@/assets/images/import-goods-delivery-svgrepo-com.svg';
-import exportIcon from '@/assets/images/export-shipment-trade-svgrepo-com.svg';
 import TanStackBasicTable from '@/components/common/CompositeTable';
-import { useGetMaterialImportReceipt } from '@/hooks/useGetMaterialImportReceipt';
-import { useGetMaterialExportReceipt } from '@/hooks/useGetMaterialExportReceipt';
-import { materialExportReceiptColumn, materialImportReceiptColumn } from './ReceiptColumn';
 import { Label } from '@/components/ui/Label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { CiInboxIn, CiInboxOut } from "react-icons/ci";
+import { useGetMaterialReceipt } from '@/hooks/useGetMaterial';
+import { MaterialImportReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
+import { CustomColumnDef } from '@/types/CompositeTable';
+import { badgeVariants } from '@/components/ui/Badge';
+import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
+import { Button } from '@/components/ui/button';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 type Props = {
   id: string;
 };
-type displayState = 'import' | 'export';
 const ReceiptTable: React.FC<Props> = ({ id }) => {
-  const [state, setState] = useState<displayState>('import');
-
-  const handleDisplayChange = (state: displayState) => {
-    setState(state);
+  const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
+  const [isOpened, setIsOpened] = useState(false);
+  const getStatusBadgeVariant = (status: string) => {
+    const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
+    return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
   };
+  const openDialog = (id: string) => {
+    setSelectedReceiptId(id); 
+    setIsOpened(true); 
+  };
+
+  // // Function to close the dialog
+  // const closeDialog = () => {
+  //   setSelectedReceiptId(null); // Reset the ID
+  // };
+  const materialImportReceiptColumn: CustomColumnDef<MaterialImportReceipt>[] = [
+    {
+      header: 'Receipt code',
+      accessorKey: 'code',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div>
+            <div>{row.original?.code}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Material Package code',
+      accessorKey: 'materialPackage.code',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div>
+            <div>{row.original?.materialPackage?.code}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Material Package name',
+      accessorKey: 'materialPackage.name',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div>
+            <div>{row.original?.materialPackage?.name}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Import Date',
+      accessorKey: 'importDate',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const dateString = row.original?.importDate;
+        if (!dateString) {
+          return <div>N/A</div>;
+        }
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        return (
+          <div>
+            <div>{formattedDate}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Expired Date',
+      accessorKey: 'expireDate',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const dateString = row.original?.expireDate;
+        if (!dateString) {
+          return <div>N/A</div>;
+        }
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        return (
+          <div>
+            <div>{formattedDate}</div>
+          </div>
+        );
+      }
+    },
+    // {
+    //   header: 'Material',
+    //   accessorKey: 'material.name',
+    //   enableColumnFilter: true,
+    //   filterOptions: materialTypes.map((type) => ({
+    //     label: type.label, // Correctly access the label
+    //     value: type.value // Correctly access the value
+    //   })),
+    //   cell: ({ row }) => <div>{row.original.material.name}</div>
+    // },
+    {
+      header: 'Import Quantity',
+      accessorKey: 'quantityByPack',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex">
+            <div className="">{row.original?.quantityByPack}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Remain Quantity',
+      accessorKey: '',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex">
+            <div className="">{row.original?.remainQuantityByPack}</div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      enableColumnFilter: true,
+      cell: ({ row }) => (
+        <div
+          className={badgeVariants({ variant: getStatusBadgeVariant(row.original?.status ?? '') })}>
+          {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
+        </div>
+      ),
+      filterOptions: ReceiptStatusLabel.map((status) => ({
+        label: status.label,
+        value: status.value
+      }))
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const request = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => openDialog(request.id)}>View</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      }
+    }
+  ];
   if (!id) {
     return (
       <div>
@@ -47,120 +208,47 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
 
   const {
     pageMeta: importPageMeta,
-    importReceiptData,
+    receiptData,
     isLoading: isImportLoading
-  } = useGetMaterialImportReceipt(id, {
+  } = useGetMaterialReceipt(id, {
     sorting: importDebouncedSorting,
     columnFilters: importDebouncedColumnFilters,
     pagination: importPagination
   });
 
-  const importData = importReceiptData &&
+  const importData = receiptData &&
     importPageMeta && {
-      data: importReceiptData,
+      data: receiptData,
       limit: importPageMeta?.limit || 0,
       page: importPageMeta?.page || 0,
       total: importPageMeta?.total || 0,
       totalFiltered: importPageMeta?.total || 0
     };
 
-  const [exportColumnFilters, setExportColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const [exportSorting, setExportSorting] = useState<SortingState>([]);
-
-  const exportDebouncedColumnFilters: ColumnFiltersState = useDebounce(exportColumnFilters, 1000);
-
-  const exportDebouncedSorting: SortingState = useDebounce(exportSorting, 1000);
-
-  const [exportPagination, setExportPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 5
-  });
-  const {
-    pageMeta: exportPageMeta,
-    exportReceiptData,
-    isLoading: isExportLoading
-  } = useGetMaterialExportReceipt(id, {
-    sorting: exportDebouncedSorting,
-    columnFilters: exportDebouncedColumnFilters,
-    pagination: exportPagination
-  });
-  const exportData = exportReceiptData &&
-    exportPageMeta && {
-      data: exportReceiptData,
-      limit: exportPageMeta?.limit || 0,
-      page: exportPageMeta?.page || 0,
-      total: exportPageMeta?.total || 0,
-      totalFiltered: exportPageMeta?.total || 0
-    };
-
   return (
     <div className=" flex flex-col gap-4 ">
       <div className="h-full">
-        <div className="flex mb-4 px-8 justify-end">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={() => handleDisplayChange('import')} variant="outline" size="icon">
-                <CiInboxIn size={28}/>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Import</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={() => handleDisplayChange('export')} variant="outline" size="icon">
-                <CiInboxOut size={28}/>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="">
+          <Label>Material Receipt</Label>
+          <TanStackBasicTable
+            isTableDataLoading={isImportLoading}
+            paginatedTableData={importData}
+            columns={materialImportReceiptColumn}
+            pagination={importPagination}
+            sorting={importSorting}
+            setSorting={setImportSorting}
+            setPagination={setImportPagination}
+            columnFilters={importColumnFilters}
+            setColumnFilters={setImportColumnFilters}
+            searchColumnId="code"
+            searchPlaceholder="Search by code"
+          />
         </div>
-        {state === 'import' ? (
-          <div className="">
-            <Label>Import Receipt</Label>
-            <TanStackBasicTable
-              isTableDataLoading={isImportLoading}
-              paginatedTableData={importData}
-              columns={materialImportReceiptColumn}
-              pagination={importPagination}
-              sorting={importSorting}
-              setSorting={setImportSorting}
-              setPagination={setImportPagination}
-              columnFilters={importColumnFilters}
-              setColumnFilters={setImportColumnFilters}
-              searchColumnId="code"
-              searchPlaceholder="Search by code"
-            />
-          </div>
-        ) : (
-          <div className="">
-            <Label>Export Receipt</Label>
-
-            <TanStackBasicTable
-              isTableDataLoading={isExportLoading}
-              paginatedTableData={exportData}
-              columns={materialExportReceiptColumn}
-              pagination={exportPagination}
-              sorting={exportSorting}
-              setSorting={setExportSorting}
-              setPagination={setExportPagination}
-              columnFilters={exportColumnFilters}
-              setColumnFilters={setExportColumnFilters}
-              searchColumnId="code"
-              searchPlaceholder="Search by code"
-            />
-          </div>
-        )}
       </div>
       <ReceiptChart />
+      {selectedReceiptId && (
+  <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened}  />
+)}
     </div>
   );
 };

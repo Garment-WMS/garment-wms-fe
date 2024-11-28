@@ -5,20 +5,20 @@ import { SortingState, ColumnFiltersState, PaginationState } from '@tanstack/rea
 import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
 
 interface UseGetAllProductionPlansParams {
-  sorting: SortingState;
-  columnFilters: ColumnFiltersState;
-  pagination: PaginationState;
+  sorting?: SortingState;
+  columnFilters?: ColumnFiltersState;
+  pagination?: PaginationState;
 }
 
 export const useGetAllProductionPlans = ({
-  sorting,
-  columnFilters,
-  pagination
+  sorting = [],
+  columnFilters = [],
+  pagination = { pageIndex: 0, pageSize: 500 }
 }: UseGetAllProductionPlansParams) => {
   const {
-    data,
+    data: data,
     status,
-    isLoading: isPending,
+    isPending,
     isError,
     isSuccess,
     isFetching
@@ -32,7 +32,6 @@ export const useGetAllProductionPlans = ({
     ],
     queryFn: () => getAllProductionPlans({ sorting, columnFilters, pagination })
   });
-
   const productionPlanList = data?.data;
   const pageMeta = data?.pageMeta;
   return { data, status, isPending, isFetching, isError, isSuccess, pageMeta, productionPlanList };
