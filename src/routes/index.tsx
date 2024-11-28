@@ -46,7 +46,6 @@ import InspectionRequestManagement from '@/pages/Inspection Report/management';
 import CreateImportRequestProduct from '@/pages/ImportRequests/createImportProduct';
 import ProductManagement from '@/pages/Product/Management';
 import ProductVariantDetails from '@/pages/Product/Details';
-import ExportRequestList from '@/pages/ExportRequestList/management';
 import ProductionBatchManagement from '@/pages/Production Batch/management';
 import RoleBasedLayoutMiddleware from '@/components/authentication/roleBasedLayoutMiddleware';
 import InspectionDepartmentLayout from '@/layouts/InspectionDepartmentLayout';
@@ -54,6 +53,10 @@ import FactoryDirectorLayout from '@/layouts/FactoryDirectorLayout';
 import ExportReceiptList from '@/pages/ExportReceiptList/management';
 import ExportReceiptDetail from '@/pages/ExportReceiptDetail';
 import NotfoundPage from '@/pages/404';
+import WarehouseStaffImportRequestManagement from '@/pages/WarehouseStaff/ImportRequests/management';
+import WarehouseStaffImportReceiptList from '@/pages/WarehouseStaff/ImportReceiptList/management';
+import ExportRequestList from '@/pages/ExportRequestList/management';
+import WarehouseStaffExportRequestList from '@/pages/WarehouseStaff/ExportRequestList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -130,7 +133,15 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/import-request',
-          element: <ImportRequestManagement />
+          element: <RoleBasedRedirect 
+          managerComponent={<ImportRequestManagement />} 
+          warehouseStaffComponent={<WarehouseStaffImportRequestManagement/>}
+          factoryDirectorComponent={<ImportRequestManagement />}
+          inspectingDepartmentComponent={<ImportRequestManagement />}
+          productionDepartmentComponent={<ImportRequestManagement />}
+          purchasingStaffComponent={<ImportRequestManagement />}
+          />
+          // element: <ImportRequestManagement />
         },
         {
           path: '/import-request/create',
@@ -150,7 +161,15 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/export-request',
-          element: <ExportRequestList />
+          element: <RoleBasedRedirect
+          managerComponent={<ExportRequestList />}
+          warehouseStaffComponent={<WarehouseStaffExportRequestList />}
+          factoryDirectorComponent={<ExportRequestList />}
+          inspectingDepartmentComponent={<ExportRequestList />}
+          productionDepartmentComponent={<ExportRequestList />}
+          purchasingStaffComponent={<ExportRequestList />}
+          />
+          // element: <ExportRequestList />
         },
         {
           path: '/export-request/:id',
@@ -169,8 +188,17 @@ const RouterComponent: React.FC = () => {
           element: <ImportReceipt />
         },
         {
-          path: '/import-receipt/',
-          element: <ImportReceiptList />
+          path: '/import-receipt',
+          element: <RoleBasedRedirect
+          managerComponent={<ImportReceiptList />}
+          warehouseStaffComponent={<WarehouseStaffImportReceiptList/>}
+          productionDepartmentComponent={<ImportReceiptList />}
+          purchasingStaffComponent={<ImportReceiptList />}
+          inspectingDepartmentComponent={<ImportReceiptList />}
+          factoryDirectorComponent={<ImportReceiptList />}
+          
+          />
+          // element: <ImportReceipt />
         },
         {
           path: '/export-receipt/:id',
