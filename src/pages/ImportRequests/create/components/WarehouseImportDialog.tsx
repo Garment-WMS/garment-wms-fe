@@ -18,6 +18,7 @@ import { getAllProductionPlanFn } from '@/api/services/productionPlanApi';
 import { ProductionPlanData, PurchaseOrder, PODelivery } from '@/types/ProductionPlan';
 import Loading from '@/components/common/Loading';
 import { PoDeliveryStatus } from '@/types/tempFile';
+import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
 
 export interface Props {
   setIsNewdelivery: any;
@@ -50,7 +51,7 @@ function SelectionSummary({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <span>Production Plan:</span>
           {selectedPlan ? (
             <Badge variant="outline" className="flex items-center gap-2">
@@ -63,7 +64,7 @@ function SelectionSummary({
           ) : (
             <span className="text-muted-foreground">Not selected</span>
           )}
-        </div>
+        </div> */}
         <div className="flex justify-between items-center">
           <span>Purchase Order:</span>
           {selectedPo ? (
@@ -115,7 +116,7 @@ export default function WarehouseImportDialog({
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isAlert, setAlert] = useState<boolean>(false);
   const handleNext = (selectedPoDelivery: PODelivery) => {
-    if (step < 3) setStep(step + 1);
+    if (step < 2) setStep(step + 1);
     else {
       if (selectedPoDelivery.isExtra) {
         setAlert(true);
@@ -130,18 +131,18 @@ export default function WarehouseImportDialog({
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
-      if (step === 3) setSelectedPoDelivery(null);
-      if (step === 2) setSelectedPO(null);
+      if (step === 2) setSelectedPoDelivery(null);
+      if (step === 1) setSelectedPO(null);
     }
   };
 
-  const findPoDeliveryById = (plans: ProductionPlanData[], deliveryId: string) => {
-    for (const plan of plans) {
-      for (const po of plan.purchaseOrder) {
+  const findPoDeliveryById = (plans: any[], deliveryId: string) => {
+    console.log('plans', plans);  
+      for (const po of plans) {
         const poDelivery = po.poDelivery.find((delivery: any) => delivery.id === deliveryId);
         if (poDelivery) {
-          return { plan, po, poDelivery };
-        }
+          return { po, poDelivery };
+        
       }
     }
     return null;
@@ -150,23 +151,24 @@ export default function WarehouseImportDialog({
     const getAllProductionPlan = async () => {
       try {
         setLoading(true);
-        const data = await getAllProductionPlanFn();
-        setProductionPlan(data);
-        if (defaultPodeliveryId) {
+        const data = await getAllPurchaseOrdersNoPage();
+        // setProductionPlan(data);
+        setPurchaseOrder(data);
+        // if (defaultPodeliveryId) {
           if (defaultPodeliveryId) {
             const selectedDelivery = findPoDeliveryById(data, defaultPodeliveryId);
+            console.log('selectedDelivery', selectedDelivery);
             if (selectedDelivery) {
-              const { plan, po, poDelivery } = selectedDelivery;
-              setSelectedPlan(plan);
+              const {  po, poDelivery } = selectedDelivery;
               setSelectedPO(po);
               setSelectedPoDelivery(poDelivery);
-              setPurchaseOrder(plan.purchaseOrder);
+              setPurchaseOrder(data);
               setPoBatch(po.poDelivery);
               setPoDeliverydetails(poDelivery.poDeliveryDetail);
               setIsNewdelivery(true);
             }
           }
-        }
+        // }
       } catch (err) {
       } finally {
         setLoading(false);
@@ -175,7 +177,6 @@ export default function WarehouseImportDialog({
 
     getAllProductionPlan();
   }, []);
-
   const handleSelectProductionPlan = (plan: ProductionPlanData) => {
     setSelectedPlan(plan);
     setPurchaseOrder(plan.purchaseOrder);
@@ -207,7 +208,7 @@ export default function WarehouseImportDialog({
   const renderStepIndicator = () => {
     return (
       <div className="flex justify-between items-center mb-4">
-        {[1, 2, 3].map((stepNumber) => (
+        {[1, 2].map((stepNumber) => (
           <div
             key={stepNumber}
             className={`flex items-center ${
@@ -223,7 +224,7 @@ export default function WarehouseImportDialog({
               }`}>
               {stepNumber}
             </div>
-            {stepNumber < 3 && <ChevronRight className="mx-2" />}
+            {stepNumber < 2 && <ChevronRight className="mx-2" />}
           </div>
         ))}
       </div>
@@ -240,33 +241,33 @@ export default function WarehouseImportDialog({
     }
 
     switch (step) {
+      // case 1:
+      //   return (
+      //     <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+      //       {productionPlans &&
+      //         productionPlans.map((plan) => (
+      //           <div
+      //             key={plan.id}
+      //             className={`mb-4 p-4 rounded-lg cursor-pointer ${
+      //               selectedPlan?.id === plan.id
+      //                 ? 'bg-primary text-primary-foreground'
+      //                 : 'bg-secondary'
+      //             }`}
+      //             onClick={() => handleSelectProductionPlan(plan)}>
+      //             <div className="flex justify-between items-center mb-2">
+      //               <div>
+      //                 <h3 className="font-semibold">{plan.name}</h3>
+      //                 <h4 className="text-sm">
+      //                   {new Date(plan.expectedStartDate).toLocaleDateString()} To{' '}
+      //                   {new Date(plan.expectedEndDate).toLocaleDateString()}
+      //                 </h4>
+      //               </div>
+      //             </div>
+      //           </div>
+      //         ))}
+      //     </ScrollArea>
+      //   );
       case 1:
-        return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            {productionPlans &&
-              productionPlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`mb-4 p-4 rounded-lg cursor-pointer ${
-                    selectedPlan?.id === plan.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary'
-                  }`}
-                  onClick={() => handleSelectProductionPlan(plan)}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <h3 className="font-semibold">{plan.name}</h3>
-                      <h4 className="text-sm">
-                        {new Date(plan.expectedStartDate).toLocaleDateString()} To{' '}
-                        {new Date(plan.expectedEndDate).toLocaleDateString()}
-                      </h4>
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </ScrollArea>
-        );
-      case 2:
         return (
           <ScrollArea className="h-[300px] w-full rounded-md border p-4">
             {purchaseOrders &&
@@ -286,7 +287,7 @@ export default function WarehouseImportDialog({
               ))}
           </ScrollArea>
         );
-      case 3:
+      case 2:
         return (
           <ScrollArea className="h-[300px] w-full rounded-md border p-4">
             {poBatches &&
@@ -370,9 +371,9 @@ export default function WarehouseImportDialog({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {step === 1 && 'Select Production Plan'}
-              {step === 2 && 'Select Purchase Order'}
-              {step === 3 && 'Select Purchase Order Batch'}
+              {/* {step === 1 && 'Select Production Plan'} */}
+              {step === 1 && 'Select Purchase Order'}
+              {step === 2 && 'Select Purchase Order Batch'}
             </DialogTitle>
           </DialogHeader>
           {renderStepIndicator()}
@@ -386,11 +387,11 @@ export default function WarehouseImportDialog({
             <Button
               onClick={() => handleNext(selectedPoDelivery)}
               disabled={
-                (step === 1 && !selectedPlan) ||
-                (step === 2 && !selectedPo) ||
-                (step === 3 && !selectedPoDelivery)
+                // (step === 1 && !selectedPlan) ||
+                (step === 1 && !selectedPo) ||
+                (step === 2 && !selectedPoDelivery)
               }>
-              {step < 3 ? 'Next' : 'Confirm'}
+              {step < 2 ? 'Next' : 'Confirm'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -34,7 +34,9 @@ const ExpandableSectionCustom: FC<ExpandableSectionProps> = ({
             onClick={() => setIsOpen(!isOpen)}>
             <div className="flex items-center gap-2">
               <span className="text-lg text-slate-500 font-normal">Purchase Order Delivery: </span>
-              <h1 className={`text-lg font-semibold text-primaryDark`}>{title ? title : `-`}</h1>
+              <h1 className={`text-lg font-semibold text-primaryDark`}>
+                {isExtra ? '-' : (title ?? '-')}
+              </h1>
             </div>
             <div className="flex gap-x-5">
               {status}

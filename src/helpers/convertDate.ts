@@ -14,6 +14,7 @@ export function convertDate(dateInput: string | Date): string {
 }
 
 export function formatDateTimeToDDMMYYYYHHMM(dateString: string): string {
+  if (!dateString) return '';
   const date = new Date(dateString);
 
   // Extract day, month, year, hours, and minutes
