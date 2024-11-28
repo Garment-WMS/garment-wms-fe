@@ -70,44 +70,55 @@ const ReceiptDialog = ({ open, setOpen, result, approvedDetails, setApprovedDeta
         <div className="grid grid-cols-4 items-center gap-4">
           <span className="font-medium col-span-2">Actual Quantity:</span>
           <span className="col-span-2 text-slate-500">
-            <Input
-              type="number"
-              className="w-20"
-              value={result?.actualQuantity}
-              min={0} // Set minimum value to 0
-              max={99999}
-              onWheel={(e) => e.currentTarget.blur()} // Prevent scrolling from changing the value
-              onChange={(e) => {
-                const inputValue = e.target.value;
+           {result?.actualQuantity ? (result?.actualQuantity) : (
+             <Input
+             type="number"
+             className="w-20"
+             value={result?.actualQuantity}
+             min={0} // Set minimum value to 0
+             max={99999}
+             onWheel={(e) => e.currentTarget.blur()} // Prevent scrolling from changing the value
+             onChange={(e) => {
+               const inputValue = e.target.value;
 
-                // If the input is cleared, handle it as empty
-                if (inputValue === '') {
-                  handleChange( null); // Use `null` to indicate cleared input
-                } else {
-                    handleChange( +inputValue); // Parse the value as a number
-                }
-              }}
-              onKeyDown={(e) => {
-                // Prevent typing `-` or `e` in the input
-                if (e.key === '-' || e.key === 'e' || e.key === 'E') {
-                  e.preventDefault();
-                }
-              }}
-            />
+               // If the input is cleared, handle it as empty
+               if (inputValue === '') {
+                 handleChange( null); // Use `null` to indicate cleared input
+               } else {
+                   handleChange( +inputValue); // Parse the value as a number
+               }
+             }}
+             onKeyDown={(e) => {
+               // Prevent typing `-` or `e` in the input
+               if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                 e.preventDefault();
+               }
+             }}
+           />
+           )}
             <div>
 
             </div>
           </span>
         </div>
+        {result?.managerQuantityConfirm && (
+            <div className="grid grid-cols-4 items-center gap-4">
+            <span className="font-medium col-span-2">Manager confirm quantity:</span>
+            <span className="col-span-2 text-slate-500">{result?.managerQuantityConfirm}</span>
+          </div>
+        )}
         {/* <div className="grid grid-cols-4 items-center gap-4">
           <span className="font-medium col-span-2">Status:</span>
           <span className="col-span-2 text-slate-500">{result?.materialReceipt?.status}</span>
         </div> */}
         <DialogFooter>
-        <div className='flex justify-end items-center gap-2'>
+            {!result?.actualQuantity &&(
+                <div className='flex justify-end items-center gap-2'>
             <Button onClick={()=>{setOpen(false)}} className={badgeVariants({ variant: 'secondary', className: 'w-12' })}>Cancel</Button>
             <Button onClick={handleSave} className={badgeVariants({ variant: 'success', className: 'w-12' })}>Save</Button>
         </div>
+            )}
+        
       </DialogFooter>
       </DialogContent>
       

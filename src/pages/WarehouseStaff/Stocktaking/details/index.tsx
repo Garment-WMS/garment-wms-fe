@@ -268,14 +268,15 @@ export default function WarehousestaffStocktakingDetails() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="col-span-2">
           <CardContent>
-            {materialDetails.length > 0 && (
-              <div className="pt-4">
-                <SearchFunction
+          <SearchFunction
                 materialDetails={materialDetails}
                 productDetails={productDetails}
                 approvedDetails={approvedDetails}
                 setApprovedDetails={setApprovedDetails}
                 />
+            {materialDetails.length > 0 && (
+              <div className="pt-4">
+                
                 <Label className="text-xl font-bold ">Material Variant</Label>
                 {materialDetails.map((detail, idx) => (
                   <div className="w-full">

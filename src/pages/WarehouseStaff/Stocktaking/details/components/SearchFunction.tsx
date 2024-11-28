@@ -72,7 +72,7 @@ const SearchFunction = ({
 //     }
 //   }, [result]);
   return (
-    <div className="max-w-2xl ">
+    <div className="max-w-2xl my-4">
         <div className='mb-4'>
            <div className="flex space-x-2">
         <Input
