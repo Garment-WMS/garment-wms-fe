@@ -15,6 +15,11 @@ import Loading from '@/components/common/Loading';
 import privateCall from '@/api/PrivateCaller';
 import { materialApi } from '@/api/services/materialApi';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/Badge"
+import { Separator } from '@/components/ui/Seperator';
+import { ArrowRight, Calendar, Package } from 'lucide-react';
 type Props = {
   id: string;
   isOpen: boolean;
@@ -44,127 +49,184 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
       <DialogTrigger asChild>
         <Button variant="outline">View Material Receipt Details</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
         {isLoading ? (
           <div>
             <Loading />
           </div>
         ) : materialReceipt ? (
           <>
-            <DialogHeader>
-              <DialogTitle>Material Receipt Details</DialogTitle>
-            </DialogHeader>
-            <ScrollArea className="h-[500px] pr-4">
-              <div className="space-y-4">
-                <div className="flex gap-4 justify-between">
-                  <section>
-                    <p>
-                      <strong>Receipt Code:</strong> {materialReceipt.code}
-                    </p>
-                    <p>
-                      <strong>Material:</strong>{' '}
-                      {materialReceipt.materialPackage.materialVariant.material.name} (
-                      {materialReceipt.materialPackage.materialVariant.material.code})
-                    </p>
-                    <p>
-                      <strong>Variant:</strong>{' '}
-                      {materialReceipt.materialPackage.materialVariant.name} (
-                      {materialReceipt.materialPackage.materialVariant.code})
-                    </p>
-                    <p>
-                      <strong>Package:</strong> {materialReceipt.materialPackage.name} (
-                      {materialReceipt.materialPackage.code})
-                    </p>
-                    <p>
-                      <strong>Import Date:</strong>{' '}
-                      {format(new Date(materialReceipt.importDate), 'PPP')}
-                    </p>
-                    <p>
-                      <strong>Expire Date:</strong>{' '}
-                      {format(new Date(materialReceipt.expireDate), 'PPP')}
-                    </p>
-                  </section>
-                  <section className="flex-row">
-                    <p>
-                      <strong>Expire Date:</strong>{' '}
-                      {format(new Date(materialReceipt.expireDate), 'PPP')}
-                    </p>
-                    <p>
-                      <strong>Initial Quantity:</strong> {materialReceipt.quantityByPack}
-                    </p>
-                    <p>
-                      <strong>Remaining Quantity:</strong> {materialReceipt.remainQuantityByPack}
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {convertTitleToTitleCase(materialReceipt.status)}
-                    </p>
-                  </section>
-                </div>
+            <DialogHeader className="p-6 pb-0">
+          <DialogTitle className="text-2xl font-bold">Material Receipt Details</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-full px-6 pb-6">
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="import">Import</TabsTrigger>
+              <TabsTrigger value="export">Export</TabsTrigger>
+              <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
+            </TabsList>
+            <TabsContent value="general">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Material Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <img
+                      src={materialReceipt.materialPackage.materialVariant.image ?? ''}
+                      alt={materialReceipt.materialPackage.materialVariant.name}
+                      width={300}
+                      height={300}
+                      className="rounded-lg shadow-md"
+                    />
+                    <Badge variant={materialReceipt.status === 'AVAILABLE' ? 'success' : 'destructive'}>
+                      {materialReceipt.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{materialReceipt.materialPackage.materialVariant.material.name}</h3>
+                      <p className="text-muted-foreground">{materialReceipt.materialPackage.materialVariant.name}</p>
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <Package className="w-5 h-5 mr-2 text-muted-foreground" />
+                        <span>Receipt Code: {materialReceipt.code}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-5 h-5 mr-2 text-muted-foreground" />
+                        <span>Import Date: {format(new Date(materialReceipt.importDate), 'PPP')}</span>
+                      </div>
+                      {materialReceipt.expireDate && (
+                        <div className="flex items-center">
+                          <Calendar className="w-5 h-5 mr-2 text-muted-foreground" />
+                          <span>Expire Date: {format(new Date(materialReceipt.expireDate), 'PPP')}</span>
+                        </div>
+                      )}
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p>
+                        <strong>Quantity:</strong> {materialReceipt.quantityByPack} {materialReceipt.materialPackage.packUnit}
+                      </p>
+                      <p>
+                        <strong>Remaining:</strong> {materialReceipt.remainQuantityByPack} {materialReceipt.materialPackage.packUnit}
+                      </p>
+                      <p>
+                        <strong>Units per {materialReceipt.materialPackage.packUnit}:</strong> {materialReceipt.materialPackage.uomPerPack} {materialReceipt.materialPackage.materialVariant.material.materialUom.uomCharacter}
+                      </p>
+                    </div>
 
-                <Tabs defaultValue="exports">
-                  <TabsList>
-                    <TabsTrigger value="exports">Export History</TabsTrigger>
-                    <TabsTrigger value="adjustments">Adjustment History</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="exports">
-                    <h3 className="text-lg font-semibold mb-2">Export History</h3>
-                    {materialReceipt.materialExportReceiptDetail?.length > 0 ? (
-                      materialReceipt.materialExportReceiptDetail.map((export_, index) => (
-                        <div key={export_.id} className="mb-4 p-2 border rounded">
-                          <p>
-                            <strong>Export #{index + 1}</strong>
-                          </p>
-                          <p>
-                            <strong>Export Code:</strong> {export_.materialExportReceipt.code}
-                          </p>
-                          <p>
-                            <strong>Quantity:</strong> {export_.quantityByPack}
-                          </p>
-                          <p>
-                            <strong>Type:</strong> {export_.materialExportReceipt.type}
-                          </p>
-                          <p>
-                            <strong>Status:</strong> {export_.materialExportReceipt.status}
-                          </p>
-                          <p>
-                            <strong>Date:</strong>{' '}
-                            {format(new Date(export_.materialExportReceipt.startedAt), 'PPP')}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500">Nothing to display</p>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="adjustments">
-                    <h3 className="text-lg font-semibold mb-2">Adjustment History</h3>
-                    {materialReceipt.receiptAdjustment?.length > 0 ? (
-                      materialReceipt.receiptAdjustment.map((adjustment, index) => (
-                        <div key={adjustment.id} className="mb-4 p-2 border rounded">
-                          <p>
-                            <strong>Adjustment #{index + 1}</strong>
-                          </p>
-                          <p>
-                            <strong>Before:</strong> {adjustment.beforeAdjustQuantity}
-                          </p>
-                          <p>
-                            <strong>After:</strong> {adjustment.afterAdjustQuantity}
-                          </p>
-                          <p>
-                            <strong>Status:</strong> {adjustment.status}
-                          </p>
-                          <p>
-                            <strong>Date:</strong> {format(new Date(adjustment.adjustedAt), 'PPP')}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500">Nothing to display</p>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </ScrollArea>
+
+
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="import">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Import Receipt Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="font-semibold">Receipt Code</p>
+                      <p>{materialReceipt.importReceipt.code}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Status</p>
+                      <Badge>{materialReceipt.importReceipt.status}</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Type</p>
+                      <p>{materialReceipt.importReceipt.type}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Started At</p>
+                      <p>{format(new Date(materialReceipt.importReceipt.startedAt), 'PPP')}</p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-semibold">Warehouse Manager</p>
+                      <p>{`${materialReceipt.importReceipt.warehouseManager.account.firstName} ${materialReceipt.importReceipt.warehouseManager.account.lastName}`}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Warehouse Staff</p>
+                      <p>{`${materialReceipt.importReceipt.warehouseStaff.account.firstName} ${materialReceipt.importReceipt.warehouseStaff.account.lastName}`}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="export">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Export Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {materialReceipt.materialExportReceiptDetail.length > 0 ? (
+                    <div className="space-y-4">
+                      {materialReceipt.materialExportReceiptDetail.map((export_, index) => (
+                        <Card key={index}>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Export #{index + 1}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            <p><strong>Export Code:</strong> {export_.materialExportReceipt.code}</p>
+                            <p><strong>Quantity:</strong> {export_.quantityByPack} {materialReceipt.materialPackage.packUnit}</p>
+                            <p><strong>Type:</strong> {export_.materialExportReceipt.type}</p>
+                            <p><strong>Status:</strong> {export_.materialExportReceipt.status}</p>
+                            <p><strong>Date:</strong> {format(new Date(export_.materialExportReceipt.startedAt), 'PPP')}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No export details available for this material receipt.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="adjustments">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Receipt Adjustments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {materialReceipt.receiptAdjustment.length > 0 ? (
+                    <div className="space-y-4">
+                      {materialReceipt.receiptAdjustment.map((adjustment, index) => (
+                        <Card key={index}>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Adjustment #{index + 1}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <span>{adjustment.beforeAdjustQuantity}</span>
+                              <ArrowRight className="w-4 h-4" />
+                              <span>{adjustment.afterAdjustQuantity}</span>
+                              <span>{materialReceipt.materialPackage.packUnit}</span>
+                            </div>
+                            <p><strong>Status:</strong> <Badge>{adjustment.status}</Badge></p>
+                            <p><strong>Adjusted At:</strong> {format(new Date(adjustment.adjustedAt), 'PPP')}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No adjustments have been made to this material receipt.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </ScrollArea>
           </>
         ) : (
           <div>

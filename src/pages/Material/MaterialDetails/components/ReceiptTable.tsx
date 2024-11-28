@@ -5,7 +5,7 @@ import { useDebounce } from '@/hooks/useDebouce';
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Label } from '@/components/ui/Label';
 import { useGetMaterialReceipt } from '@/hooks/useGetMaterial';
-import { MaterialImportReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
+import {  MaterialReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { badgeVariants } from '@/components/ui/Badge';
 import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
@@ -32,7 +32,7 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
   // const closeDialog = () => {
   //   setSelectedReceiptId(null); // Reset the ID
   // };
-  const materialImportReceiptColumn: CustomColumnDef<MaterialImportReceipt>[] = [
+  const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     {
       header: 'Receipt code',
       accessorKey: 'code',

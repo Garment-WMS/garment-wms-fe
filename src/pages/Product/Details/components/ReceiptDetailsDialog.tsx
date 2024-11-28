@@ -15,8 +15,13 @@ import Loading from '@/components/common/Loading';
 import privateCall from '@/api/PrivateCaller';
 import { materialApi } from '@/api/services/materialApi';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { ProductReceipt } from '@/types/ProductType';
 import { productApi, productVariantApi } from '@/api/services/productApi';
+import { AlertTriangle, Calendar, Package, User } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
+import { Separator } from '@/components/ui/Seperator';
 type Props = {
   id: string;
   isOpen: boolean;
@@ -46,97 +51,216 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
       <DialogTrigger asChild>
         <Button variant="outline">View Product Receipt Details</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
         {isLoading ? (
           <div>
             <Loading />
           </div>
         ) : productReceipt ? (
           <>
-            <DialogHeader>
-              <DialogTitle>Material Receipt Details</DialogTitle>
-            </DialogHeader>
-            <ScrollArea className="h-[500px] pr-4">
-              <div className="space-y-4">
-                <div className="flex gap-4 justify-between">
-                  <section>
-                    <p>
-                      <strong>Receipt Code:</strong> {productReceipt.code}
-                    </p>
-                    <p>
-                      <strong>Material:</strong>{' '}
-                      {productReceipt.productSize.productVariant.product.name} (
-                      {productReceipt.productSize.productVariant.product.code})
-                    </p>
-                    <p>
-                      <strong>Variant:</strong>{' '}
-                      {productReceipt.productSize.productVariant.name} (
-                      {productReceipt.productSize.productVariant.code})
-                    </p>
-                    <p>
-                      <strong>Package:</strong> {productReceipt.productSize.name} (
-                      {productReceipt.productSize.code})
-                    </p>
-                    <p>
-                      <strong>Import Date:</strong>{' '}
-                      {format(new Date(productReceipt.importDate), 'PPP')}
-                    </p>
-                    <p>
-                      <strong>Expire Date:</strong>{' '}
-                      {format(new Date(productReceipt.expireDate), 'PPP')}
-                    </p>
-                  </section>
-                  <section className="flex-row">
-                    <p>
-                      <strong>Expire Date:</strong>{' '}
-                      {format(new Date(productReceipt.expireDate), 'PPP')}
-                    </p>
-                    <p>
-                      <strong>Initial Quantity:</strong> {productReceipt.quantityByUom}
-                    </p>
-                    <p>
-                      <strong>Remaining Quantity:</strong> {productReceipt.remainQuantityByUom}
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {convertTitleToTitleCase(productReceipt.status)}
-                    </p>
-                  </section>
-                </div>
-
-                <Tabs defaultValue="adjustments">
-                  <TabsList>
-                    <TabsTrigger value="adjustments">Adjustment History</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="adjustments">
-                    <h3 className="text-lg font-semibold mb-2">Adjustment History</h3>
-                    {productReceipt.receiptAdjustment?.length > 0 ? (
-                      productReceipt.receiptAdjustment.map((adjustment, index) => (
-                        <div key={adjustment.id} className="mb-4 p-2 border rounded">
-                          <p>
-                            <strong>Adjustment #{index + 1}</strong>
-                          </p>
-                          <p>
-                            <strong>Before:</strong> {adjustment.beforeAdjustQuantity}
-                          </p>
-                          <p>
-                            <strong>After:</strong> {adjustment.afterAdjustQuantity}
-                          </p>
-                          <p>
-                            <strong>Status:</strong> {adjustment.status}
-                          </p>
-                          <p>
-                            <strong>Date:</strong> {format(new Date(adjustment.adjustedAt), 'PPP')}
-                          </p>
+            <DialogHeader className="p-6 pb-0">
+          <DialogTitle className="text-2xl font-bold">Product Receipt Details</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-full px-6 pb-6">
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="import">Import</TabsTrigger>
+              <TabsTrigger value="inspection">Inspection</TabsTrigger>
+              <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
+            </TabsList>
+            <TabsContent value="general">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Product Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <img
+                      src={productReceipt.productSize.productVariant.image ?? ''}
+                      alt={productReceipt.productSize.productVariant.name}
+                      width={300}
+                      height={300}
+                      className="rounded-lg shadow-md"
+                    />
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={productReceipt.status === 'AVAILABLE' ? 'success' : 'destructive'}>
+                        {productReceipt.status}
+                      </Badge>
+                      {productReceipt.isDefect && (
+                        <Badge variant="warning" className="flex items-center">
+                          <AlertTriangle className="w-4 h-4 mr-1" />
+                          Defective
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{productReceipt.productSize.productVariant.product.name}</h3>
+                      <p className="text-muted-foreground">{productReceipt.productSize.productVariant.name} - Size {productReceipt.productSize.size}</p>
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <Package className="w-5 h-5 mr-2 text-muted-foreground" />
+                        <span>Receipt Code: {productReceipt.code}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-5 h-5 mr-2 text-muted-foreground" />
+                        <span>Import Date: {format(new Date(productReceipt.importDate), 'PPP')}</span>
+                      </div>
+                    </div>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p>
+                        <strong>Quantity:</strong> {productReceipt.quantityByUom} {productReceipt.productSize.productVariant.product.productUom.uomCharacter}
+                      </p>
+                      <p>
+                        <strong>Remaining:</strong> {productReceipt.remainQuantityByUom} {productReceipt.productSize.productVariant.product.productUom.uomCharacter}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="import">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Import Receipt Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="font-semibold">Receipt Code</p>
+                      <p>{productReceipt.importReceipt.code}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Status</p>
+                      <Badge>{productReceipt.importReceipt.status}</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Type</p>
+                      <p>{productReceipt.importReceipt.type}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold">Started At</p>
+                      <p>{format(new Date(productReceipt.importReceipt.startedAt), 'PPP')}</p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-semibold">Warehouse Manager</p>
+                        <p>{`${productReceipt.importReceipt.warehouseManager.account.firstName} ${productReceipt.importReceipt.warehouseManager.account.lastName}`}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-semibold">Warehouse Staff</p>
+                        <p>{`${productReceipt.importReceipt.warehouseStaff.account.firstName} ${productReceipt.importReceipt.warehouseStaff.account.lastName}`}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="inspection">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Inspection Report</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p><strong>Inspection Report Code:</strong> {productReceipt.importReceipt.inspectionReport.code}</p>
+                  {productReceipt.importReceipt.inspectionReport.inspectionReportDetail.map((detail, index) => (
+                    <Card key={index}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Inspection Detail #{index + 1}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <p className="font-semibold">Approved Quantity</p>
+                            <p>{detail.approvedQuantityByPack}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="font-semibold">Defect Quantity</p>
+                            <p>{detail.defectQuantityByPack}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="font-semibold">Total Quantity</p>
+                            <p>{detail.quantityByPack}</p>
+                          </div>
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500">Nothing to display</p>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </ScrollArea>
+                        {(detail?.inspectionReportDetailDefect?.length ?? 0) > 0 && (
+                          <div>
+                            <p className="font-semibold mb-2">Defects:</p>
+                            <ul className="space-y-2">
+                              {detail?.inspectionReportDetailDefect?.map((defect, defectIndex) => (
+                                <li key={defectIndex} className="flex items-start space-x-2">
+                                  <AlertTriangle className="w-5 h-5 text-warning mt-0.5" />
+                                  <span>
+                                    {defect.defect.description} - Quantity: {defect.quantityByPack}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="adjustments">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Receipt Adjustments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {productReceipt.receiptAdjustment.length > 0 ? (
+                    <div className="space-y-4">
+                      {productReceipt.receiptAdjustment.map((adjustment, index) => (
+                        <Card key={index}>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Adjustment #{index + 1}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="font-semibold">Before Quantity</p>
+                                <p>{adjustment.beforeAdjustQuantity}</p>
+                              </div>
+                              <div>
+                                <p className="font-semibold">After Quantity</p>
+                                <p>{adjustment.afterAdjustQuantity}</p>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="font-semibold">Status</p>
+                              <Badge>{adjustment.status}</Badge>
+                            </div>
+                            <div>
+                              <p className="font-semibold">Adjusted At</p>
+                              <p>{format(new Date(adjustment.adjustedAt), 'PPP')}</p>
+                            </div>
+                           
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No adjustments have been made to this receipt.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </ScrollArea>
           </>
         ) : (
           <div>
