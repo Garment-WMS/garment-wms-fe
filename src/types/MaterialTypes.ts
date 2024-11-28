@@ -1,6 +1,7 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { PageMeta } from './PurchaseOrder';
 import { PageMetaData } from './Shared';
+import { User } from './User';
 
 // Unit of Measure (UOM)
 export interface UOM {
@@ -107,6 +108,7 @@ export interface OneMaterialReceipt{
   quantityByPack: number;
   importDate: string;
   materialPackage: MaterialPackage;
+  importReceipt: MaterialImportReceipt
   remainQuantityByPack: number;
   materialExportReceiptDetail: MaterialExportReceiptDetail[]
   receiptAdjustment: ReceiptAdjustment[]
@@ -136,6 +138,10 @@ export interface MaterialImportReceipt {
   importReceiptId: string;
   expireDate: string;
   quantityByPack: number;
+  type: string;
+  startedAt: string;
+  warehouseManager: User;
+  warehouseStaff: User;
   importDate: string;
   materialPackage: MaterialPackage;
   remainQuantityByPack: number;

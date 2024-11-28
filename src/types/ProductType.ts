@@ -1,6 +1,7 @@
 import { InspectionReport } from "./InspectionReport";
 import { InventoryStock, MaterialVariant, ReceiptAdjustment } from "./MaterialTypes";
 import { PageMetaData } from "./Shared";
+import { User } from "./User";
 
 export interface ProductVariantResponse {
     statusCode: number;
@@ -145,10 +146,15 @@ export interface ProductImportReceipt {
   code: string;
   importReceiptId: string;
   expireDate: string;
+  type: string;
+  startedAt: string;
   quantityByUom: number;
+  warehouseManager: User;
+  warehouseStaff: User;
   importDate: string;
   productSize: ProductSize;
   remainQuantityByUom: number;
+  inspectionReport: InspectionReport;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
