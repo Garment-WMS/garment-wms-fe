@@ -348,7 +348,7 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedInspector}
                             staff={selectedInspector}
-                            type={'inspection-department'}
+                            type={'get-inspection-department'}
                           />
                         </div>
                         <div className="w-full flex items-center py-4 ">
@@ -356,7 +356,7 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedAssignee}
                             staff={selectedAssignee}
-                            type={'warehouse-staff'}
+                            type={'get-warehouse-staff'}
                           />
                         </div>
 
