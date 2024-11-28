@@ -142,7 +142,6 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                         </div>
                       </div>
                     </div>
-
                     <Link
                       to={`/purchase-order/${poId}/po-delivery/${delivery.id}`}
                       state={{ delivery, poNumber }}
@@ -151,7 +150,6 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                       <ExternalLink size={18} />
                     </Link>
                   </div>
-
                   <div className="mt-4 border-t pt-4">
                     <MaterialTable poDeliveryDetail={delivery.poDeliveryDetail} />
                   </div>

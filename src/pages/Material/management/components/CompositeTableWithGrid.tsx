@@ -103,7 +103,9 @@ export default function CompositeTableWithGrid<TData, TValue>({
             )}
           </>
 
-          <TanStackBasicTablePaginationNavigationComponent table={table} />
+          {(paginatedTableData?.total || 0) > pagination.pageSize && (
+            <TanStackBasicTablePaginationNavigationComponent table={table} />
+          )}
         </>
       )}
     </div>

@@ -101,7 +101,9 @@ export default function KanbanList<TData, TValue>({
 
           <KanbanDisplayList selectedItems={selectedItems} setSelectedItems={setSelectedItems} paginatedData={paginatedTableData} isLoading={isTableDataLoading} />
 
-          <TanStackBasicTablePaginationNavigationComponent table={table} />
+          {(paginatedTableData?.total || 0) > pagination.pageSize && (
+            <TanStackBasicTablePaginationNavigationComponent table={table} />
+          )}
         </>
       )}
     </div>
