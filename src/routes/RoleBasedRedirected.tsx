@@ -21,19 +21,19 @@ const RoleBasedRedirect = ({
   const role = user?.role;
   switch (role) {
     case 'WAREHOUSE_STAFF':
-      return warehouseStaffComponent;
+      return warehouseStaffComponent || <Navigate to="/403" />;
     case 'WAREHOUSE_MANAGER':
-      return managerComponent;
+      return managerComponent || <Navigate to="/403" />;
     case 'PURCHASING_STAFF':
-        return purchasingStaffComponent;
+        return purchasingStaffComponent || <Navigate to="/403" />;
     case 'PRODUCTION_DEPARTMENT':
-        return productionDepartmentComponent;
+        return productionDepartmentComponent || <Navigate to="/403" />;
     case 'INSPECTING_DEPARTMENT':
-        return inspectingDepartmentComponent;
+        return inspectingDepartmentComponent || <Navigate to="/403" />;
     case 'FACTORY_DIRECTOR':
-        return factoryDirectorComponent;
+        return factoryDirectorComponent || <Navigate to="/403" />;
     default:
-      return <Navigate to="/login" />;
+      return <Navigate to="/403" />;
   }
 };
 

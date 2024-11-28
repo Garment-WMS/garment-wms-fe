@@ -23,17 +23,92 @@ import { scannerSearchFn } from '@/api/services/scannerApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import EmptyScanner from '@/assets/images/empty_scanner.svg';
+
 export default function ScannerPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [scanMode, setScanMode] = useState('product');
   const [entryMode, setEntryMode] = useState('manual');
   const [scannedData, setScannedData] = useState('');
   const [manualInput, setManualInput] = useState('');
-  const [isReady, setIsReady] = useState(false); // New state to track readiness
-  const [isEmtpy, setEmpty] = useState(false); // New state to track readiness
-  const [scannedItem, setScannedItem] = useState<any>();
-  const [scannedReceipt, setScannedReceipt] = useState<any>();
+  const [isReady, setIsReady] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [scannedItem, setScannedItem] = useState<any>(null);
+  const [scannedReceipt, setScannedReceipt] = useState<any>(null);
   const scannerInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen && entryMode === 'scanner' && scannerInputRef.current) {
+      scannerInputRef.current.focus();
+    }
+  }, [isOpen, entryMode]);
+
+  const handleScan = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let valueToScan = entryMode === 'manual' ? manualInput : scannedData;
+    if (!valueToScan) return;
+
+    const mode = scanMode === 'product' ? 'material-product' : 'receipt';
+    const res = await scannerSearchFn(mode, valueToScan);
+
+    if (mode === 'material-product') {
+      if (res.materialVariant == null && res.productVariant == null) {
+        setIsEmpty(true);
+        setScannedItem(null);
+      } else if (res.materialVariant != null) {
+        setIsEmpty(false);
+        setScannedItem(res.materialVariant);
+      } else {
+        setScannedItem(res.productVariant);
+        setIsEmpty(false);
+      }
+    } else {
+      if (res.materialReceipt == null && res.productReceipt == null && res.importReceipt == null) {
+        setIsEmpty(true);
+        setScannedReceipt(null);
+      } else if (res.materialReceipt != null) {
+        setScannedItem(null);
+        setIsEmpty(false);
+        setScannedReceipt(res.materialReceipt);
+      } else if (res.productReceipt != null) {
+        setScannedItem(null);
+        setScannedReceipt(res.productReceipt);
+        setIsEmpty(false);
+      } else {
+        setScannedItem(null);
+        setScannedReceipt(res.importReceipt);
+        setIsEmpty(false);
+      }
+    }
+
+    setManualInput('');
+    setScannedData('');
+    setIsReady(false);
+
+    if (entryMode === 'scanner' && scannerInputRef.current) {
+      scannerInputRef.current.value = '';
+      scannerInputRef.current.focus();
+    }
+  };
+
+  const handleScanButtonClick = () => {
+    if (entryMode === 'scanner' && scannerInputRef.current) {
+      scannerInputRef.current.focus();
+      setIsReady(true);
+    } else {
+      handleScan({ preventDefault: () => {} } as React.FormEvent);
+    }
+  };
+
+  const handleScannerInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const scannedValue = e.currentTarget.value;
+      setScannedData(scannedValue);
+      await handleScan(e as unknown as React.FormEvent);
+    }
+  };
+
   const renderScannedItemDetails = () => {
     if (!scannedItem) return null;
 
@@ -82,75 +157,7 @@ export default function ScannerPopup() {
       </motion.div>
     );
   };
-  useEffect(() => {
-    if (isOpen && entryMode === 'scanner' && scannerInputRef.current) {
-      scannerInputRef.current.focus();
-    }
-  }, [isOpen, entryMode]);
 
-  const handleScan = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (entryMode === 'scanner' && scannerInputRef.current) {
-      scannerInputRef.current.value = ''; // Clear the input for next scan
-      scannerInputRef.current.focus(); // Refocus after scan
-    }
-  };
-
-  const handleScanButtonClick = () => {
-    if (entryMode === 'scanner' && scannerInputRef.current) {
-      scannerInputRef.current.focus();
-      setIsReady(true); // Set button as "ready" state
-    } else {
-      handleScan({ preventDefault: () => {} } as React.FormEvent);
-    }
-  };
-
-  const handleScannerInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const scannedValue = e.currentTarget.value;
-
-      setScannedData(scannedValue);
-      const mode = scanMode == 'product' ? 'material-product' : 'receipt';
-      const res = await scannerSearchFn(mode, scannedValue);
-      if (scanMode == 'material-product') {
-        if (res.materialVariant == null && res.productVariant == null) {
-          setEmpty(true);
-          setScannedItem(null);
-        } else if (res.materialVariant != null) {
-          setEmpty(false);
-          setScannedItem(res.materialVariant);
-        } else {
-          setScannedItem(res.productVariant);
-          setEmpty(false);
-        }
-      } else {
-        if (
-          res.materialReceipt == null &&
-          res.productReceipt == null &&
-          res.importReceipt == null
-        ) {
-          setEmpty(true);
-          setScannedReceipt(null);
-        } else if (res.materialReceipt != null) {
-          setScannedItem(null);
-          setEmpty(false);
-          setScannedReceipt(res.materialReceipt);
-        } else if (res.materialReceipt != null) {
-          setScannedItem(null);
-          setScannedReceipt(res.productReceipt);
-          setEmpty(false);
-        } else {
-          setScannedItem(null);
-          setScannedReceipt(res.importReceipt);
-          setEmpty(false);
-        }
-      }
-      handleScan(e);
-      setIsReady(false); // Reset readiness after scanning
-    }
-  };
   const renderScannedReceiptDetails = () => {
     if (!scannedReceipt) return null;
 
@@ -159,6 +166,7 @@ export default function ScannerPopup() {
     const redirectUrl = isMaterialReceipt
       ? `/import-receipt/${scannedReceipt.importReceiptId}`
       : `/import-receipt/${scannedReceipt.id}`;
+
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
         <Card>
@@ -179,7 +187,7 @@ export default function ScannerPopup() {
 
             {isMaterialReceipt && (
               <>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center space-x-2">
                     <Package className="h-4 w-4 text-muted-foreground" />
                     <span>{scannedReceipt.materialPackage.name}</span>
@@ -250,6 +258,7 @@ export default function ScannerPopup() {
       </motion.div>
     );
   };
+
   return (
     <div className="flex items-center justify-center">
       <Button onClick={() => setIsOpen(true)} className="bg-transparent text-blue-500">
@@ -287,7 +296,7 @@ export default function ScannerPopup() {
                   <RadioGroupItem value="product" id="product" className="text-blue-500" />
                   <Label htmlFor="product" className="text-blue-500 flex items-center space-x-1">
                     <Barcode className="h-4 w-4" />
-                    <span>Product</span>
+                    <span>Product | Material</span>
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -323,7 +332,9 @@ export default function ScannerPopup() {
                       value={manualInput}
                       onChange={(e) => setManualInput(e.target.value)}
                       placeholder={
-                        scanMode === 'product' ? 'Enter product code' : 'Enter receipt number'
+                        scanMode === 'product'
+                          ? 'Enter product/material code'
+                          : 'Enter receipt number'
                       }
                       className="w-full pl-10 pr-4 py-2 bg-white text-blue-500 border-blue-500 focus:border-blue-600 rounded-lg"
                     />
@@ -354,9 +365,9 @@ export default function ScannerPopup() {
 
               {renderScannedItemDetails()}
               {renderScannedReceiptDetails()}
-              {isEmtpy && (
+              {isEmpty && (
                 <div className="flex flex-col justify-center w-full items-center">
-                  <img src={EmptyScanner} className="w-80" />
+                  <img src={EmptyScanner} className="w-80" alt="Empty Scanner" />
                   <h3 className="font-bold text-center ">
                     Sorry, could not find any item of that code, please try again!
                   </h3>

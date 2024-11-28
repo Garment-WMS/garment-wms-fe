@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+
 import KanbanDisplayCard from './KanbanDisplayCard';
-import { ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import KanbanSkeleton from './KanbanSkeleton';
 import { KanbanDisplayProps } from '@/types/KanbanDisplayType';
 

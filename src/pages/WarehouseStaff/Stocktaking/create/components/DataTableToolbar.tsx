@@ -19,7 +19,6 @@ import {
 
 
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { User } from '@/types/DemoUser';
 import { DataTableFacetedFilter } from '@/components/common/CompositeTable/DatatableFacedFilter';
 import { DataTableViewOptions } from '@/components/common/CompositeTable/DataTableViewOptions';
 import { Material } from '@/types/MaterialTypes';

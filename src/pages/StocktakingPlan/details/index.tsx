@@ -1,20 +1,30 @@
 import privateCall from '@/api/PrivateCaller';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import { toast } from '@/hooks/use-toast';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { CalendarIcon, ClipboardIcon, NotebookPen, PackageSearch } from 'lucide-react';
-import { format, set } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
+import { NotebookPen, PackageSearch } from 'lucide-react';
+import { format } from 'date-fns';
 import { Badge, badgeVariants } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
-} from '@/components/ui/Card';
+} from '@/components/ui/card';
 
 import {
   InventoryReportPlanToRender,
@@ -35,29 +45,33 @@ import { Label } from '@/components/ui/Label';
 import KanbanDisplayCard from '@/components/common/KanbanDisplayList/KanbanDisplayCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScrollBar } from '@/components/ui/ScrollArea';
-import InventoryReportDialog from './components/InventoryReportDialog';
 import Loading from '@/components/common/Loading';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { ErrorDialog } from './components/ErrorDialog';
+import { ImportRequest } from '@/types/ImportRequestType';
+import { MaterialExportRequest } from '@/types/exportRequest';
 
-type Props = {};
 
-const breadcrumbItems = [
-  {
-    label: 'Stocktaking Plans',
-    href: '/stocktaking'
-  }
-]
-const StocktakingPlanDetails = (props: Props) => {
+// const breadcrumbItems = [
+//   {
+//     label: 'Stocktaking Plans',
+//     href: '/stocktaking'
+//   }
+// ];
+const StocktakingPlanDetails = () => {
   const { id } = useParams();
   const breadcrumbItems = [
     {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
-    },
-  ]
-  const navigate = useNavigate();
+    }
+  ];
   const [planData, setPlanData] = useState<InventoryReportPlanToRender>();
   const [isLoading, setIsLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isErrorDialogOpen,setIsErrorDialogOpen] = useState(false);
+  const [errorImportRequests, setErrorImportRequests] = useState<ImportRequest[]>([]);
+  const [errorExportRequests, setErrorExportRequests] = useState<MaterialExportRequest[]>([]);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -77,35 +91,68 @@ const StocktakingPlanDetails = (props: Props) => {
         variant: 'destructive',
         description: error.message
       });
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
+  const handleStartPlan = async () => {
+    try {
+      if (id) {
+        const res = await privateCall(inventoryReportPlanApi.startInventoryReportPlan(id));
+        if (res.status === 204) {
+          toast({
+            title: 'success',
+            variant: 'success',
+            description: 'Plan has been started successfully'
+          });
+          fetchData();
+        }
+        
+      } else {
+        throw new Error('ID is undefined');
+      }
+    } catch (error: any) {
+      if (error.response.status === 409) {
+        const errorList = error.response.data.errors;
+        setErrorImportRequests(errorList.isAnyImportingImportRequest);
+        setErrorExportRequests(errorList.isAnyExportingExportRequest);
+        setIsErrorDialogOpen(true);
+        
+      } else {
+      toast({
+        title: 'error',
+        variant: 'destructive',
+        description: error.message
+      });
+    }
+  }
+}
   useEffect(() => {
     fetchData();
   }, [id]);
-  if(isLoading) return (
-    <div className='w-full flex justify-center items-center'>
-      <Loading/>
-    </div>
-    )
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   if (!planData) return <div>Not Found Data</div>;
 
-  if(isLoading) return (
-  <div className='w-full flex justify-center items-center'>
-    <Loading/>
-  </div>
-  )
+  if (isLoading)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   return (
     <Card className="w-full  mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl">
-          
           <div>
-            <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
+            <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
             Inventory Report Plan
-            </div></CardTitle>
+          </div>
+        </CardTitle>
         <CardDescription>Details of the inventory report plan and its items</CardDescription>
       </CardHeader>
       <CardContent>
@@ -217,24 +264,25 @@ const StocktakingPlanDetails = (props: Props) => {
                           </div>
                         </div>
 
-                        {detail.inventoryReport !== null && detail.inventoryReport.status !== 'IN_PROGRESS' && (
-                          <div className="flex gap-4 w-auto items-center">
-                            <div className="flex justify-center items-center gap-2">
-                              <NotebookPen className="text-muted-foreground h-5 w-5" />
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                Inventory Report
-                              </h3>
+                        {detail.inventoryReport !== null &&
+                          detail.inventoryReport.status !== 'IN_PROGRESS' && (
+                            <div className="flex gap-4 w-auto items-center">
+                              <div className="flex justify-center items-center gap-2">
+                                <NotebookPen className="text-muted-foreground h-5 w-5" />
+                                <h3 className="text-sm font-medium text-muted-foreground">
+                                  Inventory Report
+                                </h3>
+                              </div>
+                              <Label
+                                onClick={() => {
+                                  const url = `/stocktaking/${detail.inventoryReport.id}`;
+                                  window.open(url, '_blank', 'noopener,noreferrer');
+                                }}
+                                className="underline text-bluePrimary cursor-pointer">
+                                {detail.inventoryReport.code}
+                              </Label>
                             </div>
-                            <Label
-                              onClick={() => {
-                                const url = `/stocktaking/${detail.inventoryReport.id}`;
-                                window.open(url, '_blank', 'noopener,noreferrer');
-                              }}
-                              className="underline text-bluePrimary cursor-pointer">
-                              {detail.inventoryReport.code}
-                            </Label>
-                          </div>
-                        )}
+                          )}
 
                         <Accordion
                           defaultValue={'item-1'}
@@ -263,7 +311,7 @@ const StocktakingPlanDetails = (props: Props) => {
                       </ul> */}
                                     <ScrollArea className="w-full h-[110px]">
                                       <div className="flex gap-2 ">
-                                        {materialVariant.map((variant, idx) => (
+                                        {materialVariant.map((variant) => (
                                           <div className="w-[250px] h-[100px]">
                                             <KanbanDisplayCard product={variant.materialVariant} />
                                           </div>
@@ -289,7 +337,7 @@ const StocktakingPlanDetails = (props: Props) => {
                                     <ScrollArea className="w-full ">
                                       <div className="flex gap-2 ">
                                         {productVariant.map((variant, idx) => (
-                                          <div className="w-[250px] h-[100px]">
+                                          <div key={idx} className="w-[250px] h-[100px]">
                                             <KanbanDisplayCard product={variant.productVariant} />
                                           </div>
                                         ))}
@@ -316,6 +364,31 @@ const StocktakingPlanDetails = (props: Props) => {
                 );
               })}
             </div>
+
+            {planData.status === 'NOT_YET' && (
+              <div className="flex justify-center items-center py-4">
+              <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button type="button">Start the plan</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Starting the Plan </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to start this Plan? It will automatically create
+                      inventory report for each task and staff will be annouced to start their work.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleStartPlan} type="submit">
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            )}
           </div>
         </div>
       </CardContent>
@@ -329,6 +402,12 @@ const StocktakingPlanDetails = (props: Props) => {
           Generate Report
         </Button>
       </CardFooter> */}
+      <ErrorDialog
+        isOpen={isErrorDialogOpen}
+        onClose={() => setIsErrorDialogOpen(false)}
+        importRequests={errorImportRequests}
+        exportRequests={errorExportRequests}
+      />
     </Card>
   );
 };

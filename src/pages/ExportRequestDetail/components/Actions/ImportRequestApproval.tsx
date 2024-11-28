@@ -84,6 +84,9 @@ const getStatusDetails = (status: ApprovalStatus) => {
 };
 
 const getInitials = (name: string | undefined): string => {
+  if (name == 'undefined undefined') {
+    return 'NY';
+  }
   if (!name) return 'WM';
   return (
     name
@@ -222,11 +225,11 @@ export default function WarehouseApproval({
         description: 'Material export recommendations have been retrieved.',
         duration: 5000
       });
-    } catch (error) {
-      console.error('Error fetching recommendations:', error);
+    } catch (error: any) {
+      console.error('Error fetching recommendations:', error.response);
       toast({
         title: 'Error',
-        description: 'Failed to fetch material export recommendations.',
+        description: `${error.response.data.message}`,
         variant: 'destructive',
         duration: 5000
       });
@@ -265,7 +268,9 @@ export default function WarehouseApproval({
             <div className="text-center">
               <p className="text-sm font-medium">Warehouse Manager</p>
               <p className="text-xs text-muted-foreground">
-                {manager?.account?.firstName + ' ' + manager?.account?.lastName || 'Not assigned'}
+                {manager?.account?.firstName
+                  ? manager?.account?.firstName + ' ' + manager?.account?.lastName
+                  : 'Not assigned'}
               </p>
             </div>
           </div>
@@ -282,18 +287,20 @@ export default function WarehouseApproval({
                 <User className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Manager:</span>
                 <span>
-                  {manager?.account?.firstName + ' ' + manager?.account?.lastName || 'Not assigned'}
+                  {manager?.account?.firstName
+                    ? manager?.account?.firstName + ' ' + manager?.account?.lastName
+                    : 'Not assigned'}
                 </span>
               </div>
               <div className="flex items-center text-sm">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
-                <span>{requestDate}</span>
+                <span>{new Date(requestDate).toLocaleString()}</span>
               </div>
               <div className="flex items-start text-sm">
                 <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground mt-1" />
                 <span className="font-medium w-24">Notes:</span>
-                <span className="flex-1">{requestDetails}</span>
+                <span className="flex-1">{requestDetails ? requestDetails : 'Not yet'}</span>
               </div>
             </div>
           </div>

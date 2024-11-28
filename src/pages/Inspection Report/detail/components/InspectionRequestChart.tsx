@@ -10,29 +10,21 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import { CalendarArrowDown, CalendarArrowUp, CheckCircleIcon, XCircleIcon } from 'lucide-react';
-import { InspectionReport } from '@/types/InspectionReport';
-import { convertDate } from '@/helpers/convertDate';
-import {
-  InspectionRequestStatus,
-  InspectionRequestStatusLabels
-} from '@/enums/inspectionRequestStatus';
+import { CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import Colors from '@/constants/color';
 import PieChartComponent from '@/components/common/PieChart';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import DefectsSummary from './DefectsSummary';
+import { useGetAllDefects } from '@/hooks/useGetAllDefects';
 
-interface InspectionRequestChartProps {
-  inspectionReport: InspectionReport | null;
-}
-
-const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspectionReport }) => {
+const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectionReport }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedDefectDetails, setSelectedDefectDetails] = useState<any[]>([]);
+  const { data: defectData, isPending: isDefectsLoading } = useGetAllDefects();
 
-  if (!inspectionReport) {
+  if (!inspectionReport || isDefectsLoading) {
     return (
       <Card className="md:col-span-2">
         <EmptyDatacomponent />
@@ -40,21 +32,13 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
     );
   }
 
-  // Mock defect data
-  const mockDefectDetails = [
-    { id: 1, defectType: 'Tear', quantity: 5 },
-    { id: 2, defectType: 'Stain', quantity: 3 },
-    { id: 3, defectType: 'Misshaped', quantity: 2 },
-    { id: 4, defectType: 'Ugly', quantity: 6 }
-  ];
-
-  // Calculate total inspected materials
+  const defectsList = defectData?.data || [];
   const totalFail = inspectionReport.inspectionReportDetail.reduce(
-    (sum, detail) => sum + (detail.defectQuantityByPack || 0),
+    (sum: number, detail: any) => sum + (detail.defectQuantityByPack || 0),
     0
   );
   const totalPass = inspectionReport.inspectionReportDetail.reduce(
-    (sum, detail) => sum + (detail.approvedQuantityByPack || 0),
+    (sum: number, detail: any) => sum + (detail.approvedQuantityByPack || 0),
     0
   );
   const totalInspected = totalFail + totalPass;
@@ -64,20 +48,21 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
     { name: 'Pass', value: totalPass }
   ];
 
-  const statusClass = {
-    [InspectionRequestStatus.CANCELLED]: 'bg-red-500 text-white',
-    [InspectionRequestStatus.INSPECTING]: 'bg-blue-500 text-white',
-    [InspectionRequestStatus.INSPECTED]: 'bg-green-500 text-white'
-  };
-
-  const handleViewDefects = (defectDetails: any[]) => {
-    setSelectedDefectDetails(defectDetails);
+  const handleViewDefects = (detailDefects: any[]) => {
+    const mappedDefects = defectsList.map((defect: any) => {
+      const matchingDefect = detailDefects.find((d) => d.defectId === defect.id);
+      return {
+        id: defect.id,
+        description: defect.description,
+        quantity: matchingDefect?.quantityByPack || 0
+      };
+    });
+    setSelectedDefectDetails(mappedDefects);
     setOpenDialog(true);
   };
 
   return (
     <div className="grid grid-cols-[1fr_2fr] w-full">
-      {/* Pie Chart */}
       <Card className="w-full max-w-4xl mx-auto pb-7">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">Inspection Report Summary</CardTitle>
@@ -103,82 +88,58 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
         </div>
       </Card>
 
-      {/* Report details */}
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Inspection Report Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {/* Inspection Details */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Inspection Details</h3>
               <div className="overflow-x-auto">
                 <Table className="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden shadow-md">
                   <TableHeader className="bg-gray-100">
                     <TableRow>
-                      <TableHead className="py-4 px-6 text-center text-sm font-semibold text-gray-600"></TableHead>
-                      <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
-                        Name
-                      </TableHead>
-                      <TableHead className="py-4 px-6 text-left text-sm font-semibold text-gray-600">
-                        Code
-                      </TableHead>
-                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
-                        Total
-                      </TableHead>
-                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
-                        No. Pass
-                      </TableHead>
-                      <TableHead className="py-4 px-6 text-right text-sm font-semibold text-gray-600">
-                        No. Failed
-                      </TableHead>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead className="text-right">Total</TableHead>
+                      <TableHead className="text-right">No. Pass</TableHead>
+                      <TableHead className="text-right">No. Failed</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {inspectionReport.inspectionReportDetail.map((detail) => (
-                      <TableRow
-                        key={detail.id}
-                        className="hover:bg-gray-50 transition-colors duration-200">
-                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
-                          <div className="flex items-center justify-center">
-                            <div className="relative w-20 h-20 rounded-lg overflow-hidden shadow-md border border-gray-300">
-                              <img
-                                src={
-                                  detail?.materialPackage?.materialVariant?.image ||
-                                  'https://via.placeholder.com/100'
-                                }
-                                alt={detail?.materialPackage?.name || 'Material'}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          </div>
+                    {inspectionReport.inspectionReportDetail.map((detail: any) => (
+                      <TableRow key={detail.id}>
+                        <TableCell>
+                          <img
+                            src={
+                              detail.materialPackage?.materialVariant?.image ||
+                              'https://via.placeholder.com/100'
+                            }
+                            alt={detail.materialPackage?.name || 'Material'}
+                            className="w-20 h-20 object-cover"
+                          />
                         </TableCell>
-                        <TableCell className="py-3 px-6 text-sm font-medium text-gray-800 align-middle">
-                          {detail?.materialPackage?.name || 'null name'}
+                        <TableCell>{detail.materialPackage?.name || 'N/A'}</TableCell>
+                        <TableCell>
+                          <Badge>{detail.materialPackage?.code || 'N/A'}</Badge>
                         </TableCell>
-                        <TableCell className="py-3 px-6 text-sm font-medium text-center text-gray-600 align-middle">
-                          <Badge className="bg-slate-500">
-                            {detail?.materialPackage?.code || 'N/A'}
-                          </Badge>
+                        <TableCell className="text-right">{detail.quantityByPack}</TableCell>
+                        <TableCell className="text-right text-green-500 font-bold">
+                          <CheckCircleIcon className="inline h-5 w-5 text-green-500 mr-1" />
+                          {detail.approvedQuantityByPack}
                         </TableCell>
-                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
-                          <span className="text-lg font-semibold">{detail.quantityByPack}</span>
-                        </TableCell>
-                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
-                          <span className="flex items-center text-lg justify-end text-green-800 font-semibold">
-                            <CheckCircleIcon className="mr-2 h-6 w-6 text-green-500" />
-                            {detail.approvedQuantityByPack}
-                          </span>
-                        </TableCell>
-                        <TableCell className="py-3 px-6 text-sm text-center align-middle">
+                        <TableCell className="text-right text-red-500 font-bold">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span
-                                  className="flex items-center text-lg justify-end text-red-800 font-semibold cursor-pointer underline hover:opacity-80 transition-opacity"
-                                  onClick={() => handleViewDefects(mockDefectDetails)}>
-                                  <XCircleIcon className="mr-2 h-6 w-6 text-red-500" />
+                                  className="cursor-pointer underline"
+                                  onClick={() =>
+                                    handleViewDefects(detail.inspectionReportDetailDefect || [])
+                                  }>
+                                  <XCircleIcon className="inline h-5 w-5 text-red-500 mr-1" />
                                   {detail.defectQuantityByPack}
                                 </span>
                               </TooltipTrigger>
@@ -198,7 +159,6 @@ const InspectionRequestChart: React.FC<InspectionRequestChartProps> = ({ inspect
         </CardContent>
       </Card>
 
-      {/* Modal for Defect Details */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogTitle>Defect Details</DialogTitle>

@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-type Props = {};
 
 const KanbanDisplayCard: React.FC<any> = ({ product }) => {
   const navigate = useNavigate();

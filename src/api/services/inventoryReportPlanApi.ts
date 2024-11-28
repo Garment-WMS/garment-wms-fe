@@ -24,6 +24,9 @@ export const inventoryReportPlanApi = {
   },
   receiveInventoryReport:(id:string)=> {
     return patch(`${inventoryReportPlanApiPath}/${id}/process`);
+  },
+  startInventoryReportPlan : (id:string) => {
+    return patch(`${inventoryReportPlanApiPath}/${id}/start`);
   }
 };
 export const getAllInventoryReportPlanFn = async ({

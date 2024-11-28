@@ -48,9 +48,12 @@ import Barcode from 'react-barcode';
 import MaterialReceiptLabels from './components/MaterialreceiptLabels';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DataTable } from '@/components/ui/DataTable';
-import { materialExportReceiptColumn, materialImportReceiptColumn } from './components/ReceiptColumn';
+import {
+  materialExportReceiptColumn,
+  materialImportReceiptColumn
+} from './components/ReceiptColumn';
 import privateCall from '@/api/PrivateCaller';
-import { exportReceiptApi } from '@/api/services/exportReceiptApi';
+import { changeStatusFn, exportReceiptApi } from '@/api/services/exportReceiptApi';
 import { ExportReceipt } from '@/types/ExportReceipt';
 
 const chartData = [
@@ -106,37 +109,71 @@ export default function ExportReceiptDetail() {
   //     setIsLoading(false);
   //   }
   // };
+  const fetchData = async () => {
+    setIsLoading(true); // Start loading
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true); // Start loading
-
-      try {
-        const res = await privateCall(exportReceiptApi.getOne(id as string));
-        if (res.status === 200) {
-          const data = res.data.data;
-          // dispatch(actions.setImportReceipt(data));
-          setExportReceiptData(data);
-        } else {
-          setError('Something went wrong');
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: 'There was a problem with your request.'
-          });
-        }
-      } catch (error) {
+    try {
+      const res = await privateCall(exportReceiptApi.getOne(id as string));
+      if (res.status === 200) {
+        const data = res.data.data;
+        // dispatch(actions.setImportReceipt(data));
+        setExportReceiptData(data);
+      } else {
         setError('Something went wrong');
         toast({
           variant: 'destructive',
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem with your request.'
         });
-      } finally {
-        setIsLoading(false); // Stop loading
       }
-    };
+    } catch (error) {
+      setError('Something went wrong');
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.'
+      });
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
+  };
 
+  const handleFinishExport = async (status: string, type: string) => {
+    setIsLoading(true);
+
+    try {
+      const res = await changeStatusFn(
+        exportReceipt?.materialExportRequest?.id as string,
+        status,
+        type
+      );
+      console.log(res);
+      if (res.statusCode === 200) {
+        toast({
+          title: 'Export finished successfully',
+          description: 'The export receipt has been marked as finished.'
+        });
+        // Refresh the data after successful status change
+        fetchData();
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Export finished unsuccessfully',
+          description: 'The export receipt has not been marked as finished.'
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to finish export',
+        description: 'There was a problem finishing the export process.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (id) {
       fetchData();
     }
@@ -157,9 +194,7 @@ export default function ExportReceiptDetail() {
               <div>Product Receipt {exportReceipt?.code}</div>
             )} */}
 
-            <div>
-              Material Export Receipt {exportReceipt?.code || 'N/A'}
-            </div>
+            <div>Material Export Receipt {exportReceipt?.code || 'N/A'}</div>
           </h1>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
@@ -189,7 +224,9 @@ export default function ExportReceiptDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{exportReceipt?.type}</div>
-                <p className="text-xs text-muted-foreground">{exportReceipt?.type === "PRODUCTION" ? "Export for manufacturing purpose": ""}</p>
+                <p className="text-xs text-muted-foreground">
+                  {exportReceipt?.type === 'PRODUCTION' ? 'Export for manufacturing purpose' : ''}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -208,16 +245,55 @@ export default function ExportReceiptDetail() {
                       : 'Export completed'}
                   </p>
                 </div>
-                {/* {exportReceipt?.status === 'IMPORTING' && (
-                  <Button onClick={handleFinishImport} disabled={isLoading}>
-                    Add Label
-                  </Button>
-                )} */}
+                {exportReceipt?.status === 'EXPORTING' && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button disabled={isLoading}>Finish</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to finish exporting the material? This action cannot
+                          be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+                {exportReceipt?.status === 'EXPORTED' && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button disabled={isLoading}>Finish</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to finish exporting the material? This action cannot
+                          be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             </CardContent>
           </Card>
           <div className="grid gap-6 md:grid-cols-3 mb-8">
-            
             <Card>
               <CardHeader>
                 <CardTitle>Receipt Details</CardTitle>
@@ -231,13 +307,15 @@ export default function ExportReceiptDetail() {
                     <div className="grid gap-2">
                       <p>
                         <strong>Export Request:</strong>{' '}
-                        <div  className="flex text-primary underline underline-offset-2">
+                        <Link
+                          to={`/export-request/${exportReceipt?.materialExportRequest?.id}`}
+                          className="flex text-primary underline underline-offset-2">
                           {exportReceipt?.materialExportRequest?.code || 'N/A'}
-                        </div>
+                        </Link>
                       </p>
                       <p>
                         <strong>Production batch:</strong>{' '}
-                        <div  className="flex text-primary underline underline-offset-2">
+                        <div className="flex text-primary underline underline-offset-2">
                           {exportReceipt?.materialExportRequest.productionBatch?.code || 'N/A'}
                         </div>
                       </p>
@@ -257,50 +335,45 @@ export default function ExportReceiptDetail() {
               <CardContent>
                 {exportReceipt?.materialExportRequest.productionDepartment ? (
                   <div>
-                  <div className="flex items-center space-x-4 flex-col justify-center">
-                    <Avatar className="w-[80px] h-[80px]">
-                      <AvatarImage
-                        src={'/placeholder.svg?height=100&width=100'}
-                        alt="John Doe"
-                        className="w-[80px] h-[80px]"
-                      />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-center">
-                      <p className="text-xl font-bold">
-                        {exportReceipt?.materialExportRequest.productionDepartment
-                          .account.firstName +
-                          ' ' +
-                          exportReceipt?.materialExportRequest.productionDepartment
-                            .account.lastName}
-                      </p>
-                      <p className="text-md text-muted-foreground"></p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          exportReceipt?.materialExportRequest.productionDepartment
-                            .account.email
-                        }
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          exportReceipt?.materialExportRequest.productionDepartment
-                            .account.phoneNumber
-                        }
-                      </p>
+                    <div className="flex items-center space-x-4 flex-col justify-center">
+                      <Avatar className="w-[80px] h-[80px]">
+                        <AvatarImage
+                          src={'/placeholder.svg?height=100&width=100'}
+                          alt="John Doe"
+                          className="w-[80px] h-[80px]"
+                        />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center">
+                        <p className="text-xl font-bold">
+                          {exportReceipt?.materialExportRequest.productionDepartment.account
+                            .firstName +
+                            ' ' +
+                            exportReceipt?.materialExportRequest.productionDepartment.account
+                              .lastName}
+                        </p>
+                        <p className="text-md text-muted-foreground"></p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.materialExportRequest.productionDepartment.account.email}
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            exportReceipt?.materialExportRequest.productionDepartment.account
+                              .phoneNumber
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                ):
-                (<div>
-                  <div className="flex items-center space-x-4 flex-col justify-center h-full">
-                   
-                    <div className="flex flex-col items-center">
-                      <p className="text-base font-semibold">
-                       Not found yet
-                      </p>
+                ) : (
+                  <div>
+                    <div className="flex items-center space-x-4 flex-col justify-center h-full">
+                      <div className="flex flex-col items-center">
+                        <p className="text-base font-semibold">Not found yet</p>
+                      </div>
                     </div>
                   </div>
-                </div>)}
+                )}
               </CardContent>
             </Card>
             <Card>
@@ -319,8 +392,8 @@ export default function ExportReceiptDetail() {
                         className="w-[80px] h-[80px]"
                       />
                       <AvatarFallback>
-                        {exportReceipt?.warehouseStaff?.account?.lastName?.slice(0, 1) ?? '' +
-                          exportReceipt?.warehouseStaff?.account?.firstName.slice(0, 1)}
+                        {exportReceipt?.warehouseStaff?.account?.lastName?.slice(0, 1) ??
+                          '' + exportReceipt?.warehouseStaff?.account?.firstName.slice(0, 1)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-center">
@@ -338,10 +411,12 @@ export default function ExportReceiptDetail() {
                       </p>
                       <p className="text-md text-muted-foreground">Assigned by Manager</p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.materialExportRequest?.warehouseManager?.account?.email || 'N/A'}
+                        {exportReceipt?.materialExportRequest?.warehouseManager?.account?.email ||
+                          'N/A'}
                       </p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.materialExportRequest?.warehouseManager?.account?.phoneNumber || 'N/A'}
+                        {exportReceipt?.materialExportRequest?.warehouseManager?.account
+                          ?.phoneNumber || 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -351,7 +426,6 @@ export default function ExportReceiptDetail() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            
             {/* <Card>
               <CardHeader>
                 <CardTitle>Quality Check Results</CardTitle>
@@ -413,9 +487,8 @@ export default function ExportReceiptDetail() {
                   </TableBody>
                 </Table> */}
                 <DataTable
-                columns={materialExportReceiptColumn}
-                data={exportReceipt?.materialExportReceiptDetail || []}
-                
+                  columns={materialExportReceiptColumn}
+                  data={exportReceipt?.materialExportReceiptDetail || []}
                 />
               </CardContent>
             </Card>

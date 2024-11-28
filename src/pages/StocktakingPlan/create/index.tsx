@@ -1,5 +1,5 @@
 import { Label } from '@/components/ui/Label';
-import React, { useState } from 'react';
+import React from 'react';
 import OverallPlan from '@/assets/images/OverallPlan.png';
 import DynamicPlan from '@/assets/images/DynamicPlan.png';
 import { useNavigate } from 'react-router-dom';

@@ -3,7 +3,7 @@ import { Truck } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
-import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
+import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 

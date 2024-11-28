@@ -188,6 +188,11 @@ const ExportRequestTable = (props: Props) => {
           searchColumnId="code"
           searchPlaceholder="Search import receipt by code"
         />
+        <div className="flex items-center flex-row justify-center mb-9">
+          <Button className="w-[60%]" onClick={() => navigate('create')}>
+            Create new Export Request
+          </Button>
+        </div>
       </div>
     </div>
   );

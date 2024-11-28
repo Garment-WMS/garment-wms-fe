@@ -45,10 +45,10 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   // Update activeTitle based on the current URL
   useEffect(() => {
     const currentPath = location.pathname;
-    const matchingMenu = menu.find((Menu) => Menu.link === currentPath);
-    if (matchingMenu) {
-      setActiveTitle(matchingMenu.title);
-    }
+    const matchingMenu = menu.find((Menu) => currentPath.startsWith(Menu.link));
+  if (matchingMenu) {
+    setActiveTitle(matchingMenu.title);
+  }
   }, [location.pathname, menu]);
 
   return (

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import UploadExcel from './UploadExcel';
 import { Link } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
-import { PurchaseOrder } from '@/types/purchaseOrder';
+import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
 import { useGetAllSupplier } from '@/hooks/useGetAllSupplier';

@@ -12,7 +12,6 @@ import {
   FormMessage
 } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { format, set } from 'date-fns';
 
 import { Label } from '@/components/ui/Label';
 
@@ -25,19 +24,8 @@ import { toast } from '@/hooks/use-toast';
 import { getWarehouseStaff } from '@/api/services/userApi';
 import { User } from '@/types/User';
 import privateCall from '@/api/PrivateCaller';
-import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { MaterialVariant } from '@/types/MaterialTypes';
-import { useDebounce } from '@/hooks/useDebouce';
-import SelectTasks from './components/SelectTasks';
-import { useGetMaterial } from '@/hooks/useGetMaterial';
 import { SelectStaff } from './components/SelectStaff';
-import { ProductVariant } from '@/types/ProductType';
-import { useGetProductVariants } from '@/hooks/useGetProductVariants';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
-import { InventoryReportPlanToCreate, InventoryReportPlanDetailsProduct } from '@/types/InventoryReport';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {};
@@ -45,7 +33,7 @@ type Props = {};
 export interface AssignmentForOverall {
   staffId: string;
 }
-const CreateOverallPlan = (props: Props) => {
+const CreateOverallPlan = () => {
   const [warehouseStaffList, setWarehouseStaffList] = useState<User[]>([]);
   const [choosenStaff, setChoosenStaff] = useState<User[]>([]);
   const navigate = useNavigate();

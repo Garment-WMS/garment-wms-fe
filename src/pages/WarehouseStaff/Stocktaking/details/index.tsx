@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useParams } from 'react-router-dom';
 import privateCall from '@/api/PrivateCaller';
 import { inventoryReportApi } from '@/api/services/inventoryReportApi,';
@@ -15,13 +14,12 @@ import {
   ProductDetailsToRender,
   ProductSizeOfInventoryReport
 } from '@/types/InventoryReport';
-import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import {  formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import axios from 'axios';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/Label';
 import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 import { Badge, badgeVariants } from '@/components/ui/Badge';
-import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import {
   Table,
@@ -31,7 +29,17 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
 import {
   Accordion,
   AccordionContent,
@@ -42,8 +50,9 @@ import placeholder from '@/assets/images/null_placeholder.jpg';
 import Loading from '@/components/common/Loading';
 import { toast } from '@/hooks/use-toast';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import SearchFunction from './components/SearchFunction';
 
-interface DetailsToApproveChange {
+export interface DetailsToApproveChange {
   details: DetailsToApprove[];
 }
 
@@ -54,45 +63,58 @@ interface DetailsToApprove {
 
 export default function WarehousestaffStocktakingDetails() {
   const { id } = useParams();
-  const [notes, setNotes] = useState('');
+  // const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Record<string, string>>({});
+  // const [error, setError] = useState<string>();
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string | null }>({});
 
   const [inventoryReport, setInventoryReport] = useState<InventoryReportToRender>();
 
   const [approvedDetails, setApprovedDetails] = useState<DetailsToApproveChange>({ details: [] });
   const [materialDetails, setMaterialDetails] = useState<MaterialDetailsToRender[]>([]);
   const [productDetails, setProductDetails] = useState<ProductDetailsToRender[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const breadcrumbItems = [
     {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
     }
-  ]
+  ];
+
+  const validateQuantity = (value: number | null): string | null => {
+    if (value === null || value=== undefined || value < 0 || value > 99999) {
+      return 'Quantity must be between 0 and 99999.';
+    }
+    return null;
+  };
   async function onSubmitInventoryReport() {
-  
     try {
-      // Validation: Ensure all details have valid quantities
-      const hasErrors = approvedDetails.details.some(
-        (detail) =>
-          detail.actualQuantity === null ||
-          detail.actualQuantity === undefined ||
-          detail.actualQuantity <= 0 ||
-          detail.actualQuantity > 99999
-      );
-  
-      if (hasErrors) {
-        toast({
-          variant: 'destructive',
-          title: 'Validation Error',
-          description: 'Please ensure all quantities are valid (between 0 and 99999).',
-        });
-        return; // Stop execution if validation fails
+    // Validate all fields when submitting
+    const newFieldErrors: { [key: string]: string | null } = {};
+    let hasErrors = false;
+
+    approvedDetails.details.forEach((detail) => {
+      const error = validateQuantity(detail.actualQuantity);
+      if (error) {
+        newFieldErrors[detail.inventoryReportDetailId] = error;
+        hasErrors = true; // Mark that there are validation errors
       }
-  
+    });
+
+    setFieldErrors(newFieldErrors); // Update field errors state
+
+    if (hasErrors) {
+      toast({
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Please ensure all quantities are valid (between 0 and 99999).',
+      });
+      return; 
+    }
+
       setIsLoading(true);
-  
+
       if (id) {
         const res = await privateCall(
           inventoryReportApi.recordInventoryReport(id, approvedDetails)
@@ -107,55 +129,53 @@ export default function WarehousestaffStocktakingDetails() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to approve inventory report',
+        description: 'Failed to approve inventory report'
       });
       // Reset actualQuantity to null for all details
-    setApprovedDetails((prev) => ({
-      details: prev.details.map((detail) => ({
-        ...detail,
-        actualQuantity: null,
-      })),
-    }));
+      setApprovedDetails((prev) => ({
+        details: prev.details.map((detail) => ({
+          ...detail,
+          actualQuantity: null
+        }))
+      }));
     } finally {
       setIsLoading(false);
     }
   }
 
-  const handleApproveChange = (id: string, value: number|null) => {
-   
+  const handleApproveChange = (id: string, value: number | null) => {
 
+    // Validate the new value
+    const errorMessage = validateQuantity(value);
+    // Update field errors
+    setFieldErrors((prev) => ({
+      ...prev,
+      [id]: errorMessage
+    }));
 
-    // Clear error if valid
-    setError((prev) => {
-      const { [id]: _, ...rest } = prev; // Remove error for this id
-      return rest;
-    });
-    setApprovedDetails((prev) => {
-      // Find the index of the item to be updated
-      const existingIndex = prev.details.findIndex(
-        (detail) => detail.inventoryReportDetailId === id
-      );
+    if (!errorMessage) {
+      setApprovedDetails((prev) => {
+        const existingIndex = prev.details.findIndex(
+          (detail) => detail.inventoryReportDetailId === id
+        );
 
-      // Clone the previous details array
-      const updatedDetails = [...prev.details];
+        const updatedDetails = [...prev.details];
 
-      if (existingIndex !== -1) {
-        // If the item exists, update the `managerQuantityConfirm`
-        updatedDetails[existingIndex] = {
-          ...updatedDetails[existingIndex],
-          actualQuantity: value
-        };
-      } else {
-        // If the item doesn't exist, add it to the array
-        updatedDetails.push({
-          inventoryReportDetailId: id,
-          actualQuantity: value
-        });
-      }
+        if (existingIndex !== -1) {
+          updatedDetails[existingIndex] = {
+            ...updatedDetails[existingIndex],
+            actualQuantity: value
+          };
+        } else {
+          updatedDetails.push({
+            inventoryReportDetailId: id,
+            actualQuantity: value
+          });
+        }
 
-      // Return the updated state
-      return { details: updatedDetails };
-    });
+        return { details: updatedDetails };
+      });
+    }
   };
 
   const fetchData = async () => {
@@ -166,13 +186,13 @@ export default function WarehousestaffStocktakingDetails() {
 
       setInventoryReport(response.data.data);
       // Initialize approvedDetails based on inventoryReportDetails
-      const initialApprovedDetails: DetailsToApprove[] = fetchedReport.inventoryReportDetail.flatMap(
-        (detail: InventoryReportDetailsToRender) => [
+      const initialApprovedDetails: DetailsToApprove[] =
+        fetchedReport.inventoryReportDetail.flatMap((detail: InventoryReportDetailsToRender) => [
           ...(detail.materialPackages
             ? detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
                 item.inventoryReportDetails.map((reportDetail) => ({
                   inventoryReportDetailId: reportDetail.id,
-                  actualQuantity: reportDetail.actualQuantity,
+                  actualQuantity: reportDetail.actualQuantity
                 }))
               )
             : []),
@@ -180,12 +200,13 @@ export default function WarehousestaffStocktakingDetails() {
             ? detail.productSizes.flatMap((item: ProductSizeOfInventoryReport) =>
                 item.inventoryReportDetails.map((reportDetail) => ({
                   inventoryReportDetailId: reportDetail.id,
-                  actualQuantity: reportDetail.actualQuantity,
+                  actualQuantity: reportDetail.actualQuantity
                 }))
               )
-            : []),
-        ]
-      );
+            : [])
+        ]);
+
+        // Initialize fieldErrors for invalid quantities
 
       setApprovedDetails({ details: initialApprovedDetails });
 
@@ -210,7 +231,6 @@ export default function WarehousestaffStocktakingDetails() {
     }
   };
 
-
   useEffect(() => {
     if (id) {
       fetchData();
@@ -232,10 +252,10 @@ export default function WarehousestaffStocktakingDetails() {
       </div>
     );
   }
-  console.log('ds', approvedDetails);
+  console.log(approvedDetails);
   return (
     <div className="container mx-auto p-4 w-full  bg-white rounded-xl shadow-sm border">
-      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
+      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold">Inventory Report #{inventoryReport?.code}</h1>
         {/* <div>
@@ -247,11 +267,16 @@ export default function WarehousestaffStocktakingDetails() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
         <Card className="col-span-2">
           <CardContent>
             {materialDetails.length > 0 && (
               <div className="pt-4">
+                <SearchFunction
+                materialDetails={materialDetails}
+                productDetails={productDetails}
+                approvedDetails={approvedDetails}
+                setApprovedDetails={setApprovedDetails}
+                />
                 <Label className="text-xl font-bold ">Material Variant</Label>
                 {materialDetails.map((detail, idx) => (
                   <div className="w-full">
@@ -319,7 +344,7 @@ export default function WarehousestaffStocktakingDetails() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                        {pkg.inventoryReportDetails.map((reportDetail, idx) => (
+                                        {pkg.inventoryReportDetails.map((reportDetail) => (
                                           <>
                                             {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>
@@ -333,20 +358,21 @@ export default function WarehousestaffStocktakingDetails() {
                                                   <Input
                                                     type="number"
                                                     className="w-20"
-                                                   
                                                     value={reportDetail.actualQuantity}
                                                     min={0} // Set minimum value to 0
                                                     max={99999}
                                                     onWheel={(e) => e.currentTarget.blur()} // Prevent scrolling from changing the value
-
                                                     onChange={(e) => {
                                                       const inputValue = e.target.value;
-                                                  
+
                                                       // If the input is cleared, handle it as empty
                                                       if (inputValue === '') {
                                                         handleApproveChange(reportDetail.id, null); // Use `null` to indicate cleared input
                                                       } else {
-                                                        handleApproveChange(reportDetail.id, +inputValue); // Parse the value as a number
+                                                        handleApproveChange(
+                                                          reportDetail.id,
+                                                          +inputValue
+                                                        ); // Parse the value as a number
                                                       }
                                                     }}
                                                     onKeyDown={(e) => {
@@ -360,20 +386,21 @@ export default function WarehousestaffStocktakingDetails() {
                                                       }
                                                     }}
                                                   />
-                                                  
-                                                  {error[reportDetail.id] && (
-                                                    <p className="text-red-500 text-xs">
-                                                      {error[reportDetail.id]}
-                                                    </p>
+
+                                                  {fieldErrors[reportDetail.id] && (
+                                                    <div className="text-red-500 text-xs">
+                                                      {fieldErrors[reportDetail.id]}
+                                                    </div>
                                                   )}
                                                 </TableCell>
-                                                <TableCell>{reportDetail.managerQuantityConfirm}</TableCell>
-
+                                                <TableCell>
+                                                  {reportDetail.managerQuantityConfirm}
+                                                </TableCell>
                                               </TableRow>
                                             ) : (
                                               <TableRow>
                                                 <TableCell className="font-medium">
-                                                {reportDetail.materialReceipt.code}
+                                                  {reportDetail.materialReceipt.code}
                                                 </TableCell>
                                                 <TableCell>
                                                   {reportDetail.expectedQuantity}
@@ -470,7 +497,7 @@ export default function WarehousestaffStocktakingDetails() {
                                         </TableRow>
                                       </TableHeader>
                                       <TableBody>
-                                      {pkg.inventoryReportDetails.map((reportDetail, idx) => (
+                                        {pkg.inventoryReportDetails.map((reportDetail) => (
                                           <>
                                             {inventoryReport.status === 'IN_PROGRESS' ? (
                                               <TableRow>
@@ -490,12 +517,15 @@ export default function WarehousestaffStocktakingDetails() {
                                                     max={99999}
                                                     onChange={(e) => {
                                                       const inputValue = e.target.value;
-                                                  
+
                                                       // If the input is cleared, handle it as empty
                                                       if (inputValue === '') {
                                                         handleApproveChange(reportDetail.id, null); // Use `null` to indicate cleared input
                                                       } else {
-                                                        handleApproveChange(reportDetail.id, +inputValue); // Parse the value as a number
+                                                        handleApproveChange(
+                                                          reportDetail.id,
+                                                          +inputValue
+                                                        ); // Parse the value as a number
                                                       }
                                                     }}
                                                     onKeyDown={(e) => {
@@ -509,15 +539,15 @@ export default function WarehousestaffStocktakingDetails() {
                                                       }
                                                     }}
                                                   />
-                                                  
-                                                  {error[reportDetail.id] && (
-                                                    <p className="text-red-500 text-xs">
-                                                      {error[reportDetail.id]}
-                                                    </p>
+                                                  {fieldErrors[reportDetail.id] && (
+                                                    <div className="text-red-500 text-xs">
+                                                      {fieldErrors[reportDetail.id]}
+                                                    </div>
                                                   )}
                                                 </TableCell>
-                                                <TableCell>{reportDetail.managerQuantityConfirm}</TableCell>
-
+                                                <TableCell>
+                                                  {reportDetail.managerQuantityConfirm}
+                                                </TableCell>
                                               </TableRow>
                                             ) : (
                                               <TableRow>
@@ -610,10 +640,35 @@ export default function WarehousestaffStocktakingDetails() {
                 </div>
               )}
             </div>
-            {inventoryReport.status === 'IN_PROGRESS' && (
+            {/* {inventoryReport.status === 'IN_PROGRESS' && (
+              
               <Button type="submit" onClick={onSubmitInventoryReport} className="mt-4 w-full">
                 Confirm Report
               </Button>
+            )} */}
+            {inventoryReport.status === 'IN_PROGRESS' && (
+              
+              <div className="flex justify-center items-center mt-4 w-full">
+              <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button type="button"> Confirm Report</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Submit report </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to submit? Your report will be notified to the manager.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onSubmitInventoryReport} type="submit">
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
             )}
           </CardContent>
         </Card>

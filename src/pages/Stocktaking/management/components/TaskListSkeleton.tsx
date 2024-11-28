@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/Card"
-import { Skeleton } from "@/components/ui/Skeleton"
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TaskListSkeleton() {
   return (
@@ -28,5 +28,5 @@ export default function TaskListSkeleton() {
         </div>
       ))}
     </div>
-  )
+  );
 }

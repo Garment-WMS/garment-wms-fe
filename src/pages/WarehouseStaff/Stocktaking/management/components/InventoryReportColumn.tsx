@@ -130,45 +130,45 @@ export const materialImportReceiptColumn: CustomColumnDef<InventoryReport>[] = [
     // },
   ];
 
-  const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
-    {
-        header: 'Code',
-        accessorKey: 'code',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Balanced By',
-        accessorKey: 'warehouseManager.account.name',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Reported By',
-        accessorKey: 'warehouseStaff.account.name',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'From',
-        accessorKey: 'from',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Total Positive',
-        accessorKey: 'totalPositive',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Total Negative',
-        accessorKey: 'totalNegative',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Note',
-        accessorKey: 'note',
-        enableColumnFilter: false,
-    },
-    {
-        header: 'Status',
-        accessorKey: 'status',
-        enableColumnFilter: false,
-    }
-]
+//   const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
+//     {
+//         header: 'Code',
+//         accessorKey: 'code',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Balanced By',
+//         accessorKey: 'warehouseManager.account.name',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Reported By',
+//         accessorKey: 'warehouseStaff.account.name',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'From',
+//         accessorKey: 'from',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Total Positive',
+//         accessorKey: 'totalPositive',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Total Negative',
+//         accessorKey: 'totalNegative',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Note',
+//         accessorKey: 'note',
+//         enableColumnFilter: false,
+//     },
+//     {
+//         header: 'Status',
+//         accessorKey: 'status',
+//         enableColumnFilter: false,
+//     }
+// ]

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/Input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table'
 import { useDebounce } from '@/hooks/useDebouce'

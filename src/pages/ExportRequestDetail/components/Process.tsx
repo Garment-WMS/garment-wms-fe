@@ -10,14 +10,14 @@ type Props = {
 };
 
 const statusOrder = [
-  'ARRIVED',
+  'PENDING',
   'CANCELED',
   'REJECTED',
   'APPROVED',
-  'INSPECTING',
-  'INSPECTED',
-  'IMPORTING',
-  'IMPORTED'
+  'EXPORTING',
+  'EXPORTED',
+  'PRODUCTION_REJECTED',
+  'PRODUCTION_APPROVED'
 ];
 
 const Process = ({ currentStatus, selectedStep, setSelectedStep }: Props) => {

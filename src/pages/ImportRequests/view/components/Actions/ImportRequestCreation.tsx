@@ -1,6 +1,6 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Clock, File, FileSpreadsheet, MoreVertical, User } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React from 'react';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';

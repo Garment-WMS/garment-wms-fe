@@ -20,7 +20,7 @@ export const inventoryReportApi = {
    },
    recordInventoryReport(id: string, body: any){
     return patch(`${inventoryReportApiPath}/${id}/record`,body);
-   }
+   },
 }
 export const getAllInventoryReportFn = async ({
     sorting,

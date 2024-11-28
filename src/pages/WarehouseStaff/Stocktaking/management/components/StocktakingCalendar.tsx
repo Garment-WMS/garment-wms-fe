@@ -1,24 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Maximize2, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/Dialog';
-import { Input } from '@/components/ui/Input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Label } from '@/components/ui/Label';
-import ShortStockingPlanDetails from './ShortStocktakingPlanDetails';
 import { useNavigate } from 'react-router-dom';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
 import { getAllInventoryReportPlanFn } from '@/api/services/inventoryReportPlanApi';
-import { InventoryReportPlan, InventoryReportPlanResponse } from '@/types/InventoryReport';
+import { InventoryReportPlan } from '@/types/InventoryReport';
 import { cn } from '@/lib/utils';
-import Loading from '@/components/common/Loading';
 import CalendarSkeleton from './CalendarSkeleton';
 
 type Event = {

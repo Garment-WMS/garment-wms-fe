@@ -8,7 +8,11 @@ import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'luci
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
-import { finishImportReceiptFn, importReceiptApi } from '@/api/ImportReceiptApi';
+import {
+  finishImportReceiptFn,
+  getImportRequestFn,
+  importReceiptApi
+} from '@/api/ImportReceiptApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../ImportReceiptList/slice';
 import { useToast } from '@/hooks/use-toast';
@@ -47,8 +51,11 @@ import {
 import Barcode from 'react-barcode';
 import MaterialReceiptLabels from './components/MaterialreceiptLabels';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import privateCall from '@/api/PrivateCaller';
 import { DataTable } from '@/components/ui/DataTable';
 import { materialImportReceiptColumn } from './components/ReceiptColumn';
+import { InspectionReportDetail } from '@/types/InspectionReportDetail';
+import { Badge } from '@/components/ui/Badge';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -58,16 +65,17 @@ const chartData = [
   { name: 'White Cable', quantity: 5000 }
 ];
 
-const qualityData = [
-  { name: 'Passed', value: 95 },
-  { name: 'Minor Issues', value: 4 },
-  { name: 'Failed', value: 1 }
-];
+// const qualityData = [
+//   { name: 'Passed', value: 95 },
+//   { name: 'Minor Issues', value: 4 },
+//   { name: 'Failed', value: 1 }
+// ];
 
 export default function MaterialReceipt() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
+  const [importRequest, setImportRequest] = useState<any>(null);
   const { id } = useParams();
   const dispatch = useDispatch();
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
@@ -75,6 +83,9 @@ export default function MaterialReceipt() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const handleFinishImport = async () => {
     setShowLabelModal(true);
+  };
+  const calculateTotalItemsReceived = (materialReceipt: any[]) => {
+    return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
   };
   const handleConfirmFinishImport = async () => {
     setIsLoading(true);
@@ -132,12 +143,79 @@ export default function MaterialReceipt() {
         setIsLoading(false); // Stop loading
       }
     };
+    const fetchImportRequestData = async () => {
+      setIsLoading(true); // Start loading
+
+      try {
+        const res = await getImportRequestFn(id as string);
+
+        if (res.statusCode === 200) {
+          const data = res.data;
+          setImportRequest(data);
+        } else {
+          setError('Something went wrong');
+          toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description: 'There was a problem with your request.'
+          });
+        }
+      } catch (error) {
+        setError('Something went wrong');
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request.'
+        });
+      } finally {
+        setIsLoading(false); // Stop loading
+      }
+    };
 
     if (id) {
+      fetchImportRequestData();
       fetchData();
     }
   }, [id, dispatch]);
   console.log(importReceipt?.materialReceipt);
+  const calculateQualityData = (inspectionReportDetails: InspectionReportDetail[]) => {
+    if (!inspectionReportDetails || inspectionReportDetails.length === 0) {
+      return [
+        { name: 'Passed', value: 0 },
+        { name: 'Failed', value: 0 }
+      ];
+    }
+
+    const totalApproved = inspectionReportDetails.reduce(
+      (sum, detail) => sum + detail.approvedQuantityByPack,
+      0
+    );
+    const totalDefects = inspectionReportDetails.reduce(
+      (sum, detail) =>
+        sum +
+        detail?.inspectionReportDetailDefect?.reduce(
+          (defectSum, defect) => defectSum + defect.quantityByPack,
+          0
+        ),
+      0
+    );
+
+    const total = totalApproved + totalDefects;
+    const passedPercentage = ((totalApproved / total) * 100).toFixed(1);
+    const minorIssuesPercentage = ((totalDefects / total) * 100).toFixed(1);
+
+    return [
+      { name: 'Passed', value: parseFloat(passedPercentage) },
+      { name: 'Failed', value: parseFloat(minorIssuesPercentage) }
+    ];
+  };
+  const handleCloseDialog = () => {
+    setShowLabelModal(false);
+  };
+
+  const inspectionReport: InspectionReport | undefined = importReceipt?.inspectionReport;
+  const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
+
   return (
     <div className="container mx-auto p-4">
       {isLoading && importReceipt ? (
@@ -161,8 +239,10 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12,500</div>
-                <p className="text-xs text-muted-foreground">+2% from last receipt</p>
+                {importReceipt?.materialReceipt
+                  ? calculateTotalItemsReceived(importReceipt.materialReceipt)
+                  : 0}
+                <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
             <Card>
@@ -181,8 +261,13 @@ export default function MaterialReceipt() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">Completed</div>
-                <p className="text-xs text-muted-foreground">All processes finished</p>
+                <div className="text-2xl font-bold">{importReceipt?.status}</div>
+                <p className="text-xs text-muted-foreground">
+                  {' '}
+                  {importReceipt?.status == 'IMPORTED'
+                    ? 'All processed finished'
+                    : ' Warehouse Staff importing'}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -217,50 +302,48 @@ export default function MaterialReceipt() {
               <CardContent>
                 {importReceipt?.inspectionReportId ? (
                   <div>
-                  <div className="flex items-center space-x-4 flex-col justify-center">
-                    <Avatar className="w-[80px] h-[80px]">
-                      <AvatarImage
-                        src={'/placeholder.svg?height=100&width=100'}
-                        alt="John Doe"
-                        className="w-[80px] h-[80px]"
-                      />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-center">
-                      <p className="text-xl font-bold">
-                        {importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                          .account.firstName +
-                          ' ' +
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.lastName}
-                      </p>
-                      <p className="text-md text-muted-foreground"></p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.email
-                        }
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {
-                          importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
-                            .account.phoneNumber
-                        }
-                      </p>
+                    <div className="flex items-center space-x-4 flex-col justify-center">
+                      <Avatar className="w-[80px] h-[80px]">
+                        <AvatarImage
+                          src={'/placeholder.svg?height=100&width=100'}
+                          alt="John Doe"
+                          className="w-[80px] h-[80px]"
+                        />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center">
+                        <p className="text-xl font-bold">
+                          {importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                            .account.firstName +
+                            ' ' +
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.lastName}
+                        </p>
+                        <p className="text-md text-muted-foreground"></p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.email
+                          }
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              .account.phoneNumber
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                ):
-                (<div>
-                  <div className="flex items-center space-x-4 flex-col justify-center h-full">
-                   
-                    <div className="flex flex-col items-center">
-                      <p className="text-base font-semibold">
-                       No inspection report yet
-                      </p>
+                ) : (
+                  <div>
+                    <div className="flex items-center space-x-4 flex-col justify-center h-full">
+                      <div className="flex flex-col items-center">
+                        <p className="text-base font-semibold">No inspection report yet</p>
+                      </div>
                     </div>
                   </div>
-                </div>)}
+                )}
               </CardContent>
             </Card>
             <Card>
@@ -317,26 +400,39 @@ export default function MaterialReceipt() {
                     <div className="grid gap-2">
                       <p>
                         <strong>Import Request:</strong>{' '}
-                        <Link to="/" className="text-primary underline underline-offset-2">
-                          IR-000123
+                        <Link
+                          to={`/import-requests/${importRequest?.id}`}
+                          className="text-primary underline underline-offset-2">
+                          {importRequest?.code}
                         </Link>
                       </p>
                       <p>
                         <strong>Purchase Order:</strong>{' '}
-                        <Link to="/" className="text-primary underline underline-offset-2">
-                          PO-000001
+                        <Link
+                          to={`/purchase-orders/${importRequest?.poDelivery?.purchaseOrder?.id}`}
+                          className="text-primary underline underline-offset-2">
+                          {importRequest?.poDelivery?.purchaseOrder?.poNumber}
                         </Link>
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(importReceipt?.createdAt).toLocaleString()}
+                        {new Date(importRequest?.createdAt).toLocaleString()}
                       </p>
                       <p>
-                        <strong>Provider:</strong> Cong Ty Vai A
+                        <strong>Provider:</strong>{' '}
+                        {importRequest?.poDelivery?.purchaseOrder?.supplier?.supplierName}
                       </p>
                       <p>
-                        <strong>Warehouse:</strong> Warehouse 1
+                        <strong>Status:</strong> {importRequest?.status}
                       </p>
+                      <p>
+                        <strong>Type:</strong> {importRequest?.type}
+                      </p>
+                      {importRequest?.description && (
+                        <p>
+                          <strong>Description:</strong> {importRequest.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -346,24 +442,85 @@ export default function MaterialReceipt() {
               <CardHeader>
                 <CardTitle>Quality Check Results</CardTitle>
               </CardHeader>
-              <CardContent className="w-full flex items-center justify-center">
-                <ChartContainer
-                  config={{
-                    value: {
-                      label: 'Percentage',
-                      color: 'hsl(var(--chart-2))'
-                    }
-                  }}
-                  className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={qualityData}>
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="value" fill="var(--color-value)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                  {/* Inspection Report Details */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Inspection Report Summary
+                    </h3>
+                    <div className="grid gap-2">
+                      <p>
+                        <strong>Report Code:</strong>{' '}
+                        <span className="text-primary font-semibold">
+                          {inspectionReport?.code || 'N/A'}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Type:</strong>{' '}
+                        <Badge className="bg-slate-500">
+                          {inspectionReport?.type === 'MATERIAL' ? 'Material' : 'Product'}
+                        </Badge>
+                      </p>
+                      <p>
+                        <strong>Approved Quantity (By Pack):</strong>{' '}
+                        <span className="text-green-600 font-bold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum + detail.approvedQuantityByPack,
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Defected Quantity (By Pack):</strong>{' '}
+                        <span className="text-red-600 font-bold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum +
+                              detail?.inspectionReportDetailDefect?.reduce(
+                                (defectSum: number, defect: any) =>
+                                  defectSum + defect.quantityByPack,
+                                0
+                              ),
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Total Items:</strong>{' '}
+                        <span className="text-primaryLight font-semibold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
+                            0
+                          ) || 0}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quality Check Results Chart */}
+                  <div className="w-full flex items-center justify-center">
+                    <ChartContainer
+                      config={{
+                        value: {
+                          label: 'Percentage',
+                          color: 'hsl(var(--chart-2))'
+                        }
+                      }}
+                      className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={qualityData}>
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Bar dataKey="value" fill="var(--color-value)" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -374,16 +531,14 @@ export default function MaterialReceipt() {
                 <CardTitle>Material Receipt Details</CardTitle>
               </CardHeader>
               <CardContent>
-            
                 <DataTable
-                columns={materialImportReceiptColumn}
-                data={importReceipt?.materialReceipt || []}
-                
+                  columns={materialImportReceiptColumn}
+                  data={importReceipt?.materialReceipt || []}
                 />
               </CardContent>
             </Card>
           </div>
-          <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
+          <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
             <DialogContent className="max-w-4xl">
               <DialogHeader>
                 <DialogTitle>Material Labels</DialogTitle>
@@ -409,13 +564,17 @@ export default function MaterialReceipt() {
                   {importReceipt?.materialReceipt.map((item: any) => (
                     <div key={item.id} className="border p-4 rounded-md">
                       <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p> Material Code: {item.materialPackage.code}</p>
                       <p>
                         Quantity: {item.quantityByPack * item.materialPackage.uomPerPack}{' '}
                         {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
                       </p>
                       <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
                       <div className="mt-2">
+                        <h3 className="font-semibold">Material barcode: </h3>
+                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
+                      </div>
+                      <div className="mt-2">
+                        <h3 className="font-semibold">Material Receipt Barcode: </h3>
                         <Barcode value={item.code} width={1.5} height={50} />
                       </div>
                     </div>

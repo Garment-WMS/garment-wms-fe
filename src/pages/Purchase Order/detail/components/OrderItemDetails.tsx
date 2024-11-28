@@ -4,7 +4,7 @@ import { ExternalLink, Eye, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialTable from './MaterialTable';
-import { PODelivery, PODeliveryDetail } from '@/types/purchaseOrder';
+import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import {
   PurchaseOrderDeliveryStatusLabels,
   PurchaseOrderDeliveryStatus
@@ -50,14 +50,13 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     let label = '';
 
     switch (delivery.status) {
-      //TODO: Will enable this later after merge with import request flow
-      // case PurchaseOrderDeliveryStatus.PENDING:
-      //   color = 'bg-blue-400';
-      //   icon = <Plus size={16} />;
-      //   label = 'Create Import Request';
-      //   //TODO: Need to change path later, also need to pass the parameter
-      //   path = `/purchase-staff/purchase-order/${poid}/po-delivery/${delivery.id}/import-request`;
-      //   break;
+      case PurchaseOrderDeliveryStatus.PENDING:
+        color = 'bg-blue-400';
+        icon = <Plus size={16} />;
+        label = 'Create Import Request';
+        //TODO: Need to change path later, also need to pass the parameter
+        path = `/import-request/create/material/${delivery.id}`;
+        break;
       case PurchaseOrderDeliveryStatus.FINISHED:
         color = 'bg-green-400';
         icon = <Eye size={16} />;

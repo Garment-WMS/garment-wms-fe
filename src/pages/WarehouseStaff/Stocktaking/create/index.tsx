@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/Input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table'
 import { useDebounce } from '@/hooks/useDebouce'
-import { useGetMaterial } from '@/hooks/useGetMaterial'
 import KanbanDisplayList from './components/KanbanDisplayList/KanbanDisplayList'
 import { MaterialVariant } from '@/types/MaterialTypes'
 import { toast } from '@/hooks/use-toast'
-import axios from 'axios'
-import { getAllMaterialFn, materialApi } from '@/api/services/materialApi'
-import { UseGetTableResponseType } from '@/types/CompositeTable'
+import { getAllMaterialFn } from '@/api/services/materialApi'
 
 interface Product {
   id: string;
@@ -44,7 +41,7 @@ export default function CreateStocktakingReport() {
 
   const totalActualStock = products.reduce((sum, product) => sum + product.actualStock, 0)
   const totalBranchStock = products.reduce((sum, product) => sum + product.branchStock, 0)
-  const totalDifference = totalActualStock - totalBranchStock
+  // const totalDifference = totalActualStock - totalBranchStock
 
   const [materialList, setMaterialList] = useState<MaterialVariant[]>();
   const [pageMeta, setPageMeta] = useState<any>(null);
