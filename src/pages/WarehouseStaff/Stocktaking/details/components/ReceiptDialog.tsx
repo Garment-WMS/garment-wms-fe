@@ -54,7 +54,7 @@ const ReceiptDialog = ({ open, setOpen, result, approvedDetails, setApprovedDeta
         <div className="grid grid-cols-4 items-center gap-4">
           <span className="font-medium col-span-2">Expire Date:</span>
           <span className="col-span-2 text-slate-500">
-            {formatDateTimeToDDMMYYYYHHMM(result?.materialReceipt?.expireDate || result?.productReceipt?.expireDate)}
+            {formatDateTimeToDDMMYYYYHHMM(result?.materialReceipt?.expireDate || result?.productReceipt?.expireDate) || 'N/A'}
           </span>
         </div>
         <div className="grid grid-cols-4 items-center gap-4">

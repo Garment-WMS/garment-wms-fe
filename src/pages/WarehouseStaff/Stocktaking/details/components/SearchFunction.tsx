@@ -27,10 +27,12 @@ const SearchFunction = ({
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null); // Track error messages
 
   const handleSearch = () => {
     const formattedQuery = query.trim();
-    // Search in materialDetails
+    setError(null);
+
     for (const material of materialDetails) {
       for (const materialPackage of material.materialPackages) {
         for (const detail of materialPackage.inventoryReportDetails) {
@@ -39,13 +41,12 @@ const SearchFunction = ({
  
                 setIsOpen(true);
               
-            return; // Stop searching after finding the first match
+            return; 
           }
         }
       }
     }
 
-    // Search in productDetails
     for (const product of productDetails) {
       for (const productPackage of product.productSizes) {
         for (const detail of productPackage.inventoryReportDetails) {
@@ -53,7 +54,7 @@ const SearchFunction = ({
             setResult(detail);
             setIsOpen(true);
 
-            return; // Stop searching after finding the first match
+            return;
           }
         }
       }
@@ -61,6 +62,8 @@ const SearchFunction = ({
 
     // No match found
     setResult(null);
+    setError('No receipt found with the provided code.'); 
+
   };
 
 //   useEffect(() => {
@@ -70,7 +73,8 @@ const SearchFunction = ({
 //   }, [result]);
   return (
     <div className="max-w-2xl ">
-      <div className="flex space-x-2 mb-4">
+        <div className='mb-4'>
+           <div className="flex space-x-2">
         <Input
           type="text"
           placeholder="Search receipt code"
@@ -83,6 +87,13 @@ const SearchFunction = ({
           <Search className="mr-2 h-4 w-4" /> Search
         </Button>
       </div>
+      {error && ( // Conditionally render the error message
+        <div className="text-red-500 text-sm">
+          {error}
+        </div>
+      )} 
+        </div>
+      
 
       <ReceiptDialog
         open={isOpen}

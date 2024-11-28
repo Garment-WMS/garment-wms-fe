@@ -252,7 +252,6 @@ export default function WarehousestaffStocktakingDetails() {
       </div>
     );
   }
-  console.log(approvedDetails);
   return (
     <div className="container mx-auto p-4 w-full  bg-white rounded-xl shadow-sm border">
       <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
@@ -591,7 +590,7 @@ export default function WarehousestaffStocktakingDetails() {
               <p>Started At:</p>
               <p className="">{formatDateTimeToDDMMYYYYHHMM(inventoryReport.from)}</p>
               <p>Finished At:</p>
-              <p>{formatDateTimeToDDMMYYYYHHMM(inventoryReport.to)}</p>
+              <p>{formatDateTimeToDDMMYYYYHHMM(inventoryReport.to) || 'N/A'}</p>
               <p>Created by:</p>
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8">
