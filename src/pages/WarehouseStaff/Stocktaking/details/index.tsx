@@ -50,8 +50,9 @@ import placeholder from '@/assets/images/null_placeholder.jpg';
 import Loading from '@/components/common/Loading';
 import { toast } from '@/hooks/use-toast';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import SearchFunction from './components/SearchFunction';
 
-interface DetailsToApproveChange {
+export interface DetailsToApproveChange {
   details: DetailsToApprove[];
 }
 
@@ -111,24 +112,6 @@ export default function WarehousestaffStocktakingDetails() {
       });
       return; 
     }
-
-      // const hasErrors = approvedDetails.details.some(
-      //   (detail) =>
-      //     detail.actualQuantity === null ||
-      //     detail.actualQuantity === undefined ||
-      //     detail.actualQuantity < 0 ||
-      //     detail.actualQuantity > 99999
-      // );
-
-      // if (hasErrors) {
-      //   setError('Invalid');
-      //   toast({
-      //     variant: 'destructive',
-      //     title: 'Validation Error',
-      //     description: 'Please ensure all quantities are valid (between 0 and 99999).'
-      //   });
-      //   return; 
-      // }
 
       setIsLoading(true);
 
@@ -285,8 +268,15 @@ export default function WarehousestaffStocktakingDetails() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="col-span-2">
           <CardContent>
+          <SearchFunction
+                materialDetails={materialDetails}
+                productDetails={productDetails}
+                approvedDetails={approvedDetails}
+                setApprovedDetails={setApprovedDetails}
+                />
             {materialDetails.length > 0 && (
               <div className="pt-4">
+                
                 <Label className="text-xl font-bold ">Material Variant</Label>
                 {materialDetails.map((detail, idx) => (
                   <div className="w-full">
@@ -601,7 +591,7 @@ export default function WarehousestaffStocktakingDetails() {
               <p>Started At:</p>
               <p className="">{formatDateTimeToDDMMYYYYHHMM(inventoryReport.from)}</p>
               <p>Finished At:</p>
-              <p>{formatDateTimeToDDMMYYYYHHMM(inventoryReport.to)}</p>
+              <p>{formatDateTimeToDDMMYYYYHHMM(inventoryReport.to) || 'N/A'}</p>
               <p>Created by:</p>
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8">

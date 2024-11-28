@@ -10,7 +10,6 @@ interface RoleBasedLayoutProps {
 const RoleBasedLayoutMiddleware: React.FC<RoleBasedLayoutProps> = ({ roleLayouts, fallbackPath }) => {
 const user = useGetProfile();
 const userRole = user?.role;
-console.log('us',userRole);
 
   // If no valid role or invalid role, redirect to fallback
   if (!userRole || !roleLayouts[userRole]) {

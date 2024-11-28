@@ -42,6 +42,7 @@ const ImportRequestDetails = ({
       setDetails(newDetails);
       setInitialDetails(newDetails);
       setIsNewdelivery(false);
+      setEditDetail(false);
     }
   }, [data]);
 
@@ -60,15 +61,35 @@ const ImportRequestDetails = ({
     }
   };
   const handleSave = () => {
-    if (!isError) {
-      setEditDetail(false);
-      setPoDeliverydetails(details);
-      setInitialDetails(details); // Update initialDetails with the new saved state
-    } else {
+    const emptyQuantities = details.filter((detail) => !detail.actualQuantity);
+    const allEmpty = emptyQuantities.length === details.length;
+    const isHavingValue = details.find((detail) => detail.actualQuantity != 0);
+    if (allEmpty || !isHavingValue) {
       toast({
         variant: 'destructive',
-        title: 'Please handle error',
-        description: 'Please resolve all the error before saving the details'
+        title: 'Error',
+        description: 'All actual quantities are empty. Please fill in at least one actual quantity.'
+      });
+    } else if (emptyQuantities.length > 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Warning',
+        description: `${emptyQuantities.length} item(s) have empty actual quantities. Please fill in all actual quantities or remove empty items.`
+      });
+    } else if (isError) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Please resolve all errors before saving the details.'
+      });
+    } else {
+      setEditDetail(false);
+      setPoDeliverydetails(details);
+      setInitialDetails(details);
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Details saved successfully.'
       });
     }
   };
