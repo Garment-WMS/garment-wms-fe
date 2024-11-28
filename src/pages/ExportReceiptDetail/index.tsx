@@ -42,6 +42,7 @@ import privateCall from '@/api/PrivateCaller';
 import { changeStatusFn, exportReceiptApi } from '@/api/services/exportReceiptApi';
 import { ExportReceipt } from '@/types/ExportReceipt';
 import Discussion from './components/Disscussion';
+import MaterialReceiptFinish from './components/MaterialReceiptFinish';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -199,26 +200,11 @@ export default function ExportReceiptDetail() {
                   </p>
                 </div>
                 {exportReceipt?.status === 'EXPORTING' && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button disabled={isLoading}>Finish</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to finish exporting the material? This action cannot
-                          be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <MaterialReceiptFinish
+                    importReceiptId={exportReceipt?.id}
+                    materialReceipts={exportReceipt?.materialExportReceiptDetail}
+                    onFinishImport={handleFinishExport}
+                  />
                 )}
                 {exportReceipt?.status === 'EXPORTED' && (
                   <AlertDialog>

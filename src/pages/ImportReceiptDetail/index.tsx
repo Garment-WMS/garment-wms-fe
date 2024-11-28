@@ -57,6 +57,7 @@ import { materialImportReceiptColumn } from './components/ReceiptColumn';
 import { InspectionReportDetail } from '@/types/InspectionReportDetail';
 import { Badge } from '@/components/ui/Badge';
 import Discussion from './components/Disscussion';
+import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -96,7 +97,7 @@ export default function MaterialReceipt() {
     setIsLoading(true);
     try {
       const res = await finishImportReceiptFn(id as string);
-      if (res.status === 201) {
+      if (res.statusCode === 201) {
         toast({
           title: 'Import finished successfully',
           description: 'The import receipt has been marked as imported.'
@@ -290,11 +291,13 @@ export default function MaterialReceipt() {
                       : 'Import completed'}
                   </p>
                 </div>
-                {importReceipt?.status === 'IMPORTING' && (
-                  <Button onClick={handleFinishImport} disabled={isLoading}>
-                    Add Label
-                  </Button>
-                )}
+                <WarehouseStaffGuardDiv>
+                  {importReceipt?.status === 'IMPORTING' && (
+                    <Button onClick={handleFinishImport} disabled={isLoading}>
+                      Add Label
+                    </Button>
+                  )}
+                </WarehouseStaffGuardDiv>
               </div>
             </CardContent>
           </Card>
