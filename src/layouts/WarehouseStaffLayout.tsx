@@ -1,13 +1,21 @@
-import SideBar from '@/components/SideBar'
-import TopBar from '@/components/TopBar'
-import { MenuProps } from '@/constants/interface'
-import React from 'react'
-import { LuClipboardCopy } from 'react-icons/lu'
-import { TbHome, TbPackage, TbPackageExport, TbReceipt, TbReceiptRefund, TbShirt } from 'react-icons/tb'
-import { Outlet } from 'react-router-dom'
-import { MdOutlineInventory } from "react-icons/md";
+import SideBar from '@/components/SideBar';
+import TopBar from '@/components/TopBar';
+import { MenuProps } from '@/constants/interface';
+import React from 'react';
+import { LuClipboardCopy } from 'react-icons/lu';
+import {
+  TbHome,
+  TbPackage,
+  TbPackageExport,
+  TbReceipt,
+  TbReceiptRefund,
+  TbShirt
+} from 'react-icons/tb';
+import { Outlet } from 'react-router-dom';
+import { MdOutlineInventory } from 'react-icons/md';
+import { BiTask } from 'react-icons/bi';
 
-type Props = {}
+type Props = {};
 const iconSize = 22;
 const PurchaseStaffMenu: MenuProps[] = [
   {
@@ -39,7 +47,7 @@ const PurchaseStaffMenu: MenuProps[] = [
   },
   {
     title: 'Export Receipt',
-    renderIcon: <TbReceiptRefund  size={iconSize} />,
+    renderIcon: <TbReceiptRefund size={iconSize} />,
     link: '/export-receipt'
   },
   {
@@ -52,6 +60,11 @@ const PurchaseStaffMenu: MenuProps[] = [
     renderIcon: <TbShirt size={iconSize} />,
     link: '/product-variant'
   },
+  {
+    title: 'Task',
+    renderIcon: <BiTask size={iconSize} />,
+    link: '/tasks'
+  }
 ];
 const WarehouseStaffLayout = (props: Props) => {
   return (
@@ -64,7 +77,7 @@ const WarehouseStaffLayout = (props: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WarehouseStaffLayout
+export default WarehouseStaffLayout;

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
+  productionDepartment?: any;
   currentStatus: string;
   requestId: string;
   warehouseManager?: any;
@@ -45,50 +46,55 @@ const getInitials = (name: string | undefined): string => {
   );
 };
 
-export default function WarehouseStaffAssignment({
+export default function ExportRequestConfirmation({
   currentStatus,
   requestId,
   warehouseManager,
   warehouseStaff,
-  lastedUpdate
+  lastedUpdate,
+  productionDepartment
 }: WarehouseStaffAssignmentProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
 
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-2xl">Label and Import to warehouse</CardTitle>
+        <CardTitle className="text-2xl">Goods Export Confirmation</CardTitle>
         <p className="text-sm text-muted-foreground">Request #{requestId}</p>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {warehouseStaff ? (
+        {productionDepartment ? (
           <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
             <Avatar className="">
-              <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
-              <AvatarFallback className="bg-gray-200 rounded-full p-2 m-1">
-                {warehouseStaff?.account.lastName.slice(0, 1) +
-                  warehouseStaff?.account.firstName.slice(0, 1)}
+              <AvatarImage src={productionDepartment?.account?.avatarUrl} />
+              <AvatarFallback>
+                {productionDepartment?.account.lastName.slice(0, 1) +
+                  productionDepartment?.account.firstName.slice(0, 1)}
               </AvatarFallback>
             </Avatar>
-            <h1>{warehouseStaff?.account.lastName + ' ' + warehouseStaff?.account.firstName}</h1>
+            <h1>
+              {productionDepartment?.account.lastName +
+                ' ' +
+                productionDepartment?.account.firstName}
+            </h1>
             <div className="text-center">
-              <p className="text-sm font-medium">Warehouse Staff</p>
+              <p className="text-sm font-medium">Warehouse assignment</p>
               <p className="text-xs text-muted-foreground">
-                {warehouseStaff?.account?.email || 'Not assigned'}
+                {productionDepartment?.account?.email || 'Not assigned'}
               </p>
             </div>
           </div>
         ) : (
           <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
             <Avatar className="">
-              <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
+              <AvatarImage src={productionDepartment?.account?.avatarUrl} />
               <AvatarFallback>NY</AvatarFallback>
             </Avatar>
             <h1>Not Reached</h1>
             <div className="text-center">
               <p className="text-sm font-medium">Warehouse assignment</p>
               <p className="text-xs text-muted-foreground">
-                {warehouseStaff?.account?.email || 'Not assigned'}
+                {productionDepartment?.account?.email || 'Not assigned'}
               </p>
             </div>
           </div>
@@ -105,19 +111,7 @@ export default function WarehouseStaffAssignment({
             <div className="flex items-center text-sm">
               <User className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Assigned by:</span>
-              <span>
-                <Avatar>
-                  <AvatarImage src={warehouseManager?.account?.avatarUrl} />
-                  <AvatarFallback className="bg-gray-200 rounded-full p-2 m-1">
-                    {' '}
-                    {warehouseManager?.account?.firstName.slice(0, 1) +
-                      ' ' +
-                      warehouseManager?.account?.lastName.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
-                {warehouseManager?.account?.firstName + ' ' + warehouseManager?.account?.lastName ||
-                  'Not assigned'}
-              </span>
+              <span>{warehouseManager?.account?.firstName || 'Not assigned'}</span>
             </div>
             <div className="flex items-center text-sm">
               <Clock className="mr-3 h-5 w-5 text-muted-foreground" />

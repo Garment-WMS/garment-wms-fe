@@ -11,9 +11,10 @@ import {
   TbShoppingCartCog,
   TbReceipt,
   TbPackageExport,
-  TbReceiptRefund 
+  TbReceiptRefund
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
+import { BiTask } from 'react-icons/bi';
 
 type Props = {};
 const iconSize = 22;
@@ -48,6 +49,11 @@ const InspectionDepartmentMenu: MenuProps[] = [
     title: 'Report',
     renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
+  },
+  {
+    title: 'Task',
+    renderIcon: <BiTask size={iconSize} />,
+    link: '/tasks'
   }
 ];
 const InspectionDepartmentLayout = (props: Props) => {

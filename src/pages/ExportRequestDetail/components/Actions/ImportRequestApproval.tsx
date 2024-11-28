@@ -42,6 +42,9 @@ import {
 } from '@/api/services/exportRequestApi';
 import AssignStaffPopup from './StaffAssignment';
 import { useNavigate } from 'react-router-dom';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import Barcode from 'react-barcode';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'PENDING';
 
@@ -52,6 +55,7 @@ interface WarehouseApprovalProps {
   requestDetails: string;
   requestDate: string;
   onApproval: () => void;
+  warehouseStaff: any;
 }
 
 const getStatusDetails = (status: ApprovalStatus) => {
@@ -98,6 +102,7 @@ const getInitials = (name: string | undefined): string => {
 };
 
 export default function WarehouseApproval({
+  warehouseStaff,
   requestId,
   manager,
   currentStatus,
@@ -115,6 +120,10 @@ export default function WarehouseApproval({
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('');
   const [recommendedMaterials, setRecommendedMaterials] = useState<any[]>([]);
   const [selectedAssignee, setSelectedAssignee] = useState<any>(null);
+  const [fullFilledMaterialExportRequestDetails, setFullFilledMaterialExportRequestDetails] =
+    useState([]);
+  const [notFullFilledMaterialExportRequestDetails, setNotFullFilledMaterialExportRequestDetails] =
+    useState([]);
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -227,6 +236,13 @@ export default function WarehouseApproval({
       });
     } catch (error: any) {
       console.error('Error fetching recommendations:', error.response);
+
+      setNotFullFilledMaterialExportRequestDetails(
+        error.response.data.data.notFullFilledMaterialExportRequestDetails
+      );
+      setFullFilledMaterialExportRequestDetails(
+        error.response.data.data.fullFilledMaterialExportRequestDetails
+      );
       toast({
         title: 'Error',
         description: `${error.response.data.message}`,
@@ -293,6 +309,15 @@ export default function WarehouseApproval({
                 </span>
               </div>
               <div className="flex items-center text-sm">
+                <User className="mr-3 h-5 w-5 text-muted-foreground" />
+                <span className="font-medium w-24">Manager:</span>
+                <span>
+                  {manager?.account?.firstName
+                    ? manager?.account?.firstName + ' ' + manager?.account?.lastName
+                    : 'Not assigned'}
+                </span>
+              </div>
+              <div className="flex items-center text-sm">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
                 <span>{new Date(requestDate).toLocaleString()}</span>
@@ -329,12 +354,12 @@ export default function WarehouseApproval({
                       Please complete the following steps to approve the request.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <div className="space-y-4 py-4">
+                  <ScrollArea className="space-y-4 py-4 h-[500px]">
                     <div className="space-y-2">
                       <Label htmlFor="algorithm">Export Algorithm</Label>
                       <h5 className="text-sm text-gray-600">
                         The Algirithom will find the most suitable Package of material that suit the
-                        nee{' '}
+                        need.
                       </h5>
                       <Select onValueChange={setSelectedAlgorithm} value={selectedAlgorithm}>
                         <SelectTrigger className="w-full">
@@ -347,36 +372,116 @@ export default function WarehouseApproval({
                         </SelectContent>
                       </Select>
                     </div>
+                    {notFullFilledMaterialExportRequestDetails.length > 0 && (
+                      <Alert variant="destructive" className="mt-4 mb-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Insufficient Materials</AlertTitle>
+                        <AlertDescription>
+                          There are not enough materials to fulfill this export request. Please
+                          contact the Purchasing department to order additional materials.
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     {recommendedMaterials.length > 0 && (
                       <div className="space-y-2">
                         <Label>Recommended Materials</Label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {recommendedMaterials.map((material, index) => (
                             <Card key={index} className="overflow-hidden">
-                              <img
-                                src={
-                                  material.materialReceipt.materialPackage.materialVariant.image ||
-                                  '/placeholder.svg?height=100&width=100'
-                                }
-                                alt={material.materialReceipt.materialPackage.name}
-                                className="w-full h-32 object-cover"
-                              />
-                              <CardContent className="p-2">
-                                <p className="font-medium text-sm truncate">
-                                  {material.materialReceipt.materialPackage.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Quantity: {material.quantityByPack}{' '}
-                                  {material.materialReceipt.materialPackage.packUnit}
-                                </p>
+                              <div className="aspect-square relative">
+                                <img
+                                  src={
+                                    material.materialReceipt.materialPackage.materialVariant
+                                      .image || '/placeholder.svg'
+                                  }
+                                  alt={material.materialReceipt.materialPackage.name}
+                                  className="object-cover"
+                                />
+                              </div>
+                              <CardContent className="p-4 space-y-3">
+                                <div>
+                                  <h3 className="font-semibold truncate">
+                                    {material.materialReceipt.materialPackage.name}
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    Used Quantity: {material.quantityByPack}{' '}
+                                    {material.materialReceipt.materialPackage.packUnit}
+                                  </p>
+                                </div>
+                                <div className="pt-2 border-t flex">
+                                  <Barcode
+                                    value={material.materialReceipt.code}
+                                    width={1}
+                                    height={40}
+                                    fontSize={15}
+                                    format="CODE128"
+                                    displayValue={true}
+                                  />
+                                </div>
                               </CardContent>
                             </Card>
                           ))}
                         </div>
                       </div>
                     )}
-                    <div className="space-y-2">
-                      <Label>Assign Staff</Label>
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Fulfilled Items</h3>
+                      {fullFilledMaterialExportRequestDetails.length > 0 ? (
+                        fullFilledMaterialExportRequestDetails.map((item: any, index: number) => (
+                          <Card key={index} className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="font-medium">{item.materialVariant.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Code: {item.materialVariant.code}
+                                </p>
+                              </div>
+                              <Badge className="bg-green-500">
+                                <CheckCircle className="mr-1 h-3 w-3" />
+                                Fulfilled
+                              </Badge>
+                            </div>
+                            <p className="mt-2">
+                              Quantity: {item.targetQuantityUom}{' '}
+                              {item.materialVariant.material.materialUom.uomCharacter}
+                            </p>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground">No fulfilled items.</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Unfulfilled Items</h3>
+                      {notFullFilledMaterialExportRequestDetails.map((item: any, index: number) => (
+                        <Card key={index} className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <img src={item.materialVariant.image} className="rounded w-16 h-16" />
+                              <h4 className="font-medium">{item.materialVariant.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Code: {item.materialVariant.code}
+                              </p>
+                            </div>
+                            <Badge variant="destructive">
+                              <XCircle className="mr-1 h-3 w-3" />
+                              Unfulfilled
+                            </Badge>
+                          </div>
+                          <p className="mt-2">
+                            Requested: {item.targetQuantityUom}{' '}
+                            {item.materialVariant.material.materialUom.uomCharacter}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Missing: {item.missingQuantityUom}{' '}
+                            {item.materialVariant.material.materialUom.uomCharacter}
+                          </p>
+                        </Card>
+                      ))}
+                    </div>
+                    <div className="space-y-2 mt-4 mb-4">
+                      <Label className="mr-4">Assign Staff</Label>
                       <AssignStaffPopup
                         setStaff={setSelectedAssignee}
                         staff={selectedAssignee}
@@ -393,12 +498,16 @@ export default function WarehouseApproval({
                         placeholder="Enter any additional notes here..."
                       />
                     </div>
-                  </div>
+                  </ScrollArea>
                   <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => setIsApproveDialogOpen(false)}>
                       Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleApprove}>Approve</AlertDialogAction>
+                    <AlertDialogAction
+                      onClick={handleApprove}
+                      disabled={notFullFilledMaterialExportRequestDetails.length > 0}>
+                      Approve
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

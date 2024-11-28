@@ -4,24 +4,23 @@ import { User } from './User';
 import { PageMetaData } from './Shared';
 import { MaterialExportRequest } from './exportRequest';
 
-
 export type MaterialExportReceipt = {
-  id: string,
-  code: string,
-  materialExportRequestId: string,
-  warehouseStaffId: string,
-  type: string,
-  status: string,
-  note: string,
-  startAt: string,
-  finishedAt: string,
+  id: string;
+  code: string;
+  materialExportRequestId: string;
+  warehouseStaffId: string;
+  type: string;
+  status: string;
+  note: string;
+  startAt: string;
+  finishedAt: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  warehouseStaff:User
-  materialExportReceiptDetail: MaterialExportReceiptDetail[]
-}
-export interface MaterialExportReceiptDetail{
+  warehouseStaff: User;
+  materialExportReceiptDetail: MaterialExportReceiptDetail[];
+};
+export interface MaterialExportReceiptDetail {
   id: string;
   materialExportReceiptId: string;
   materialReceiptId: string;
@@ -29,7 +28,7 @@ export interface MaterialExportReceiptDetail{
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  materialReceipt: MaterialReceipt
+  materialReceipt: MaterialReceipt;
 }
 export type MaterialReceipt = {
   id: string;
@@ -39,7 +38,7 @@ export type MaterialReceipt = {
   expireDate: string | null;
   importDate: string | null;
   quantityByPack: number;
-  materialPackage: MaterialPackage
+  materialPackage: MaterialPackage;
   remainQuantityByPack: number;
   status: 'IMPORTING' | 'IMPORTED' | 'CANCELED' | 'AVAILABLE' | 'USED';
   createdAt: string;
@@ -103,6 +102,7 @@ type InspectionReport = {
 };
 
 export type ExportReceipt = {
+  discussion: any;
   id: string;
   warehouseStaffId: string;
   warehouseManagerId: string;
@@ -120,23 +120,20 @@ export type ExportReceipt = {
   warehouseStaff: WarehouseStaff;
   productionDepartment: WarehouseStaff;
   materialReceipt: MaterialExportReceipt[];
-  materialExportRequest: MaterialExportRequest
+  materialExportRequest: MaterialExportRequest;
   materialExportReceiptDetail: MaterialExportReceiptDetail[];
   productReceipt: any[]; // Replace with appropriate type if productReceipt has a defined structure
   inspectionReport: InspectionReport | null;
 };
 export const ExportReceiptType = [
-  { label: 'For Production', value: 'PRODUCTION',variant:'default' },
-  { label: 'Canceled', value: 'DISCHARGE',variant:'destructive' },
-
+  { label: 'For Production', value: 'PRODUCTION', variant: 'default' },
+  { label: 'Canceled', value: 'DISCHARGE', variant: 'destructive' }
 ];
 
 export const ExportReceiptStatus = [
   { label: 'Exported', value: 'EXPORTED', variant: 'success' },
   { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
-  { label: 'Canceled', value: 'CANCELLED', variant: 'destructive' },
-
-
+  { label: 'Canceled', value: 'CANCELLED', variant: 'destructive' }
 ];
 export interface UseExportReceiptResponse {
   statusCode: number;

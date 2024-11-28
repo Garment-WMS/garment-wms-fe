@@ -12,7 +12,7 @@ export const importRequestStatusList = [
     state: ['EXPORTING', 'EXPORTED']
   },
   {
-    title: 'Production Confirmation',
+    title: 'Goods Export Confirmation',
     state: ['PRODUCTION_APPROVED', 'PRODUCTION_REJECTED']
   }
 ];

@@ -35,26 +35,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/Dialog';
-import Barcode from 'react-barcode';
-import MaterialReceiptLabels from './components/MaterialreceiptLabels';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { DataTable } from '@/components/ui/DataTable';
-import {
-  materialExportReceiptColumn,
-  materialImportReceiptColumn
-} from './components/ReceiptColumn';
+import { materialExportReceiptColumn } from './components/ReceiptColumn';
 import privateCall from '@/api/PrivateCaller';
 import { changeStatusFn, exportReceiptApi } from '@/api/services/exportReceiptApi';
 import { ExportReceipt } from '@/types/ExportReceipt';
+import Discussion from './components/Disscussion';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -64,51 +51,17 @@ const chartData = [
   { name: 'White Cable', quantity: 5000 }
 ];
 
-const qualityData = [
-  { name: 'Passed', value: 95 },
-  { name: 'Minor Issues', value: 4 },
-  { name: 'Failed', value: 1 }
-];
-
 export default function ExportReceiptDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const [showLabelModal, setShowLabelModal] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [exportReceipt, setExportReceiptData] = useState<ExportReceipt>();
-  const handleFinishImport = async () => {
-    setShowLabelModal(true);
+  const [render, setRender] = useState<number>(0);
+  const onRender = () => {
+    setRender((render: number) => render + 1);
   };
-  // const handleConfirmFinishImport = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await finishImportReceiptFn(id as string);
-  //     if (res.status === 201) {
-  //       toast({
-  //         title: 'Import finished successfully',
-  //         description: 'The import receipt has been marked as imported.'
-  //       });
-  //       setShowConfirmDialog(false);
-  //     } else {
-  //       toast({
-  //         variant: 'destructive',
-  //         title: 'Import finished unsuccessfully',
-  //         description: 'The import receipt has not been marked as imported.'
-  //       });
-  //     }
-  //   } catch (error) {
-  //     toast({
-  //       variant: 'destructive',
-  //       title: 'Failed to finish import',
-  //       description: 'There was a problem finishing the import process.'
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   const fetchData = async () => {
     setIsLoading(true); // Start loading
 
@@ -177,7 +130,7 @@ export default function ExportReceiptDetail() {
     if (id) {
       fetchData();
     }
-  }, [id, dispatch]);
+  }, [id, dispatch, render]);
   return (
     <div className="container mx-auto p-4">
       {isLoading && exportReceipt ? (
@@ -493,70 +446,7 @@ export default function ExportReceiptDetail() {
               </CardContent>
             </Card>
           </div>
-          {/* <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
-            <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>Material Labels</DialogTitle>
-                <DialogDescription>
-                  Review and print labels for each material in this import receipt.
-                </DialogDescription>
-              </DialogHeader>
-              <ScrollArea className="max-h-96">
-                <div className="w-full text-center text-xl font-bold">Material Barcode</div>
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {exportReceipt?.materialReceipt.map((item: any) => (
-                    <div key={item.id} className="border p-4 rounded-md">
-                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p>Code: {item.materialPackage.code}</p>
-                      <div className="mt-2">
-                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="w-full text-center text-xl font-bold">Material Receipt Barcode</div>
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {exportReceipt?.materialReceipt.map((item: any) => (
-                    <div key={item.id} className="border p-4 rounded-md">
-                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p> Material Code: {item.materialPackage.code}</p>
-                      <p>
-                        Quantity: {item.quantityByPack * item.materialPackage.uomPerPack}{' '}
-                        {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
-                      </p>
-                      <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
-                      <div className="mt-2">
-                        <Barcode value={item.code} width={1.5} height={50} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              <DialogFooter>
-                <MaterialReceiptLabels materialReceipts={exportReceipt?.materialReceipt} />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="default">Confirm Finish Import</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action will finish the import process and mark all materials as
-                        received in the warehouse.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleConfirmFinishImport}>
-                        Confirm
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog> */}
+          <Discussion chat={exportReceipt?.discussion} onRender={onRender} />
         </>
       )}
     </div>

@@ -16,6 +16,7 @@ import exportRequestSelector from '../../slice/selector';
 import { MaterialExportRequest } from '@/types/exportRequest';
 import { useParams } from 'react-router-dom';
 import ExportRequestCreation from './ExportRequestCreation';
+import ExportRequestConfirmation from './ExportRequestConfirmation';
 
 interface Props {
   selectedStep: number | null;
@@ -64,6 +65,19 @@ const InspectionStep: React.FC<Props> = ({
           warehouseManager={exportRequest?.warehouseManager}
           warehouseStaff={exportRequest?.warehouseStaff}
           lastedUpdate={exportRequest?.updatedAt}
+        />
+      )
+    },
+    {
+      title: 'Pending Approval',
+      content: (
+        <ExportRequestConfirmation
+          currentStatus={currentStatus}
+          requestId={exportRequest?.code}
+          warehouseManager={exportRequest?.warehouseManager}
+          warehouseStaff={exportRequest?.warehouseStaff}
+          lastedUpdate={exportRequest?.updatedAt}
+          productionDepartment={exportRequest?.productionDepartment}
         />
       )
     }

@@ -56,6 +56,7 @@ import { DataTable } from '@/components/ui/DataTable';
 import { materialImportReceiptColumn } from './components/ReceiptColumn';
 import { InspectionReportDetail } from '@/types/InspectionReportDetail';
 import { Badge } from '@/components/ui/Badge';
+import Discussion from './components/Disscussion';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -81,6 +82,10 @@ export default function MaterialReceipt() {
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [render, setRender] = useState<number>(0);
+  const onRender = () => {
+    setRender((render) => render + 1);
+  };
   const handleFinishImport = async () => {
     setShowLabelModal(true);
   };
@@ -176,8 +181,7 @@ export default function MaterialReceipt() {
       fetchImportRequestData();
       fetchData();
     }
-  }, [id, dispatch]);
-  console.log(importReceipt?.materialReceipt);
+  }, [id, dispatch, render]);
   const calculateQualityData = (inspectionReportDetails: InspectionReportDetail[]) => {
     if (!inspectionReportDetails || inspectionReportDetails.length === 0) {
       return [
@@ -213,7 +217,7 @@ export default function MaterialReceipt() {
     setShowLabelModal(false);
   };
 
-  const inspectionReport: InspectionReport | undefined = importReceipt?.inspectionReport;
+  const inspectionReport: any | undefined = importReceipt?.inspectionReport;
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
 
   return (
@@ -547,18 +551,6 @@ export default function MaterialReceipt() {
                 </DialogDescription>
               </DialogHeader>
               <ScrollArea className="max-h-96">
-                {/* <div className="w-full text-center text-xl font-bold">Material Barcode</div>
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {importReceipt?.materialReceipt.map((item: any) => (
-                    <div key={item.id} className="border p-4 rounded-md">
-                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p>Code: {item.materialPackage.code}</p>
-                      <div className="mt-2">
-                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
-                      </div>
-                    </div>
-                  ))}
-                </div> */}
                 <div className="w-full text-center text-xl font-bold">Material Receipt Barcode</div>
                 <div className="grid grid-cols-2 gap-4 py-4">
                   {importReceipt?.materialReceipt.map((item: any) => (
@@ -605,6 +597,9 @@ export default function MaterialReceipt() {
                 </AlertDialog>
               </DialogFooter>
             </DialogContent>
+            {importReceipt?.discussion && (
+              <Discussion chat={importReceipt?.discussion} onRender={onRender} />
+            )}
           </Dialog>
         </>
       )}
