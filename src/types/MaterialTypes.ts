@@ -51,6 +51,15 @@ export interface MaterialVariantResponse {
   message: string;
   errors: any | null;
 }
+export interface MaterialReceiptResponse {
+  statusCode: number;
+  data: {
+    data: MaterialReceipt[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
 export interface MaterialImportReceiptResponse {
   statusCode: number;
   data: {
@@ -69,25 +78,56 @@ export interface MaterialExportReceiptResponse {
   message: string;
   errors: any | null;
 }
-export interface MaterialReceiptResponse {
-  statusCode: number;
-  data: MaterialReceipt;
-  message: string;
-  errors: any | null;
-}
+// export interface MaterialReceiptResponse {
+//   statusCode: number;
+//   data: MaterialReceipt;
+//   message: string;
+//   errors: any | null;
+// }
 export interface MaterialReceipt {
   id: string;
-  materialPackageId: string;
-  code:string;
+  materialId: string;
+  code: string;
   importReceiptId: string;
+  expireDate: string;
   quantityByPack: number;
-  remainQuantityByPack: number;
-  status: string;
+  importDate: string;
   materialPackage: MaterialPackage;
-  expiredDate: string;
+  remainQuantityByPack: number;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  status: string;
+}
+export interface OneMaterialReceipt{
+  id: string;
+  code: string;
+  importReceiptId: string;
+  expireDate: string;
+  quantityByPack: number;
+  importDate: string;
+  materialPackage: MaterialPackage;
+  remainQuantityByPack: number;
+  materialExportReceiptDetail: MaterialExportReceiptDetail[]
+  receiptAdjustment: ReceiptAdjustment[]
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt: string | null;
+  status: string;
+}
+
+export interface MaterialExportReceiptDetail{
+  id: string
+  quantityByPack: number
+  createdAt: string
+  materialExportReceipt: MaterialExportReceipt
+}
+export interface ReceiptAdjustment{
+  id: string
+  beforeAdjustQuantity: number
+  afterAdjustQuantity: number
+  status: string
+  adjustedAt: string
 }
 export interface MaterialImportReceipt {
   id: string;
@@ -122,7 +162,9 @@ export interface MaterialExportReceipt {
   quantityByPack: number;
   remainQuantityByPack: number;
   materialReceipt: MaterialReceipt;
+  type: string;
   materialPackage: MaterialPackage;
+  startedAt: string;
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
