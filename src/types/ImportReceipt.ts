@@ -10,7 +10,7 @@ export type MaterialReceipt = {
   expireDate: string | null;
   importDate: string | null;
   quantityByPack: number;
-  materialPackage: MaterialPackage
+  materialPackage: MaterialPackage;
   remainQuantityByPack: number;
   status: 'IMPORTING' | 'IMPORTED' | 'CANCELED' | 'AVAILABLE' | 'USED';
   createdAt: string;
@@ -74,6 +74,7 @@ type InspectionReport = {
 };
 
 export type ImportReceipt = {
+  discussion: any;
   id: string;
   warehouseStaffId: string;
   warehouseManagerId: string;

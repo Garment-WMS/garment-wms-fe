@@ -1,5 +1,5 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import {
   TbCalendarCog,
   TbClipboardData,
@@ -9,14 +9,15 @@ import {
   TbShoppingCartCog,
   TbReceipt,
   TbPackageExport,
-  TbReceiptRefund 
+  TbReceiptRefund
 } from 'react-icons/tb';
 import { MenuProps } from '@/constants/interface';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 import SideBar from '@/components/SideBar';
 import TopBar from '@/components/TopBar';
 import { MdOutlineInventory } from 'react-icons/md';
-type Props = {}
+import { BiTask } from 'react-icons/bi';
+type Props = {};
 const iconSize = 22;
 const WarehouseManagerMenu: MenuProps[] = [
   {
@@ -61,7 +62,7 @@ const WarehouseManagerMenu: MenuProps[] = [
   },
   {
     title: 'Export Receipt',
-    renderIcon: <TbReceiptRefund  size={iconSize} />,
+    renderIcon: <TbReceiptRefund size={iconSize} />,
     link: '/export-receipt'
   },
   {
@@ -78,6 +79,11 @@ const WarehouseManagerMenu: MenuProps[] = [
     title: 'Report',
     renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
+  },
+  {
+    title: 'Task Management',
+    renderIcon: <BiTask size={iconSize} />,
+    link: '/tasks-management'
   }
 ];
 const WarehouseManagerLayout = (props: Props) => {
@@ -91,7 +97,7 @@ const WarehouseManagerLayout = (props: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WarehouseManagerLayout
+export default WarehouseManagerLayout;

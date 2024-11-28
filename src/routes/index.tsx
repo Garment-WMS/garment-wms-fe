@@ -14,7 +14,6 @@ import PurchaseOrderDeliveryDetails from '@/pages/Purchase Order Delivery/detail
 import CreateImportRequest from '@/pages/ImportRequests/create';
 import CreateImportRequestMenu from '@/pages/ImportRequests/menu';
 
-
 import Loading from '@/components/common/Loading';
 import ImportRequestManagement from '@/pages/ImportRequests/management';
 import ViewImportRequest from '@/pages/ImportRequests/view';
@@ -53,6 +52,8 @@ import FactoryDirectorLayout from '@/layouts/FactoryDirectorLayout';
 import ExportReceiptList from '@/pages/ExportReceiptList/management';
 import ExportReceiptDetail from '@/pages/ExportReceiptDetail';
 import NotfoundPage from '@/pages/404';
+import TaskManagers from '@/pages/Task Manager';
+import TaskDetailManagingPage from '@/pages/Task Manager/taskDetails';
 import WarehouseStaffImportRequestManagement from '@/pages/WarehouseStaff/ImportRequests/management';
 import WarehouseStaffImportReceiptList from '@/pages/WarehouseStaff/ImportReceiptList/management';
 import ExportRequestList from '@/pages/ExportRequestList/management';
@@ -82,7 +83,6 @@ const RouterComponent: React.FC = () => {
         //   path: '/',
         //   element: <Home />,
         // },
-
 
         {
           path: '/dashboard',
@@ -133,14 +133,16 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/import-request',
-          element: <RoleBasedRedirect 
-          managerComponent={<ImportRequestManagement />} 
-          warehouseStaffComponent={<WarehouseStaffImportRequestManagement/>}
-          factoryDirectorComponent={<ImportRequestManagement />}
-          inspectingDepartmentComponent={<ImportRequestManagement />}
-          productionDepartmentComponent={<ImportRequestManagement />}
-          purchasingStaffComponent={<ImportRequestManagement />}
-          />
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<ImportRequestManagement />}
+              warehouseStaffComponent={<WarehouseStaffImportRequestManagement />}
+              factoryDirectorComponent={<ImportRequestManagement />}
+              inspectingDepartmentComponent={<ImportRequestManagement />}
+              productionDepartmentComponent={<ImportRequestManagement />}
+              purchasingStaffComponent={<ImportRequestManagement />}
+            />
+          )
           // element: <ImportRequestManagement />
         },
         {
@@ -161,14 +163,16 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/export-request',
-          element: <RoleBasedRedirect
-          managerComponent={<ExportRequestList />}
-          warehouseStaffComponent={<WarehouseStaffExportRequestList />}
-          factoryDirectorComponent={<ExportRequestList />}
-          inspectingDepartmentComponent={<ExportRequestList />}
-          productionDepartmentComponent={<ExportRequestList />}
-          purchasingStaffComponent={<ExportRequestList />}
-          />
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<ExportRequestList />}
+              warehouseStaffComponent={<WarehouseStaffExportRequestList />}
+              factoryDirectorComponent={<ExportRequestList />}
+              inspectingDepartmentComponent={<ExportRequestList />}
+              productionDepartmentComponent={<ExportRequestList />}
+              purchasingStaffComponent={<ExportRequestList />}
+            />
+          )
           // element: <ExportRequestList />
         },
         {
@@ -180,6 +184,18 @@ const RouterComponent: React.FC = () => {
           element: <MyTasks />
         },
         {
+          path: '/tasks-management',
+          element: <TaskManagers />
+        },
+        {
+          path: '/tasks-management-detail/:id',
+          element: <TaskDetailManagingPage />
+        },
+        {
+          path: '/tasks-management/:id',
+          element: <TaskManagers />
+        },
+        {
           path: '/tasks/:id',
           element: <TaskDetailPage />
         },
@@ -189,15 +205,16 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/import-receipt',
-          element: <RoleBasedRedirect
-          managerComponent={<ImportReceiptList />}
-          warehouseStaffComponent={<WarehouseStaffImportReceiptList/>}
-          productionDepartmentComponent={<ImportReceiptList />}
-          purchasingStaffComponent={<ImportReceiptList />}
-          inspectingDepartmentComponent={<ImportReceiptList />}
-          factoryDirectorComponent={<ImportReceiptList />}
-          
-          />
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<ImportReceiptList />}
+              warehouseStaffComponent={<WarehouseStaffImportReceiptList />}
+              productionDepartmentComponent={<ImportReceiptList />}
+              purchasingStaffComponent={<ImportReceiptList />}
+              inspectingDepartmentComponent={<ImportReceiptList />}
+              factoryDirectorComponent={<ImportReceiptList />}
+            />
+          )
           // element: <ImportReceipt />
         },
         {
@@ -272,7 +289,7 @@ const RouterComponent: React.FC = () => {
       path: '/unauthorized',
       element: <NotfoundPage />
     },
-              
+
     { path: '*', element: <NotfoundPage /> }
   ]);
   return <RouterProvider fallbackElement={<Loading />} router={router} />;
