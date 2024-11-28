@@ -228,7 +228,7 @@ const CreateDynamicPlan = (props: Props) => {
   // pagination state of the table
   const [materialPagination, setMaterialPagination] = useState<PaginationState>({
     pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
+    pageSize: 100 //default page size
   });
   const {
     materialList,
@@ -260,7 +260,7 @@ const CreateDynamicPlan = (props: Props) => {
   // pagination state of the table
   const [productPagination, setProductPagination] = useState<PaginationState>({
     pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
+    pageSize: 100 //default page size
   });
   const {
     productList,
