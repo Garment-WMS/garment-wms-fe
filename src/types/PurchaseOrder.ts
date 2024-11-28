@@ -3,6 +3,7 @@ import { MaterialPackage } from './MaterialTypes';
 import { Supplier } from './SupplierTypes';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 import { ImportRequest } from './ImportRequestType';
+import { ProductionPlan } from './ProductionPlan';
 
 // PO Delivery Detail
 export interface PODeliveryDetail {
@@ -41,6 +42,7 @@ export interface PurchaseOrder {
   id: string;
   poNumber: string;
   quarterlyProductionPlanId: string | null;
+  productionPlanId: string | null;
   purchasingStaffId: string | null;
   currency: string;
   subTotalAmount: number;
@@ -60,6 +62,7 @@ export interface PurchaseOrder {
   totalImportQuantity: number;
   totalFailImportQuantity: number;
   totalQuantityToImport: number;
+  productionPlan : ProductionPlan | null;
 }
 
 // Pagination Meta

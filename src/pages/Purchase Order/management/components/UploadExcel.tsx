@@ -24,6 +24,16 @@ const errorMessages = {
     clientMessage:
       'The uploaded file format does not match the required template. Please use the correct template and try again.'
   },
+  invalidPOInfoHeader: {
+    statusCode: 415,
+    message: 'Invalid format, POInfo table header is invalid',
+    clientMessage: 'The uploaded file contains invalid data. The POInfo table header is incorrect.'
+  },
+  invalidProductionPlan: {
+    statusCode: 415,
+    message: 'Invalid Production Plan, the production plan is not available',
+    clientMessage: 'The uploaded file contains invalid Production Plan.'
+  },
   errorInFile: {
     message: 'There is error in the file',
     clientMessage:
@@ -91,7 +101,7 @@ const UploadExcel: React.FC = () => {
           setPoNumber(response?.data?.poNumber);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       setUploadError('Failed to upload file. Please try again.');
       setActiveStep(0);
     } finally {
@@ -104,7 +114,7 @@ const UploadExcel: React.FC = () => {
       response.statusCode === errorMessages.invalidFileType.statusCode &&
       response.message === errorMessages.invalidFileType.message
     ) {
-      setUploadError(errorMessages.invalidFileType.clientMessage);
+      setUploadError(errorMessages.invalidFileType.message);
     } else if (
       response.statusCode === errorMessages.invalidFormat.statusCode &&
       response.message === errorMessages.invalidFormat.message
@@ -112,6 +122,11 @@ const UploadExcel: React.FC = () => {
       setUploadError(errorMessages.invalidFormat.clientMessage);
     } else if (response.message === errorMessages.errorInFile.message && response.errors) {
       setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
+    } else if (
+      response.statusCode === errorMessages.invalidProductionPlan.statusCode &&
+      response.message.includes(errorMessages.invalidProductionPlan.message)
+    ) {
+      setUploadError(errorMessages.invalidProductionPlan.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
@@ -140,6 +155,7 @@ const UploadExcel: React.FC = () => {
 
   const renderUploadExcel = () => (
     <div>
+      {/* File Upload Section */}
       {!selectedFile && !uploadError && (
         <div
           className={`flex flex-col gap-5 justify-center items-center border-2 ${

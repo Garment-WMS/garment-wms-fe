@@ -73,6 +73,7 @@ const PurchaseOrderDetails: React.FC = () => {
           totalImportQuantity={totalImportQuantity}
           totalFailImportQuantity={totalFailImportQuantity}
           totalQuantityToImport={totalQuantityToImport}
+          prodcutionPlanCode={purchaseOrder?.productionPlan.code}
         />
         {/* Order to details */}
         <OrderToDetails supplier={supplier} />
