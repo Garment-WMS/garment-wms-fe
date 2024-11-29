@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ArrowUpIcon } from 'lucide-react';
+import { ArrowUpIcon, Percent } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getDashboardFn, getLatestImportReceiptFn } from '@/api/services/dashboardApi';
+import {
+  getDashboardFn,
+  getLatestExportReceiptFn,
+  getLatestImportReceiptFn
+} from '@/api/services/dashboardApi';
 import { DateRangePicker } from '@/components/date-range-picker';
 import {
   Table,
@@ -17,10 +21,16 @@ import {
   TableRow
 } from '@/components/ui/Table';
 import Loading from '@/components/common/Loading';
-
+import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/Badge';
+import { PiShirtFoldedBold } from 'react-icons/pi';
+import { GiCardboardBoxClosed } from 'react-icons/gi';
+import { Avatar } from '@radix-ui/react-avatar';
+import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [importReceipts, setImportReceipts] = useState<any[]>([]);
+  const [exportReceipts, setExportReceipts] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: new Date(new Date().setDate(new Date().getDate() - 30)), // Default to last 30 days
     to: new Date()
@@ -28,10 +38,12 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [dashboardRes, importReceiptsRes] = await Promise.all([
+      const [dashboardRes, importReceiptsRes, exportReceiptRes] = await Promise.all([
         getDashboardFn(dateRange.from.toISOString(), dateRange.to.toISOString()),
-        getLatestImportReceiptFn(dateRange.from.toISOString(), dateRange.to.toISOString())
+        getLatestImportReceiptFn(dateRange.from.toISOString(), dateRange.to.toISOString()),
+        getLatestExportReceiptFn(dateRange.from.toISOString(), dateRange.to.toISOString())
       ]);
+      setExportReceipts(exportReceiptRes);
       setDashboardData(dashboardRes);
       setImportReceipts(importReceiptsRes);
     } catch (error) {
@@ -54,14 +66,25 @@ export default function DashboardPage() {
   const totalProduction = dashboardData.numberOfProductStock;
   const totalMaterialStock = dashboardData.numberOfMaterialStock;
 
-  // Helper function to get material data
   const getMaterialData = () => {
-    return dashboardData.materialVariant.map((material: any) => ({
+    const materials = dashboardData.materialVariant.map((material: any) => ({
       name: material.name,
       value: material.quantity
     }));
-  };
 
+    // Sort materials by quantity in descending order
+    materials.sort((a: any, b: any) => b.value - a.value);
+
+    // Calculate total quantity
+    const totalQuantity = materials.reduce((sum: number, material: any) => sum + material.value, 0);
+
+    // Calculate percentage and add color
+    return materials.map((material: any, index: number) => ({
+      ...material,
+      percentage: (material.value / totalQuantity) * 100,
+      color: `hsl(${(index * 40) % 360}, 70%, 60%)`
+    }));
+  };
   // Helper function to get product data
   const getProductData = () => {
     return dashboardData.productVariant.map((product: any) => ({
@@ -84,7 +107,10 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">TOTAL PRODUCTION</CardTitle>
+              <CardTitle className="text-sm font-medium flex justify-between w-full items-center">
+                <h3>TOTAL PRODUCTION</h3>
+                <PiShirtFoldedBold size={30} />
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalProduction} units</div>
@@ -93,7 +119,10 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">RAW MATERIAL STOCK</CardTitle>
+              <CardTitle className="text-sm font-medium flex justify-between w-full items-center">
+                <h3>RAW MATERIAL STOCK</h3>
+                <GiCardboardBoxClosed size={30} />
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalMaterialStock} units</div>
@@ -101,17 +130,20 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium"> IMPORT MATERIAL QUALITY RATE</CardTitle>
+              <CardTitle className="text-sm font-medium flex justify-between w-full items-center">
+                <h3>IMPORT MATERIAL QUALITY RATE</h3>
+                <Percent size={30} />
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{dashboardData.materialQualityRate}%</div>
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2  ">
           <Card>
             <CardHeader>
-              <CardTitle>Raw Material Distribution</CardTitle>
+              <CardTitle>Raw Material Chart</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -121,7 +153,7 @@ export default function DashboardPage() {
                     color: 'hsl(252, 76%, 54%)'
                   }
                 }}
-                className="h-[300px]">
+                className="">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart layout="vertical" data={getMaterialData()}>
                     <XAxis type="number" />
@@ -145,7 +177,7 @@ export default function DashboardPage() {
                     color: 'hsl(142, 76%, 36%)'
                   }
                 }}
-                className="h-[300px]">
+                className="">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={getProductData()}>
                     <XAxis dataKey="name" />
@@ -163,17 +195,21 @@ export default function DashboardPage() {
             <CardTitle>Raw Material Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 grid-rows-3 gap-2 h-[300px]">
+            <div className="grid grid-cols-3 gap-2 h-[500px]">
               {getMaterialData().map((material: any, i: number) => (
                 <div
                   key={i}
-                  className="rounded-lg p-2 text-white"
+                  className="rounded-lg p-2 text-white flex flex-col justify-between"
                   style={{
-                    backgroundColor: `hsl(${(i * 40) % 360}, 70%, 60%)`,
-                    gridRow: i < 2 ? 'span 2' : 'span 1'
-                  }}>
-                  <div className="font-medium">{material.name}</div>
-                  <div className="text-sm opacity-80">{material.value} units</div>
+                    backgroundColor: material.color,
+                    gridRow: `span ${Math.ceil((material.percentage / 10) * 2)}` // Dynamic scaling
+                  }}
+                  title={`Name: ${material.name}\nValue: ${material.value}\nPercentage: ${material.percentage.toFixed(2)}%`}>
+                  <div>
+                    <div className="font-medium">{material.name}</div>
+                    <div className="text-sm opacity-80">{material.value} units</div>
+                  </div>
+                  <div className="text-xs mt-2">{material.percentage.toFixed(2)}%</div>
                 </div>
               ))}
             </div>
@@ -193,19 +229,138 @@ export default function DashboardPage() {
                   <TableHead>Started At</TableHead>
                   <TableHead>Finished At</TableHead>
                   <TableHead>Warehouse Staff</TableHead>
+                  <TableHead>Managed By </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {importReceipts.map((receipt) => (
                   <TableRow key={receipt.id}>
-                    <TableCell>{receipt.code}</TableCell>
-                    <TableCell>{receipt.status}</TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/export-receipt/${receipt.id}`}
+                        className="text-blue-500 underline">
+                        {receipt.code}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          receipt.status == 'IMPORTED'
+                            ? 'success'
+                            : receipt.status == 'CANCELLED'
+                              ? 'destructive'
+                              : 'default'
+                        }>
+                        {receipt.status}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{receipt.type}</TableCell>
                     <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
                     <TableCell>
                       {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}
                     </TableCell>
-                    <TableCell>{`${receipt.warehouseStaff.account.firstName} ${receipt.warehouseStaff.account.lastName}`}</TableCell>
+                    <TableCell>
+                      <div className="flex">
+                        <Avatar className="mr-2">
+                          <AvatarImage src={receipt.warehouseStaff.account.avatarUrl} />
+                          <AvatarFallback>
+                            {' '}
+                            {`${receipt.warehouseStaff.account.firstName.slice(0, 1)} ${receipt.warehouseStaff.account.lastName.slice(0, 1)}`}
+                          </AvatarFallback>
+                        </Avatar>
+                        {`${receipt.warehouseStaff.account.firstName} ${receipt.warehouseStaff.account.lastName}`}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex">
+                        <Avatar className="mr-2">
+                          <AvatarImage src={receipt.warehouseManager.account.avatarUrl} />
+                          <AvatarFallback>
+                            {' '}
+                            {`${receipt.warehouseManager.account.firstName.slice(0, 1)} ${receipt.warehouseManager.account.lastName.slice(0, 1)}`}
+                          </AvatarFallback>
+                        </Avatar>
+                        {`${receipt.warehouseManager.account.firstName} ${receipt.warehouseManager.account.lastName}`}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Latest Export Receipts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Started At</TableHead>
+                  <TableHead>Finished At</TableHead>
+                  <TableHead>Warehouse Staff</TableHead>
+                  <TableHead>Managed by</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {exportReceipts.map((receipt) => (
+                  <TableRow key={receipt.id}>
+                    <TableCell>
+                      <Link
+                        to={`/import-receipt/${receipt.id}`}
+                        className="text-blue-500 underline">
+                        {receipt.code}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          receipt.status == 'IMPORTED'
+                            ? 'success'
+                            : receipt.status == 'CANCELLED'
+                              ? 'destructive'
+                              : 'default'
+                        }>
+                        {receipt.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{receipt.type}</TableCell>
+                    <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex">
+                        <Avatar className="mr-2">
+                          <AvatarImage src={receipt.warehouseStaff.account.avatarUrl} />
+                          <AvatarFallback>
+                            {' '}
+                            {`${receipt.warehouseStaff.account.firstName.slice(0, 1)} ${receipt.warehouseStaff.account.lastName.slice(0, 1)}`}
+                          </AvatarFallback>
+                        </Avatar>
+                        {`${receipt.warehouseStaff.account.firstName} ${receipt.warehouseStaff.account.lastName}`}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex">
+                        <Avatar className="mr-2">
+                          <AvatarImage src={receipt.warehouseManager?.account.avatarUrl} />
+                          <AvatarFallback>
+                            {' '}
+                            {receipt.warehouseManager
+                              ? `${receipt.warehouseManager?.account.firstName.slice(0, 1)} ${receipt.warehouseManager?.account.lastName.slice(0, 1)}`
+                              : 'NA'}
+                          </AvatarFallback>
+                        </Avatar>
+                        {receipt.warehouseManager
+                          ? `${receipt.warehouseManager?.account.firstName} ${receipt.warehouseManager?.account.lastName}`
+                          : 'N/A'}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

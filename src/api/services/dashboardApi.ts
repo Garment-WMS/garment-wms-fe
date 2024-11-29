@@ -9,7 +9,7 @@ export const dashboardApi = {
   getLatestImportReceipt: (startDate: string, endDate: string) =>
     get(`/import-receipt/latest?from=${startDate}&to=${endDate}`),
   getLatestExportReceipt: (startDate: string, endDate: string) =>
-    get(`material-export-request/latest?from=${startDate}&to=${endDate}`)
+    get(`/material-export-receipt/latest?from=${startDate}&to=${endDate}`)
 };
 
 export const getDashboardFn = async (startDate: string, endDate: string): Promise<any> => {
