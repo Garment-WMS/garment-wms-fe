@@ -84,7 +84,7 @@ const ImportRequestSheet = (props: Props) => {
           value={importRequest?.description}
         />
       </div>
-      <SupplierWarehouseInfo />
+      {/* <SupplierWarehouseInfo /> */}
       <ImportRequestDetails />
     </div>
   );

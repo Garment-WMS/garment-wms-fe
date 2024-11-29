@@ -53,7 +53,7 @@ const ImportRequestSheet: React.FC = () => {
           value={description || ''}
         />
       </div>
-      <SupplierWarehouseInfo />
+      {/* <SupplierWarehouseInfo /> */}
       <ExportRequestDetail />
     </div>
   );

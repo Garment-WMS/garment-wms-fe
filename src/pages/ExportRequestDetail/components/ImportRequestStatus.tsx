@@ -77,7 +77,7 @@ const ImportRequestStatus = (props: Props) => {
     lg:flex-col lg:justify-center
     ">
       <div className="flex flex-col justify-center items-center gap-1">
-        <div className="font-primary font-bold lg:text-xl">Import Request</div>
+        <div className="font-primary font-bold lg:text-xl">Export Request</div>
         <span className="font-primary font-bold lg:text-xl">#{id}</span>
         <div className="font-primary text-sm">Assigned to</div>
         <Avatar>

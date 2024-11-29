@@ -126,7 +126,7 @@ export default function MaterialReceiptFinish({
       <Dialog open={showFinishDialog} onOpenChange={setShowFinishDialog}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Finish Import - Scan Materials</DialogTitle>
+            <DialogTitle>Finish Export - Scan Materials</DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh]">
             <div className="grid grid-cols-2 gap-4 p-4">
@@ -159,9 +159,9 @@ export default function MaterialReceiptFinish({
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Finish Import</AlertDialogTitle>
+            <AlertDialogTitle>Confirm Finish Export</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to finish the import? This action cannot be undone.
+              Are you sure you want to finish the Export? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
