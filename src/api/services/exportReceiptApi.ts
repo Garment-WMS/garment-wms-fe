@@ -9,6 +9,7 @@ const exportReceiptPath = '/material-export-receipt';
 export const exportReceiptApi = {
   getAllWithQueryStrings: (queryString: string) => get(`${exportReceiptPath}${queryString}`),
   getOne: (id: string) => get(`${exportReceiptPath}/${id}`),
+  getOneByRequestId: (id: string) => get(`${exportReceiptPath}/by-material-export-request/${id}`),
   changeStatus: (id: string, action: string) =>
     post('/material-export-receipt/warehouse-staff-process', {
       action,

@@ -5,12 +5,16 @@ import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { exportReceiptApi } from '@/api/services/exportReceiptApi';
+import privateCall from '@/api/PrivateCaller';
 
-type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
+type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'EXPORTING' | 'EXPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
   currentStatus: string;
   requestId: string;
+  exportRequestId: string;
   warehouseManager?: any;
   warehouseStaff?: any;
   lastedUpdate: any;
@@ -20,14 +24,14 @@ const getStatusDetails = (status: AssignmentStatus) => {
   switch (status) {
     case 'WAITING FOR ASSIGNMENT':
       return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: Clock };
-    case 'IMPORTING':
+    case 'EXPORTING':
       return {
         label: 'In Progress',
         color: 'bg-blue-500 text-white',
         icon: Info
       };
-    case 'IMPORTED':
-      return { label: 'Imported', color: 'bg-green-500 text-green-950', icon: ClipboardCheck };
+    case 'EXPORTED':
+      return { label: 'Exported', color: 'bg-green-500 text-green-950', icon: ClipboardCheck };
 
     default:
       return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: AlertCircle };
@@ -48,16 +52,27 @@ const getInitials = (name: string | undefined): string => {
 export default function WarehouseStaffAssignment({
   currentStatus,
   requestId,
+  exportRequestId,
   warehouseManager,
   warehouseStaff,
   lastedUpdate
 }: WarehouseStaffAssignmentProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
+  const [exportReceipt, setExportReceipt] = useState<any>();
+  useEffect(() => {
+    const getExportReceipt = async () => {
+      const response = await privateCall(exportReceiptApi.getOneByRequestId(exportRequestId));
+      setExportReceipt(response.data.data);
+    };
 
+    if (currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') {
+      getExportReceipt();
+    }
+  }, []);
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-2xl">Label and Import to warehouse</CardTitle>
+        <CardTitle className="text-2xl">Export to warehouse</CardTitle>
         <p className="text-sm text-muted-foreground">Request #{requestId}</p>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -133,8 +148,8 @@ export default function WarehouseStaffAssignment({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && (
-            <Link to={``}>
+          {(currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') && exportReceipt && (
+            <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
               <Button variant={'default'} className="ml-4">
                 Go to Receipt
               </Button>

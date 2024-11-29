@@ -78,7 +78,7 @@ const ExportRequestDetail = () => {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <div className="font-primary text-xl font-bold my-2">Import Request Details</div>
+      <div className="font-primary text-xl font-bold my-2">Export Request Details</div>
       <div className="pb-4">
         <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
           <DataTable columns={DetailsColumn} data={formattedDetails} />

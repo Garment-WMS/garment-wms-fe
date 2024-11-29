@@ -1,29 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import axios from 'axios';
-import { finishImportReceiptFn, importReceiptApi } from '@/api/ImportReceiptApi';
+
 import { useDispatch, useSelector } from 'react-redux';
-import { actions } from '../ImportReceiptList/slice';
 import { useToast } from '@/hooks/use-toast';
-import { ImportReceipt } from '@/types/ImportReceipt';
-import importReceiptSelector from '../ImportReceiptList/slice/selector';
+
 import Loading from '@/components/common/Loading';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/Table';
+
 import {
   AlertDialog,
   AlertDialogAction,
