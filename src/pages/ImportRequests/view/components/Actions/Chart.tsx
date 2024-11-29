@@ -56,9 +56,11 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   const { data: defectsData } = useGetAllDefects();
 
   useEffect(() => {
+    console.log('defectsData', defectsData);
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; percentage: number }[] = [];
-      const staticDefects = defectsData?.data;
+      // const staticDefects = defectsData?.data;
+      const staticDefects = Array.isArray(defectsData.data) ? defectsData.data : [];
 
       // Map over static defects and combine with inspectionRequest data
       staticDefects.forEach((staticDefect: { description: string }) => {
