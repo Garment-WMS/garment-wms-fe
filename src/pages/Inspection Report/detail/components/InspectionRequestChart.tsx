@@ -44,8 +44,8 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
   const totalInspected = totalFail + totalPass;
 
   const chartData = [
-    { name: 'Fail', value: totalFail },
-    { name: 'Pass', value: totalPass }
+    { name: 'Pass', value: totalPass },
+    { name: 'Fail', value: totalFail }
   ];
 
   const handleViewDefects = (detailDefects: any[]) => {
@@ -76,7 +76,7 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
         <div className="w-full pb-5">
           <PieChartComponent
             data={chartData}
-            colors={[Colors.green[500], Colors.red[500]]}
+            colors={[Colors.green[500], Colors.red[500]]} // Corrected order: Pass is green, Fail is red
             width={280}
             height={280}
             innerRadius={80}
@@ -86,6 +86,7 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
             showValue={false}
             legendHeight={5}
           />
+          ;
         </div>
       </Card>
 
