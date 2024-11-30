@@ -70,7 +70,7 @@ function SelectionSummary({
           {selectedPo ? (
             <Badge variant="outline" className="flex items-center gap-2">
               {selectedPo.poNumber}
-              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(2)}>
+              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(1)}>
                 <Edit className="h-3 w-3" />
                 <span className="sr-only">Edit Purchase Order</span>
               </Button>
@@ -84,7 +84,7 @@ function SelectionSummary({
           {selectedPoDelivery ? (
             <Badge variant="outline" className="flex items-center gap-2">
               {selectedPoDelivery.code}
-              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(3)}>
+              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(2)}>
                 <Edit className="h-3 w-3" />
                 <span className="sr-only">Edit PO Batch</span>
               </Button>
