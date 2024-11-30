@@ -6,6 +6,7 @@ import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { Button } from '@/components/ui/button';
 
 const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
@@ -19,15 +20,6 @@ const PurchaseOrderDeliveryDetails = () => {
     (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
     0
   );
-  const breadcrumbItems = [
-    { label: 'Purchase Orders', href: '/purchase-order' },
-    { label: `Purchase Order #${poNumber}`, href: `/purchase-order/${poId}` },
-    {
-      label: `Delivery #${delivery.code}`,
-      href: `/purchase-order/${poId}/po-delivery/${delivery.id}`,
-      disabled: true
-    }
-  ];
 
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
@@ -46,8 +38,6 @@ const PurchaseOrderDeliveryDetails = () => {
 
   return (
     <main className="w-full h-screen bg-white rounded-xl shadow-xl px-8 pt-6 pb-8 pl-5">
-      {/* <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={3} /> */}
-
       {/* Header */}
       <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6 mt-5">
         <div className="flex flex-col gap-4">
@@ -74,10 +64,10 @@ const PurchaseOrderDeliveryDetails = () => {
         <div className="items-center flex flex-col justify-center">
           {delivery && delivery?.importRequest && delivery?.importRequest[0]?.id ? (
             <Link to={`/import-request/${delivery.importRequest[0].id}`}>
-              <Badge
-                className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
+              <Button
+                className={`px-3 py-2 rounded-md text-lg bg-white ${getStatusBadgeClass(delivery.status)}`}>
                 View Import Request
-              </Badge>{' '}
+              </Button>{' '}
             </Link>
           ) : null}
         </div>
@@ -87,12 +77,12 @@ const PurchaseOrderDeliveryDetails = () => {
       <section className="flex flex-col gap-6 border-b border-gray-200 pb-6 mb-6">
         <h2 className="text-xl font-semibold text-primaryDark">Materials</h2>
         {delivery.poDeliveryDetail.map((detail: PODeliveryDetail) => (
-          <MaterialList key={detail.id} detail={detail} />
+          <MaterialList key={detail.id} detail={detail} status={delivery?.status} />
         ))}
       </section>
 
       {/* Order Summary */}
-      <section className="border-t border-gray-200 pt-6 -mt-9">
+      <section className="border-t border-gray-200 pt-6 -mt-9 hidden">
         <h2 className="text-xl font-semibold text-primaryDark mb-4">Order Summary</h2>
 
         <div className="flex flex-wrap justify-between items-center text-lg">

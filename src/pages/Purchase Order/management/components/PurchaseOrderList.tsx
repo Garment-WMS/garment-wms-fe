@@ -5,7 +5,7 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import UploadExcel from './UploadExcel';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
@@ -14,7 +14,6 @@ import { useGetAllSupplier } from '@/hooks/useGetAllSupplier';
 import { Supplier } from '@/types/SupplierTypes';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
-import { ProductionPlan } from '@/types/ProductionPlan';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -148,6 +147,18 @@ const PurchaseOrderList: React.FC = () => {
             colorVariant = 'bg-gray-200 text-black';
         }
         return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
+      }
+    },
+    {
+      header: 'No of delivery',
+      accessorKey: 'totalPoDelivery',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-center text-xl">
+            <Badge className="bg-blue-700">{row.original.totalPoDelivery || 0}</Badge>
+          </div>
+        );
       }
     },
     {

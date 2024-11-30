@@ -99,16 +99,13 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
         label = 'Create Import Request';
         path = `/import-request/create/material/${delivery.id}`;
         break;
-      case PurchaseOrderDeliveryStatus.FINISHED:
-        color = 'bg-green-400';
-        label = 'View Details';
-        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
-        break;
+      // case PurchaseOrderDeliveryStatus.FINISHED:
+      //   color = 'bg-green-400';
+      //   label = 'View Details';
+      //   path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
+      //   break;
       default:
-        color = 'bg-green-500';
-        label = 'View Details';
-        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
-        break;
+        return null;
     }
 
     return (
