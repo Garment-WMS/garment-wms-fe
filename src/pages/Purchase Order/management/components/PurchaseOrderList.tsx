@@ -5,7 +5,7 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import UploadExcel from './UploadExcel';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
@@ -15,15 +15,25 @@ import { Supplier } from '@/types/SupplierTypes';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
 import { ProductionPlan } from '@/types/ProductionPlan';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/DropdownMenu';
+import { Button } from '@/components/ui/button';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 
 const PurchaseOrderList: React.FC = () => {
+  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 8
   });
 
   const { isFetching, purchaseOrderList, pageMeta } = useGetAllPurchaseOrder({
@@ -38,6 +48,9 @@ const PurchaseOrderList: React.FC = () => {
     isPending: isFetchingProductionPlan,
     isError
   } = useGetAllProductionPlans({});
+  const handleViewClick = (requestId: string) => {
+    navigate(`/purchase-order/${requestId}`);
+  };
 
   const paginatedTableData =
     purchaseOrderList && pageMeta
@@ -54,27 +67,8 @@ const PurchaseOrderList: React.FC = () => {
     {
       header: 'PO Number',
       accessorKey: 'poNumber',
-      cell: ({ row }) => (
-        <Link
-          to={`/purchase-order/${row.original.id}`}
-          className="ml-2 font-semibold text-primary underline hover:opacity-50">
-          {row.original.poNumber}
-        </Link>
-      ),
+      cell: ({ row }) => <span className="font-bold ">{row.original.poNumber}</span>,
       enableColumnFilter: false
-    },
-    {
-      header: 'Production Plan Code',
-      accessorKey: 'productionPlanId',
-      enableColumnFilter: true,
-      filterOptions: data?.data.data.map((productionPlan: ProductionPlan) => ({
-        label: productionPlan.code,
-        value: productionPlan.id
-      })),
-      cell: ({ row }) => {
-        const value = row.original?.productionPlan?.code;
-        return <div className="ml-9 font-semibold">{value ? value : 'PL123'}</div>;
-      }
     },
     {
       header: 'Supplier',
@@ -189,6 +183,27 @@ const PurchaseOrderList: React.FC = () => {
               </div>
             </Tooltip>
           </TooltipProvider>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const request = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       }
     }
