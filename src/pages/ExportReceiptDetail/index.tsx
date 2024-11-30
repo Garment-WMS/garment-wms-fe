@@ -30,6 +30,10 @@ import privateCall from '@/api/PrivateCaller';
 import { changeStatusFn, exportReceiptApi } from '@/api/services/exportReceiptApi';
 import { ExportReceipt } from '@/types/ExportReceipt';
 import Discussion from './components/Disscussion';
+import {
+  ProductionDepartmentGuardDiv,
+  WarehouseStaffGuardDiv
+} from '@/components/authentication/createRoleGuard';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -91,6 +95,7 @@ export default function ExportReceiptDetail() {
       console.log(res);
       if (res.statusCode === 200) {
         toast({
+          variant: 'success',
           title: 'Export finished successfully',
           description: 'The export receipt has been marked as finished.'
         });
@@ -187,49 +192,54 @@ export default function ExportReceiptDetail() {
                   </p>
                 </div>
                 {exportReceipt?.status === 'EXPORTING' && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button disabled={isLoading}>Finish</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to finish exporting the material? This action cannot
-                          be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <WarehouseStaffGuardDiv>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button disabled={isLoading}>Finish</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to finish exporting the material? This action
+                            cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleFinishExport('EXPORTED', 'staff')}>
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </WarehouseStaffGuardDiv>
                 )}
                 {exportReceipt?.status === 'EXPORTED' && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button disabled={isLoading}>Finish</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to finish exporting the material? This action cannot
-                          be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <ProductionDepartmentGuardDiv>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button disabled={isLoading}>Finish</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to finish exporting the material? This action
+                            cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </ProductionDepartmentGuardDiv>
                 )}
               </div>
             </CardContent>
