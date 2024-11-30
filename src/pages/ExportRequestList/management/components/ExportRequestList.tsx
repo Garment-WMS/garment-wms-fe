@@ -105,7 +105,7 @@ const ExportRequestTable = (props: Props) => {
               {row.original.productionDepartment?.account?.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-center align-middle">
             {row.original.productionDepartment?.account?.firstName}{' '}
             {row.original.productionDepartment?.account?.lastName}
           </div>

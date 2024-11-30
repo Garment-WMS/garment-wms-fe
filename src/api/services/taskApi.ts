@@ -9,9 +9,15 @@ export const taskApi = {
   getAllTask: (type: string, id: string) =>
     get(`/task?filter[0][field]=${type}&filter[0][value]=${id}&filter[0][type]==`),
   getTaskByTimeZoneAndRole: (type: string, start: string, ended: string) =>
-    post(`/task/${type}`, { expectedStartAt: start, expectedEndAt: ended })
+    post(`/task/${type}`, { expectedStartAt: start, expectedEndAt: ended }),
+  getTaskByRole: (type: string) =>
+    get(`/task?filter[0][field]=${type}&filter[0][value]=null&filter[0][type]=nenull`)
 };
 
+export const getTaskByRolefn = async (type: string) => {
+  const res = await privateCall(taskApi.getTaskByRole(type));
+  return res.data;
+};
 export const getTaskByTimeZoneAndRole = async (type: string, start: string, ended: string) => {
   const res = await privateCall(taskApi.getTaskByTimeZoneAndRole(type, start, ended));
   return res.data;

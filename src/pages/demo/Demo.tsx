@@ -1,151 +1,269 @@
+'use client';
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  PaginationState,
-  SortingState
-} from '@tanstack/react-table';
-import { useState } from 'react';
-import { useDebounce } from '@/hooks/useDebouce';
-import TanStackBasicTable from '@/components/common/CompositeTable';
-import { useGetUsers } from '@/hooks/useGetUsers';
-import { User } from '@/types/DemoUser';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Badge } from '@/components/ui/Badge';
-import { CustomColumnDef } from '@/types/CompositeTable';
-import Introduction from '../ImportRequests/management/components/Introduction';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/Dialog';
+import React, { useMemo, useState } from 'react';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/Select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Label } from '@/components/ui/Label';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/button';
+// Setup the localizer for react-big-calendar
+const localizer = momentLocalizer(moment);
 
-function Demo() {
-  // sorting state of the table
-  const [sorting, setSorting] = useState<SortingState>([]);
+// Sample data for our participants and their tasks
+const participants = [
+  { id: '1', name: 'Alice' },
+  { id: '2', name: 'Bob' },
+  { id: '3', name: 'Charlie' }
+];
 
-  // column filters state of the table
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
+const initialTasks = [
+  {
+    id: 1,
+    title: 'Meeting with clients',
+    start: new Date(2024, 5, 30, 9, 0),
+    end: new Date(2024, 5, 30, 10, 30),
+    participantId: '1'
+  },
+  {
+    id: 2,
+    title: 'Project planning',
+    start: new Date(2024, 10, 30, 10, 0),
+    end: new Date(2024, 10, 30, 12, 30),
+    participantId: '1'
+  },
+  {
+    id: 3,
+    title: 'Team standup',
+    start: new Date(2024, 10, 30, 10, 0),
+    end: new Date(2024, 10, 30, 10, 30),
+    participantId: '2'
+  },
+  {
+    id: 4,
+    title: 'Code review',
+    start: new Date(2024, 10, 30, 14, 0),
+    end: new Date(2024, 10, 30, 15, 30),
+    participantId: '2'
+  },
+  {
+    id: 5,
+    title: 'Training session',
+    start: new Date(2024, 10, 30, 13, 0),
+    end: new Date(2024, 10, 30, 14, 30),
+    participantId: '3'
+  }
+];
 
-  // pagination state of the table
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0, //initial page index
-    pageSize: 20 //default page size
-  });
+interface Task {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  participantId: string;
+}
 
-  const {
-    allUsersData, //allUsersDataStatus,
-    isAllUsersDataLoading
-  } = useGetUsers({
-    sorting,
-    columnFilters: debouncedColumnFilters,
-    pagination
-  });
+export function Scheduler() {
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newTask, setNewTask] = useState<Partial<Task>>({});
 
-  const filterOptions = {
-    country: ['USA', 'Canada', 'UK', 'Australia'],
-    city: ['New York', 'Los Angeles', 'Toronto', 'London'],
-    favorite_color: ['Red', 'Blue', 'Green', 'Yellow'],
-    gender: ['Male', 'Female', 'Other']
-    // Add more filter options for other columns
+  const handleParticipantChange = (participantId: string, index: number) => {
+    const newSelectedParticipants = [...selectedParticipants];
+    newSelectedParticipants[index] = participantId;
+    setSelectedParticipants(newSelectedParticipants);
   };
-  const userColumns: CustomColumnDef<User>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="translate-y-[2px]"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-[2px]"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false
-    },
 
-    {
-      header: 'ID',
-      accessorKey: 'user_id',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Username',
-      accessorKey: 'username',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Email',
-      accessorKey: 'email',
-      enableColumnFilter: false
-    },
-    {
-      header: 'First Name',
-      accessorKey: 'first_name',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Last Name',
-      accessorKey: 'last_name',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Gender',
-      accessorKey: 'gender',
-      cell: ({ row }) => <Badge variant={'default'}> {row.original.gender}</Badge>,
-      filterOptions: [
-        { label: 'Male', value: 'Male' },
-        { label: 'Female', value: 'Female' },
-        { label: 'Complicated', value: 'Complicated' }
-      ]
-    },
-    {
-      header: 'Birthdate',
-      accessorKey: 'birthdate',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Country',
-      accessorKey: 'country'
-    },
-    {
-      header: 'City',
-      accessorKey: 'city',
-    },
-    {
-      header: 'Fav Color',
-      accessorKey: 'favorite_color',
-      filterOptions: [
-        { label: 'green', value: 'green' },
-        { label: 'blue', value: 'blue' },
-        { label: 'red', value: 'red' }
-      ]
+  const filteredTasks = useMemo(
+    () =>
+      tasks
+        .filter((task) => selectedParticipants.includes(task.participantId))
+        .map((task) => ({
+          ...task,
+          resourceId: task.participantId
+        })),
+    [selectedParticipants, tasks]
+  );
+
+  const resources = useMemo(
+    () =>
+      participants
+        .filter((participant) => selectedParticipants.includes(participant.id))
+        .map((participant) => ({
+          id: participant.id,
+          title: participant.name
+        })),
+    [selectedParticipants]
+  );
+
+  const handleSelectSlot = (slotInfo: any) => {
+    const now = new Date();
+    if (slotInfo.end < now) {
+      alert('Cannot schedule tasks in the past.');
+      return;
+    } else if (slotInfo.start < now) {
+      setNewTask({
+        start: now,
+        end: new Date(now.getTime() + 30 * 60000), // Default 30 minutes duration
+        participantId: (slotInfo as any).resourceId
+      });
+      setIsDialogOpen(true);
+    } else {
+      setNewTask({
+        start: slotInfo.start,
+        end: new Date(slotInfo.start.getTime() + 30 * 60000), // Default 30 minutes duration
+        participantId: (slotInfo as any).resourceId
+      });
+      setIsDialogOpen(true);
     }
-  ];
+  };
+
+  const handleCreateTask = () => {
+    if (newTask.title && newTask.start && newTask.end && newTask.participantId) {
+      setTasks([...tasks, { ...(newTask as Task), id: Date.now() }]);
+      setIsDialogOpen(false);
+      setNewTask({});
+    }
+  };
+
+  const handleDurationChange = (duration: number) => {
+    if (newTask.start) {
+      setNewTask({
+        ...newTask,
+        end: new Date(newTask.start.getTime() + duration * 60000)
+      });
+    }
+  };
 
   return (
-    <div>
-      <div>
-        <Introduction/>
-      </div>
-      <TanStackBasicTable
-        isTableDataLoading={isAllUsersDataLoading}
-        paginatedTableData={allUsersData}
-        columns={userColumns}
-        pagination={pagination}
-        setPagination={setPagination}
-        sorting={sorting}
-        setSorting={setSorting}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
-    </div>
+    <Card className="w-full max-w-6xl mx-auto">
+      <CardHeader>
+        <CardTitle>Horizontal Timeline Scheduling System</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-4 mb-4">
+          {[0, 1].map((index) => (
+            <Select
+              key={index}
+              onValueChange={(value) => handleParticipantChange(value, index)}
+              value={selectedParticipants[index]}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={`Select participant ${index + 1}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {participants.map((participant) => (
+                  <SelectItem key={participant.id} value={participant.id}>
+                    {participant.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ))}
+        </div>
+        <div style={{ height: '500px' }}>
+          <Calendar
+            localizer={localizer}
+            events={filteredTasks}
+            startAccessor="start"
+            endAccessor="end"
+            defaultView={Views.DAY}
+            views={[Views.DAY]}
+            step={15}
+            timeslots={1}
+            resources={resources}
+            resourceIdAccessor="id"
+            resourceTitleAccessor="title"
+            selectable
+            onSelectSlot={handleSelectSlot}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor:
+                  event.participantId === '1'
+                    ? '#3174ad'
+                    : event.participantId === '2'
+                      ? '#ad4331'
+                      : '#31ad70'
+              }
+            })}
+            components={{
+              event: (props) => (
+                <div className="text-white p-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+                  {props.title}
+                </div>
+              )
+            }}
+            dayLayoutAlgorithm="no-overlap"
+            formats={{
+              dayFormat: 'dddd, MMMM D, YYYY'
+            }}
+            toolbar={false}
+            min={new Date(2024, 10, 30, 9, 0)}
+            max={new Date(2024, 10, 30, 18, 0)}
+          />
+        </div>
+      </CardContent>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Task</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="task-title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="task-title"
+                value={newTask.title || ''}
+                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="task-duration" className="text-right">
+                Duration (minutes)
+              </Label>
+              <Input
+                id="task-duration"
+                type="number"
+                min="15"
+                step="15"
+                defaultValue="30"
+                onChange={(e) => handleDurationChange(parseInt(e.target.value))}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Start Time</Label>
+              <div className="col-span-3">{newTask.start?.toLocaleTimeString()}</div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">End Time</Label>
+              <div className="col-span-3">{newTask.end?.toLocaleTimeString()}</div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleCreateTask}>Create Task</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 }
-export default Demo;

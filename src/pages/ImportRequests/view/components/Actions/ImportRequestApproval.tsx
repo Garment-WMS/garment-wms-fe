@@ -120,6 +120,8 @@ export default function WarehouseApproval({
   const chat: any = useSelector(importRequestSelector.importRequest);
   const { toast } = useToast();
   const { id } = useParams();
+  const [selectedInspectionTimeFrame, setSelectedInspectionTimeFrame] = useState();
+  const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState();
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
       toast({
@@ -348,7 +350,9 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedInspector}
                             staff={selectedInspector}
-                            type={'get-inspection-department'}
+                            type={'inspectionDepartmentId'}
+                            setSelectedTimeFrame={setSelectedInspectionTimeFrame}
+                            role="inspection-department"
                           />
                         </div>
                         <div className="w-full flex items-center py-4 ">
@@ -356,7 +360,9 @@ export default function WarehouseApproval({
                           <AssignStaffPopup
                             setStaff={setSelectedAssignee}
                             staff={selectedAssignee}
-                            type={'get-warehouse-staff'}
+                            type={'warehouseStaffId'}
+                            setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
+                            role="warehouse-staff"
                           />
                         </div>
 

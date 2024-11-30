@@ -6,7 +6,7 @@ import TestPage from '@/pages/test';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import ProductionStaffRoute from './ProductionStaffRoute';
 import ImportPurchaseOrder from '@/pages/demoPO';
-import Demo from '@/pages/demo';
+
 import PurchaseOrderManagement from '@/pages/Purchase Order/management';
 import StepperDemo from '@/pages/demoStepper';
 import PurchaseOrderDetails from '@/pages/Purchase Order/detail';
@@ -58,6 +58,7 @@ import WarehouseStaffImportRequestManagement from '@/pages/WarehouseStaff/Import
 import WarehouseStaffImportReceiptList from '@/pages/WarehouseStaff/ImportReceiptList/management';
 import ExportRequestList from '@/pages/ExportRequestList/management';
 import WarehouseStaffExportRequestList from '@/pages/WarehouseStaff/ExportRequestList/management';
+import { Scheduler } from '@/pages/demo';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -144,6 +145,10 @@ const RouterComponent: React.FC = () => {
             />
           )
           // element: <ImportRequestManagement />
+        },
+        {
+          path: '/demo',
+          element: <Scheduler />
         },
         {
           path: '/import-request/create',

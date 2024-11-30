@@ -254,7 +254,10 @@ export default function DashboardPage() {
                         {receipt.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{receipt.type}</TableCell>
+                    <TableCell>
+                      {' '}
+                      <Badge variant={'outline'}>{receipt.type}</Badge>
+                    </TableCell>
                     <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
                     <TableCell>
                       {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}
@@ -328,7 +331,9 @@ export default function DashboardPage() {
                         {receipt.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{receipt.type}</TableCell>
+                    <TableCell>
+                      <Badge variant={'outline'}>{receipt.type}</Badge>
+                    </TableCell>
                     <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
                     <TableCell>
                       {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}

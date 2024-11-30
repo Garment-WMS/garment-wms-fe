@@ -111,21 +111,23 @@ const ImportReceiptTable = (props: Props) => {
         value: delivery.value
       })),
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
-          <Avatar className="mr-2 flex justify-center items-center">
-            <AvatarImage
-              src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseStaff?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseStaff?.account?.firstName}
-          </h4>
+        <Link className="flex text-blue-500 underline items-center" to="">
+          <div className="flex items-center">
+            <Avatar className="mr-2 flex justify-center items-center">
+              <AvatarImage
+                src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
+                  row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center align-middle">
+              {row?.original?.warehouseStaff?.account?.lastName +
+                ' ' +
+                row?.original?.warehouseStaff?.account?.firstName}
+            </div>
+          </div>
         </Link>
       )
     },

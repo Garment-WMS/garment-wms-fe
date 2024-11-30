@@ -7,6 +7,7 @@ const ImportReceiptList = () => {
     <div className="h-full w-full px-4 flex flex-col gap-4">
       <Introduction />
       {/* <AnalystSection /> */}
+
       <ImportReceiptTable />
     </div>
   );

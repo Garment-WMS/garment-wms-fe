@@ -6,8 +6,6 @@ export const accountApi = {
 };
 
 export const getAccountByRole = async ({ role }: any): Promise<any> => {
-  // Make the API request
-  console.log(role);
   const res = await privateCall(accountApi.getByRole(role));
   return res.data.data;
 };
