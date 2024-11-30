@@ -20,14 +20,12 @@ import { Button } from '@/components/ui/button';
 import DeliveryForm from './DeliveryForm';
 import ImportRequestDetails from './ImportRequestDetails';
 import WarehouseImportDialog from './WarehouseImportDialog';
-import {
-  ProductionPlanDetail,
-  ProductSize,
-} from '@/types/ProductionPlan';
+import { ProductionPlanDetail, ProductSize } from '@/types/ProductionPlan';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import privateCall from '@/api/PrivateCaller';
 import ProductImportDetail from './ProductImportDetail';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/Label';
 
 type Props = {};
 
@@ -77,7 +75,7 @@ const NewImportRequest = (props: Props) => {
   };
   const onSubmit = async () => {
     try {
-      if (!selectedProductionBatch ) {
+      if (!selectedProductionBatch) {
         toast({
           variant: 'destructive',
           title: 'Please choose a Production Batch',
@@ -98,7 +96,7 @@ const NewImportRequest = (props: Props) => {
         })
       );
       if (response.status === 201) {
-        const responseData = response.data.data.data;  
+        const responseData = response.data.data.data;
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
@@ -136,68 +134,18 @@ const NewImportRequest = (props: Props) => {
             selectedProductionBatch={selectedProductionBatch}
             setSelectedProductionBatch={setSelectedProductionBatch}
           />
+          
         </div>
       </div>
-
-      <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
-        {/* <div className="flex flex-col gap-4">
-          <div className="font-primary font-bold text-xl mb-4">Supplier</div>
-          {selectedPO?.supplier ? (
-            <div className="flex flex-col gap-4">
-              <div className="font-primary font-semibold text-sm">
-                Warehouse name: {selectedPO?.supplier.supplierName || 'Unknown'}
-              </div>
-              <div className="font-primary font-semibold text-sm">
-                Address: {selectedPO?.supplier.address || 'Unknown'}
-              </div>
-              <div className="font-primary font-semibold text-sm">
-                Phone: {selectedPO?.supplier.phoneNumber || 'Unknown'}
-              </div>
-              <div className="font-primary font-semibold text-sm">
-                Email: {selectedPO?.supplier.email || 'Unknown'}
-              </div>
-              <div className="font-primary font-semibold text-sm">
-                Fax: {selectedPO?.supplier.fax || 'Unknown'}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4 text-xl border border-gray-300 rounded-md p-4 h-full">
-              <div className="font-bold text-lg text-center">Choose the PO first</div>
-            </div>
-          )}
-        </div> */}
-       
-        <div className="flex flex-col gap-4">
-          <div className="font-primary font-bold text-xl mb-4">Warehouse</div>
-          <div className="flex flex-col gap-4">
-            <div className="font-primary font-semibold text-sm">
-              Warehouse name: {WarehouseInfo.name}
-            </div>
-            <div className="font-primary font-semibold text-sm">
-              Address: {WarehouseInfo.address}
-            </div>
-            <div className="font-primary font-semibold text-sm">Phone: {WarehouseInfo.phone}</div>
-            <div className="font-primary font-semibold text-sm">Email: {WarehouseInfo.email}</div>
-            <div className="font-primary font-semibold text-sm">Fax: {WarehouseInfo.fax}</div>
-          </div>
+              <div className="w-full px-4">
+          <Label>Notes</Label>
+          <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
         </div>
-        <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
-      </div>
-
-      {/* <ImportRequestDetails
-        data={poDeliveryDetails}
-        setPoDeliverydetails={setPoDeliverydetails}
-        setEditDetail={setEditDetail}
-        isEditDetail={isEditDetail}
-      /> */}
-
       {selectedProductionBatch ? (
-        <ProductImportDetail
-          selectedProductionBatch={selectedProductionBatch}
-        />
+        <ProductImportDetail selectedProductionBatch={selectedProductionBatch} />
       ) : (
         <div className="flex justify-center items-center">
-          <h1>Choose the production plan first</h1>
+          <h1>Choose the production batch first</h1>
         </div>
       )}
 
