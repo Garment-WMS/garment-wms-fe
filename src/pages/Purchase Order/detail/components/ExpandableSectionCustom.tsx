@@ -37,11 +37,9 @@ const ExpandableSectionCustom: FC<ExpandableSectionProps> = ({
               <h1 className={`text-lg font-semibold text-primaryDark`}>
                 {isExtra ? '-' : (title ?? '-')}
               </h1>
+              <div className="ml-2">{status}</div>
             </div>
-            <div className="flex gap-x-5">
-              {status}
-              {redirectButton}
-            </div>
+            <div className="flex gap-x-5">{redirectButton}</div>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent className="CollapsibleContent px-4 pb-5 ">

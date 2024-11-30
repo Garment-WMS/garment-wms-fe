@@ -217,9 +217,9 @@ export default function MaterialReceipt() {
   const handleCloseDialog = () => {
     setShowLabelModal(false);
   };
-
   const inspectionReport: any | undefined = importReceipt?.inspectionReport;
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
+  const inspectionRequestId = inspectionReport?.inspectionRequest?.id;
 
   return (
     <div className="container mx-auto p-4">
@@ -459,9 +459,13 @@ export default function MaterialReceipt() {
                     <div className="grid gap-2">
                       <p>
                         <strong>Report Code:</strong>{' '}
-                        <span className="text-primary font-semibold">
-                          {inspectionReport?.code || 'N/A'}
-                        </span>
+                        <Link
+                          to={`/report/${inspectionRequestId}`}
+                          className="font-semibold text-primary underline">
+                          <span className="text-primary font-semibold">
+                            {inspectionReport?.code || 'N/A'}
+                          </span>
+                        </Link>
                       </p>
                       <p>
                         <strong>Type:</strong>{' '}

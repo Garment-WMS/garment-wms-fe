@@ -1,6 +1,7 @@
+import React from 'react';
 import { Badge } from '@/components/ui/Badge';
 import ExpandableSectionCustom from './ExpandableSectionCustom';
-import { ExternalLink, Eye, Plus } from 'lucide-react';
+import { ExternalLink, CheckCircle, RefreshCcw, Clock, XCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialTable from './MaterialTable';
@@ -19,15 +20,59 @@ interface OrderItemDetailsProps {
   poId: string | undefined;
   poNumber?: string;
   isPendingDelivery?: boolean;
+  totalDelivery?: number;
+  totalFinishDelivery?: number;
+  totalInProgressDelivery?: number;
+  totalPendingDelivery?: number;
+  totalCancelDelivery?: number;
 }
 
+interface ImportQuantityCardProps {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  variant?: 'finish' | 'in-progress' | 'pending' | 'cancel';
+}
+
+// ImportQuantityCard Component
+const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
+  title,
+  value,
+  icon,
+  variant = 'pending'
+}) => {
+  const variantStyles = {
+    finish: 'bg-green-50 border-green-200 text-green-700',
+    cancel: 'bg-red-50 border-red-200 text-red-700',
+    'in-progress': 'bg-blue-50 border-blue-200 text-blue-700',
+    pending: 'bg-yellow-50 border-yellow-200 text-yellow-700'
+  };
+
+  const selectedStyles = variantStyles[variant] || 'bg-gray-50 border-gray-200 text-gray-700';
+
+  return (
+    <div className={`p-4 border rounded-lg flex flex-col items-center ${selectedStyles}`}>
+      <div className="text-3xl">{icon}</div>
+      <div className="mt-2 text-xl font-semibold text-center">{title}</div>
+      <div className="mt-1 text-2xl font-bold">{value}</div>
+    </div>
+  );
+};
+
+// OrderItemDetails Component
 const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   poDelivery,
   poId,
   poNumber,
-  isPendingDelivery
+  isPendingDelivery,
+  totalDelivery = 0,
+  totalFinishDelivery = 0,
+  totalInProgressDelivery = 0,
+  totalPendingDelivery = 0,
+  totalCancelDelivery = 0
 }) => {
   const navigate = useNavigate();
+
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
       case PurchaseOrderDeliveryStatus.PENDING:
@@ -46,29 +91,21 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   const renderRedirectButton = (delivery: PODelivery, poid: string) => {
     let path = '';
     let color = '';
-    let icon;
     let label = '';
 
     switch (delivery.status) {
       case PurchaseOrderDeliveryStatus.PENDING:
-        color = 'bg-blue-400';
-        icon = <Plus size={16} />;
+        color = 'bg-primaryLight';
         label = 'Create Import Request';
-        //TODO: Need to change path later, also need to pass the parameter
         path = `/import-request/create/material/${delivery.id}`;
         break;
-      case PurchaseOrderDeliveryStatus.FINISHED:
-        color = 'bg-green-400';
-        icon = <Eye size={16} />;
-        label = 'View Details';
-        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
-        break;
+      // case PurchaseOrderDeliveryStatus.FINISHED:
+      //   color = 'bg-green-400';
+      //   label = 'View Details';
+      //   path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
+      //   break;
       default:
-        color = 'bg-green-400';
-        icon = <Eye size={16} />;
-        label = 'View Details';
-        path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
-        break;
+        return null;
     }
 
     return (
@@ -76,14 +113,14 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
         <Tooltip delayDuration={5}>
           <TooltipTrigger asChild>
             <Button
-              className={`w-30  ${color}`}
+              className={`w-30 ${color}`}
               size={'sm'}
               onClick={() => {
                 if (poId) {
                   navigate(path, { state: { delivery, poNumber } });
                 }
               }}>
-              {icon}
+              {label}
             </Button>
           </TooltipTrigger>
           <TooltipContent className="mb-1" side="top">
@@ -94,13 +131,48 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
       </TooltipProvider>
     );
   };
+
   return (
     <div className="mt-8">
-      <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
+        <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm font-medium">Total:</span>
+          <span className="text-xl font-semibold">{totalDelivery}</span>
+        </div>
+      </div>
+
+      {/* ImportQuantityCard Components */}
+      <div className="mt-4 grid grid-cols-4 gap-4">
+        <ImportQuantityCard
+          title="Pending"
+          value={totalPendingDelivery.toString()}
+          icon={<Clock className="text-yellow-700" size={24} />}
+          variant="pending"
+        />
+        <ImportQuantityCard
+          title="In Progress"
+          value={totalInProgressDelivery.toString()}
+          icon={<RefreshCcw className="text-blue-700" size={24} />}
+          variant="in-progress"
+        />
+        <ImportQuantityCard
+          title="Finished"
+          value={totalFinishDelivery.toString()}
+          icon={<CheckCircle className="text-green-700" size={24} />}
+          variant="finish"
+        />
+        <ImportQuantityCard
+          title="Cancelled"
+          value={totalCancelDelivery.toString()}
+          icon={<XCircle className="text-red-700" size={24} />}
+          variant="cancel"
+        />
+      </div>
+
       <div className="mt-5 flex flex-col gap-6">
         {isPendingDelivery
-          ? // Render skeletons if data is pending
-            Array(3)
+          ? Array(3)
               .fill(null)
               .map((_, index) => (
                 <ExpandableSectionSkeleton
@@ -111,8 +183,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                   }
                 />
               ))
-          : // Render actual data if available
-            poDelivery.map((delivery) => {
+          : poDelivery.map((delivery) => {
               const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
                 (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
                 0

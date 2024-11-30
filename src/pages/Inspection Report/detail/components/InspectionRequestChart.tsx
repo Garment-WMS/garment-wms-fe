@@ -43,10 +43,15 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
   );
   const totalInspected = totalFail + totalPass;
 
+  // Dynamically assign colors based on the chart values
   const chartData = [
-    { name: 'Fail', value: totalFail },
-    { name: 'Pass', value: totalPass }
+    { name: 'Pass', value: totalPass },
+    { name: 'Fail', value: totalFail }
   ];
+
+  const colors = chartData.map((item) =>
+    item.name === 'Pass' && item.value > 0 ? Colors.green[500] : Colors.red[500]
+  );
 
   const handleViewDefects = (detailDefects: any[]) => {
     const mappedDefects = defectsList.map((defect: any) => {
@@ -76,13 +81,14 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
         <div className="w-full pb-5">
           <PieChartComponent
             data={chartData}
-            colors={[Colors.red[500], Colors.green[500]]}
+            colors={colors} // Dynamically assigned colors
             width={280}
             height={280}
             innerRadius={80}
             outerRadius={120}
             labelType="value"
             showLegend={true}
+            showValue={false}
             legendHeight={5}
           />
         </div>
