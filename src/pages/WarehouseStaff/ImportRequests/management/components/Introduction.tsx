@@ -3,7 +3,7 @@ import photo from '@/assets/images/DeliveryNoteIntro.png'
 type Props = {};
 
 const Introduction = (props: Props) => {
-  const title = 'Delivery Notes';
+  const title = 'Import Requests';
   const description = 'Easily update and manage your delivery notes here.';
   return (
     <div className="w-full h-32 bg-white rounded-xl shadow-sm border

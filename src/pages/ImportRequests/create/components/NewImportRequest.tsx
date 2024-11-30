@@ -84,12 +84,13 @@ const NewImportRequest = (props: Props) => {
         'MATERIAL_BY_PO'
       );
       if (response.data.statusCode === 201) {
+        const id = response.data.data.id;
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate(`/import-request`); // Navigate back after successful creation
+        navigate(`/import-request/${id}`); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({

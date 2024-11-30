@@ -31,6 +31,7 @@ export interface InspectionReport {
   id: string;
   inspectionRequestId: string;
   code: string;
+  type: string;
   createdAt?: string | null;
   updateAt?: string | null;
   deletedAt?: string | null;
