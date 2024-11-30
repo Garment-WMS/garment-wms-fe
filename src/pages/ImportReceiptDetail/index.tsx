@@ -58,6 +58,7 @@ import { InspectionReportDetail } from '@/types/InspectionReportDetail';
 import { Badge } from '@/components/ui/Badge';
 import Discussion from './components/Disscussion';
 import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -250,7 +251,7 @@ export default function MaterialReceipt() {
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
-            <Card>
+            {/* <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Quality Pass Rate</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -259,7 +260,7 @@ export default function MaterialReceipt() {
                 <div className="text-2xl font-bold">98.5%</div>
                 <p className="text-xs text-muted-foreground">+0.5% from last receipt</p>
               </CardContent>
-            </Card>
+            </Card> */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Receipt Status</CardTitle>
@@ -275,8 +276,7 @@ export default function MaterialReceipt() {
                 </p>
               </CardContent>
             </Card>
-          </div>
-          <Card className="mb-6">
+            <Card >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Import Status</CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
@@ -301,6 +301,8 @@ export default function MaterialReceipt() {
               </div>
             </CardContent>
           </Card>
+          </div>
+          
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <Card>
               <CardHeader>
@@ -379,12 +381,12 @@ export default function MaterialReceipt() {
                           ' ' +
                           importReceipt?.warehouseStaff?.account?.firstName}
                       </p>
-                      <p className="text-md text-muted-foreground">Import Manager</p>
+                      <p className="text-md text-muted-foreground">Import Staff</p>
                       <p className="text-md text-muted-foreground">
-                        {importReceipt?.warehouseManager?.account?.email}
+                        {importReceipt?.warehouseStaff?.account?.email}
                       </p>
                       <p className="text-md text-muted-foreground">
-                        {importReceipt?.warehouseManager?.account?.phoneNumber}
+                        {importReceipt?.warehouseStaff?.account?.phoneNumber}
                       </p>
                     </div>
                   </div>
@@ -430,10 +432,10 @@ export default function MaterialReceipt() {
                         {importRequest?.poDelivery?.purchaseOrder?.supplier?.supplierName}
                       </p>
                       <p>
-                        <strong>Status:</strong> {importRequest?.status}
+                        <strong>Status:</strong> {convertTitleToTitleCase(importRequest?.status) }
                       </p>
                       <p>
-                        <strong>Type:</strong> {importRequest?.type}
+                        <strong>Type:</strong> {convertTitleToTitleCase(importRequest?.type)}
                       </p>
                       {importRequest?.description && (
                         <p>

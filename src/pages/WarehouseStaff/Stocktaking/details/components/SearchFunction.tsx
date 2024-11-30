@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 
 import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
@@ -28,7 +28,14 @@ const SearchFunction = ({
   const [result, setResult] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null); // Track error messages
+  const inputRef = useRef<HTMLInputElement>(null); // Reference to the input field
 
+  useEffect(() => {
+    // Focus the input field on component load
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
   const handleSearch = () => {
     const formattedQuery = query.trim();
     setError(null);
@@ -77,6 +84,7 @@ const SearchFunction = ({
            <div className="flex space-x-2">
         <Input
           type="text"
+          ref={inputRef}
           placeholder="Search receipt code"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { Badge } from '@/components/ui/Badge';
 import Colors from '@/constants/color';
+import InspectionReportDialog from './InspectionReportDialog';
 
 const COLORS = {
   passed: 'hsl(var(--chart-1))',
@@ -241,6 +242,10 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
           </>
         )}
         <h1>Please contact Inspection team if it takes long time</h1>
+        {/* <InspectionReportDialog inspectionReport={inspectionRequest.ins}/> */}
+        {inspectionRequest?.[0]?.inspectionReport && (
+          <InspectionReportDialog inspectionReqId={inspectionRequest[0].id} inspectionReport={inspectionRequest[0].inspectionReport} />
+        )}
       </CardFooter>
     </Card>
   );
