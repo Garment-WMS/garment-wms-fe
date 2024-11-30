@@ -15,8 +15,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetMaterialExportRequest } from '@/hooks/useGetMaterialExportRequest';
 type Props = {};
 

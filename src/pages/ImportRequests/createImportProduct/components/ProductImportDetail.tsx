@@ -33,10 +33,10 @@ const ProductImportDetail = ({
   return (
     <>
 
-<div className="container mx-auto p-4 space-y-6">
+<div className=" p-4 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Production Plan Details</CardTitle>
+          <CardTitle>Import Details</CardTitle>
           <CardDescription>Overview of the production plan and associated batch</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

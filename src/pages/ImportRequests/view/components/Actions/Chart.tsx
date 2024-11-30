@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from '@/components/ui/Card';
+} from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
@@ -57,7 +57,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   const { data: defectsData } = useGetAllDefects();
 
   useEffect(() => {
-    console.log('defectsData', defectsData);
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; percentage: number }[] = [];
       // const staticDefects = defectsData?.data;

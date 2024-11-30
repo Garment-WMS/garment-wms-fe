@@ -14,6 +14,8 @@ import {
 import { Outlet } from 'react-router-dom';
 import { MdOutlineInventory } from 'react-icons/md';
 import { BiTask } from 'react-icons/bi';
+import { PiPackage } from 'react-icons/pi';
+import { CgArrowsExchangeAltV } from 'react-icons/cg';
 
 type Props = {};
 const iconSize = 22;
@@ -31,26 +33,38 @@ const PurchaseStaffMenu: MenuProps[] = [
   },
 
   {
-    title: 'Import Request',
-    renderIcon: <LuClipboardCopy size={iconSize} />,
-    link: '/import-request'
+    title: 'Import/Export',
+    renderIcon: <CgArrowsExchangeAltV size={iconSize} />,
+    isGroup: true,
+    children: [
+      {
+        title: 'Import Request',
+        renderIcon: <LuClipboardCopy size={iconSize} />,
+        link: '/import-request'
+      },
+      {
+        title: 'Import Receipt',
+        renderIcon: <TbReceipt size={iconSize} />,
+        link: '/import-receipt'
+      },
+      {
+        title: 'Export request',
+        renderIcon: <TbPackageExport size={iconSize} />,
+        link: '/export-request'
+      },
+      {
+        title: 'Export Receipt',
+        renderIcon: <TbReceiptRefund size={iconSize} />,
+        link: '/export-receipt'
+      }
+    ]
   },
   {
-    title: 'Import Receipt',
-    renderIcon: <TbReceipt size={iconSize} />,
-    link: '/import-receipt'
-  },
-  {
-    title: 'Export request',
-    renderIcon: <TbPackageExport size={iconSize} />,
-    link: '/export-request'
-  },
-  {
-    title: 'Export Receipt',
-    renderIcon: <TbReceiptRefund size={iconSize} />,
-    link: '/export-receipt'
-  },
-  {
+    title: 'Material/Product',
+    renderIcon: <PiPackage size={iconSize} />,
+    isGroup: true,
+    children: [
+       {
     title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
     link: '/material-variant'
@@ -59,6 +73,8 @@ const PurchaseStaffMenu: MenuProps[] = [
     title: 'Product',
     renderIcon: <TbShirt size={iconSize} />,
     link: '/product-variant'
+  },
+    ]
   },
   {
     title: 'Task',
