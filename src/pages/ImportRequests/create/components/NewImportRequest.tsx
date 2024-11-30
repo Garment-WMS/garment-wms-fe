@@ -68,21 +68,28 @@ const NewImportRequest = (props: Props) => {
         });
         return;
       }
+
+      const formatedPoDeliveryDetails = poDeliveryDetails.map((detail: any) => {
+        return {
+          ...detail,
+          quantityByPack: detail.actualQuantity
+            ? Number(detail.actualQuantity)
+            : detail.quantityByPack
+        };
+      });
       const response = await importRequestApi.create(
         selectedPoDelivery?.id as string,
         data.description as string,
-        poDeliveryDetails,
+        formatedPoDeliveryDetails,
         'MATERIAL_BY_PO'
       );
-      if (response.status === 201) {
-        const responseData = response?.data?.data;
-        const importRequestId = responseData?.id;
+      if (response.data.statusCode === 201) {
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate(`/import-request/${importRequestId}`); // Navigate back after successful creation
+        navigate(`/import-request`); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({
