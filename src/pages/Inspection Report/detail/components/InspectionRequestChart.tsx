@@ -76,13 +76,14 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
         <div className="w-full pb-5">
           <PieChartComponent
             data={chartData}
-            colors={[Colors.red[500], Colors.green[500]]}
+            colors={[Colors.green[500], Colors.red[500]]}
             width={280}
             height={280}
             innerRadius={80}
             outerRadius={120}
             labelType="value"
             showLegend={true}
+            showValue={false}
             legendHeight={5}
           />
         </div>

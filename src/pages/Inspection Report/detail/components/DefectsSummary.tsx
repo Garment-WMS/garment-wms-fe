@@ -55,22 +55,19 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
   const isAllZero = chartData.every((data) => data.value === 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-h-[90vh]">
       {/* Pie Chart Card */}
       <Card>
-        <CardHeader>
-          <CardTitle>Defects Overview</CardTitle>
-        </CardHeader>
         <CardContent>
           {!isAllZero ? (
             <PieChartComponent
               data={chartData}
               colors={colors}
               width={300}
-              height={300}
+              height={270}
               innerRadius={90}
               outerRadius={130}
-              showLegend
+              showLegend={false}
             />
           ) : (
             <EmptyDatacomponent />
