@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 import { CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Edit } from 'lucide-react';
 import { getAllProductionPlanFn } from '@/api/services/productionPlanApi';
@@ -19,6 +19,10 @@ import { ProductionPlanData, PurchaseOrder, PODelivery } from '@/types/Productio
 import Loading from '@/components/common/Loading';
 import { PoDeliveryStatus } from '@/types/tempFile';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
+import { calculatePercentage } from '@/helpers/calculatePercentage';
+import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { cn } from '@/lib/utils';
 
 export interface Props {
   setIsNewdelivery: any;
@@ -137,7 +141,6 @@ export default function WarehouseImportDialog({
   };
 
   const findPoDeliveryById = (plans: any[], deliveryId: string) => {
-    console.log('plans', plans);  
       for (const po of plans) {
         const poDelivery = po.poDelivery.find((delivery: any) => delivery.id === deliveryId);
         if (poDelivery) {
@@ -207,7 +210,7 @@ export default function WarehouseImportDialog({
 
   const renderStepIndicator = () => {
     return (
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-center items-center mb-4">
         {[1, 2].map((stepNumber) => (
           <div
             key={stepNumber}
@@ -239,88 +242,116 @@ export default function WarehouseImportDialog({
         </div>
       );
     }
-
+    const filteredPurchaseOrders = purchaseOrders?.filter((po) =>
+      po.poDelivery.some((delivery: any) => delivery.status === 'PENDING')
+    );
     switch (step) {
-      // case 1:
-      //   return (
-      //     <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-      //       {productionPlans &&
-      //         productionPlans.map((plan) => (
-      //           <div
-      //             key={plan.id}
-      //             className={`mb-4 p-4 rounded-lg cursor-pointer ${
-      //               selectedPlan?.id === plan.id
-      //                 ? 'bg-primary text-primary-foreground'
-      //                 : 'bg-secondary'
-      //             }`}
-      //             onClick={() => handleSelectProductionPlan(plan)}>
-      //             <div className="flex justify-between items-center mb-2">
-      //               <div>
-      //                 <h3 className="font-semibold">{plan.name}</h3>
-      //                 <h4 className="text-sm">
-      //                   {new Date(plan.expectedStartDate).toLocaleDateString()} To{' '}
-      //                   {new Date(plan.expectedEndDate).toLocaleDateString()}
-      //                 </h4>
-      //               </div>
-      //             </div>
-      //           </div>
-      //         ))}
-      //     </ScrollArea>
-      //   );
       case 1:
         return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            {purchaseOrders &&
-              purchaseOrders.map((po) => (
-                <div
-                  key={po.id}
-                  className={`mb-4 p-4 rounded-lg cursor-pointer ${
-                    selectedPo?.id === po.id ? 'bg-primary text-primary-foreground' : 'bg-secondary'
-                  }`}
-                  onClick={() => handleSelectPurchaseOrder(po)}>
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-semibold">Purchase Order: {po.poNumber}</h3>
-                    <span>{po.totalQuantityToProduce}%</span>
+          <ScrollArea className="h-[300px] w-full rounded-md border">
+          <div className="p-4 space-y-4">
+            {filteredPurchaseOrders && filteredPurchaseOrders.map((po) => (
+              <Card 
+                key={po.id} 
+                className={`cursor-pointer transition-all duration-300 ${
+                  selectedPo?.id === po.id ? 'ring-2 ring-primary' : 'hover:bg-accent'
+                }`}
+                onClick={() => handleSelectPurchaseOrder(po)}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg">{po.poNumber}</CardTitle>
+                    <Badge variant={po.status === 'IN_PROGRESS' ? 'default' : 'secondary'}>
+                      {convertTitleToTitleCase(po.status)}
+                    </Badge>
                   </div>
-                  <Progress value={90} className="w-full" />
-                </div>
-              ))}
-          </ScrollArea>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium">Delivery Progress</span>
+                        <span className="text-sm">
+                          {po.totalFinishedPoDelivery} / {po.totalPoDelivery} Deliveries
+                        </span>
+                      </div>
+                      <Progress 
+                        value={Number(calculatePercentage(po.totalFinishedPoDelivery, po.totalPoDelivery))} 
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium">Import Progress</span>
+                        <span className="text-sm">
+                          {po.totalImportQuantity} / {po.totalQuantityToImport} Items
+                        </span>
+                      </div>
+                      <Progress 
+                        value={Number(calculatePercentage(po.totalImportQuantity, po.totalQuantityToImport))} 
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </ScrollArea>
         );
       case 2:
         return (
-          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-            {poBatches &&
-              poBatches.map((batch) => (
-                <div
-                  key={batch.id}
-                  className={`mb-4 p-4 rounded-lg ${
-                    batch.status != 'PENDING'
-                      ? 'bg-muted cursor-not-allowed'
-                      : selectedPoDelivery?.id === batch.id
-                        ? 'bg-primary text-primary-foreground cursor-pointer text-white'
-                        : 'bg-secondary cursor-pointer '
-                  }`}
-                  onClick={() => !(batch.status != 'PENDING') && setSelectedPoDelivery(batch)}>
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold">{batch.code}</h3>
-                    {batch.status != 'PENDING' ? (
-                      <AlertCircle className="text-yellow-500" />
-                    ) : (
-                      <CheckCircle className="text-green-500" />
-                    )}
-                  </div>
-                  {batch.status != 'PENDING' && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Import request already exists
-                    </p>
+          <ScrollArea className="h-[300px] w-full rounded-md border">
+      <div className="p-4 space-y-4">
+        {poBatches && poBatches.map((batch) => (
+          <Card
+            key={batch.id}
+            className={cn(
+              "transition-colors duration-200",
+              batch.status !== 'PENDING'
+                ? 'bg-muted cursor-not-allowed'
+                : selectedPoDelivery?.id === batch.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-card hover:bg-accent'
+            )}
+            onClick={() => batch.status === 'PENDING' && setSelectedPoDelivery(batch)}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{batch.code}</CardTitle>
+              <Badge 
+                variant={batch.status === 'PENDING' ? 'warning' : 'outline'}
+                className="ml-auto"
+              >
+                {batch.status}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4 text-sm">
+                <div className="flex items-center space-x-2">
+                  {batch.status !== 'PENDING' ? (
+                    <AlertCircle className="h-4 w-4 text-yellow-500" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                   )}
-                  {batch.isExtra == true && (
-                    <p className="text-sm  mt-2"> This is a make-up import</p>
-                  )}
+                  <span>
+                    {batch.status !== 'PENDING' 
+                      ? 'Import request exists' 
+                      : 'Ready for import'
+                    }
+                  </span>
                 </div>
-              ))}
-          </ScrollArea>
+
+              </div>
+              {batch.isExtra && (
+                <p className="text-sm mt-2 text-muted-foreground">
+                  Make-up import
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </ScrollArea>
         );
     }
   };
@@ -368,7 +399,7 @@ export default function WarehouseImportDialog({
       </Dialog>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="">
           <DialogHeader>
             <DialogTitle>
               {/* {step === 1 && 'Select Production Plan'} */}
