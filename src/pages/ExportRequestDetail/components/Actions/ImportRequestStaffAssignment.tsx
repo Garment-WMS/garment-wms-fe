@@ -2,12 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/Badge';
 
 import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { exportReceiptApi } from '@/api/services/exportReceiptApi';
 import privateCall from '@/api/PrivateCaller';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'EXPORTING' | 'EXPORTED' | 'declined';
 

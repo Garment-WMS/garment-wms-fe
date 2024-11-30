@@ -75,12 +75,14 @@ const NewImportRequest = (props: Props) => {
         'MATERIAL_BY_PO'
       );
       if (response.status === 201) {
+        const responseData = response?.data?.data;
+        const importRequestId = responseData?.id;
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate('/import-request'); // Navigate back after successful creation
+        navigate(`/import-request/${importRequestId}`); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({
@@ -119,7 +121,7 @@ const NewImportRequest = (props: Props) => {
           <DeliveryForm form={form} onSubmit={onSubmit} />
         </div>
       </div>
-      <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
+      {/* <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Supplier</div>
           {selectedPO?.supplier ? (
@@ -161,7 +163,7 @@ const NewImportRequest = (props: Props) => {
             <div className="font-primary font-semibold text-sm">Fax: {WarehouseInfo.fax}</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <ImportRequestDetails
         selectedPoDelivery={selectedPoDelivery}

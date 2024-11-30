@@ -20,8 +20,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt } from '@/types/ImportReceipt';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type Props = {};
 
 const ImportReceiptTable = (props: Props) => {
@@ -113,7 +112,7 @@ const ImportReceiptTable = (props: Props) => {
       })),
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
-          <Avatar className="mr-2 ">
+          <Avatar className="mr-2 flex justify-center items-center">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
             />

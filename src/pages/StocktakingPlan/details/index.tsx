@@ -365,7 +365,7 @@ const StocktakingPlanDetails = () => {
               })}
             </div>
 
-            {planData.status === 'NOT_YET' && (
+            {planData.status === 'NOT_YET' || planData.status === 'AWAIT' && (
               <div className="flex justify-center items-center py-4">
               <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogTrigger asChild>
