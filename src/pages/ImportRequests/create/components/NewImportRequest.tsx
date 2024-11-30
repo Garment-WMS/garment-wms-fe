@@ -70,7 +70,12 @@ const NewImportRequest = (props: Props) => {
       }
 
       const formatedPoDeliveryDetails = poDeliveryDetails.map((detail: any) => {
-        return { ...detail, quantityByPack: Number(detail.actualQuantity) };
+        return {
+          ...detail,
+          quantityByPack: detail.actualQuantity
+            ? Number(detail.actualQuantity)
+            : detail.quantityByPack
+        };
       });
       const response = await importRequestApi.create(
         selectedPoDelivery?.id as string,
@@ -78,13 +83,13 @@ const NewImportRequest = (props: Props) => {
         formatedPoDeliveryDetails,
         'MATERIAL_BY_PO'
       );
-      if (response.statusCode === 201) {
+      if (response.data.statusCode === 201) {
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate('/import-request'); // Navigate back after successful creation
+        navigate(`/import-request`); // Navigate back after successful creation
       }
     } catch (error: any) {
       toast({
@@ -123,7 +128,7 @@ const NewImportRequest = (props: Props) => {
           <DeliveryForm form={form} onSubmit={onSubmit} />
         </div>
       </div>
-      <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
+      {/* <div className="flex flex-col gap-4 md:grid grid-cols-2 w-full px-4">
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Supplier</div>
           {selectedPO?.supplier ? (
@@ -165,7 +170,7 @@ const NewImportRequest = (props: Props) => {
             <div className="font-primary font-semibold text-sm">Fax: {WarehouseInfo.fax}</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <ImportRequestDetails
         selectedPoDelivery={selectedPoDelivery}

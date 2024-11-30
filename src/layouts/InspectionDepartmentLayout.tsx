@@ -15,6 +15,8 @@ import {
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 import { BiTask } from 'react-icons/bi';
+import { PiPackage } from 'react-icons/pi';
+import { CgArrowsExchangeAltV } from 'react-icons/cg';
 
 type Props = {};
 const iconSize = 22;
@@ -25,17 +27,39 @@ const InspectionDepartmentMenu: MenuProps[] = [
     link: '/dashboard'
   },
   {
-    title: 'Import Request',
-    renderIcon: <LuClipboardCopy size={iconSize} />,
-    link: '/import-request'
-  },
-  {
-    title: 'Import Receipt',
-    renderIcon: <TbReceipt size={iconSize} />,
-    link: '/import-receipt'
+    title: 'Import/Export',
+    renderIcon: <CgArrowsExchangeAltV size={iconSize} />,
+    isGroup: true,
+    children: [
+      {
+        title: 'Import Request',
+        renderIcon: <LuClipboardCopy size={iconSize} />,
+        link: '/import-request'
+      },
+      {
+        title: 'Import Receipt',
+        renderIcon: <TbReceipt size={iconSize} />,
+        link: '/import-receipt'
+      },
+      {
+        title: 'Export request',
+        renderIcon: <TbPackageExport size={iconSize} />,
+        link: '/export-request'
+      },
+      {
+        title: 'Export Receipt',
+        renderIcon: <TbReceiptRefund size={iconSize} />,
+        link: '/export-receipt'
+      }
+    ]
   },
 
   {
+    title: 'Material/Product',
+    renderIcon: <PiPackage size={iconSize} />,
+    isGroup: true,
+    children: [
+       {
     title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
     link: '/material-variant'
@@ -45,8 +69,10 @@ const InspectionDepartmentMenu: MenuProps[] = [
     renderIcon: <TbShirt size={iconSize} />,
     link: '/product-variant'
   },
+    ]
+  },
   {
-    title: 'Report',
+    title: 'Inspection Report',
     renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
   },

@@ -15,6 +15,8 @@ import {
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 import { MdOutlineInventory } from 'react-icons/md';
+import { CgArrowsExchangeAltV } from 'react-icons/cg';
+import { PiPackage } from 'react-icons/pi';
 
 type Props = {};
 const iconSize = 22;
@@ -23,11 +25,6 @@ const PurchaseStaffMenu: MenuProps[] = [
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
     link: '/dashboard'
-  },
-  {
-    title: 'Stocktaking Management',
-    renderIcon: <MdOutlineInventory size={iconSize} />,
-    link: '/stocktaking'
   },
   {
     title: 'Production Plan',
@@ -45,26 +42,38 @@ const PurchaseStaffMenu: MenuProps[] = [
     link: '/purchase-order'
   },
   {
-    title: 'Import Request',
-    renderIcon: <LuClipboardCopy size={iconSize} />,
-    link: '/import-request'
+    title: 'Import/Export',
+    renderIcon: <CgArrowsExchangeAltV size={iconSize} />,
+    isGroup: true,
+    children: [
+      {
+        title: 'Import Request',
+        renderIcon: <LuClipboardCopy size={iconSize} />,
+        link: '/import-request'
+      },
+      {
+        title: 'Import Receipt',
+        renderIcon: <TbReceipt size={iconSize} />,
+        link: '/import-receipt'
+      },
+      {
+        title: 'Export request',
+        renderIcon: <TbPackageExport size={iconSize} />,
+        link: '/export-request'
+      },
+      {
+        title: 'Export Receipt',
+        renderIcon: <TbReceiptRefund size={iconSize} />,
+        link: '/export-receipt'
+      }
+    ]
   },
   {
-    title: 'Import Receipt',
-    renderIcon: <TbReceipt size={iconSize} />,
-    link: '/import-receipt'
-  },
-  {
-    title: 'Export request',
-    renderIcon: <TbPackageExport size={iconSize} />,
-    link: '/export-request'
-  },
-  {
-    title: 'Export Receipt',
-    renderIcon: <TbReceiptRefund size={iconSize} />,
-    link: '/export-receipt'
-  },
-  {
+    title: 'Material/Product',
+    renderIcon: <PiPackage size={iconSize} />,
+    isGroup: true,
+    children: [
+       {
     title: 'Material',
     renderIcon: <TbPackage size={iconSize} />,
     link: '/material-variant'
@@ -74,8 +83,10 @@ const PurchaseStaffMenu: MenuProps[] = [
     renderIcon: <TbShirt size={iconSize} />,
     link: '/product-variant'
   },
+    ]
+  },
   {
-    title: 'Report',
+    title: 'Inspection Report',
     renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
   }

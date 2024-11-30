@@ -1,8 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
 
 import { Clock, ClipboardCheck, User, AlertCircle, Info, Receipt } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Button } from '@/components/ui/button';
 import { Link, useParams } from 'react-router-dom';
 
@@ -10,6 +9,7 @@ import Waiting from '@/assets/images/wait-2.svg';
 import { useEffect, useState } from 'react';
 import { getImportReceiptFn } from '@/api/purchase-staff/importRequestApi';
 import { TiDocument } from 'react-icons/ti';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {

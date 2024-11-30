@@ -20,8 +20,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts, useGetMyImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt } from '@/types/ImportReceipt';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type Props = {};
 
 const ImportReceiptTable = (props: Props) => {
