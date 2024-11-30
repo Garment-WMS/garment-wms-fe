@@ -68,13 +68,17 @@ const NewImportRequest = (props: Props) => {
         });
         return;
       }
+
+      const formatedPoDeliveryDetails = poDeliveryDetails.map((detail: any) => {
+        return { ...detail, quantityByPack: Number(detail.actualQuantity) };
+      });
       const response = await importRequestApi.create(
         selectedPoDelivery?.id as string,
         data.description as string,
-        poDeliveryDetails,
+        formatedPoDeliveryDetails,
         'MATERIAL_BY_PO'
       );
-      if (response.status === 201) {
+      if (response.statusCode === 201) {
         toast({
           variant: 'success',
           title: 'Import Request created successfully',
