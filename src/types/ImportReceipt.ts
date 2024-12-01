@@ -73,6 +73,41 @@ type InspectionReport = {
   inspectionRequest: InspectionRequest;
 };
 
+export const ImportReceiptType:{
+  label: string;
+  value: 'MATERIAL' | 'PRODUCT';
+}[] = [
+  {
+    label: 'Material',
+    value: 'MATERIAL',
+  },
+  {
+    label: 'Product',
+    value: 'PRODUCT',
+  },
+]
+
+export const ImportReceiptStatus:{
+  label: string;
+  value: string;
+}[] = [
+  {
+    label: 'Await to import',
+    value: 'AWAIT_TO_IMPORT',
+  },
+  {
+    label: 'Rejected',
+    value: 'REJECTED',
+  },
+  {
+    label: 'Importing',
+    value: 'IMPORTING',
+  },
+  {
+    label: 'Imported',
+    value: 'IMPORTED',
+  },
+]
 export type ImportReceipt = {
   discussion: any;
   id: string;

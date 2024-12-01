@@ -89,7 +89,7 @@ const ImportRequestList = (props: Props) => {
     },
 
     {
-      header: 'Import Request Type',
+      header: 'Type',
       accessorKey: 'type',
       enableColumnFilter: true,
       filterOptions: DeliveryType.map((delivery) => ({

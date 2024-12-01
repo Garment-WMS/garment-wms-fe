@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts, useGetMyImportReceipts } from '@/hooks/useGetImportReceipts';
-import { ImportReceipt } from '@/types/ImportReceipt';
+import { ImportReceipt, ImportReceiptStatus, ImportReceiptType } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type Props = {};
 
@@ -93,10 +93,10 @@ const ImportReceiptTable = (props: Props) => {
     },
 
     {
-      header: 'Import Receipt Type',
+      header: 'Type',
       accessorKey: 'type',
       enableColumnFilter: true,
-      filterOptions: DeliveryType.map((delivery) => ({
+      filterOptions: ImportReceiptType.map((delivery) => ({
         label: delivery.label,
         value: delivery.value
       })),
@@ -112,7 +112,8 @@ const ImportReceiptTable = (props: Props) => {
       })),
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
-          <Avatar className="mr-2 ">
+          <div className='flex justify-center items-center'>
+             <Avatar className="mr-2 flex justify-center items-center">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
             />
@@ -126,6 +127,8 @@ const ImportReceiptTable = (props: Props) => {
               ' ' +
               row?.original?.warehouseStaff?.account?.firstName}
           </h4>
+          </div>
+         
         </Link>
       )
     },
@@ -139,7 +142,8 @@ const ImportReceiptTable = (props: Props) => {
       })),
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
-          <Avatar className="mr-2 ">
+          <div className='flex justify-center items-center'>
+            <Avatar className="mr-2 flex justify-center items-center">
             <AvatarImage
               src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
             />
@@ -153,6 +157,8 @@ const ImportReceiptTable = (props: Props) => {
               ' ' +
               row?.original?.warehouseManager?.account?.firstName}
           </h4>
+          </div>
+          
         </Link>
       )
     },
@@ -205,7 +211,7 @@ const ImportReceiptTable = (props: Props) => {
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
-      filterOptions: Status.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: ImportReceiptStatus.map((status) => ({ label: status.label, value: status.value }))
     },
     {
       id: 'actions',
