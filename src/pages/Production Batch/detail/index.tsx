@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useGetProductionBatchById } from '@/hooks/useGetProductionBatchById';
 import Loading from '@/components/common/Loading';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { Package, Box } from 'lucide-react';
 
 const ProductionBatchDetail = () => {
