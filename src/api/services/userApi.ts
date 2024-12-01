@@ -1,11 +1,14 @@
-import { get } from "../ApiCaller";
+import { get } from '../ApiCaller';
 
 let userPath = '/user';
 let accountPath = '/account';
 export const userApi = {
-    getAllByRole: (role: string) => get(`${accountPath}/role/${role}`),
-}
+  getAllByRole: (role: string) => get(`${accountPath}/role/${role}`)
+};
 
 export const getWarehouseStaff = () => {
-    return userApi.getAllByRole('WAREHOUSE_STAFF');
-}
+  return userApi.getAllByRole('WAREHOUSE_STAFF');
+};
+export const getAccountById = (accountId: string) => {
+  return get(`${accountPath}/${accountId}`);
+};

@@ -19,6 +19,7 @@ import { MdOutlineInventory } from 'react-icons/md';
 import { BiTask } from 'react-icons/bi';
 import { PiPackage } from 'react-icons/pi';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
+import { GrUserWorker } from 'react-icons/gr';
 type Props = {};
 const iconSize = 22;
 const WarehouseManagerMenu: MenuProps[] = [
@@ -79,19 +80,19 @@ const WarehouseManagerMenu: MenuProps[] = [
     renderIcon: <PiPackage size={iconSize} />,
     isGroup: true,
     children: [
-       {
-    title: 'Material',
-    renderIcon: <TbPackage size={iconSize} />,
-    link: '/material-variant'
-  },
-  {
-    title: 'Product',
-    renderIcon: <TbShirt size={iconSize} />,
-    link: '/product-variant'
-  },
+      {
+        title: 'Material',
+        renderIcon: <TbPackage size={iconSize} />,
+        link: '/material-variant'
+      },
+      {
+        title: 'Product',
+        renderIcon: <TbShirt size={iconSize} />,
+        link: '/product-variant'
+      }
     ]
   },
- 
+
   {
     title: 'Inspection Report',
     renderIcon: <TbClipboardData size={iconSize} />,
@@ -101,6 +102,11 @@ const WarehouseManagerMenu: MenuProps[] = [
     title: 'Task Management',
     renderIcon: <BiTask size={iconSize} />,
     link: '/tasks-management'
+  },
+  {
+    title: 'Staff Management',
+    renderIcon: <GrUserWorker size={iconSize} />,
+    link: '/warehouse-staff'
   }
 ];
 const WarehouseManagerLayout = (props: Props) => {
