@@ -295,7 +295,7 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/warehouse-staff/:id',
-          element: <RoleBasedRedirect managerComponent={<WarehouseStaffDetail />} />
+          element: <WarehouseStaffDetail />
         }
       ]
     },
