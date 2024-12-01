@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetMaterialExportRequest } from '@/hooks/useGetMaterialExportRequest';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
@@ -75,14 +76,14 @@ const ExportRequestTable = (props: Props) => {
       header: 'Code',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.code}</div>
+      cell: ({ row }) => <div >{row.original.code}</div>
     },
     {
       header: 'Status',
       accessorKey: 'status',
       cell: ({ row }) => (
         <Badge variant={row.original.status === 'PENDING' ? 'warning' : 'success'}>
-          {row.original.status}
+          {convertTitleToTitleCase(row.original.status)}
         </Badge>
       )
     },
@@ -90,28 +91,28 @@ const ExportRequestTable = (props: Props) => {
       header: 'Production Batch',
       accessorKey: 'productionBatch.name',
       enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.productionBatch?.name || 'N/A'}</div>
+      cell: ({ row }) => <div className='truncate w-[130px]'>{row.original.productionBatch?.name || 'N/A'}</div>
     },
-    {
-      header: 'Created By',
-      enableColumnFilter: false,
-      accessorKey: 'productionDepartment.account',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <Avatar className="mr-2">
-            <AvatarImage src={row.original.productionDepartment?.account?.avatarUrl || ''} />
-            <AvatarFallback className="flex items-center">
-              {row.original.productionDepartment?.account?.firstName?.charAt(0)}
-              {row.original.productionDepartment?.account?.lastName?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="text-center align-middle">
-            {row.original.productionDepartment?.account?.firstName}{' '}
-            {row.original.productionDepartment?.account?.lastName}
-          </div>
-        </div>
-      )
-    },
+    // {
+    //   header: 'Created By',
+    //   enableColumnFilter: false,
+    //   accessorKey: 'productionDepartment.account',
+    //   cell: ({ row }) => (
+    //     <div className="flex items-center">
+    //       <Avatar className="mr-2">
+    //         <AvatarImage src={row.original.productionDepartment?.account?.avatarUrl || ''} />
+    //         <AvatarFallback className="flex items-center">
+    //           {row.original.productionDepartment?.account?.firstName?.charAt(0)}
+    //           {row.original.productionDepartment?.account?.lastName?.charAt(0)}
+    //         </AvatarFallback>
+    //       </Avatar>
+    //       <div className="text-center align-middle">
+    //         {row.original.productionDepartment?.account?.firstName}{' '}
+    //         {row.original.productionDepartment?.account?.lastName}
+    //       </div>
+    //     </div>
+    //   )
+    // },
     {
       header: 'Assigned By',
       enableColumnFilter: false,

@@ -14,15 +14,18 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
+import { PurchaseOrder } from '@/types/PurchaseOrder';
+import { ProductionBatch } from '@/types/ProductionBatch';
 type Props = {};
 
 const ImportRequestList = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [purchaseOrderData, setPurchaseOrderData] = useState<PurchaseOrder[]>([]);
+  const [productionBatchData, setProductionBatchData] = useState<ProductionBatch[]>([]);
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
 
@@ -74,6 +77,16 @@ const ImportRequestList = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
+  const fetchPurchaseOrders = async () => {
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
+  useEffect(() => {
+    
+  }, []);
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
       header: 'Import request code',
@@ -89,7 +102,7 @@ const ImportRequestList = (props: Props) => {
     },
 
     {
-      header: 'Import Request Type',
+      header: 'Type',
       accessorKey: 'type',
       enableColumnFilter: true,
       filterOptions: DeliveryType.map((delivery) => ({

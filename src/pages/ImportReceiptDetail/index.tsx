@@ -245,9 +245,11 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
+              <div className="text-2xl font-bold">
                 {importReceipt?.materialReceipt
                   ? calculateTotalItemsReceived(importReceipt.materialReceipt)
                   : 0}
+                </div>
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
@@ -267,7 +269,7 @@ export default function MaterialReceipt() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{importReceipt?.status}</div>
+                <div className="text-2xl font-bold">{convertTitleToTitleCase(importReceipt?.status)}</div>
                 <p className="text-xs text-muted-foreground">
                   {' '}
                   {importReceipt?.status == 'IMPORTED'
@@ -284,7 +286,7 @@ export default function MaterialReceipt() {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold capitalize">{importReceipt?.status}</div>
+                  <div className="text-2xl font-bold capitalize">{convertTitleToTitleCase(importReceipt?.status)}</div>
                   <p className="text-xs text-muted-foreground">
                     {importReceipt?.status === 'IMPORTING'
                       ? 'Import in progress'
@@ -410,7 +412,7 @@ export default function MaterialReceipt() {
                       <p>
                         <strong>Import Request:</strong>{' '}
                         <Link
-                          to={`/import-requests/${importRequest?.id}`}
+                          to={`/import-request/${importRequest?.id}`}
                           className="text-primary underline underline-offset-2">
                           {importRequest?.code}
                         </Link>
@@ -418,7 +420,7 @@ export default function MaterialReceipt() {
                       <p>
                         <strong>Purchase Order:</strong>{' '}
                         <Link
-                          to={`/purchase-orders/${importRequest?.poDelivery?.purchaseOrder?.id}`}
+                          to={`/purchase-order/${importRequest?.poDelivery?.purchaseOrder?.id}`}
                           className="text-primary underline underline-offset-2">
                           {importRequest?.poDelivery?.purchaseOrder?.poNumber}
                         </Link>
