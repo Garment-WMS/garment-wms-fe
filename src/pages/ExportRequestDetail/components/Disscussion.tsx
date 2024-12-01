@@ -78,7 +78,7 @@ const Discussion = (props: Props) => {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full mt-8">
       <CardHeader>
         <CardTitle>Discussion</CardTitle>
       </CardHeader>

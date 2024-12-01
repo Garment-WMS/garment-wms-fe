@@ -197,7 +197,7 @@ export default function WarehouseTasks() {
     const { label, color } = getStatusDetails(event.status);
 
     return (
-      <div className={`flex items-center gap-2 p-2 rounded ${color}`}>
+      <div className={`flex items-center gap-2 p-2 rounded ${color} justify-center`}>
         <TaskTypeIcon type={event.taskType} className="text-white" />
         <span className="text-white">{event.title}</span>
       </div>
@@ -274,7 +274,7 @@ export default function WarehouseTasks() {
             </TableCell>
             <TableCell>{new Date(task.createdAt).toLocaleString()}</TableCell>
             <TableCell>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 ">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src={task.warehouseStaff.account.avatarUrl || undefined}

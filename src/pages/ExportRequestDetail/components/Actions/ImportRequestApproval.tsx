@@ -563,7 +563,9 @@ export default function WarehouseApproval({
                     <AlertDialogCancel onClick={() => setIsDeclineDialogOpen(false)}>
                       Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDecline}>Decline</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDecline} className="bg-red-500">
+                      Decline
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
