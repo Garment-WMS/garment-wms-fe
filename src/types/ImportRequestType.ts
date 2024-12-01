@@ -12,6 +12,7 @@ export interface ImportRequest {
     | 'CANCELLED'
     | 'REJECTED'
     | 'APPROVED'
+    | 'AWAIT_TO_IMPORT'
     | 'INSPECTING'
     | 'INSPECTED'
     | 'IMPORTING'
@@ -51,6 +52,7 @@ export interface ImportRequest {
     | 'INSPECTING'
     | 'INSPECTED'
     | 'IMPORTING'
+    | 'AWAIT_TO_IMPORT'
     | 'IMPORTED'; // Expanded statuses
   type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
   startAt: string | null;
@@ -267,6 +269,7 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
   { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
+  { label: 'Wait for Import', value: 'AWAIT_TO_IMPORT', variant: 'warning' },
   { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
   { label: 'Imported', value: 'IMPORTED', variant: 'success' },
   { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
@@ -286,7 +289,7 @@ export const DeliveryType = [
   { label: 'Material with Purchase Order', value: 'MATERIAL_BY_PO' },
   { label: 'Return Material', value: 'MATERIAL_RETURN' },
   { label: 'Product with Manufacturing Order', value: 'PRODUCT_BY_BATCH' },
-  { label: 'Return Product', value: 'PRODUCT_RETURN' },
+  { label: 'Return Product', value: 'PRODUCT_RETURN' }
 ];
 
 export interface UseImportRequestsInput {

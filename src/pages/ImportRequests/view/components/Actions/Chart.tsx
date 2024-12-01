@@ -110,7 +110,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
     const total = passed + (defectTypes?.length ?? 0);
     return total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
   }, [totalMaterials, defectTypes]);
-
   return (
     <Card className="flex flex-col w-full max-w-5xl">
       <CardHeader className="items-center pb-2">
@@ -217,7 +216,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
         )}
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm">
-        {currentStatus === 'INSPECTED' && (
+        {statusOrder.indexOf(currentStatus) > 4 && (
           <>
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
@@ -244,7 +243,10 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
         <h1>Please contact Inspection team if it takes long time</h1>
         {/* <InspectionReportDialog inspectionReport={inspectionRequest.ins}/> */}
         {inspectionRequest?.[0]?.inspectionReport && (
-          <InspectionReportDialog inspectionReqId={inspectionRequest[0].id} inspectionReport={inspectionRequest[0].inspectionReport} />
+          <InspectionReportDialog
+            inspectionReqId={inspectionRequest[0].id}
+            inspectionReport={inspectionRequest[0].inspectionReport}
+          />
         )}
       </CardFooter>
     </Card>
