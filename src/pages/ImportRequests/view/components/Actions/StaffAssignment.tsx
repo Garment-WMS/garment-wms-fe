@@ -70,10 +70,11 @@ export default function AssignStaffPopup({
         task?.warehouseStaff?.account?.id ||
         task.resourceId,
       start: task.startedAt ? new Date(task.startedAt) : new Date(task.expectedStartedAt),
-      end: task.finishedAt ? new Date(task.finishedAt) : new Date(task.expectFinishedAt),
+      end: task.finishedAt ? new Date(task.finishedAt) : new Date(task.expectedFinishedAt),
       title: task?.code
     }));
   };
+  console.log(filteredTasks(tasks));
   const resources = useMemo(
     () =>
       participants.map((participant: any) => ({

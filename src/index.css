@@ -162,7 +162,11 @@
 }
 
 .rbc-event {
-  @apply bg-primary text-primary-foreground rounded-md;
+  @apply bg-transparent text-primary-foreground rounded-md;
+}
+.rbc-event.rbc-selected,
+.rbc-day-slot .rbc-selected.rbc-background-event {
+  @apply bg-transparent !important;
 }
 
 .rbc-today {
