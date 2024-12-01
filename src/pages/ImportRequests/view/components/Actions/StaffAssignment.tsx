@@ -204,9 +204,29 @@ export default function AssignStaffPopup({
       }
     };
   };
+  const handleOpen = () => {
+    if (role === 'warehouse-staff' && !selectedInspectionTimeFrame?.expectFinishedAt) {
+      toast({
+        variant: 'destructive',
+        title: 'Please select task for inspection first',
+        description: 'Please choose time for assigning the inspection staff first'
+      });
+      setIsOpen(false); // Ensure the dialog remains closed
+    } else {
+      setIsOpen(true); // Open the dialog if conditions are met
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (open) {
+          handleOpen();
+        } else {
+          setIsOpen(false); // Close the dialog when manually toggled off
+        }
+      }}>
       <DialogTrigger asChild>
         {staff ? (
           <Badge variant="outline">
@@ -244,7 +264,12 @@ export default function AssignStaffPopup({
             </div>
           </Badge>
         ) : (
-          <Button variant="outline">Assign Employee</Button>
+          <Button
+            variant="outline"
+            onClick={() => setIsOpen(true)} // Allow manual override
+            disabled={selectedInspectionTimeFrame?.expectFinishedAt && role == 'warehouse-staff'}>
+            Assign Employee
+          </Button>
         )}
       </DialogTrigger>
 

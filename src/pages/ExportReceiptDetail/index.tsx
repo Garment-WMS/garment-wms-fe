@@ -92,7 +92,7 @@ export default function ExportReceiptDetail() {
         status,
         type
       );
-      console.log(res);
+
       if (res.statusCode === 200) {
         toast({
           variant: 'success',
@@ -150,7 +150,6 @@ export default function ExportReceiptDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12,500</div>
-                <p className="text-xs text-muted-foreground">+2% from last receipt</p>
               </CardContent>
             </Card>
             <Card>
@@ -160,7 +159,6 @@ export default function ExportReceiptDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">98.5%</div>
-                <p className="text-xs text-muted-foreground">+0.5% from last receipt</p>
               </CardContent>
             </Card>
             <Card>

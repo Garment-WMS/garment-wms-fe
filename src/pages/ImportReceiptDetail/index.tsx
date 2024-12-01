@@ -244,9 +244,11 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                {importReceipt?.materialReceipt
-                  ? calculateTotalItemsReceived(importReceipt.materialReceipt)
-                  : 0}
+                <div className="text-2xl font-bold">
+                  {importReceipt?.materialReceipt
+                    ? calculateTotalItemsReceived(importReceipt.materialReceipt)
+                    : 0}
+                </div>
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
@@ -257,7 +259,7 @@ export default function MaterialReceipt() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">98.5%</div>
-                <p className="text-xs text-muted-foreground">+0.5% from last receipt</p>
+                <p className="text-xs text-muted-foreground">Inspection rate</p>
               </CardContent>
             </Card>
             <Card>
