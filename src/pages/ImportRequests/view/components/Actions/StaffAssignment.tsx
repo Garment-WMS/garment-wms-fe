@@ -29,6 +29,7 @@ import moment from 'moment';
 import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import Loading from '@/components/common/Loading';
+import { useToast } from '@/hooks/use-toast';
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
 export interface Props {
@@ -37,6 +38,7 @@ export interface Props {
   type: string;
   setSelectedTimeFrame: (expectFinishedAtexpectFinishedAt: any) => void;
   role: string;
+  selectedInspectionTimeFrame?: any;
 }
 
 export default function AssignStaffPopup({
@@ -44,10 +46,10 @@ export default function AssignStaffPopup({
   setStaff,
   type,
   setSelectedTimeFrame,
-  role
+  role,
+  selectedInspectionTimeFrame
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<any>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState<Partial<any>>({});
@@ -55,6 +57,8 @@ export default function AssignStaffPopup({
   const [selectedDate, setSelectedDate] = useState(new Date()); // Track the selected date
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isLoading, setLoading] = useState(false);
+  const [duration, setDuration] = useState<number>();
+  const { toast } = useToast();
   const handleSelectEvent = (event: any) => {
     setSelectedEvent(event);
   };
@@ -81,19 +85,33 @@ export default function AssignStaffPopup({
 
   const handleSelectSlot = (slotInfo: any) => {
     const now = new Date();
-    // if (slotInfo.end < now) {
-    //   alert('Cannot schedule tasks in the past.');
-    //   return;
-    // }
+    if (slotInfo.start < now) {
+      toast({
+        variant: 'destructive',
+        title: 'invalid selection',
+        description: 'Task should be after current time '
+      });
+      return;
+    } else if (
+      selectedInspectionTimeFrame?.expectFinishedAt &&
+      slotInfo.start < selectedInspectionTimeFrame?.expectFinishedAt
+    ) {
+      toast({
+        variant: 'destructive',
+        title: 'invalid selection',
+        description: 'Task should be after inspection report'
+      });
+      return;
+    }
 
+    setDuration((slotInfo.end - slotInfo.start) / 60000);
     const participant = participants.find((p: any) => p.accountId === slotInfo.resourceId);
-
     setNewTask({
       title: participant
         ? `${type == 'warehouseStaffId' ? `Warehouse Task for ` : `Inspection request for `} ${participant?.account?.firstName} ${participant?.account?.lastName}`
         : '',
       start: slotInfo.start,
-      end: new Date(slotInfo.start.getTime() + 30 * 60000),
+      end: slotInfo.end,
       resourceId: participant.accountId
     });
 
@@ -131,9 +149,8 @@ export default function AssignStaffPopup({
 
   const handleDurationChange = (duration: number) => {
     if (newTask.start) {
+      setDuration(duration);
       const newEnd = new Date(newTask.start.getTime() + duration * 60000);
-
-      console.log(isParticipantAvailable(newTask.participantId as string, newTask.start, newEnd));
       if (!isParticipantAvailable(newTask.participantId as string, newTask.start, newEnd)) {
         alert('The participant is not available for the selected time range.');
         return;
@@ -174,6 +191,19 @@ export default function AssignStaffPopup({
 
     fetchTasks();
   }, []);
+  const slotPropGetter = (date: Date) => {
+    const now = new Date();
+
+    const isDisabled = date < selectedInspectionTimeFrame?.expectFinishedAt;
+    const isPast = date < now;
+
+    return {
+      style: {
+        backgroundColor: isPast ? '#cdcccc' : isDisabled ? '#d4bfbf' : 'white',
+        cursor: isDisabled || isPast ? 'not-allowed' : 'pointer'
+      }
+    };
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -261,6 +291,7 @@ export default function AssignStaffPopup({
                             : '#246bfd'
                     }
                   })}
+                  slotPropGetter={slotPropGetter}
                   components={{
                     event: (props) => (
                       <div className="text-white p-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap text-center">
@@ -274,8 +305,8 @@ export default function AssignStaffPopup({
                     dayFormat: 'dddd, MMMM D, YYYY'
                   }}
                   toolbar={false}
-                  // min={new Date(2024, 10, 30, 9, 0)}
-                  // max={new Date(2024, 10, 30, 18, 0)}
+                  min={new Date(2024, 10, 30, 9, 0)}
+                  max={new Date(2024, 10, 30, 18, 0)}
                 />
               )}
             </div>
@@ -285,13 +316,9 @@ export default function AssignStaffPopup({
                   <DialogTitle>Assign Warehouse Task</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="task-title" className="text-right">
-                      Title
-                    </Label>
-                    {}
-                    <div className="w-full">
-                      <h3 className="w-full">{newTask.title}</h3>
+                  <div className="flex items-center justify-center">
+                    <div className="">
+                      <h3 className="">{newTask.title}</h3>
                     </div>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -304,17 +331,18 @@ export default function AssignStaffPopup({
                       min="15"
                       step="15"
                       defaultValue="30"
+                      value={duration}
                       onChange={(e) => handleDurationChange(parseInt(e.target.value))}
                       className="col-span-3"
                     />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Start Time</Label>
-                    <div className="col-span-3">{newTask.start?.toLocaleTimeString()}</div>
+                    <div className="col-span-3">{new Date(newTask.start).toLocaleString()}</div>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">End Time</Label>
-                    <div className="col-span-3">{newTask.end?.toLocaleTimeString()}</div>
+                    <div className="col-span-3">{new Date(newTask.end).toLocaleString()}</div>
                   </div>
                 </div>
                 <DialogFooter>
