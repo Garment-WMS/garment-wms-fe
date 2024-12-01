@@ -6,6 +6,7 @@ import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { Button } from '@/components/ui/button';
 
 const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
@@ -19,15 +20,6 @@ const PurchaseOrderDeliveryDetails = () => {
     (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
     0
   );
-  const breadcrumbItems = [
-    { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
-    { label: `Purchase Order #${poNumber}`, href: `/purchase-staff/purchase-order/${poId}` },
-    {
-      label: `Delivery #${delivery.code}`,
-      href: `/purchase-staff/purchase-order/${poId}/po-delivery/${delivery.id}`,
-      disabled: true
-    }
-  ];
 
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
@@ -46,14 +38,18 @@ const PurchaseOrderDeliveryDetails = () => {
 
   return (
     <main className="w-full h-screen bg-white rounded-xl shadow-xl px-8 pt-6 pb-8 pl-5">
-      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={3} />
-
       {/* Header */}
       <section className="flex items-center justify-between border-b border-gray-200 pb-5 mb-6 mt-5">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-medium text-gray-700">Purchase Order Delivery ID:</h1>
-            <h1 className="text-2xl font-bold text-primaryDark">{delivery.id}</h1>
+            <h1 className="text-2xl font-bold text-primaryDark">{delivery?.code}</h1>
+            <div className="mt-1 ml-2">
+              <Badge
+                className={`px-3 py-1 rounded-md text-lg mb-2 ${getStatusBadgeClass(delivery.status)}`}>
+                {delivery.status}
+              </Badge>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 text-green-600">
@@ -66,17 +62,12 @@ const PurchaseOrderDeliveryDetails = () => {
         </div>
 
         <div className="items-center flex flex-col justify-center">
-          <Badge
-            className={`px-3 py-1 rounded-md text-lg mb-2 ${getStatusBadgeClass(delivery.status)}`}>
-            {delivery.status}
-          </Badge>
-
           {delivery && delivery?.importRequest && delivery?.importRequest[0]?.id ? (
             <Link to={`/import-request/${delivery.importRequest[0].id}`}>
-              <Badge
-                className={`px-3 py-2 rounded-md text-lg ${getStatusBadgeClass(delivery.status)}`}>
+              <Button
+                className={`px-3 py-2 rounded-md text-lg bg-white ${getStatusBadgeClass(delivery.status)}`}>
                 View Import Request
-              </Badge>{' '}
+              </Button>{' '}
             </Link>
           ) : null}
         </div>
@@ -86,33 +77,12 @@ const PurchaseOrderDeliveryDetails = () => {
       <section className="flex flex-col gap-6 border-b border-gray-200 pb-6 mb-6">
         <h2 className="text-xl font-semibold text-primaryDark">Materials</h2>
         {delivery.poDeliveryDetail.map((detail: PODeliveryDetail) => (
-          <MaterialList key={detail.id} detail={detail} />
+          <MaterialList key={detail.id} detail={detail} status={delivery?.status} />
         ))}
       </section>
 
-      {/* Purchaser Info */}
-      <section className="flex items-center justify-between border-b border-gray-200 pb-6 mb-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-lg font-semibold text-gray-700">Purchasing Staff</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Staff ID:</span>
-            <span className="font-semibold text-gray-700">3890428394823</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Staff Name:</span>
-            <span className="font-semibold text-gray-700">Huy Long</span>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 w-72">
-          <h1 className="text-lg font-semibold text-gray-700">Delivery Address</h1>
-          <p className="text-gray-600 leading-relaxed">
-            Lo E2a-7, Duong D1, D. D1, Long Thanh My, Thanh Pho Thu Duc
-          </p>
-        </div>
-      </section>
-
       {/* Order Summary */}
-      <section className="border-t border-gray-200 pt-6 -mt-9">
+      <section className="border-t border-gray-200 pt-6 -mt-9 hidden">
         <h2 className="text-xl font-semibold text-primaryDark mb-4">Order Summary</h2>
 
         <div className="flex flex-wrap justify-between items-center text-lg">

@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import { useGetPurchaseOrderById } from '@/hooks/useGetPurchaseOrderById';
 import Loading from '@/components/common/Loading';
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
-import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import { useGetPurchaseOrderDeliveryByPoId } from '@/hooks/useGetPurchaseOrderDeliveryByPoID';
 
 const statusMap: Record<string, PurchaseOrderStatus> = {
@@ -48,17 +47,18 @@ const PurchaseOrderDetails: React.FC = () => {
     otherAmount,
     totalImportQuantity,
     totalFailImportQuantity,
-    totalQuantityToImport
+    totalQuantityToImport,
+    totalPoDelivery,
+    totalFinishedPoDelivery,
+    totalInProgressPoDelivery,
+    totalPendingPoDelivery,
+    totalCancelledPoDelivery,
+    productionPlan
   } = purchaseOrder;
-  const breadcrumbItems = [
-    { label: 'Purchase Orders', href: '/purchase-staff/purchase-order' },
-    { label: `Purchase Order #${poNumber}`, href: `/purchase-staff/purchase-order/${id}` }
-  ];
 
   return (
     <section className="h-full w-full px-4  py-3 flex flex-col space-y-7">
       <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 ring-gray-300 flex flex-col gap-8">
-        <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={2} />
         {/* Order overview */}
         <OrderOverview
           poNumber={poNumber}
@@ -73,16 +73,23 @@ const PurchaseOrderDetails: React.FC = () => {
           totalImportQuantity={totalImportQuantity}
           totalFailImportQuantity={totalFailImportQuantity}
           totalQuantityToImport={totalQuantityToImport}
-          prodcutionPlanCode={purchaseOrder?.productionPlan.code}
+          productionPlanCode={productionPlan?.code}
         />
         {/* Order to details */}
-        <OrderToDetails supplier={supplier} />
+        <div className="hidden">
+          <OrderToDetails supplier={supplier} />
+        </div>
         {/* Order item details */}
         <OrderItemDetails
           poDelivery={poDeliveryData?.data}
           poId={id}
           poNumber={poNumber}
           isPendingDelivery={isPedingDelivery}
+          totalDelivery={totalPoDelivery}
+          totalFinishDelivery={totalFinishedPoDelivery}
+          totalInProgressDelivery={totalInProgressPoDelivery}
+          totalPendingDelivery={totalPendingPoDelivery}
+          totalCancelDelivery={totalCancelledPoDelivery}
         />
       </div>
     </section>

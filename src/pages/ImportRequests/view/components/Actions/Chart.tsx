@@ -25,6 +25,8 @@ import { useGetAllDefects } from '@/hooks/useGetAllDefects';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { Badge } from '@/components/ui/Badge';
+import Colors from '@/constants/color';
+import InspectionReportDialog from './InspectionReportDialog';
 
 const COLORS = {
   passed: 'hsl(var(--chart-1))',
@@ -141,8 +143,8 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Pie
                     data={[
-                      { status: 'passed', quantity: totalMaterials, fill: COLORS.passed },
-                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: COLORS.failed }
+                      { status: 'passed', quantity: totalMaterials, fill: Colors.success },
+                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: Colors.error }
                     ]}
                     dataKey="quantity"
                     nameKey="status"
@@ -150,8 +152,8 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                     outerRadius={80}
                     paddingAngle={2}>
                     {[
-                      { status: 'passed', quantity: totalMaterials, fill: COLORS.passed },
-                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: COLORS.failed }
+                      { status: 'passed', quantity: totalMaterials, fill: Colors.success },
+                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: Colors.error }
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry?.fill} />
                     ))}
@@ -240,6 +242,10 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
           </>
         )}
         <h1>Please contact Inspection team if it takes long time</h1>
+        {/* <InspectionReportDialog inspectionReport={inspectionRequest.ins}/> */}
+        {inspectionRequest?.[0]?.inspectionReport && (
+          <InspectionReportDialog inspectionReqId={inspectionRequest[0].id} inspectionReport={inspectionRequest[0].inspectionReport} />
+        )}
       </CardFooter>
     </Card>
   );

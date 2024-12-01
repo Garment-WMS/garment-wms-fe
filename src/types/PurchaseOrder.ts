@@ -62,7 +62,12 @@ export interface PurchaseOrder {
   totalImportQuantity: number;
   totalFailImportQuantity: number;
   totalQuantityToImport: number;
-  productionPlan : ProductionPlan | null;
+  totalPoDelivery: number; // Added field
+  totalFinishedPoDelivery: number; // Added field
+  totalInProgressPoDelivery: number; // Added field
+  totalPendingPoDelivery: number; // Added field
+  totalCancelledPoDelivery: number; // Added field
+  productionPlan: ProductionPlan | null;
 }
 
 // Pagination Meta

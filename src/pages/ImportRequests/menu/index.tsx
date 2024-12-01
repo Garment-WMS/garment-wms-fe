@@ -19,7 +19,7 @@ const CreateImportRequestMenu: React.FC = () => {
   ];
 
   return (
-    <div className="h-full w-full px-4 flex flex-col gap-4 bg-white items-center p-8">
+    <div className="h-fit w-full px-4 flex flex-col gap-4 bg-white items-center p-8">
       {/* Title */}
       <div
         className="font-extrabold font-primary flex justify-center text-bluePrimary text-md mb-8

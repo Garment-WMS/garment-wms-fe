@@ -10,7 +10,8 @@ interface PieChartComponentProps {
   outerRadius?: number;
   labelType?: 'percentage' | 'value';
   showLegend?: boolean;
-  legendHeight?: number; // Added legendHeight property
+  legendHeight?: number;
+  showValue?: boolean; // Added prop to toggle label display
 }
 
 const RADIAN = Math.PI / 180;
@@ -50,7 +51,8 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   outerRadius = 180,
   labelType = 'percentage',
   showLegend = false,
-  legendHeight = 40 // Default legend height
+  legendHeight = 40,
+  showValue = true // Default is true to show values
 }) => {
   // Enforce legendHeight when showLegend is true
   if (showLegend && !legendHeight) {
@@ -60,6 +62,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
   }
 
   const filteredData = data.filter((entry) => entry.value !== 0);
+
   return (
     <div className="flex justify-center">
       <PieChart width={width} height={height}>
@@ -69,7 +72,7 @@ const PieChartComponent: React.FC<PieChartComponentProps> = ({
           cx={width / 2}
           cy={height / 2}
           labelLine={false}
-          label={(props) => renderCustomizedLabel(props, labelType)}
+          label={showValue ? (props) => renderCustomizedLabel(props, labelType) : undefined} // Render labels conditionally
           innerRadius={innerRadius}
           outerRadius={outerRadius}
           fill="#8884d8"
