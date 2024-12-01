@@ -73,41 +73,41 @@ type InspectionReport = {
   inspectionRequest: InspectionRequest;
 };
 
-export const ImportReceiptType:{
+export const ImportReceiptType: {
   label: string;
   value: 'MATERIAL' | 'PRODUCT';
 }[] = [
   {
     label: 'Material',
-    value: 'MATERIAL',
+    value: 'MATERIAL'
   },
   {
     label: 'Product',
-    value: 'PRODUCT',
-  },
-]
+    value: 'PRODUCT'
+  }
+];
 
-export const ImportReceiptStatus:{
+export const ImportReceiptStatus: {
   label: string;
   value: string;
 }[] = [
   {
     label: 'Await to import',
-    value: 'AWAIT_TO_IMPORT',
+    value: 'AWAIT_TO_IMPORT'
   },
   {
     label: 'Rejected',
-    value: 'REJECTED',
+    value: 'REJECTED'
   },
   {
     label: 'Importing',
-    value: 'IMPORTING',
+    value: 'IMPORTING'
   },
   {
     label: 'Imported',
-    value: 'IMPORTED',
-  },
-]
+    value: 'IMPORTED'
+  }
+];
 export type ImportReceipt = {
   discussion: any;
   id: string;
@@ -115,7 +115,7 @@ export type ImportReceipt = {
   warehouseManagerId: string;
   inspectionReportId: string | null;
   code: string;
-  status: 'IMPORTING' | 'IMPORTED' | 'CANCELED';
+  status: 'IMPORTING' | 'IMPORTED' | 'CANCELED' | 'AWAIT_TO_IMPORT';
   type: 'MATERIAL' | 'PRODUCT';
   note: string | null;
   startedAt: string;

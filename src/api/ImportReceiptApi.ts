@@ -12,7 +12,8 @@ export const importReceiptApi = {
   getMy: (queryString: string) => get(`/import-receipt/my${queryString}`),
 
   finish: (id: string) => patch(`${importRequestUrl}/${id}/finish`),
-  getImportRequest: (id: string) => get(`/import-request/by-import-receipt/${id}`)
+  getImportRequest: (id: string) => get(`/import-request/by-import-receipt/${id}`),
+  startImporting: (id: string) => patch(`${importRequestUrl}/${id}/importing`)
 };
 export const getImportRequestFn = async (id: string) => {
   const res = await privateCall(importReceiptApi.getImportRequest(id));
@@ -117,5 +118,10 @@ export const getMyImportReceiptFn = async ({
 export const finishImportReceiptFn = async (id: string): Promise<any> => {
   // Make the API request
   const res = await privateCall(importReceiptApi.finish(id));
+  return res.data.data;
+};
+export const startImportReceiptFn = async (id: string): Promise<any> => {
+  // Make the API request
+  const res = await privateCall(importReceiptApi.startImporting(id));
   return res.data.data;
 };

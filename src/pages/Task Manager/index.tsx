@@ -67,6 +67,7 @@ const getStatusDetails = (status: string) => {
   }
 };
 export interface Task {
+  expectedStartedAt: string;
   id: string;
   code: string;
   taskType: string;
@@ -74,7 +75,7 @@ export interface Task {
   startedAt: string;
   createdAt: string;
   role: string;
-  expectFinishedAt: string;
+  expectedFinishedAt: string;
   finishedAt: string;
   warehouseStaff: {
     account: {
@@ -99,10 +100,15 @@ export interface CalendarEvent {
 export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] | undefined {
   if (tasks) {
     return tasks?.map((task) => {
-      const startDate = new Date(task.startedAt);
+      let startDate;
+      if (!task.startedAt) {
+        startDate = new Date(task.expectedStartedAt);
+      } else {
+        startDate = new Date(task.startedAt);
+      }
       let endDate;
       if (!task.finishedAt) {
-        endDate = new Date(task.expectFinishedAt); // 2 hours later
+        endDate = new Date(task.expectedFinishedAt); // 2 hours later
       } else {
         endDate = new Date(task.finishedAt);
       }
@@ -177,6 +183,7 @@ export default function TaskManagerOverview() {
           const tasksData = await getAllTasks(staffType, selectedStaff.id);
           setTasks(tasksData.data);
           setTaskEvents(convertTasksToEvents(tasksData.data));
+          console.log(convertTasksToEvents(tasksData.data));
           navigate(`/tasks-management/${selectedStaff.id}`);
         } catch (error) {
           console.error('Error fetching tasks:', error);

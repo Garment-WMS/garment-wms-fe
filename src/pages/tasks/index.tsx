@@ -30,11 +30,16 @@ import {
   DialogFooter
 } from '@/components/ui/Dialog'; // Assuming you have a dialog component
 export interface Task {
+  expectedStartedAt: string;
   id: string;
   code: string;
   taskType: string;
   status: string;
+  startedAt: string;
   createdAt: string;
+  role: string;
+  expectedFinishedAt: string;
+  finishedAt: string;
   warehouseStaff: {
     account: {
       firstName: string;
@@ -55,12 +60,22 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
 }
-export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] {
+export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] | undefined {
   if (tasks) {
     return tasks?.map((task) => {
-      const startDate = new Date(task.createdAt);
-      const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
-
+      let startDate;
+      if (!task.startedAt) {
+        startDate = new Date(task.expectedStartedAt);
+      } else {
+        startDate = new Date(task.startedAt);
+      }
+      let endDate;
+      if (!task.finishedAt) {
+        endDate = new Date(task.expectedFinishedAt); // 2 hours later
+      } else {
+        endDate = new Date(task.finishedAt);
+      }
+      console.log(endDate);
       return {
         id: task.id,
         title: `${task.taskType} - ${task.code}`,

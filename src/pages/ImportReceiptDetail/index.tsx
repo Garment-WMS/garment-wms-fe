@@ -11,7 +11,8 @@ import axios from 'axios';
 import {
   finishImportReceiptFn,
   getImportRequestFn,
-  importReceiptApi
+  importReceiptApi,
+  startImportReceiptFn
 } from '@/api/ImportReceiptApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../ImportReceiptList/slice';
@@ -93,6 +94,34 @@ export default function MaterialReceipt() {
   };
   const calculateTotalItemsReceived = (materialReceipt: any[]) => {
     return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
+  };
+  const handleStartImportRequest = async () => {
+    setIsLoading(true);
+    try {
+      const res = await startImportReceiptFn(id as string);
+      if (res.statusCode === 200) {
+        toast({
+          variant: 'success',
+          title: 'Import finished successfully',
+          description: 'The import receipt has been marked as imported.'
+        });
+        setShowConfirmDialog(false);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Import finished unsuccessfully',
+          description: 'The import receipt has not been marked as imported.'
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to finish import',
+        description: 'There was a problem finishing the import process.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   const handleConfirmFinishImport = async () => {
     setIsLoading(true);
@@ -221,7 +250,23 @@ export default function MaterialReceipt() {
   const inspectionReport: any | undefined = importReceipt?.inspectionReport;
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
   const inspectionRequestId = inspectionReport?.inspectionRequest?.id;
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const handleFinishImporting = async () => {
+    if (importReceipt?.status === 'AWAIT_TO_IMPORT') {
+      setIsDialogOpen(true); // Open the confirmation dialog
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Action',
+        description: 'The importing process cannot be started due to the current status.'
+      });
+    }
+  };
+  const confirmImporting = async () => {
+    await handleStartImportRequest();
+    //onStartImport(); // Execute the importing process
+    setIsDialogOpen(false); // Close the dialog
+  };
   return (
     <div className="container mx-auto p-4">
       {isLoading && importReceipt ? (
@@ -245,10 +290,10 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-              <div className="text-2xl font-bold">
-                {importReceipt?.materialReceipt
-                  ? calculateTotalItemsReceived(importReceipt.materialReceipt)
-                  : 0}
+                <div className="text-2xl font-bold">
+                  {importReceipt?.materialReceipt
+                    ? calculateTotalItemsReceived(importReceipt.materialReceipt)
+                    : 0}
                 </div>
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
@@ -269,7 +314,9 @@ export default function MaterialReceipt() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{convertTitleToTitleCase(importReceipt?.status)}</div>
+                <div className="text-2xl font-bold">
+                  {convertTitleToTitleCase(importReceipt?.status)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {' '}
                   {importReceipt?.status == 'IMPORTED'
@@ -278,33 +325,42 @@ export default function MaterialReceipt() {
                 </p>
               </CardContent>
             </Card>
-            <Card >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Import Status</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold capitalize">{convertTitleToTitleCase(importReceipt?.status)}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {importReceipt?.status === 'IMPORTING'
-                      ? 'Import in progress'
-                      : 'Import completed'}
-                  </p>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Import Status</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-2xl font-bold capitalize">
+                      {convertTitleToTitleCase(importReceipt?.status)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {importReceipt?.status === 'IMPORTING'
+                        ? 'Import in progress'
+                        : 'Import completed'}
+                    </p>
+                  </div>
+                  <WarehouseStaffGuardDiv>
+                    {importReceipt?.status === 'IMPORTING' && (
+                      <Button onClick={handleFinishImport} disabled={isLoading}>
+                        Add Label
+                      </Button>
+                    )}
+                  </WarehouseStaffGuardDiv>
+                  <WarehouseStaffGuardDiv>
+                    {importReceipt?.status === 'AWAIT_TO_IMPORT' && (
+                      <Button onClick={handleFinishImporting} disabled={isLoading}>
+                        Start Importing
+                      </Button>
+                    )}
+                  </WarehouseStaffGuardDiv>
                 </div>
-                <WarehouseStaffGuardDiv>
-                  {importReceipt?.status === 'IMPORTING' && (
-                    <Button onClick={handleFinishImport} disabled={isLoading}>
-                      Add Label
-                    </Button>
-                  )}
-                </WarehouseStaffGuardDiv>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
           </div>
-          
+
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <Card>
               <CardHeader>
@@ -434,7 +490,7 @@ export default function MaterialReceipt() {
                         {importRequest?.poDelivery?.purchaseOrder?.supplier?.supplierName}
                       </p>
                       <p>
-                        <strong>Status:</strong> {convertTitleToTitleCase(importRequest?.status) }
+                        <strong>Status:</strong> {convertTitleToTitleCase(importRequest?.status)}
                       </p>
                       <p>
                         <strong>Type:</strong> {convertTitleToTitleCase(importRequest?.type)}
@@ -608,6 +664,27 @@ export default function MaterialReceipt() {
                 </AlertDialog>
               </DialogFooter>
             </DialogContent>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Start Importing Process</DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <p>
+                    Are you sure you want to start the importing process? This action cannot be
+                    undone.
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="default" onClick={confirmImporting}>
+                    Confirm
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             {importReceipt?.discussion && (
               <Discussion chat={importReceipt?.discussion} onRender={onRender} />
             )}
