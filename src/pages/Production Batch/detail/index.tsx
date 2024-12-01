@@ -1,9 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useGetProductionBatchById } from '@/hooks/useGetProductionBatchById';
 import Loading from '@/components/common/Loading';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import {
   Table,
   TableBody,
@@ -11,8 +10,8 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from '@/components/ui/Table';
-import { Package, ClipboardList, Box, Calendar, User, Truck } from 'lucide-react';
+} from '@/components/ui/table';
+import { Package, Box } from 'lucide-react';
 
 const ProductionBatchDetail = () => {
   const { id } = useParams();
@@ -36,8 +35,7 @@ const ProductionBatchDetail = () => {
     status,
     quantityToProduce,
     createdAt,
-    importRequest,
-    productionBatchMaterialVariant,
+    materialExportRequest,
     productionPlanDetail
   } = data?.data;
 
@@ -51,8 +49,15 @@ const ProductionBatchDetail = () => {
             Batch Information
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
+        <CardContent className="flex flex-col items-center">
+          <div className="flex flex-row justify-center">
+            <img
+              src={productionPlanDetail.productSize.productVariant.image}
+              alt="Product Variant"
+              className="w-64 h-64 object-cover rounded mt-2"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4 items">
             <div>
               <p className="text-sm font-medium">Code:</p>
               <p className="text-primaryLight font-semibold">{code}</p>
@@ -63,7 +68,7 @@ const ProductionBatchDetail = () => {
             </div>
             <div>
               <p className="text-sm font-medium">Status:</p>
-              <Badge variant={status === 'IMPORTING' ? 'default' : 'secondary'}>{status}</Badge>
+              <Badge className="bg-slate-500">{status}</Badge>
             </div>
             <div>
               <p className="text-sm font-medium">Quantity to Produce:</p>
@@ -81,39 +86,26 @@ const ProductionBatchDetail = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Box className="h-5 w-5" />
-            Materials
+            Material Export Requests
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="ml-5">Code</TableHead>
-                <TableHead>Quantity</TableHead>
+                <TableHead>Code</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created At</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {productionBatchMaterialVariant.map((material: any) => (
-                <TableRow key={material.id}>
+              {materialExportRequest.map((request: any) => (
+                <TableRow key={request.id}>
+                  <TableCell>{request.code}</TableCell>
                   <TableCell>
-                    <img
-                      src={material.materialVariant.image}
-                      alt={material.materialVariant.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
+                    <Badge className="bg-slate-500">{request.status}</Badge>
                   </TableCell>
-                  <TableCell className="font-semibold text-lg">
-                    {material.materialVariant.name}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="">{material.materialVariant.code}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {material.quantityByUom}{' '}
-                    {material.materialVariant.material.materialUom.uomCharacter}
-                  </TableCell>
+                  <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
