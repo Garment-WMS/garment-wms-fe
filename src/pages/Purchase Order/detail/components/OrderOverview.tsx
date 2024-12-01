@@ -17,6 +17,7 @@ interface OrderOverviewProps {
   shippingAmount: number | null;
   otherAmount: number | null;
   orderDate: string;
+  finishDate: string;
   expectedFinishDate: string;
   status: PurchaseOrderStatus;
   currency: string;
@@ -64,7 +65,8 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   totalImportQuantity,
   totalFailImportQuantity,
   totalQuantityToImport,
-  productionPlanCode
+  productionPlanCode,
+  finishDate
 }) => {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -87,6 +89,11 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="space-y-1">
           <KeyValueDisplay name="Purchase Order Date" value={convertDate(orderDate)} />
           <KeyValueDisplay name="Expected Finished Date" value={convertDate(expectedFinishDate)} />
+          <KeyValueDisplay
+            name="Finished Date"
+            value={finishDate ? convertDate(finishDate) : '-'}
+            valueColor={finishDate ? 'text-green-600' : 'text-gray-900'}
+          />
         </div>
       </div>
 
