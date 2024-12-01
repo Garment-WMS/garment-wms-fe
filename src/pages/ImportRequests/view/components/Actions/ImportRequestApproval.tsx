@@ -363,6 +363,7 @@ export default function WarehouseApproval({
                             type={'warehouseStaffId'}
                             setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
                             role="warehouse-staff"
+                            selectedInspectionTimeFrame={selectedInspectionTimeFrame}
                           />
                         </div>
 

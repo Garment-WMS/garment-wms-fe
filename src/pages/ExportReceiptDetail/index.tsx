@@ -92,7 +92,7 @@ export default function ExportReceiptDetail() {
         status,
         type
       );
-      console.log(res);
+
       if (res.statusCode === 200) {
         toast({
           variant: 'success',
@@ -150,7 +150,15 @@ export default function ExportReceiptDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">12,500</div>
-                <p className="text-xs text-muted-foreground">+2% from last receipt</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Quality Pass Rate</CardTitle>
+                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">98.5%</div>
               </CardContent>
             </Card>
             <Card>
@@ -166,75 +174,77 @@ export default function ExportReceiptDetail() {
               </CardContent>
             </Card>
             <Card className="">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Export Status</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold capitalize">{exportReceipt?.status}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {exportReceipt?.status === 'EXPORTING'
-                      ? 'Export in progress'
-                      : 'Export completed'}
-                  </p>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Export Status</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-2xl font-bold capitalize">{exportReceipt?.status}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {exportReceipt?.status === 'EXPORTING'
+                        ? 'Export in progress'
+                        : 'Export completed'}
+                    </p>
+                  </div>
+                  {exportReceipt?.status === 'EXPORTING' && (
+                    <WarehouseStaffGuardDiv>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button disabled={isLoading}>Finish</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to finish exporting the material? This action
+                              cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleFinishExport('EXPORTED', 'staff')}>
+                              Confirm
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </WarehouseStaffGuardDiv>
+                  )}
+                  {exportReceipt?.status === 'EXPORTED' && (
+                    <ProductionDepartmentGuardDiv>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button disabled={isLoading}>Finish</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to finish exporting the material? This action
+                              cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleFinishExport('PRODUCTION_APPROVED', 'production')
+                              }>
+                              Confirm
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </ProductionDepartmentGuardDiv>
+                  )}
                 </div>
-                {exportReceipt?.status === 'EXPORTING' && (
-                  <WarehouseStaffGuardDiv>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button disabled={isLoading}>Finish</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to finish exporting the material? This action
-                            cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleFinishExport('EXPORTED', 'staff')}>
-                            Confirm
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </WarehouseStaffGuardDiv>
-                )}
-                {exportReceipt?.status === 'EXPORTED' && (
-                  <ProductionDepartmentGuardDiv>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button disabled={isLoading}>Finish</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to finish exporting the material? This action
-                            cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
-                            Confirm
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </ProductionDepartmentGuardDiv>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
           </div>
-          
+
           <div className="grid gap-6 md:grid-cols-3 mb-8">
             <Card>
               <CardHeader>
