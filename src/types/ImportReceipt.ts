@@ -1,6 +1,7 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { PageMetaData } from './ImportRequestType';
 import { MaterialPackage } from './MaterialTypes';
+import { InspectionReportDetail } from './InspectionReportDetail';
 
 export type MaterialReceipt = {
   id: string;
