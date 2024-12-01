@@ -14,14 +14,22 @@ export const importRequestApi = {
     managerNote: string,
     id: string,
     inspectionDepartmentId?: string,
-    warehouseStaffId?: string
+    warehouseStaffId?: string,
+    inspectExpectedStartedAt?: string,
+    inspectExpectedFinishedAt?: string,
+    importExpectedStartedAt?: string,
+    importExpectedFinishedAt?: string
   ) => {
     if (inspectionDepartmentId && warehouseStaffId) {
       return post(`/import-request/${id}/manager-process`, {
         action,
         managerNote: managerNote != '' ? managerNote : undefined,
         inspectionDepartmentId,
-        warehouseStaffId
+        warehouseStaffId,
+        inspectExpectedStartedAt,
+        inspectExpectedFinishedAt,
+        importExpectedStartedAt,
+        importExpectedFinishedAt
       });
     } else {
       return post(`/import-request/${id}/manager-process`, {
@@ -188,7 +196,11 @@ export const importRequestApprovalFn = async (
   managerNote: string,
   id: string,
   inspectionDepartmentId?: string,
-  warehouseStaffId?: string
+  warehouseStaffId?: string,
+  inspectExpectedStartedAt?: string,
+  inspectExpectedFinishedAt?: string,
+  importExpectedStartedAt?: string,
+  importExpectedFinishedAt?: string
 ) => {
   const res = await privateCall(
     importRequestApi.approveRequest(
@@ -196,7 +208,11 @@ export const importRequestApprovalFn = async (
       managerNote,
       id,
       inspectionDepartmentId,
-      warehouseStaffId
+      warehouseStaffId,
+      inspectExpectedStartedAt,
+      inspectExpectedFinishedAt,
+      importExpectedStartedAt,
+      importExpectedFinishedAt
     )
   );
   return res.data;

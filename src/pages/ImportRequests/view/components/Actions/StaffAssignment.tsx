@@ -140,7 +140,8 @@ export default function AssignStaffPopup({
           code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`
         }
       ]);
-      setSelectedTimeFrame({ expectedStartedAt: newTask.start, expectFinishedAt: newTask.end });
+
+      setSelectedTimeFrame({ expectedStartedAt: newTask.start, expectedFinishedAt: newTask.end });
       handleAssignTask(newTask.resourceId);
       setIsDialogOpen(false);
       //setNewTask({});
@@ -194,7 +195,7 @@ export default function AssignStaffPopup({
   const slotPropGetter = (date: Date) => {
     const now = new Date();
 
-    const isDisabled = date < selectedInspectionTimeFrame?.expectFinishedAt;
+    const isDisabled = date < selectedInspectionTimeFrame?.expectedFinishedAt;
     const isPast = date < now;
 
     return {
@@ -205,7 +206,7 @@ export default function AssignStaffPopup({
     };
   };
   const handleOpen = () => {
-    if (role === 'warehouse-staff' && !selectedInspectionTimeFrame?.expectFinishedAt) {
+    if (role === 'warehouse-staff' && !selectedInspectionTimeFrame?.expectedFinishedAt) {
       toast({
         variant: 'destructive',
         title: 'Please select task for inspection first',
@@ -267,7 +268,9 @@ export default function AssignStaffPopup({
           <Button
             variant="outline"
             onClick={() => setIsOpen(true)} // Allow manual override
-            disabled={selectedInspectionTimeFrame?.expectFinishedAt && role == 'warehouse-staff'}>
+            disabled={
+              !selectedInspectionTimeFrame?.expectedFinishedAt && role == 'warehouse-staff'
+            }>
             Assign Employee
           </Button>
         )}

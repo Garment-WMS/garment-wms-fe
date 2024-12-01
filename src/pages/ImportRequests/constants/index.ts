@@ -24,6 +24,7 @@ export const statusOrder = [
   'APPROVED',
   'INSPECTING',
   'INSPECTED',
+  'AWAIT_TO_IMPORT',
   'IMPORTING',
   'IMPORTED'
 ];

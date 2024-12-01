@@ -120,8 +120,8 @@ export default function WarehouseApproval({
   const chat: any = useSelector(importRequestSelector.importRequest);
   const { toast } = useToast();
   const { id } = useParams();
-  const [selectedInspectionTimeFrame, setSelectedInspectionTimeFrame] = useState();
-  const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState();
+  const [selectedInspectionTimeFrame, setSelectedInspectionTimeFrame] = useState<any>();
+  const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
       toast({
@@ -139,14 +139,19 @@ export default function WarehouseApproval({
     try {
       // Simulate delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      console.log(selectedInspectionTimeFrame?.expectedFinishedAt);
       // Call the approval function
+
       const res = await importRequestApprovalFn(
         'APPROVED',
         approveNote,
         id as string,
         selectedInspector.id,
-        selectedAssignee.id
+        selectedAssignee.id,
+        selectedInspectionTimeFrame?.expectedStartedAt,
+        selectedInspectionTimeFrame?.expectedFinishedAt,
+        selectedWareHouseTimeFrame?.expectedStartedAt,
+        selectedWareHouseTimeFrame?.expectedFinishedAt
       );
 
       if (res.statusCode === 200) {

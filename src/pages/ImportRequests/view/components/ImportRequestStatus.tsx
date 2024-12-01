@@ -9,9 +9,7 @@ type Props = {};
 
 const ImportRequestStatus = (props: Props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
-  console.log(importRequest);
 
-  const id = importRequest?.id.slice(0, 4);
   const code = importRequest?.code;
   const status = importRequest?.status;
   const createdDate = importRequest?.createdAt
@@ -76,6 +74,7 @@ const ImportRequestStatus = (props: Props) => {
             importRequest?.inspectionRequest[0]?.inspectionDepartment?.account?.firstName
         };
       case 'IMPORTING':
+      case 'AWAIT_TO_IMPORT':
         return {
           role: 'Warehouse Stafff',
           avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
