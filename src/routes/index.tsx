@@ -61,6 +61,8 @@ import WarehouseStaffExportRequestList from '@/pages/WarehouseStaff/ExportReques
 import { Scheduler } from '@/pages/demo';
 import ProductionBatchDetail from '@/pages/Production Batch/detail';
 import WarehouseStaffManagement from '@/pages/WarehouseStaff/Management';
+import WarehouseStaffDetai from '@/pages/WarehouseStaff/Detail';
+import WarehouseStaffDetail from '@/pages/WarehouseStaff/Detail';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -290,6 +292,10 @@ const RouterComponent: React.FC = () => {
         {
           path: '/warehouse-staff',
           element: <RoleBasedRedirect managerComponent={<WarehouseStaffManagement />} />
+        },
+        {
+          path: '/warehouse-staff/:id',
+          element: <RoleBasedRedirect managerComponent={<WarehouseStaffDetail />} />
         }
       ]
     },
