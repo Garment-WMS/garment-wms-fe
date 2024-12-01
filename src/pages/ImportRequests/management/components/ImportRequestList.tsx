@@ -15,10 +15,11 @@ import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 type Props = {};
 
 const ImportRequestList = (props: Props) => {
@@ -79,26 +80,21 @@ const ImportRequestList = (props: Props) => {
 
   const fetchPurchaseOrders = async () => {
     try {
-      
-    } catch (error) {
-      
-    }
-  }
-  useEffect(() => {
-    
-  }, []);
+    } catch (error) {}
+  };
+  useEffect(() => {}, []);
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
-      header: 'Import request code',
+      header: 'Code',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div>{row.original.code}</div>
-          </div>
-        );
-      }
+      cell: ({ row }) => (
+        <div>
+          <Link to={`/import-request/${row.original.id}`} className="text-blue-500 hover:underline">
+            {row.original.code}
+          </Link>
+        </div>
+      )
     },
 
     {
@@ -121,11 +117,7 @@ const ImportRequestList = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+        const formattedDate = date.toLocaleString();
         return (
           <div>
             <div>{formattedDate}</div>
@@ -139,7 +131,7 @@ const ImportRequestList = (props: Props) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+          className={`${badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })} w-[110px] flex justify-center`}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
@@ -172,25 +164,24 @@ const ImportRequestList = (props: Props) => {
   return (
     <div className="pb-4 ">
       <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-
-          <TanStackBasicTable
-            isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
-            paginatedTableData={paginatedTableData ?? undefined}
-            columns={importRequestColumn}
-            pagination={pagination}
-            setPagination={setPagination}
-            sorting={sorting}
-            setSorting={setSorting}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-            searchColumnId="code"
-            searchPlaceholder="Search by import request code"
-          />
-        <div className="flex items-center flex-row justify-center mb-9">
+        <TanStackBasicTable
+          isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
+          paginatedTableData={paginatedTableData ?? undefined}
+          columns={importRequestColumn}
+          pagination={pagination}
+          setPagination={setPagination}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          searchColumnId="code"
+          searchPlaceholder="Search by import request code"
+        />
+        <PurchasingStaffGuardDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request
           </Button>
-        </div>
+        </PurchasingStaffGuardDiv>
       </div>
     </div>
   );

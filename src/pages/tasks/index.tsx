@@ -16,7 +16,17 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { ClipboardCheck, Truck, CheckCircle, XCircle, Clock, LayoutGrid, List } from 'lucide-react';
+import {
+  ClipboardCheck,
+  Truck,
+  CheckCircle,
+  XCircle,
+  Clock,
+  LayoutGrid,
+  List,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getMytaskFn } from '@/api/services/taskApi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -30,18 +40,18 @@ import {
   DialogFooter
 } from '@/components/ui/Dialog'; // Assuming you have a dialog component
 export interface Task {
-  expectedStartedAt: string;
   id: string;
   code: string;
   taskType: string;
   status: string;
   startedAt: string;
   createdAt: string;
-  role: string;
+  expectedStartedAt: string;
   expectedFinishedAt: string;
   finishedAt: string;
   warehouseStaff: {
     account: {
+      id: string;
       firstName: string;
       lastName: string;
       avatarUrl: string | null;
@@ -75,7 +85,7 @@ export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] | undefined
       } else {
         endDate = new Date(task.finishedAt);
       }
-      console.log(endDate);
+
       return {
         id: task.id,
         title: `${task.taskType} - ${task.code}`,
@@ -92,7 +102,9 @@ const getStatusDetails = (status: string) => {
   switch (status.toUpperCase()) {
     case 'OPEN':
       return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
-    case 'COMPLETED':
+    case 'INPROGRESS':
+      return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
+    case 'DONE':
       return { label: 'Completed', color: 'bg-green-500 text-green-950', icon: CheckCircle };
     case 'CANCELED':
       return { label: 'Canceled', color: 'bg-red-500 text-red-950', icon: XCircle };
@@ -101,35 +113,47 @@ const getStatusDetails = (status: string) => {
   }
 };
 
-const TaskTypeIcon = ({ type }: { type: string }) => {
+const TaskTypeIcon = ({ type, className }: { type: string; className?: string }) => {
   switch (type.toUpperCase()) {
     case 'IMPORT':
     case 'EXPORT':
-      return <Truck className="h-5 w-5 text-muted-foreground" />;
+      return <Truck className={`h-5 w-5 ${className}`} />;
     default:
-      return <ClipboardCheck className="h-5 w-5 text-muted-foreground" />;
+      return <ClipboardCheck className={`h-5 w-5 ${className}`} />;
   }
 };
 
 export default function WarehouseTasks() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [taskEvents, setEvent] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskEvents, setTaskEvents] = useState<CalendarEvent[]>([]);
   const [viewMode, setViewMode] = useState<'calendar' | 'table'>('calendar');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const [selectedTask, setSelectedTask] = useState<any | null>(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [activeTab, setActiveTab] = useState<'warehouse' | 'inspection'>('warehouse');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleEventClick = (event: CalendarEvent) => {
+    const task = tasks.find((task) => task.id === event.id);
+    if (task) {
+      setSelectedTask(task);
+      setIsDialogOpen(true);
+    }
+  };
+
+  const closeDialog = () => {
+    setSelectedTask(null);
+    setIsDialogOpen(false);
+  };
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         setIsLoading(true);
         const response = await getMytaskFn();
-        const calendarEvents = convertTasksToEvents(response);
         setTasks(response);
-
-        setEvent(calendarEvents);
+        setTaskEvents(convertTasksToEvents(response));
         setError(null);
       } catch (err) {
         console.error('Error fetching tasks:', err);
@@ -141,93 +165,83 @@ export default function WarehouseTasks() {
 
     fetchTasks();
   }, []);
-  const handleEventClick = (event: CalendarEvent) => {
-    const task = tasks.find((task) => task.id == event.id);
-    console.log(task);
-    if (task) {
-      setSelectedTask(task);
-      setIsDialogOpen(true);
-    }
+
+  const convertTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
+    return tasks.map((task) => ({
+      id: task.id,
+      title: `${task.taskType} - ${task.code}`,
+      start: new Date(task.startedAt || task.expectedStartedAt),
+      end: new Date(task.finishedAt || task.expectedFinishedAt),
+      resourceId: task.warehouseStaff?.account.id || '',
+      status: task.status,
+      taskType: task.taskType
+    }));
   };
 
-  const closeDialog = () => {
-    setSelectedTask(null);
-    setIsDialogOpen(false);
+  const handleDateChange = (action: 'prev' | 'next') => {
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      if (action === 'prev') {
+        newDate.setDate(newDate.getDate() - 7);
+      } else {
+        newDate.setDate(newDate.getDate() + 7);
+      }
+      return newDate;
+    });
   };
+
   const handleNavigate = (taskId: string) => {
     navigate(`/tasks/${taskId}`);
   };
+  const EventComponent = ({ event }: { event: any }) => {
+    const { label, color } = getStatusDetails(event.status);
 
-  const renderTasks = (tasks: Task[]) => (
-    <>
-      <div className="mt-8">
-        <Card>
-          <CardContent className="p-0">
-            <Calendar
-              localizer={localizer}
-              events={taskEvents}
-              startAccessor="start"
-              endAccessor="end"
-              defaultView="week"
-              onSelectEvent={handleEventClick} // Handle event click
-              views={['week']}
-              min={new Date(0, 0, 0, 0, 0, 0)} // Set min time to 9:00 AM
-              max={new Date(0, 0, 0, 23, 0, 0)} // Set max time to 5:00 PM
-              step={15}
-              timeslots={4}
-              formats={{
-                timeGutterFormat: (date: Date, culture: string, localizer: any) =>
-                  localizer.format(date, 'HH:mm', culture)
-              }}
-              className="min-h-[600px]"
-            />
-          </CardContent>
-        </Card>
+    return (
+      <div className={`flex items-center gap-2 p-2 rounded ${color}`}>
+        <TaskTypeIcon type={event.taskType} className="text-white" />
+        <span className="text-white">{event.title}</span>
       </div>
-      {/* Custom Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedTask?.title || 'Event Details'}</DialogTitle>
-          </DialogHeader>
-          <div className="p-4">
-            {selectedTask && (
-              <div key={selectedTask.id} className="flex flex-col">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Task #{selectedTask.code}</CardTitle>
-                  <Badge className={getStatusDetails(selectedTask.status).color}>
-                    {getStatusDetails(selectedTask.status).label}
-                  </Badge>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-2">{selectedTask.taskType} TASK</div>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Created: {new Date(selectedTask.createdAt).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Expected End date: {new Date(selectedTask.createdAt).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Actual End date: {new Date(selectedTask.createdAt).toLocaleString()}
-                  </p>
-                </CardContent>
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>
-              Close
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handleNavigate(selectedTask.id)}
-              className="items-center flex">
-              View Details
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    );
+  };
+  const renderCalendarView = () => (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-md font-medium">Tasks</CardTitle>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="icon" onClick={() => handleDateChange('prev')}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span>{selectedDate.toDateString()}</span>
+          <Button variant="outline" size="icon" onClick={() => handleDateChange('next')}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Calendar
+          localizer={localizer}
+          events={taskEvents}
+          startAccessor="start"
+          endAccessor="end"
+          defaultView="week"
+          views={['week']}
+          date={selectedDate}
+          onNavigate={(newDate) => setSelectedDate(newDate)}
+          min={new Date(0, 0, 0, 0, 0, 0)}
+          max={new Date(0, 0, 0, 23, 59, 59)}
+          step={15}
+          timeslots={4}
+          onSelectEvent={handleEventClick}
+          components={{
+            event: EventComponent
+          }}
+          formats={{
+            timeGutterFormat: (date, culture, localizer) => localizer.format(date, 'HH:mm', culture)
+          }}
+          className="min-h-[600px]"
+        />
+      </CardContent>
+    </Card>
   );
 
   const renderTableView = () => (
@@ -252,8 +266,9 @@ export default function WarehouseTasks() {
                 <span>{task.taskType}</span>
               </div>
             </TableCell>
-            <TableCell>
-              <Badge className={getStatusDetails(task.status).color}>
+            <TableCell className="">
+              <Badge
+                className={`${getStatusDetails(task.status).color} w-[80px] flex items-center justify-center`}>
                 {getStatusDetails(task.status).label}
               </Badge>
             </TableCell>
@@ -313,7 +328,7 @@ export default function WarehouseTasks() {
           type="single"
           value={viewMode}
           onValueChange={(value) => setViewMode(value as 'calendar' | 'table')}>
-          <ToggleGroupItem value="calendar" aria-label="Grid view">
+          <ToggleGroupItem value="calendar" aria-label="Calendar view">
             <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem value="table" aria-label="Table view">
@@ -327,10 +342,62 @@ export default function WarehouseTasks() {
       ) : error ? (
         <div className="text-center text-red-500">{error}</div>
       ) : viewMode === 'calendar' ? (
-        renderTasks(tasks)
+        renderCalendarView()
       ) : (
         renderTableView()
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedTask?.code || 'Task Details'}</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            {selectedTask && (
+              <div key={selectedTask.id} className="flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Task #{selectedTask.code}</CardTitle>
+                  <Badge className={getStatusDetails(selectedTask.status).color}>
+                    {getStatusDetails(selectedTask.status).label}
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold mb-2 flex items-end w-full">
+                    {selectedTask.taskType} TASK{' '}
+                    <TaskTypeIcon type={selectedTask.taskType} className="ml-4" />
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Expected Started At: {new Date(selectedTask.expectedStartedAt).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Expected End date: {new Date(selectedTask.expectedFinishedAt).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Actual Started At: {new Date(selectedTask.startedAt).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Actual End date:{' '}
+                    {selectedTask.finishedAt
+                      ? new Date(selectedTask.finishedAt).toLocaleString()
+                      : 'Not yet'}
+                  </p>
+                </CardContent>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeDialog}>
+              Close
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => selectedTask && handleNavigate(selectedTask.id)}
+              className="items-center flex">
+              View Details
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

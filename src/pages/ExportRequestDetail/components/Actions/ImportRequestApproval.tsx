@@ -122,6 +122,7 @@ export default function WarehouseApproval({
   const [selectedAssignee, setSelectedAssignee] = useState<any>(null);
   const [fullFilledMaterialExportRequestDetails, setFullFilledMaterialExportRequestDetails] =
     useState([]);
+  const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
   const [notFullFilledMaterialExportRequestDetails, setNotFullFilledMaterialExportRequestDetails] =
     useState([]);
   const { toast } = useToast();
@@ -496,7 +497,9 @@ export default function WarehouseApproval({
                       <AssignStaffPopup
                         setStaff={setSelectedAssignee}
                         staff={selectedAssignee}
-                        type={'get-warehouse-staff'}
+                        type={'warehouseStaffId'}
+                        setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
+                        role="warehouse-staff"
                       />
                     </div>
                     <div className="space-y-2">
