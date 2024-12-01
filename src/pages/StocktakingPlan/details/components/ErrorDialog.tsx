@@ -10,16 +10,40 @@ import {
 import { Button } from '@/components/ui/button';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { MaterialExportRequest } from '@/types/exportRequest';
+import { toast } from '@/hooks/use-toast';
+import privateCall from '@/api/PrivateCaller';
+import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 
 interface ErrorDialogProps {
+  id: string | undefined;
   isOpen: boolean;
+  fetchData: () => void;
   onClose: () => void;
   importRequests: ImportRequest[];
   exportRequests: MaterialExportRequest[];
 }
 
-export function ErrorDialog({ isOpen, onClose, importRequests, exportRequests }: ErrorDialogProps) {
-  //   const importingRequests = importRequests.filter(request => request.status === 'IMPORTING')
+export function ErrorDialog({ id,fetchData,isOpen, onClose, importRequests, exportRequests }: ErrorDialogProps) {
+  const handleAwaitPlan = async () => {
+    try {
+      if (!id) throw new Error('Plan ID is required');
+      const response = await privateCall(inventoryReportPlanApi.awaitInventoryReportPlan(id));
+      if (response.status === 204) {
+        toast({
+          variant: 'success',
+          title: 'Plan is now awaiting',
+          description: 'The plan will automatically start when the import/export requests are completed.'});
+        fetchData();
+        onClose()
+        }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error awaiting plan',
+        description: 'An error occurred while awaiting the plan.'
+      })
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -55,9 +79,13 @@ export function ErrorDialog({ isOpen, onClose, importRequests, exportRequests }:
               </ul>
             </div>
           )}
+          <div className='my-2'>You can also await plan to automatically start when Import/Export requests are done</div>
         </DialogDescription>
         <DialogFooter>
           <Button onClick={onClose}>Close</Button>
+          <Button onClick={handleAwaitPlan} variant="outline">
+            Await Plan
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
