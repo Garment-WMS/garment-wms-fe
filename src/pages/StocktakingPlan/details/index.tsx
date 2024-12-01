@@ -403,6 +403,8 @@ const StocktakingPlanDetails = () => {
         </Button>
       </CardFooter> */}
       <ErrorDialog
+        id={id}
+        fetchData={fetchData}
         isOpen={isErrorDialogOpen}
         onClose={() => setIsErrorDialogOpen(false)}
         importRequests={errorImportRequests}
