@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/Badge';
-import { Truck } from 'lucide-react';
+import { Clock, Package, Truck } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
@@ -52,12 +52,24 @@ const PurchaseOrderDeliveryDetails = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-green-600">
-            <Truck className="text-sm" />
-            <span className="text-sm">Estimated Delivery:</span>
-            <span className="ml-3 font-semibold">
-              {delivery.expectedDeliverDate ? convertDate(delivery.expectedDeliverDate) : 'N/A'}
-            </span>
+          <div className="flex flex-row items-center space-x-9">
+            {/* Estimated Delivery */}
+            <div className="flex items-center gap-2 text-blue-600">
+              <Clock className="text-sm" />
+              <span className="text-sm">Estimated Delivery:</span>
+              <span className="ml-3 font-semibold">
+                {delivery.expectedDeliverDate ? convertDate(delivery.expectedDeliverDate) : 'N/A'}
+              </span>
+            </div>
+
+            {/* Actual Delivery */}
+            <div className="flex items-center gap-2 text-green-600">
+              <Package className="text-sm" />
+              <span className="text-sm">Actual Delivery:</span>
+              <span className="ml-3 font-semibold">
+                {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
+              </span>
+            </div>
           </div>
         </div>
 
