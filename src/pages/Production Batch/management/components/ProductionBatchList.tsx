@@ -4,14 +4,24 @@ import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import { ProductionBatchStatus, ProductionBatchStatusLabels } from '@/enums/productionBatch';
 import { useGetAllProductionBatch } from '@/hooks/useGetAllProductionBatch';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import { ProductionBatchDetailsModal } from './ProductionBatchDetailModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/DropdownMenu';
+import { Button } from '@/components/ui/button';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 
 const ProductionBatchList: React.FC = () => {
+  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
@@ -20,6 +30,9 @@ const ProductionBatchList: React.FC = () => {
     pageIndex: 0,
     pageSize: 10
   });
+  const handleViewClick = (requestId: string) => {
+    navigate(`/production-batch/${requestId}`);
+  };
 
   const { isFetching, productionBatchList, pageMeta } = useGetAllProductionBatch({
     sorting: debouncedSorting,
@@ -124,6 +137,27 @@ const ProductionBatchList: React.FC = () => {
         </div>
       ),
       enableColumnFilter: false
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const request = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      }
     }
   ];
 

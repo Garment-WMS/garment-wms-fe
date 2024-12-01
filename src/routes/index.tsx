@@ -59,6 +59,7 @@ import WarehouseStaffImportReceiptList from '@/pages/WarehouseStaff/ImportReceip
 import ExportRequestList from '@/pages/ExportRequestList/management';
 import WarehouseStaffExportRequestList from '@/pages/WarehouseStaff/ExportRequestList/management';
 import { Scheduler } from '@/pages/demo';
+import ProductionBatchDetail from '@/pages/Production Batch/detail';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -283,7 +284,8 @@ const RouterComponent: React.FC = () => {
           path: '/report/:id',
           element: <InspectionRequestDetails />
         },
-        { path: '/production-batch', element: <ProductionBatchManagement /> }
+        { path: '/production-batch', element: <ProductionBatchManagement /> },
+        { path: '/production-batch/:id', element: <ProductionBatchDetail /> }
       ]
     },
     {
