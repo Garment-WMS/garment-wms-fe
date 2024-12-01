@@ -168,6 +168,10 @@
 .rbc-day-slot .rbc-selected.rbc-background-event {
   @apply bg-transparent !important;
 }
+.rbc-day-slot .rbc-event,
+.rbc-day-slot .rbc-background-event {
+  @apply border-none !important;
+}
 
 .rbc-today {
   @apply bg-accent;

@@ -12,14 +12,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
-import {
-  AlertCircle,
-  CheckCheckIcon,
-  ChevronLeft,
-  ChevronLeftCircleIcon,
-  ChevronRight,
-  Plus
-} from 'lucide-react';
+import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllTasks, getTaskByRolefn, getTaskByTimeZoneAndRole } from '@/api/services/taskApi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getAccountByRole } from '@/api/account/accountApi';
@@ -113,7 +106,8 @@ export default function AssignStaffPopup({
         : '',
       start: slotInfo.start,
       end: slotInfo.end,
-      resourceId: participant.accountId
+      resourceId: participant.accountId,
+      taskType: 'EXP-TAS-NEW'
     });
 
     setIsDialogOpen(true);
@@ -138,7 +132,9 @@ export default function AssignStaffPopup({
           id: Date.now(),
           startedAt: newTask.start,
           finishedAt: newTask.end,
-          code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`
+          expectedStartedAt: newTask.start,
+          expectedFinishedAt: newTask.end,
+          code: `${type == 'warehouseStaffId' ? `TAS-NEW` : `New Inspection Task`}`
         }
       ]);
 
@@ -223,7 +219,7 @@ export default function AssignStaffPopup({
       <DialogTrigger asChild>
         {staff ? (
           <Badge variant="outline">
-            <div>
+            <div className="">
               <div className="flex items-center">
                 <Avatar className="w-6 h-6 mr-2">
                   <AvatarImage src={staff.account.avatarUrl} />
@@ -314,7 +310,6 @@ export default function AssignStaffPopup({
                     event: (props) => (
                       <div className="text-white p-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap text-center">
                         {props.title}
-                        {props.title == 'New Warehouse Task' ? <AlertCircle /> : ''}
                       </div>
                     )
                   }}

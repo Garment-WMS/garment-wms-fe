@@ -262,7 +262,7 @@ export interface ImportRequestDetails {
 }
 
 export const Status: { label: string; value: string; variant: StatusVariant }[] = [
-  { label: 'Arrived', value: 'PENDING', variant: 'info' },
+  { label: 'Pending', value: 'PENDING', variant: 'warning' },
   { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
