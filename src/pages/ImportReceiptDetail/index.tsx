@@ -54,12 +54,16 @@ import MaterialReceiptLabels from './components/MaterialreceiptLabels';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import privateCall from '@/api/PrivateCaller';
 import { DataTable } from '@/components/ui/DataTable';
-import { materialImportReceiptColumn } from './components/ReceiptColumn';
+import {
+  materialImportReceiptColumn,
+  productImportReceiptColumn
+} from './components/ReceiptColumn';
 import { InspectionReportDetail } from '@/types/InspectionReportDetail';
 import { Badge } from '@/components/ui/Badge';
 import Discussion from './components/Disscussion';
 import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import ProductReceiptLabel from './components/ProductReceiptLabels';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -86,6 +90,7 @@ export default function MaterialReceipt() {
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [render, setRender] = useState<number>(0);
+
   const onRender = () => {
     setRender((render) => render + 1);
   };
@@ -93,7 +98,65 @@ export default function MaterialReceipt() {
     setShowLabelModal(true);
   };
   const calculateTotalItemsReceived = (materialReceipt: any[]) => {
-    return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
+    return materialReceipt.reduce(
+      (total, item) => total + (item.quantityByPack || 0) + (item.quantityByUom || 0),
+      0
+    );
+  };
+  const fetchData = async () => {
+    setIsLoading(true); // Start loading
+
+    try {
+      const res = await axios(importReceiptApi.getOne(id as string));
+      if (res.status === 200) {
+        const data = res.data.data;
+        dispatch(actions.setImportReceipt(data));
+      } else {
+        setError('Something went wrong');
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request.'
+        });
+      }
+    } catch (error) {
+      setError('Something went wrong');
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.'
+      });
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
+  };
+  const fetchImportRequestData = async () => {
+    setIsLoading(true); // Start loading
+
+    try {
+      const res = await getImportRequestFn(id as string);
+
+      if (res.statusCode === 200) {
+        const data = res.data;
+        setImportRequest(data);
+      } else {
+        setError('Something went wrong');
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem with your request.'
+        });
+      }
+    } catch (error) {
+      setError('Something went wrong');
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.'
+      });
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
   };
   const handleStartImportRequest = async () => {
     setIsLoading(true);
@@ -105,6 +168,8 @@ export default function MaterialReceipt() {
           title: 'Import finished successfully',
           description: 'The import receipt has been marked as imported.'
         });
+        fetchImportRequestData();
+        fetchData();
         setShowConfirmDialog(false);
       } else {
         toast({
@@ -127,12 +192,15 @@ export default function MaterialReceipt() {
     setIsLoading(true);
     try {
       const res = await finishImportReceiptFn(id as string);
-      if (res.statusCode === 201) {
+      if (res.status === 200) {
         toast({
+          variant: 'success',
           title: 'Import finished successfully',
           description: 'The import receipt has been marked as imported.'
         });
         setShowConfirmDialog(false);
+        fetchData();
+        fetchImportRequestData();
       } else {
         toast({
           variant: 'destructive',
@@ -152,62 +220,6 @@ export default function MaterialReceipt() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true); // Start loading
-
-      try {
-        const res = await axios(importReceiptApi.getOne(id as string));
-        if (res.status === 200) {
-          const data = res.data.data;
-          dispatch(actions.setImportReceipt(data));
-        } else {
-          setError('Something went wrong');
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: 'There was a problem with your request.'
-          });
-        }
-      } catch (error) {
-        setError('Something went wrong');
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request.'
-        });
-      } finally {
-        setIsLoading(false); // Stop loading
-      }
-    };
-    const fetchImportRequestData = async () => {
-      setIsLoading(true); // Start loading
-
-      try {
-        const res = await getImportRequestFn(id as string);
-
-        if (res.statusCode === 200) {
-          const data = res.data;
-          setImportRequest(data);
-        } else {
-          setError('Something went wrong');
-          toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: 'There was a problem with your request.'
-          });
-        }
-      } catch (error) {
-        setError('Something went wrong');
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request.'
-        });
-      } finally {
-        setIsLoading(false); // Stop loading
-      }
-    };
-
     if (id) {
       fetchImportRequestData();
       fetchData();
@@ -247,6 +259,10 @@ export default function MaterialReceipt() {
   const handleCloseDialog = () => {
     setShowLabelModal(false);
   };
+
+  const handleCloseConfirmDialog = () => {
+    setShowConfirmDialog(false);
+  };
   const inspectionReport: any | undefined = importReceipt?.inspectionReport;
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
   const inspectionRequestId = inspectionReport?.inspectionRequest?.id;
@@ -269,7 +285,7 @@ export default function MaterialReceipt() {
   };
   return (
     <div className="container mx-auto p-4">
-      {isLoading && importReceipt ? (
+      {isLoading ? (
         // Show the loading component when `isLoading` is true
         <div className="flex items-center justify-center min-h-screen">
           <Loading size="100" />
@@ -290,11 +306,23 @@ export default function MaterialReceipt() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {importReceipt?.materialReceipt
-                    ? calculateTotalItemsReceived(importReceipt.materialReceipt)
-                    : 0}
-                </div>
+                {importReceipt?.type === 'MATERIAL' ? (
+                  importReceipt?.materialReceipt ? (
+                    <div className="text-2xl font-bold">
+                      {calculateTotalItemsReceived(importReceipt.materialReceipt)}
+                    </div>
+                  ) : (
+                    <div className="text-2xl font-bold">0</div>
+                  )
+                ) : importReceipt?.productReceipt ? (
+                  <div className="text-2xl font-bold">
+                    {' '}
+                    {calculateTotalItemsReceived(importReceipt.productReceipt)}
+                  </div>
+                ) : (
+                  <div className="text-2xl font-bold">0</div>
+                )}
+
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
@@ -597,98 +625,183 @@ export default function MaterialReceipt() {
           </div>
 
           <div className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Material Receipt Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  columns={materialImportReceiptColumn}
-                  data={importReceipt?.materialReceipt || []}
-                />
-              </CardContent>
-            </Card>
+            {importReceipt?.type === 'MATERIAL' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Material Receipt Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DataTable
+                    columns={materialImportReceiptColumn}
+                    data={importReceipt?.materialReceipt || []}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            {importReceipt?.type === 'PRODUCT' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Product Receipt Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DataTable
+                    columns={productImportReceiptColumn}
+                    data={importReceipt?.productReceipt || []}
+                  />
+                </CardContent>
+              </Card>
+            )}
           </div>
-          <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
-            <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>Material Labels</DialogTitle>
-                <DialogDescription>
-                  Review and print labels for each material in this import receipt.
-                </DialogDescription>
-              </DialogHeader>
-              <ScrollArea className="max-h-96">
-                <div className="w-full text-center text-xl font-bold">Material Receipt Barcode</div>
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {importReceipt?.materialReceipt.map((item: any) => (
-                    <div key={item.id} className="border p-4 rounded-md">
-                      <h3 className="font-bold mb-2">{item.materialPackage.name}</h3>
-                      <p>
-                        Quantity: {item.quantityByPack * item.materialPackage.uomPerPack}{' '}
-                        {item.materialPackage.materialVariant.material.materialUom.uomCharacter}
-                      </p>
-                      <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
-                      <div className="mt-2">
-                        <h3 className="font-semibold">Material barcode: </h3>
-                        <Barcode value={item.materialPackage.code} width={1.5} height={50} />
-                      </div>
-                      <div className="mt-2">
-                        <h3 className="font-semibold">Material Receipt Barcode: </h3>
-                        <Barcode value={item.code} width={1.5} height={50} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              <DialogFooter>
-                <MaterialReceiptLabels materialReceipts={importReceipt?.materialReceipt} />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="default">Confirm Finish Import</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action will finish the import process and mark all materials as
-                        received in the warehouse.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleConfirmFinishImport}>
-                        Confirm
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DialogFooter>
-            </DialogContent>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent>
+          {importReceipt?.type === 'MATERIAL' && (
+            <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
+              <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                  <DialogTitle>Start Importing Process</DialogTitle>
+                  <DialogTitle>Material Labels</DialogTitle>
+                  <DialogDescription>
+                    Review and print labels for each material in this import receipt.
+                  </DialogDescription>
                 </DialogHeader>
-                <div className="py-4">
-                  <p>
-                    Are you sure you want to start the importing process? This action cannot be
-                    undone.
-                  </p>
-                </div>
+                <ScrollArea className="max-h-96">
+                  <div className="w-full text-center text-xl font-bold">
+                    Material Receipt Barcode
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 py-4">
+                    {importReceipt?.materialReceipt?.map((item: any) => (
+                      <div key={item.id} className="border p-4 rounded-md">
+                        <h3 className="font-bold mb-2">{item?.materialPackage?.name}</h3>
+                        <p>
+                          Quantity: {item?.quantityByPack * item?.materialPackage?.uomPerPack}{' '}
+                          {
+                            item?.materialPackage?.materialVariant?.material?.materialUom
+                              ?.uomCharacter
+                          }
+                        </p>
+                        <p>Expire Date: {new Date(item?.expireDate).toLocaleDateString()}</p>
+                        <div className="mt-2">
+                          <h3 className="font-semibold">Material barcode: </h3>
+                          <Barcode value={item?.materialPackage?.code} width={1.5} height={50} />
+                        </div>
+                        <div className="mt-2">
+                          <h3 className="font-semibold">Material Receipt Barcode: </h3>
+                          <Barcode value={item?.code} width={1.5} height={50} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="default" onClick={confirmImporting}>
-                    Confirm
-                  </Button>
+                  <MaterialReceiptLabels materialReceipts={importReceipt?.materialReceipt} />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="default">Confirm Finish Import</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action will finish the import process and mark all materials as
+                          received in the warehouse.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmFinishImport}>
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </DialogFooter>
               </DialogContent>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Start Importing Process</DialogTitle>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <p>
+                      Are you sure you want to start the importing process? This action cannot be
+                      undone.
+                    </p>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button variant="default" onClick={confirmImporting}>
+                      Confirm
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              {importReceipt?.discussion && (
+                <Discussion chat={importReceipt?.discussion} onRender={onRender} />
+              )}
             </Dialog>
-            {importReceipt?.discussion && (
-              <Discussion chat={importReceipt?.discussion} onRender={onRender} />
-            )}
-          </Dialog>
+          )}
+          {importReceipt?.type === 'PRODUCT' && (
+            <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
+              <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Products Labels</DialogTitle>
+                  <DialogDescription>
+                    Review and print labels for each product in this import receipt.
+                  </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-96">
+                  <div className="w-full text-center text-xl font-bold">
+                    Product Receipt Barcode
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 py-4">
+                    {importReceipt?.productReceipt?.map((item: any) => (
+                      <div key={item.id} className="border p-4 rounded-md">
+                        <h3 className="font-bold mb-2">{item?.productSize?.name}</h3>
+                        <p>
+                          Quantity: {item?.quantityByUom}{' '}
+                          {item?.productSize?.productVariant?.product?.productUom?.uomCharacter}
+                        </p>
+                        <p>Expire Date: {new Date(item?.expireDate).toLocaleDateString()}</p>
+                        <div className="mt-2">
+                          <h3 className="font-semibold">Product barcode: </h3>
+                          <Barcode value={item?.productSize?.code} width={1.5} height={50} />
+                        </div>
+                        <div className="mt-2">
+                          <h3 className="font-semibold">Product Receipt Barcode: </h3>
+                          <Barcode value={item?.code} width={1.5} height={50} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                <DialogFooter>
+                  <ProductReceiptLabel productReceipts={importReceipt?.productReceipt} />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="default">Confirm Finish Import</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action will finish the import process and mark all products as
+                          received in the warehouse.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmFinishImport}>
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </DialogFooter>
+              </DialogContent>
+              {importReceipt?.discussion && (
+                <Discussion chat={importReceipt?.discussion} onRender={onRender} />
+              )}
+            </Dialog>
+          )}
         </>
       )}
     </div>

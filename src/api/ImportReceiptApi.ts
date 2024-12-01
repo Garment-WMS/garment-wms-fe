@@ -118,10 +118,10 @@ export const getMyImportReceiptFn = async ({
 export const finishImportReceiptFn = async (id: string): Promise<any> => {
   // Make the API request
   const res = await privateCall(importReceiptApi.finish(id));
-  return res.data.data;
+  return res;
 };
 export const startImportReceiptFn = async (id: string): Promise<any> => {
   // Make the API request
   const res = await privateCall(importReceiptApi.startImporting(id));
-  return res.data.data;
+  return res.data;
 };
