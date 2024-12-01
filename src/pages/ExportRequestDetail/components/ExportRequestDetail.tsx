@@ -3,6 +3,9 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { useSelector } from 'react-redux';
 import exportRequestSelector from '../slice/selector';
 import { MaterialExportRequest } from '@/types/exportRequest';
+import { UOM } from '@/types/MaterialTypes';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { formatNumber } from '@/helpers/formatNumber';
 
 interface ColumnType {
   id: string;
@@ -10,8 +13,9 @@ interface ColumnType {
   code: string;
   packUnit: string;
   materialName: any;
+  uom:UOM;
   uomPerPack: any;
-  quantityByPack: any;
+  quantityByUOM: any;
   materialCode: any;
   materialType: any; // Fallback for nested materialType
 }
@@ -26,10 +30,11 @@ const ExportRequestDetail = () => {
       return {
         id: materialPackage?.id ?? 'N/A',
         code: materialPackage?.materialVariant.code ?? 'N/A',
-        packUnit: materialPackage?.quantityByUom ?? 'N/A',
+        packUnit: materialPackage?.materialVariant?.material?.materialUom.name ?? 'N/A',
         materialName: materialPackage?.materialVariant.name ?? 'N/A', // Fallback for nested material
         uomPerPack: materialPackage?.materialVariant.material.materialUom.name ?? 0, // Default to 0 if undefined
-        quantityByPack: detail.quantityByUom ?? 0, // Default to 0 if undefined
+        uom: detail.materialVariant?.material?.materialUom ?? "N/A",
+        quantityByUOM: detail.quantityByUom ?? 0, // Default to 0 if undefined
         materialCode: materialPackage?.materialVariant.material?.code ?? 'N/A', // Fallback for nested material
         materialType: materialPackage?.materialVariant.material.name ?? 'N/A' // Fallback for nested materialType
       };
@@ -61,20 +66,19 @@ const ExportRequestDetail = () => {
       }
     },
     {
-      header: 'Material Code',
-      accessorKey: 'materialCode',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Quantity',
-      accessorKey: 'quantityByPack',
-      enableColumnFilter: false
-    },
-    {
       header: 'Unit of measure',
       accessorKey: 'uomPerPack',
       enableColumnFilter: false
-    }
+    },
+    {
+      header: 'Quantity By UOM',
+      accessorKey: 'quantityByUOM',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.quantityByUOM} {convertTitleToTitleCase(row.original?.packUnit)}</div>;
+      }
+    },
+
   ];
   return (
     <div className="flex flex-col gap-4">

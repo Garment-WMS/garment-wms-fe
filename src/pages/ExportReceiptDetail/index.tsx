@@ -34,6 +34,7 @@ import {
   ProductionDepartmentGuardDiv,
   WarehouseStaffGuardDiv
 } from '@/components/authentication/createRoleGuard';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -50,6 +51,9 @@ export default function ExportReceiptDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [exportReceipt, setExportReceiptData] = useState<ExportReceipt>();
+  const calculateTotalItemsReceived = (materialReceipt: any[]) => {
+    return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
+  };
   const [render, setRender] = useState<number>(0);
   const onRender = () => {
     setRender((render: number) => render + 1);
@@ -145,20 +149,15 @@ export default function ExportReceiptDetail() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Items Received</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Items Exported</CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">12,500</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Quality Pass Rate</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">98.5%</div>
+                <div className="text-2xl font-bold"> {exportReceipt?.materialExportReceiptDetail
+                  ? calculateTotalItemsReceived(exportReceipt.materialExportReceiptDetail)
+                  : 0}</div>
+                                  <p className="text-xs text-muted-foreground">Total items from this receipt</p>
+
               </CardContent>
             </Card>
             <Card>
@@ -167,7 +166,7 @@ export default function ExportReceiptDetail() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{exportReceipt?.type}</div>
+                <div className="text-2xl font-bold">{convertTitleToTitleCase(exportReceipt?.type)}</div>
                 <p className="text-xs text-muted-foreground">
                   {exportReceipt?.type === 'PRODUCTION' ? 'Export for manufacturing purpose' : ''}
                 </p>
@@ -181,7 +180,7 @@ export default function ExportReceiptDetail() {
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-2xl font-bold capitalize">{exportReceipt?.status}</div>
+                    <div className="text-2xl font-bold capitalize">{convertTitleToTitleCase(exportReceipt?.status)}</div>
                     <p className="text-xs text-muted-foreground">
                       {exportReceipt?.status === 'EXPORTING'
                         ? 'Export in progress'
@@ -267,9 +266,11 @@ export default function ExportReceiptDetail() {
                       </p>
                       <p>
                         <strong>Production batch:</strong>{' '}
-                        <div className="flex text-primary underline underline-offset-2">
+                        <Link 
+                        to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
+                        className="flex text-primary underline underline-offset-2">
                           {exportReceipt?.materialExportRequest.productionBatch?.code || 'N/A'}
-                        </div>
+                        </Link>
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}

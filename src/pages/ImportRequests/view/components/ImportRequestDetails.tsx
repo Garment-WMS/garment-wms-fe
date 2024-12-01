@@ -3,6 +3,9 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../../slice/selector';
+import { MaterialPackage, UOM } from '@/types/MaterialTypes';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { formatNumber } from '@/helpers/formatNumber';
 
 type Props = {};
 
@@ -13,6 +16,7 @@ interface ColumnType {
   packUnit: string;
   materialName: any;
   uomPerPack: any;
+  uom: UOM;
   quantityByPack: any;
   materialCode: any;
   materialType: any; // Fallback for nested materialType
@@ -44,6 +48,7 @@ const ImportRequestDetails = (props: Props) => {
             packUnit: materialPackage.packUnit ?? "N/A",
             materialName: materialPackage.materialVariant?.material?.name ?? "N/A",
             uomPerPack: materialPackage.uomPerPack ?? 0,
+            uom: materialPackage.materialVariant?.material?.materialUom ?? "N/A",
             quantityByPack: detail.quantityByPack ?? 0,
             materialCode: materialPackage.materialVariant?.material?.code ?? "N/A",
             materialType: materialPackage.materialVariant?.material?.name ?? "N/A",
@@ -102,15 +107,22 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false
     },
     {
-      header: 'Quantity per pack',
-      accessorKey: 'uomPerPack',
-      enableColumnFilter: false
-    },
-    {
       header: 'Quantity By Pack',
       accessorKey: 'quantityByPack',
-      enableColumnFilter: false
-    }
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return <div className="text-left">{row.original.quantityByPack} {convertTitleToTitleCase  (row.original?.packUnit)}</div>;
+      }
+    },
+    {
+      header: 'Quantity by UOM',
+      accessorKey: 'uomPerPack',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return <div className="text-left">{formatNumber(row.original.uomPerPack * row.original.quantityByPack)}  {row.original?.uom.uomCharacter}</div>;
+      }
+    },
+    
   ];
   const DetailsColumnForProduct: CustomColumnDef<ColumnTypeForProduct>[] = [
     {
@@ -143,7 +155,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false
     },
     {
-      header: 'Quantity By Pack',
+      header: 'Quantity',
       accessorKey: 'quantityByPack',
       enableColumnFilter: false
     }
