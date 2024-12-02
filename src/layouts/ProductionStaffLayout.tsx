@@ -75,11 +75,6 @@ const ProductionStaffMenu: MenuProps[] = [
     ]
   },
   {
-    title: 'Production Batch',
-    renderIcon: <LuContainer size={iconSize} />,
-    link: '/production-batch'
-  },
-  {
     title: 'Inspection Report',
     renderIcon: <TbClipboardData size={iconSize} />,
     link: '/report'
