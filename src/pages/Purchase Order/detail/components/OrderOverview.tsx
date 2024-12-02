@@ -1,9 +1,24 @@
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/button';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { convertDate } from '@/helpers/convertDate';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { XCircle } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
+import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
+import { Input } from '@/components/ui/Input';
 
 interface KeyValueDisplayProps {
   name: string;
@@ -56,7 +71,9 @@ const StatusBadge: React.FC<{ status: PurchaseOrderStatus }> = ({ status }) => {
 
   return (
     <Badge
-      className={`px-4 py-1.5 rounded-full text-sm font-medium ${variants[status] || 'bg-gray-500 text-white'}`}>
+      className={`px-4 py-1.5 rounded-full text-sm font-medium ${
+        variants[status] || 'bg-gray-500 text-white'
+      }`}>
       {PurchaseOrderStatusLabels[status]}
     </Badge>
   );
@@ -74,6 +91,70 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   finishDate,
   cancelledAt
 }) => {
+  const { id } = useParams(); // Get purchase order ID from the route params
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+
+  const handleConfirmCancel = async () => {
+    if (id) {
+      const validCancelReason =
+        cancelReason && cancelReason.trim() ? cancelReason.trim() : 'No reason provided';
+      try {
+        const response = await cancelPurchaseOrder(id, validCancelReason);
+        if (response?.statusCode === 200) {
+          toast({
+            variant: 'success',
+            title: 'Purchase Order Cancelled',
+            description: `Purchase Order ${poNumber} has been successfully cancelled.`
+          });
+          navigate(0);
+        } else {
+          handleBackendErrors(response);
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response) {
+          handleBackendErrors(error.response.data);
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: `An unexpected error occurred while cancelling Purchase Order ${poNumber}.`
+          });
+        }
+      } finally {
+        setIsModalOpen(false);
+        setCancelReason('');
+      }
+    }
+  };
+
+  const handleBackendErrors = (response: any) => {
+    if (response?.errors?.length > 0) {
+      const backendError = response.errors[0];
+      if (backendError.property === 'cancelledReason' && backendError.constraints) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Cancellation Reason',
+          description: backendError.constraints.isString || response.message || 'Invalid input.'
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Cancellation Failed',
+          description: response.message || 'An unexpected error occurred.'
+        });
+      }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Cancellation Failed',
+        description: response.message || 'An unexpected error occurred.'
+      });
+    }
+  };
+
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
       {/* Header Section */}
@@ -81,7 +162,9 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="flex flex-col items-start">
           <div className="flex flex-row items-center gap-3">
             <h1 className="text-2xl font-bold text-gray-900">Purchase Order Overview</h1>
-            <XCircle className="w-9 h-9 text-red-600" />
+            {status === PurchaseOrderStatus.CANCELLED && (
+              <XCircle className="w-9 h-9 text-red-600" />
+            )}
           </div>
           {status === PurchaseOrderStatus.CANCELLED && (
             <KeyValueDisplay
@@ -93,7 +176,16 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
           )}
         </div>
 
-        <StatusBadge status={status} />
+        <div className="flex flex-row items-center gap-3">
+          <StatusBadge status={status} />
+          <PurchasingStaffGuardDiv>
+            {status === PurchaseOrderStatus.IN_PROGRESS && (
+              <Button variant="destructive" onClick={() => setIsModalOpen(true)}>
+                Cancel Order
+              </Button>
+            )}
+          </PurchasingStaffGuardDiv>
+        </div>
       </div>
 
       {/* Order Details Section */}
@@ -137,6 +229,36 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
           />
         </div>
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Cancel Purchase Order</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel Purchase Order{' '}
+              <span className="font-semibold text-primaryLight">{poNumber}</span>? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
+              id="cancelReason"
+              placeholder="Enter reason for cancellation"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmCancel} disabled={!cancelReason.trim()}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

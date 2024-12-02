@@ -47,7 +47,9 @@ const PurchaseOrderDeliveryDetails = () => {
             <div className="flex items-center justify-between">
               <div className="flex flex-row items-center gap-3">
                 <h1 className="text-2xl font-bold text-primaryDark">{delivery?.code}</h1>
-                <XCircle className="w-9 h-9 text-red-600" />
+                {delivery.status === PurchaseOrderDeliveryStatus.CANCELLED && (
+                  <XCircle className="w-9 h-9 text-red-600" />
+                )}
               </div>
               <Badge
                 className={`px-3 py-1 rounded-md text-md ${getStatusBadgeClass(delivery.status)}`}>

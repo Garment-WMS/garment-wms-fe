@@ -66,7 +66,7 @@ const PurchaseOrderList: React.FC = () => {
             title: 'Purchase Order Cancelled',
             description: `Purchase Order ${selectedPO.poNumber} has been successfully cancelled.`
           });
-          navigate(`/purchase-order/${selectedPO.id}`);
+          navigate(0);
         } else {
           handleBackendErrors(response);
         }
@@ -317,7 +317,7 @@ const PurchaseOrderList: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Lists</h1>
         <PurchasingStaffGuardDiv>
-          <UploadExcel fileName="purchase order" triggerButtonLabel="Import" />
+          <UploadExcel />
         </PurchasingStaffGuardDiv>
       </div>
       {/* Set fixed height for the table */}

@@ -15,7 +15,7 @@ export const convertDateWithTime = (isoString: string): string => {
       hour12: false
     });
 
-    return `${formattedDate} ${formattedTime}`;
+    return `${formattedTime}, ${formattedDate}`;
   } catch {
     return 'Invalid date';
   }
