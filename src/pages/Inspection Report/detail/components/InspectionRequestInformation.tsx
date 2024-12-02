@@ -16,6 +16,7 @@ import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
 import { Gender } from '@/enums/gender';
 import fallbackAvatar from '@/assets/images/avaPlaceholder.jpg';
+import { Link } from 'react-router-dom';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -37,6 +38,7 @@ interface InspectionRequestInformationProps {
   inspectionReport: InspectionReport;
   importRequest?: ImportRequest;
   inspectionDepartment?: any;
+  importRequestId?: string;
 }
 
 const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
@@ -46,7 +48,8 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestNote,
   requestCreatedAt,
   importRequest,
-  inspectionDepartment
+  inspectionDepartment,
+  importRequestId
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
 
@@ -107,8 +110,14 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
                 <div className="flex items-center">
                   <Calendar className="text-gray-500 mr-2" />
                   <div>
-                    <dt className="font-medium text-gray-500">Created At</dt>
-                    <dd className="text-gray-800">{convertDate(requestCreatedAt)}</dd>
+                    <dt className="font-medium text-gray-500">Import Request</dt>
+                    <dd className="text-primaryLight underline cursor-pointer">
+                      <Link
+                        to={`/import-request/${importRequest?.id}`}
+                        className="text-primaryLight underline cursor-pointer">
+                        {importRequest?.code}
+                      </Link>
+                    </dd>
                   </div>
                 </div>
 
