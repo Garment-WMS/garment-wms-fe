@@ -72,12 +72,14 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   searchColumnId?: string;
   searchPlaceholder?: string;
+  searchWidth?: string;
 }
 
 export function DataTableToolbar<TData>({
   table,
   searchColumnId = 'id',
-  searchPlaceholder = 'Search...'
+  searchPlaceholder = 'Search...',
+  searchWidth = 'lg:w-[350px]'
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   return (
@@ -87,7 +89,7 @@ export function DataTableToolbar<TData>({
           placeholder={searchPlaceholder}
           value={(table.getColumn(searchColumnId)?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn(searchColumnId)?.setFilterValue(event.target.value)}
-          className="h-8 w-[150px] lg:w-[350px]"
+          className= {`${searchWidth} h-8 w-[150px]`}
         />
         {table
           .getHeaderGroups()[0]

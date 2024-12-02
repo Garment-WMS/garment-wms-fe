@@ -146,7 +146,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
     },
     {
-      header: 'Purchase order',
+      header: 'PO',
       accessorKey: 'poDelivery.purchaseOrder.code',
       enableColumnFilter: true,
       filterOptions: purchaseOrderFilter.map((delivery) => ({
@@ -156,7 +156,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
       cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
     },
     {
-      header: 'Production batch',
+      header: 'PB',
       accessorKey: 'productionBatch.code',
       enableColumnFilter: true,
       filterOptions: productionBatchFilter.map((delivery) => ({
@@ -237,7 +237,8 @@ const mappedArray = res.reduce((acc: any, item: any) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
-          searchPlaceholder="Search by import request code"
+          searchPlaceholder="Input request code"
+          searchWidth='lg:w-[200px]'
         />
         <div className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
