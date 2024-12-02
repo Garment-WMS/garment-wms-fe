@@ -335,7 +335,10 @@ export default function TaskManagerOverview() {
                     Expected End date: {new Date(selectedTask.expectedFinishedAt).toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Actual Started At: {new Date(selectedTask.startedAt).toLocaleString()}
+                    Actual Started At:
+                    {selectedTask.startedAt
+                      ? new Date(selectedTask.startedAt).toLocaleString()
+                      : 'Not yet'}
                   </p>
 
                   <p className="text-xs text-muted-foreground mb-4">

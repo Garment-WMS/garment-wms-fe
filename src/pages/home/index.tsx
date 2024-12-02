@@ -195,23 +195,25 @@ export default function DashboardPage() {
             <CardTitle>Raw Material Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-2 h-[500px]">
-              {getMaterialData().map((material: any, i: number) => (
-                <div
-                  key={i}
-                  className="rounded-lg p-2 text-white flex flex-col justify-between"
-                  style={{
-                    backgroundColor: material.color,
-                    gridRow: `span ${Math.ceil((material.percentage / 10) * 2)}` // Dynamic scaling
-                  }}
-                  title={`Name: ${material.name}\nValue: ${material.value}\nPercentage: ${material.percentage.toFixed(2)}%`}>
-                  <div>
-                    <div className="font-medium">{material.name}</div>
-                    <div className="text-sm opacity-80">{material.value} units</div>
+            <div className="grid grid-cols-3 gap-2 h-[750px]">
+              {getMaterialData()
+                .slice(0, 10)
+                .map((material: any, i: number) => (
+                  <div
+                    key={i}
+                    className="rounded-lg p-2 text-white flex flex-col justify-between"
+                    style={{
+                      backgroundColor: material.color,
+                      gridRow: `span ${Math.ceil((material.percentage / 10) * 2)}` // Dynamic scaling
+                    }}
+                    title={`Name: ${material.name}\nValue: ${material.value}\nPercentage: ${material.percentage.toFixed(2)}%`}>
+                    <div>
+                      <div className="font-medium">{material.name}</div>
+                      <div className="text-sm opacity-80">{material.value} units</div>
+                    </div>
+                    <div className="text-xs mt-2">{material.percentage.toFixed(2)}%</div>
                   </div>
-                  <div className="text-xs mt-2">{material.percentage.toFixed(2)}%</div>
-                </div>
-              ))}
+                ))}
             </div>
           </CardContent>
         </Card>

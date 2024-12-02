@@ -21,7 +21,10 @@ import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
-import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+import {
+  PurchasingStaffGuardAndProductionDepartmentDiv,
+  PurchasingStaffGuardDiv
+} from '@/components/authentication/createRoleGuard';
 type Props = {};
 export interface Filter {
   label: string;
@@ -238,11 +241,11 @@ const ImportRequestList = (props: Props) => {
           searchWidth="lg:w-[200px]"
         />
 
-        <PurchasingStaffGuardDiv className="flex items-center flex-row justify-center mb-9">
+        <PurchasingStaffGuardAndProductionDepartmentDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request
           </Button>
-        </PurchasingStaffGuardDiv>
+        </PurchasingStaffGuardAndProductionDepartmentDiv>
       </div>
     </div>
   );
