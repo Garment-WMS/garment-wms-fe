@@ -12,12 +12,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
+import { VscDebugStart } from 'react-icons/vsc';
 import {
   WarehouseStaffGuardDiv,
   ProductionDepartmentGuardDiv
 } from '@/components/authentication/createRoleGuard';
 import { MaterialDetailsGrid } from './MaterialDetailsGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FaRegSave } from 'react-icons/fa';
+import { GiConfirmed } from 'react-icons/gi';
 
 interface Material {
   id: string;
@@ -49,7 +52,10 @@ export function MaterialExportActions({
             <WarehouseStaffGuardDiv>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button disabled={isLoading}>Finish</Button>
+                  <Button disabled={isLoading}>
+                    <FaRegSave />
+                    Finish
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-3xl">
                   <AlertDialogHeader>
@@ -64,7 +70,38 @@ export function MaterialExportActions({
                   </ScrollArea>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
+                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTING', 'staff')}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </WarehouseStaffGuardDiv>
+          )}
+          {status === 'AWAIT_TO_EXPORT' && (
+            <WarehouseStaffGuardDiv>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={isLoading}>
+                    {' '}
+                    <VscDebugStart className="mr-2" />
+                    Start Exporting
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="max-w-3xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Start Emporting</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Starting this task will initiate the export process immediately.
+                      <br />
+                      Please ensure all necessary preparations are complete before proceeding.
+                      <br />
+                      Are you sure you want to begin?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTING', 'staff')}>
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -76,7 +113,10 @@ export function MaterialExportActions({
             <ProductionDepartmentGuardDiv>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button disabled={isLoading}>Finish</Button>
+                  <Button disabled={isLoading}>
+                    <GiConfirmed />
+                    Finish
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-3xl">
                   <AlertDialogHeader>
