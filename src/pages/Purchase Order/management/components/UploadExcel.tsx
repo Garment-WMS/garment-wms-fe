@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/Dialog';
-import { ArrowLeft, CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
+import { CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
 import Colors from '@/constants/color';
 import ExcelIcon from '@/assets/images/ExcelFile_Icon.png';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { Step, Stepper } from 'react-form-stepper';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { importPurchaseOrder } from '@/api/services/purchaseOrder';
 import Loading from '@/components/common/Loading';
 
@@ -35,19 +35,21 @@ const errorMessages = {
     clientMessage: 'The uploaded file contains invalid Production Plan.'
   },
   errorInFile: {
-    message: 'There is error in the file',
+    message: 'There is error Purchase Order sheet. Please fix before upload again !!!',
     clientMessage:
-      'We found issues in the uploaded file. <a href="{errors}" target="_blank" class="underline text-blue-600">Click here</a> to download the file with errors and correct them.'
+      'We found issues in the uploaded file. You can <a href="{errors}" target="_blank" class="underline text-blue-600">download the error file</a> and correct them.'
   }
 };
 
 const UploadExcel: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isUploadComplete, setIsUploadComplete] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [errorFileLink, setErrorFileLink] = useState<string | null>(null);
   const [poId, setPoID] = useState<string | null>(null);
   const [poNumber, setPoNumber] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -73,6 +75,7 @@ const UploadExcel: React.FC = () => {
   const processFile = (file: File | null) => {
     if (file) {
       setUploadError(null);
+      setErrorFileLink(null);
       const fileSizeKB = file.size / 1024;
       if (fileSizeKB > MAX_FILE_SIZE_KB) {
         setUploadError(`The file must not be over ${MAX_FILE_SIZE_KB} KB`);
@@ -95,13 +98,13 @@ const UploadExcel: React.FC = () => {
         setIsUploadComplete(true);
         setActiveStep(1);
         if (response.data?.id) {
-          setPoID(response.data?.id);
+          setPoID(response.data.id);
         }
         if (response?.data?.poNumber) {
           setPoNumber(response?.data?.poNumber);
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       setUploadError('Failed to upload file. Please try again.');
       setActiveStep(0);
     } finally {
@@ -110,23 +113,9 @@ const UploadExcel: React.FC = () => {
   };
 
   const handleUploadErrors = (response: any) => {
-    if (
-      response.statusCode === errorMessages.invalidFileType.statusCode &&
-      response.message === errorMessages.invalidFileType.message
-    ) {
-      setUploadError(errorMessages.invalidFileType.message);
-    } else if (
-      response.statusCode === errorMessages.invalidFormat.statusCode &&
-      response.message === errorMessages.invalidFormat.message
-    ) {
-      setUploadError(errorMessages.invalidFormat.clientMessage);
-    } else if (response.message === errorMessages.errorInFile.message && response.errors) {
+    if (response.message === errorMessages.errorInFile.message && response.errors) {
+      setErrorFileLink(response.errors);
       setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
-    } else if (
-      response.statusCode === errorMessages.invalidProductionPlan.statusCode &&
-      response.message.includes(errorMessages.invalidProductionPlan.message)
-    ) {
-      setUploadError(errorMessages.invalidProductionPlan.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
@@ -136,6 +125,7 @@ const UploadExcel: React.FC = () => {
     setSelectedFile(null);
     setIsUploadComplete(false);
     setUploadError(null);
+    setErrorFileLink(null);
     setActiveStep(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -146,6 +136,7 @@ const UploadExcel: React.FC = () => {
     setSelectedFile(null);
     setIsUploadComplete(false);
     setUploadError(null);
+    setErrorFileLink(null);
     setPoID(null);
     setActiveStep(0);
     if (fileInputRef.current) {
@@ -155,7 +146,6 @@ const UploadExcel: React.FC = () => {
 
   const renderUploadExcel = () => (
     <div>
-      {/* File Upload Section */}
       {!selectedFile && !uploadError && (
         <div
           className={`flex flex-col gap-5 justify-center items-center border-2 ${
@@ -200,45 +190,16 @@ const UploadExcel: React.FC = () => {
               onClick={handleDeleteFile}
             />
           </div>
-          <div className="px-4 w-full">
-            {isUploading ? (
-              <div className="flex justify-center items-center">
+          <div className="px-4">
+            {isUploading && (
+              <div className="flex flex-row justify-center">
                 <Loading />
               </div>
-            ) : uploadError ? (
-              <p className="text-red-600 mt-2">Upload failed</p>
-            ) : (
-              <p className="text-green-600 mt-2">Upload successful</p>
+            )}
+            {uploadError && (
+              <p className="text-red-600" dangerouslySetInnerHTML={{ __html: uploadError }}></p>
             )}
           </div>
-        </div>
-      )}
-
-      {uploadError && (
-        <div className="mt-4 flex flex-col bg-red-100 p-4 rounded-lg border border-red-300">
-          <div className="flex items-center mb-2">
-            <XCircle size={30} color="red" />
-            <p className="ml-2 text-sm font-semibold text-red-600">{selectedFile?.name}</p>
-          </div>
-          <p className="text-sm text-red-600" dangerouslySetInnerHTML={{ __html: uploadError }} />
-        </div>
-      )}
-
-      {isUploadComplete && !uploadError && selectedFile && (
-        <div className="mt-4 flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <img src={ExcelIcon} alt="Excel Icon" className="w-8 h-8" />
-            <div>
-              <p className="text-sm text-gray-700 font-bold">{selectedFile.name}</p>
-              <p className="text-xs text-green-600">Upload successfully</p>
-            </div>
-          </div>
-          <Trash
-            size={25}
-            color="red"
-            className="cursor-pointer hover:opacity-30"
-            onClick={handleDeleteFile}
-          />
         </div>
       )}
     </div>
@@ -251,10 +212,25 @@ const UploadExcel: React.FC = () => {
         <h1 className="font-bold text-xl text-green-600">
           Purchase Order: {poNumber} uploaded successfully!
         </h1>
-        <p className=" text-gray-500 mt-2">
+        <p className="text-gray-500 mt-2">
           Your purchase order has been uploaded successfully. You can now proceed to view or manage
           it.
         </p>
+      </div>
+      <div className="flex gap-4">
+        <Button
+          onClick={() => {
+            handleReset();
+            navigate(0);
+          }}
+          className="bg-red-600 text-white hover:bg-red-700">
+          Close
+        </Button>
+        <Button
+          onClick={() => poId && navigate(`/purchase-order/${poId}`)}
+          className="bg-blue-600 text-white hover:bg-blue-700">
+          Open
+        </Button>
       </div>
     </main>
   );
@@ -296,25 +272,6 @@ const UploadExcel: React.FC = () => {
 
         {activeStep === 0 && renderUploadExcel()}
         {activeStep === 1 && renderUploadSuccessfully()}
-
-        {activeStep === 1 && (
-          <div className="flex justify-center items-center gap-5 mt-6">
-            <Button
-              className="bg-white text-red-500 ring-1 ring-red-500 w-32"
-              onClick={handleReset}>
-              Close
-            </Button>
-            <Button
-              className="w-40"
-              onClick={() => {
-                if (poId) {
-                  navigate(`/purchase-order/${poId}`);
-                }
-              }}>
-              View purchase order
-            </Button>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
