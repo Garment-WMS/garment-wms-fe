@@ -34,8 +34,8 @@ export default function CreateProductVariant() {
   const [formData, setFormData] = useState({
     productId: '',
     name: '',
-    attributes: [] as ProductAttribute[],
-    sizes: [] as ProductSize[]
+    productAttributes: [] as ProductAttribute[],
+    productSizes: [] as ProductSize[]
   })
   const [image, setImage] = useState<File | null>(null); 
   const [imagePreview, setImagePreview] = useState<string | null>(null) // State to store preview URL
@@ -74,7 +74,7 @@ export default function CreateProductVariant() {
   const addSize = () => {
     setFormData(prev => ({
       ...prev,
-      sizes: [...prev.sizes, { 
+      productSizes: [...prev.productSizes, { 
         
         width: 0,
         height: 0,
@@ -88,7 +88,7 @@ export default function CreateProductVariant() {
   const updateSize = (index: number, field: keyof ProductSize, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      sizes: prev.sizes.map((size, i) => 
+      productSizes: prev.productSizes.map((size, i) => 
         i === index ? { ...size, [field]: value } : size
       )
     }))
@@ -97,20 +97,20 @@ export default function CreateProductVariant() {
   const removeSize = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      sizes: prev.sizes.filter((_, i) => i !== index)
+      productSizes: prev.productSizes.filter((_, i) => i !== index)
     }))
   }
   const addAttribute = () => {
     setFormData(prev => ({
       ...prev,
-      attributes: [...prev.attributes, { name: '', value: '', type: 'STRING' }]
+      productAttributes: [...prev.productAttributes, { name: '', value: '', type: 'STRING' }]
     }))
   }
 
   const updateAttribute = (index: number, field: keyof ProductAttribute, value: string) => {
     setFormData(prev => ({
       ...prev,
-      attributes: prev.attributes.map((attr, i) => 
+      productAttributes: prev.productAttributes.map((attr, i) => 
         i === index ? { ...attr, [field]: value } : attr
       )
     }))
@@ -118,12 +118,39 @@ export default function CreateProductVariant() {
   const removeAttribute = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      attributes: prev.attributes.filter((_, i) => i !== index)
+      productAttributes: prev.productAttributes.filter((_, i) => i !== index)
     }))
   }
+  const validateUniqueFields = (): boolean => {
+    const attributeNames = formData.productAttributes.map((attr) => attr.name);
+    const packageNames = formData.productSizes.map((pkg) => pkg.size);
 
+    const hasDuplicateAttributes = new Set(attributeNames).size !== attributeNames.length;
+    const hasDuplicatePackages = new Set(packageNames).size !== packageNames.length;
+
+    if (hasDuplicateAttributes) {
+      toast({
+        variant: 'destructive',
+        description: 'Duplicate attribute names found. Each attribute must have a unique name.',
+        title: 'Validation Error'
+      });
+      return false;
+    }
+
+    if (hasDuplicatePackages) {
+      toast({
+        variant: 'destructive',
+        description: 'Duplicate Size names found. Each Size must have a unique name.',
+        title: 'Validation Error'
+      });
+      return false;
+    }
+
+    return true;
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    validateUniqueFields();
     setLoading(true)
 
     try {
@@ -131,7 +158,6 @@ export default function CreateProductVariant() {
 
       formDataToSubmit.append('createProductDto', JSON.stringify(formData));
 
-      console.log('Image file before appending:', image); // Check the file object
       if (image) {
         formDataToSubmit.append('file', image);
       }
@@ -202,7 +228,7 @@ export default function CreateProductVariant() {
 
         <div>
           <Label className='m-4'>Attributes</Label>
-          {formData.attributes.map((attr, index) => (
+          {formData.productAttributes.map((attr, index) => (
             <div key={index} className="flex items-center space-x-2 mt-2">
               <Input 
                 placeholder="Name" 
@@ -239,7 +265,7 @@ export default function CreateProductVariant() {
         </div>
         <div>
           <Label className='m-4'>Sizes</Label>
-          {formData.sizes.map((size, index) => (
+          {formData.productSizes.map((size, index) => (
             <div key={index} className="space-y-2 mt-2 p-4 border rounded">
               <div>
                 <Label>Size</Label>

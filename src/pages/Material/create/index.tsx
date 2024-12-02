@@ -1,54 +1,59 @@
-
-import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/Input"
-import { Label } from "@/components/ui/Label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
-import { PlusCircle, Trash2 } from 'lucide-react'
-import privateCall from '@/api/PrivateCaller'
-import { materialApi, materialTypeApi } from '@/api/services/materialApi'
-import { toast } from '@/hooks/use-toast'
-import { UOM } from '@/types/MaterialTypes'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/Select';
+import { PlusCircle, Trash2 } from 'lucide-react';
+import privateCall from '@/api/PrivateCaller';
+import { materialApi, materialTypeApi } from '@/api/services/materialApi';
+import { toast } from '@/hooks/use-toast';
+import { UOM } from '@/types/MaterialTypes';
+import { useNavigate } from 'react-router-dom';
 
 interface Material {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface MaterialAttribute {
-  name: string
-  value: string
-  type: 'STRING' | 'NUMBER' | 'BOOLEAN'
+  name: string;
+  value: string;
+  type: 'STRING' | 'NUMBER' | 'BOOLEAN';
 }
 
 interface MaterialPackage {
-  name: string
-  packUnit: string
-  uomPerPack: number
-  packedWidth: number
-  packedLength: number
-  packedHeight: number
-  packedWeight: number
+  name: string;
+  packUnit: string;
+  uomPerPack: number;
+  packedWidth: number;
+  packedLength: number;
+  packedHeight: number;
+  packedWeight: number;
 }
 
 export default function CreateMaterialVariant() {
   const [materialType, setMaterialType] = useState<Material[]>([]);
-  const [loading, setLoading] = useState(false)
-  const [image, setImage] = useState<File | null>(null); 
-  const [imagePreview, setImagePreview] = useState<string | null>(null) // State to store preview URL
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // State to store preview URL
+  const navigate = useNavigate();
   const [data, setData] = useState({
     materialId: '',
     name: '',
     reorderLevel: 0,
-    attributes: [] as MaterialAttribute[],
-    packages: [] as MaterialPackage[]
-  })
+    materialAttributes: [] as MaterialAttribute[],
+    materialPackages: [] as MaterialPackage[]
+  });
 
   useEffect(() => {
-    fetchMaterialTypes()
-  }, [])
+    fetchMaterialTypes();
+  }, []);
 
   const fetchMaterialTypes = async () => {
     try {
@@ -64,9 +69,9 @@ export default function CreateMaterialVariant() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,85 +82,116 @@ export default function CreateMaterialVariant() {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setData(prev => ({ ...prev, [name]: value }))
-  }
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const addAttribute = () => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      attributes: [...prev.attributes, { name: '', value: '', type: 'STRING' }]
-    }))
-  }
+      materialAttributes: [...prev.materialAttributes, { name: '', value: '', type: 'STRING' }]
+    }));
+  };
 
   const updateAttribute = (index: number, field: keyof MaterialAttribute, value: string) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      attributes: prev.attributes.map((attr, i) => 
+      materialAttributes: prev.materialAttributes.map((attr, i) =>
         i === index ? { ...attr, [field]: value } : attr
       )
-    }))
-  }
+    }));
+  };
 
   const removeAttribute = (index: number) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      attributes: prev.attributes.filter((_, i) => i !== index)
-    }))
-  }
+      materialAttributes: prev.materialAttributes.filter((_, i) => i !== index)
+    }));
+  };
 
   const addPackage = () => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      packages: [...prev.packages, { 
-        name: '', 
-        packUnit: '', 
-        uomPerPack: 0,
-        packedWidth: 0,
-        packedLength: 0,
-        packedHeight: 0,
-        packedWeight: 0
-      }]
-    }))
-  }
+      materialPackages: [
+        ...prev.materialPackages,
+        {
+          name: '',
+          packUnit: '',
+          uomPerPack: 0,
+          packedWidth: 0,
+          packedLength: 0,
+          packedHeight: 0,
+          packedWeight: 0
+        }
+      ]
+    }));
+  };
 
   const updatePackage = (index: number, field: keyof MaterialPackage, value: string | number) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      packages: prev.packages.map((pkg, i) => 
+      materialPackages: prev.materialPackages.map((pkg, i) =>
         i === index ? { ...pkg, [field]: value } : pkg
       )
-    }))
-  }
+    }));
+  };
 
   const removePackage = (index: number) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      packages: prev.packages.filter((_, i) => i !== index)
-    }))
-  }
+      materialPackages: prev.materialPackages.filter((_, i) => i !== index)
+    }));
+  };
+  const validateUniqueFields = (): boolean => {
+    const attributeNames = data.materialAttributes.map((attr) => attr.name);
+    const packageNames = data.materialPackages.map((pkg) => pkg.name);
 
+    const hasDuplicateAttributes = new Set(attributeNames).size !== attributeNames.length;
+    const hasDuplicatePackages = new Set(packageNames).size !== packageNames.length;
+
+    if (hasDuplicateAttributes) {
+      toast({
+        variant: 'destructive',
+        description: 'Duplicate attribute names found. Each attribute must have a unique name.',
+        title: 'Validation Error'
+      });
+      return false;
+    }
+
+    if (hasDuplicatePackages) {
+      toast({
+        variant: 'destructive',
+        description: 'Duplicate package names found. Each package must have a unique name.',
+        title: 'Validation Error'
+      });
+      return false;
+    }
+
+    return true;
+  };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    const isValid = validateUniqueFields();
+    if (!isValid) {
+      return; // Stop form submission if validation fails
+    }
+    setLoading(true);
 
     try {
       const formDataToSubmit = new FormData();
 
       formDataToSubmit.append('createMaterialDto', JSON.stringify(data));
 
-      console.log('Image file before appending:', image); // Check the file object
       if (image) {
         formDataToSubmit.append('file', image);
       }
-      
-      
-      const config = {
-        'Content-Type': 'multipart/form-data',
-      }
 
-      
-      
-      const response = await privateCall(materialApi.createMaterialVariant(formDataToSubmit,config));
+      const config = {
+        'Content-Type': 'multipart/form-data'
+      };
+
+      const response = await privateCall(
+        materialApi.createMaterialVariant(formDataToSubmit, config)
+      );
 
       if (response.status === 201) {
         toast({
@@ -163,17 +199,19 @@ export default function CreateMaterialVariant() {
           description: 'Material variant created successfully',
           title: 'Success'
         });
-        navigate('/material-variant')
-      } else {
-        throw new Error('Failed to create material variant');
+        navigate('/material-variant');
       }
-    } catch (error) {
-      console.error('Error creating material variant:', error);
+    } catch (error: any) {
+      const errorList = error.response.data.message;
+      toast({
+        variant: 'destructive',
+        description: errorList,
+        title: 'Error'
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 bg-white mx-auto p-4 rounded-md">
@@ -182,20 +220,28 @@ export default function CreateMaterialVariant() {
       </div>
 
       <div className="space-y-4">
-      <div>
-        <Label htmlFor="image">Image</Label>
-        <Input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} />
-        {imagePreview && (
-            <img 
-              src={imagePreview} 
-              alt="Selected Preview" 
-              className="mt-4 max-w-xs rounded-md border" 
+        <div>
+          <Label htmlFor="image">Image</Label>
+          <Input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Selected Preview"
+              className="mt-4 max-w-xs rounded-md border"
             />
           )}
-      </div>
+        </div>
         <div>
           <Label htmlFor="materialId">Material</Label>
-          <Select name="materialId" onValueChange={(value) => handleSelectChange('materialId', value)}>
+          <Select
+            name="materialId"
+            onValueChange={(value) => handleSelectChange('materialId', value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select a material" />
             </SelectTrigger>
@@ -227,23 +273,24 @@ export default function CreateMaterialVariant() {
         </div> */}
 
         <div>
-          <Label className='m-4'>Attributes</Label>
-          {data.attributes.map((attr, index) => (
+          <Label className="m-4">Attributes</Label>
+          {data.materialAttributes.map((attr, index) => (
             <div key={index} className="flex items-center space-x-2 mt-2">
-              <Input 
-                placeholder="Name" 
-                value={attr.name} 
-                onChange={(e) => updateAttribute(index, 'name', e.target.value)} 
+              <Input
+                placeholder="Name"
+                value={attr.name}
+                onChange={(e) => updateAttribute(index, 'name', e.target.value)}
               />
-              <Input 
-                placeholder="Value" 
-                value={attr.value} 
-                onChange={(e) => updateAttribute(index, 'value', e.target.value)} 
+              <Input
+                placeholder="Value"
+                value={attr.value}
+                onChange={(e) => updateAttribute(index, 'value', e.target.value)}
               />
-              <Select 
-                value={attr.type} 
-                onValueChange={(value) => updateAttribute(index, 'type', value as 'STRING' | 'NUMBER' | 'BOOLEAN')}
-              >
+              <Select
+                value={attr.type}
+                onValueChange={(value) =>
+                  updateAttribute(index, 'type', value as 'STRING' | 'NUMBER' | 'BOOLEAN')
+                }>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -265,71 +312,71 @@ export default function CreateMaterialVariant() {
         </div>
 
         <div>
-          <Label className='m-4'>Packages</Label>
-          {data.packages.map((pkg, index) => (
+          <Label className="m-4">Packages</Label>
+          {data.materialPackages.map((pkg, index) => (
             <div key={index} className="space-y-2 mt-2 p-4 border rounded">
               <div>
                 <Label>Name</Label>
-              <Input 
-                placeholder="Name" 
-                value={pkg.name} 
-                onChange={(e) => updatePackage(index, 'name', e.target.value)} 
-              />
+                <Input
+                  placeholder="Name"
+                  value={pkg.name}
+                  onChange={(e) => updatePackage(index, 'name', e.target.value)}
+                />
               </div>
               <div>
                 <Label>Pack Unit</Label>
-                <Input 
-                placeholder="Pack Unit" 
-                value={pkg.packUnit} 
-                onChange={(e) => updatePackage(index, 'packUnit', e.target.value)} 
-              />
+                <Input
+                  placeholder="Pack Unit"
+                  value={pkg.packUnit}
+                  onChange={(e) => updatePackage(index, 'packUnit', e.target.value)}
+                />
               </div>
               <div>
                 <Label>UOM per Pack</Label>
-                <Input 
-                type="number" 
-                placeholder="UOM per Pack" 
-                value={pkg.uomPerPack} 
-                onChange={(e) => updatePackage(index, 'uomPerPack', parseFloat(e.target.value))} 
-              />
+                <Input
+                  type="number"
+                  placeholder="UOM per Pack"
+                  value={pkg.uomPerPack}
+                  onChange={(e) => updatePackage(index, 'uomPerPack', parseFloat(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Width of the package</Label>
-                <Input 
-                type="number" 
-                placeholder="Packed Width" 
-                value={pkg.packedWidth} 
-                onChange={(e) => updatePackage(index, 'packedWidth', parseFloat(e.target.value))} 
-              />
+                <Input
+                  type="number"
+                  placeholder="Packed Width"
+                  value={pkg.packedWidth}
+                  onChange={(e) => updatePackage(index, 'packedWidth', parseFloat(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Length of the package</Label>
-                <Input 
-                type="number" 
-                placeholder="Packed Length" 
-                value={pkg.packedLength} 
-                onChange={(e) => updatePackage(index, 'packedLength', parseFloat(e.target.value))} 
-              />
+                <Input
+                  type="number"
+                  placeholder="Packed Length"
+                  value={pkg.packedLength}
+                  onChange={(e) => updatePackage(index, 'packedLength', parseFloat(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Height of the package</Label>
-                <Input 
-                type="number" 
-                placeholder="Packed Height" 
-                value={pkg.packedHeight} 
-                onChange={(e) => updatePackage(index, 'packedHeight', parseFloat(e.target.value))} 
-              />
+                <Input
+                  type="number"
+                  placeholder="Packed Height"
+                  value={pkg.packedHeight}
+                  onChange={(e) => updatePackage(index, 'packedHeight', parseFloat(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Weight of the package</Label>
-                <Input 
-                type="number" 
-                placeholder="Packed Weight" 
-                value={pkg.packedWeight} 
-                onChange={(e) => updatePackage(index, 'packedWeight', parseFloat(e.target.value))} 
-              />
+                <Input
+                  type="number"
+                  placeholder="Packed Weight"
+                  value={pkg.packedWeight}
+                  onChange={(e) => updatePackage(index, 'packedWeight', parseFloat(e.target.value))}
+                />
               </div>
-              
+
               <Button type="button" variant="ghost" onClick={() => removePackage(index)}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Remove Package
@@ -347,6 +394,5 @@ export default function CreateMaterialVariant() {
         {loading ? 'Creating...' : 'Create Material Variant'}
       </Button>
     </form>
-  )
+  );
 }
-
