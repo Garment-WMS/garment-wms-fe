@@ -166,7 +166,9 @@ export default function WarehouseApproval({
         'APPROVED',
         approveNote,
         selectedAssignee.id,
-        materialExportReceipt
+        materialExportReceipt,
+        selectedWareHouseTimeFrame.expectedStartedAt,
+        selectedWareHouseTimeFrame.expectedFinishedAt
       );
 
       toast({
