@@ -20,12 +20,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import UploadExcelProductionBatch from './UploadExcel';
-import { ROLES_ENUM } from '@/enums/role';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
 
 const ProductionBatchList: React.FC = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  const userRole = userData?.role;
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -33,7 +31,7 @@ const ProductionBatchList: React.FC = () => {
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 8
   });
   const handleViewClick = (requestId: string) => {
     navigate(`/production-batch/${requestId}`);
@@ -173,7 +171,7 @@ const ProductionBatchList: React.FC = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Production Batch List</h1>
         <ProductionDepartmentGuardDiv>
-          <UploadExcelProductionBatch fileName="production batch" triggerButtonLabel="Import" />
+          <UploadExcelProductionBatch />
         </ProductionDepartmentGuardDiv>
       </div>
       <div className="overflow-auto h-[700px] mt-4">

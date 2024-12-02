@@ -62,7 +62,7 @@ const ProductionBatchDetail: React.FC = () => {
     materialExportRequest,
     importRequest,
     productionPlanDetail
-  } = data?.data;
+  } = data?.data || {};
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -172,7 +172,7 @@ const ProductionBatchDetail: React.FC = () => {
                     onClick={() => handleRowClick(request.id)}>
                     <TableCell>{request.code}</TableCell>
                     <TableCell>
-                      <Badge className="bg-slate-500">{request.status}</Badge>
+                      <Badge className="bg-slate-500 text-white">{request.status}</Badge>
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
                     <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
