@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { ROLES_ENUM } from '@/enums/role';
 import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import {
   Dialog,
@@ -40,7 +39,6 @@ import axios from 'axios';
 
 const PurchaseOrderList: React.FC = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  const userRole = userData?.role;
   const { toast } = useToast();
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -297,15 +295,15 @@ const PurchaseOrderList: React.FC = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
-              {row.original?.status === PurchaseOrderStatus.IN_PROGRESS && (
-                <PurchasingStaffGuardDiv>
+              <PurchasingStaffGuardDiv>
+                {row.original?.status === PurchaseOrderStatus.IN_PROGRESS && (
                   <DropdownMenuItem
                     onClick={() => handleCancelClick(request.id, request.poNumber)}
                     className="text-red-500 hover:text-red-600">
                     Cancel
                   </DropdownMenuItem>
-                </PurchasingStaffGuardDiv>
-              )}
+                )}
+              </PurchasingStaffGuardDiv>
             </DropdownMenuContent>
           </DropdownMenu>
         );
