@@ -23,8 +23,11 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { ROLES_ENUM } from '@/enums/role';
 
 const PurchaseOrderList: React.FC = () => {
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const userRole = userData?.role;
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -224,7 +227,9 @@ const PurchaseOrderList: React.FC = () => {
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Lists</h1>
-        <UploadExcel fileName="purchase order" triggerButtonLabel="Import" />
+        {userRole === ROLES_ENUM.PURCHASING_STAFF && (
+          <UploadExcel fileName="purchase order" triggerButtonLabel="Import" />
+        )}
       </div>
       {/* Set fixed height for the table */}
       <div className="overflow-auto h-[700px]">

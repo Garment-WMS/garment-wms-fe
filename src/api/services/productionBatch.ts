@@ -1,9 +1,10 @@
 import { ProductionBatchListResponse } from '@/types/ProductionBatchListResponse';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { get, post } from './ApiCaller';
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
+import Cookies from 'js-cookie';
+import { get, post } from '../ApiCaller';
 
 interface GetAllProductionBatchInput {
   sorting: SortingState;
@@ -74,5 +75,49 @@ export const getOneProductionBatchById = async (id: string): Promise<ApiResponse
   } catch (error: any) {
     console.error('Failed to fetch production batch by ID:', error);
     throw new Error('Failed to fetch production batch');
+  }
+};
+
+export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+
+  const accessToken = Cookies.get('accessToken');
+
+  // Prepare the API caller configuration
+  const config = post(
+    '/production-batch',
+    formData,
+    {}, // No additional params needed
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
+
+  try {
+    // Make the API call
+    const response = await axios(config);
+    // Return the successful response data
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error uploading production batch:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data);
+      // Return an error response in the expected format
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred during file upload.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    // Throw for unexpected errors
+    throw new Error('An unexpected error occurred during file upload.');
   }
 };

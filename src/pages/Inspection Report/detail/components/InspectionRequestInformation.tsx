@@ -10,12 +10,13 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Box, Calendar, Edit3, FileText, Shirt, Type } from 'lucide-react';
+import { Box, Calendar, ClipboardCopy, Edit3, FileText, Shirt, Type } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
 import { Gender } from '@/enums/gender';
 import fallbackAvatar from '@/assets/images/avaPlaceholder.jpg';
+import { Link } from 'react-router-dom';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -37,6 +38,7 @@ interface InspectionRequestInformationProps {
   inspectionReport: InspectionReport;
   importRequest?: ImportRequest;
   inspectionDepartment?: any;
+  importRequestId?: string;
 }
 
 const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
@@ -46,7 +48,8 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestNote,
   requestCreatedAt,
   importRequest,
-  inspectionDepartment
+  inspectionDepartment,
+  importRequestId
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
 
@@ -82,7 +85,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
                 <div className="flex items-center">
                   <Type className="text-gray-500 mr-2" />
                   <div>
-                    <dt className="font-medium text-gray-500">Request Code</dt>
+                    <dt className="font-medium text-gray-500">Inspection Request</dt>
                     <dd className="text-gray-800">
                       <Badge className="bg-primaryLight">{requestCode}</Badge>
                     </dd>
@@ -105,10 +108,16 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
 
                 {/* Created At */}
                 <div className="flex items-center">
-                  <Calendar className="text-gray-500 mr-2" />
+                  <ClipboardCopy className="text-gray-500 mr-2" />
                   <div>
-                    <dt className="font-medium text-gray-500">Created At</dt>
-                    <dd className="text-gray-800">{convertDate(requestCreatedAt)}</dd>
+                    <dt className="font-medium text-gray-500">Import Request</dt>
+                    <dd className="text-primaryLight underline cursor-pointer">
+                      <Link
+                        to={`/import-request/${importRequest?.id}`}
+                        className="text-primaryLight underline cursor-pointer">
+                        {importRequest?.code}
+                      </Link>
+                    </dd>
                   </div>
                 </div>
 

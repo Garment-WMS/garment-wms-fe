@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'lucide-react';
+import {
+  Package,
+  FileText,
+  CheckCircle,
+  UserCircle,
+  Users,
+  Printer,
+  ClipboardCheck
+} from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import axios from 'axios';
@@ -338,21 +346,44 @@ export default function MaterialReceipt() {
             </Card> */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Receipt Status</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Quality Check Summary</CardTitle>
+                <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {convertTitleToTitleCase(importReceipt?.status)}
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Total Inspected</p>
+                    <div className="text-2xl font-bold">
+                      {importReceipt?.inspectionReport?.inspectionReportDetail?.length || 0}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Total Passed</p>
+                    <div className="text-2xl font-bold text-green-600">
+                      {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
+                        (sum, detail) => sum + detail.approvedQuantityByPack,
+                        0
+                      ) || 0}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Total Failed</p>
+                    <div className="text-2xl font-bold text-red-600">
+                      {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
+                        (sum, detail) =>
+                          sum +
+                          (detail.inspectionReportDetailDefect?.reduce(
+                            (defectSum, defect) => defectSum + defect.quantityByPack,
+                            0
+                          ) || 0),
+                        0
+                      ) || 0}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {' '}
-                  {importReceipt?.status == 'IMPORTED'
-                    ? 'All processed finished'
-                    : ' Warehouse Staff importing'}
-                </p>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Import Status</CardTitle>
