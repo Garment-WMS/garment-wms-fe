@@ -5,10 +5,11 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
 import privateCall from '../PrivateCaller';
+import Cookies from 'js-cookie';
 export const purchaseOrderApi = {
   getOne: (id: string) => get(`/purchase-order/${id}`),
   getAll: () => get('/purchase-order/all')
-}
+};
 
 export const getAllPurchaseOrdersNoPage = async (): Promise<any> => {
   // Make the API request
@@ -106,12 +107,27 @@ export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
   for (const [key, value] of formData.entries()) {
     console.log(`${key}:`, value);
   }
-  const config = post('/purchase-order', formData, {}, { 'Content-Type': 'multipart/form-data' });
+  const accessToken = Cookies.get('accessToken');
+  // Prepare the API caller configuration
+  const config = post(
+    '/purchase-order',
+    formData,
+    {}, // No additional params needed
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
+
   try {
-    const response = await privateCall(config);
+    // Make the API call
+    const response = await axios(config);
+    // Return the successful response data
     return response.data as ApiResponse;
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error uploading purchase order:', error);
     if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data); // Return an error response in the expected format
       return {
         statusCode: error.response.status,
         data: null,
@@ -119,9 +135,34 @@ export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
         errors: error.response.data.errors || null
       } as ApiResponse;
     }
+    // Throw for unexpected errors
     throw new Error('An unexpected error occurred during file upload.');
   }
 };
+
+// export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+//   console.log('FormData contents:');
+//   for (const [key, value] of formData.entries()) {
+//     console.log(`${key}:`, value);
+//   }
+//   const config = post('/purchase-order', formData, {}, { 'Content-Type': 'multipart/form-data' });
+//   try {
+//     const response = await privateCall(config);
+//     return response.data as ApiResponse;
+//   } catch (error) {
+//     if (axios.isAxiosError(error) && error.response) {
+//       return {
+//         statusCode: error.response.status,
+//         data: null,
+//         message: error.response.data.message || 'An error occurred during file upload.',
+//         errors: error.response.data.errors || null
+//       } as ApiResponse;
+//     }
+//     throw new Error('An unexpected error occurred during file upload.');
+//   }
+// };
 
 export const getPurchaseOrderStatistic = async (): Promise<ApiResponse> => {
   try {
