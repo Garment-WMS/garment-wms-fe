@@ -184,6 +184,7 @@ export const cancelPurchaseOrder = async (
     const endpoint = `/purchase-order/${id}/cancel`;
     const body = { cancelledReason };
     const accessToken = Cookies.get('accessToken');
+
     const config = patch(
       endpoint,
       body,
@@ -193,6 +194,7 @@ export const cancelPurchaseOrder = async (
         Authorization: accessToken ? `Bearer ${accessToken}` : ''
       }
     );
+
     const response = await axios(config);
     return response.data as ApiResponse;
   } catch (error: any) {

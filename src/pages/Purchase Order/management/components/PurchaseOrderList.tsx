@@ -36,6 +36,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 const PurchaseOrderList: React.FC = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
@@ -57,13 +58,10 @@ const PurchaseOrderList: React.FC = () => {
     if (selectedPO) {
       const validCancelReason =
         cancelReason && cancelReason.trim() ? cancelReason.trim() : 'No reason provided';
-      const requestBody = {
-        cancelledReason: validCancelReason // Ensure it's a trimmed string
-      };
-
       try {
-        const response = await cancelPurchaseOrder(selectedPO.id, requestBody);
+        const response = await cancelPurchaseOrder(selectedPO.id, validCancelReason);
         console.log(response);
+
         if (response?.statusCode === 200) {
           toast({
             variant: 'success',
