@@ -425,73 +425,75 @@ export default function WarehouseApproval({
                         </div>
                       </div>
                     )}
-                    {selectedAlgorithm && (
-                      <>
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">Fulfilled Items</h3>
-                          {fullFilledMaterialExportRequestDetails.length > 0 ? (
-                            fullFilledMaterialExportRequestDetails.map(
+                    {selectedAlgorithm &&
+                      (fullFilledMaterialExportRequestDetails.length > 0 ||
+                        notFullFilledMaterialExportRequestDetails.length > 0) && (
+                        <>
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">Fulfilled Items</h3>
+                            {fullFilledMaterialExportRequestDetails.length > 0 ? (
+                              fullFilledMaterialExportRequestDetails.map(
+                                (item: any, index: number) => (
+                                  <Card key={index} className="p-4">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <h4 className="font-medium">{item.materialVariant.name}</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                          Code: {item.materialVariant.code}
+                                        </p>
+                                      </div>
+                                      <Badge className="bg-green-500">
+                                        <CheckCircle className="mr-1 h-3 w-3" />
+                                        Fulfilled
+                                      </Badge>
+                                    </div>
+                                    <p className="mt-2">
+                                      Quantity: {item.targetQuantityUom}{' '}
+                                      {item.materialVariant.material.materialUom.uomCharacter}
+                                    </p>
+                                  </Card>
+                                )
+                              )
+                            ) : (
+                              <p className="text-muted-foreground">No fulfilled items.</p>
+                            )}
+                          </div>
+
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">Unfulfilled Items</h3>
+                            {notFullFilledMaterialExportRequestDetails.map(
                               (item: any, index: number) => (
                                 <Card key={index} className="p-4">
                                   <div className="flex items-center justify-between">
                                     <div>
+                                      <img
+                                        src={item.materialVariant.image}
+                                        className="rounded w-16 h-16"
+                                      />
                                       <h4 className="font-medium">{item.materialVariant.name}</h4>
                                       <p className="text-sm text-muted-foreground">
                                         Code: {item.materialVariant.code}
                                       </p>
                                     </div>
-                                    <Badge className="bg-green-500">
-                                      <CheckCircle className="mr-1 h-3 w-3" />
-                                      Fulfilled
+                                    <Badge variant="destructive">
+                                      <XCircle className="mr-1 h-3 w-3" />
+                                      Unfulfilled
                                     </Badge>
                                   </div>
                                   <p className="mt-2">
-                                    Quantity: {item.targetQuantityUom}{' '}
+                                    Requested: {item.targetQuantityUom}{' '}
+                                    {item.materialVariant.material.materialUom.uomCharacter}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Missing: {item.missingQuantityUom}{' '}
                                     {item.materialVariant.material.materialUom.uomCharacter}
                                   </p>
                                 </Card>
                               )
-                            )
-                          ) : (
-                            <p className="text-muted-foreground">No fulfilled items.</p>
-                          )}
-                        </div>
-
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">Unfulfilled Items</h3>
-                          {notFullFilledMaterialExportRequestDetails.map(
-                            (item: any, index: number) => (
-                              <Card key={index} className="p-4">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <img
-                                      src={item.materialVariant.image}
-                                      className="rounded w-16 h-16"
-                                    />
-                                    <h4 className="font-medium">{item.materialVariant.name}</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                      Code: {item.materialVariant.code}
-                                    </p>
-                                  </div>
-                                  <Badge variant="destructive">
-                                    <XCircle className="mr-1 h-3 w-3" />
-                                    Unfulfilled
-                                  </Badge>
-                                </div>
-                                <p className="mt-2">
-                                  Requested: {item.targetQuantityUom}{' '}
-                                  {item.materialVariant.material.materialUom.uomCharacter}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  Missing: {item.missingQuantityUom}{' '}
-                                  {item.materialVariant.material.materialUom.uomCharacter}
-                                </p>
-                              </Card>
-                            )
-                          )}
-                        </div>
-                      </>
-                    )}
+                            )}
+                          </div>
+                        </>
+                      )}
                     <div className="space-y-2 mt-4 mb-4">
                       <Label className="mr-4">Assign Staff</Label>
                       <AssignStaffPopup
