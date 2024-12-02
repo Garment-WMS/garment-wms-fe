@@ -19,14 +19,58 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
+import { getProductionBatchFn } from '@/api/services/productionBatchApi';
+import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
 import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 type Props = {};
-
+export interface Filter {
+  label: string;
+  value: string;
+}
 const ImportRequestList = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [purchaseOrderData, setPurchaseOrderData] = useState<PurchaseOrder[]>([]);
-  const [productionBatchData, setProductionBatchData] = useState<ProductionBatch[]>([]);
+
+  const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
+  const [purchaseOrderFilter, setPurchaseOrderFilter] = useState<Filter[]>([]);
+  const fetchProductionBatch = async () => {
+    try {
+      const res = await getProductionBatchFn();
+      const data = res.data;
+      const uniqueCodes = new Set();
+      const mappedArray = data.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setProductionBatchFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch production batch data', error);
+    }
+  };
+  const fetchPurchaseOrder = async () => {
+    try {
+      const res = await getAllPurchaseOrdersNoPage();
+      const uniqueCodes = new Set();
+      const mappedArray = res.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setPurchaseOrderFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch purchase order data', error);
+    }
+  };
+  useEffect(() => {
+    fetchPurchaseOrder();
+    fetchProductionBatch();
+  }, []);
+
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
 
@@ -78,11 +122,6 @@ const ImportRequestList = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  const fetchPurchaseOrders = async () => {
-    try {
-    } catch (error) {}
-  };
-  useEffect(() => {}, []);
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
       header: 'Code',
@@ -106,6 +145,26 @@ const ImportRequestList = (props: Props) => {
         value: delivery.value
       })),
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
+    },
+    {
+      header: 'PO',
+      accessorKey: 'poDelivery.purchaseOrder.code',
+      enableColumnFilter: true,
+      filterOptions: purchaseOrderFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
+    },
+    {
+      header: 'PB',
+      accessorKey: 'productionBatch.code',
+      enableColumnFilter: true,
+      filterOptions: productionBatchFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
     {
       header: 'Create date',
@@ -175,8 +234,10 @@ const ImportRequestList = (props: Props) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
-          searchPlaceholder="Search by import request code"
+          searchPlaceholder="Input request code"
+          searchWidth="lg:w-[200px]"
         />
+
         <PurchasingStaffGuardDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request

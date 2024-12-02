@@ -14,15 +14,56 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
+import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
+import { getProductionBatchFn } from '@/api/services/productionBatchApi';
+import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
 type Props = {};
 
 const ImportRequestList = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
+  const [purchaseOrderFilter, setPurchaseOrderFilter] = useState<Filter[]>([]);
+  const fetchProductionBatch = async () => {
+    try {
+      const res = await getProductionBatchFn();
+      const data = res.data;
+      const uniqueCodes = new Set();
+      const mappedArray = data.reduce((acc:any, item:any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setProductionBatchFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch production batch data', error);
+    }
+  };
+  const fetchPurchaseOrder = async () => {
+    try {
+      const res = await getAllPurchaseOrdersNoPage();
+      const uniqueCodes = new Set();
+const mappedArray = res.reduce((acc: any, item: any) => {
+  if (item.code && !uniqueCodes.has(item.code)) {
+    uniqueCodes.add(item.code);
+    acc.push({ label: item.code, value: item.code });
+  }
+  return acc;
+}, []);
+      setPurchaseOrderFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch purchase order data', error);
+    }
+  };
+  useEffect(() => {
+    fetchPurchaseOrder();
+    fetchProductionBatch();
+  }, []);
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
 
@@ -97,6 +138,26 @@ const ImportRequestList = (props: Props) => {
         value: delivery.value
       })),
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
+    },
+    {
+      header: 'Purchase order',
+      accessorKey: 'poDelivery.purchaseOrder.code',
+      enableColumnFilter: true,
+      filterOptions: purchaseOrderFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
+    },
+    {
+      header: 'Production batch',
+      accessorKey: 'productionBatch.code',
+      enableColumnFilter: true,
+      filterOptions: productionBatchFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
     {
       header: 'Create date',

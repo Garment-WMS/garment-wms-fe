@@ -95,7 +95,7 @@ export default function WarehouseStaffAssignment({
           </div>
         ) : (
           <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
-            <Avatar className="">
+            <Avatar className="flex">
               <AvatarImage src={warehouseStaff?.account?.avatarUrl} />
               <AvatarFallback>NY</AvatarFallback>
             </Avatar>

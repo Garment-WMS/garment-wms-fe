@@ -2,6 +2,7 @@ export interface MaterialExportRequest {
   id: string;
   code: string;
   productionBatchId: string;
+  type: string;
   productFormulaId: string;
   warehouseManagerId: string | null;
   warehouseStaffId: string | null;

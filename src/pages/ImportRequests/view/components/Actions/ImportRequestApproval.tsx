@@ -256,7 +256,7 @@ export default function WarehouseApproval({
             <div className="text-center">
               <p className="text-sm font-medium">Warehouse Manager</p>
               <p className="text-xs text-muted-foreground">
-                {manager?.account?.firstName + ' ' + manager?.account?.lastName || 'Not assigned'}
+                {manager ? ((manager?.account?.firstName + ' ' + manager?.account?.lastName)):("Wait for assign")}
               </p>
             </div>
           </div>
