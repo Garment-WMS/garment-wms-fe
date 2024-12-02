@@ -16,11 +16,14 @@ interface RoleGuardProps {
   className?: string; // Add className for styling
 }
 
-const createRoleGuard = (requiredRole: RoleCode) => {
+const createRoleGuard = (requiredRoles: RoleCode[] | RoleCode) => {
   const RoleGuard: React.FC<RoleGuardProps> = ({ children, className }) => {
     const user = useGetProfile();
 
-    if (!user || user.role !== requiredRole) {
+    // Normalize `requiredRoles` to an array for consistent checking
+    const rolesArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+
+    if (!user || !rolesArray.includes(user.role)) {
       return null; // Render nothing if the role doesn't match
     }
 
@@ -38,3 +41,9 @@ export const FactoryDirectorGuardDiv = createRoleGuard(RoleCode.FACTORY_DIRECTOR
 export const InspectionDepartmentGuardDiv = createRoleGuard(RoleCode.INSPECTION_DEPARTMENT);
 export const ProductionDepartmentGuardDiv = createRoleGuard(RoleCode.PRODUCTION_DEPARTMENT);
 export const PurchasingStaffGuardDiv = createRoleGuard(RoleCode.PURCHASING_STAFF);
+
+// Create a combined guard for Purchasing Staff and Production Department
+export const PurchasingStaffGuardAndProductionDepartmentDiv = createRoleGuard([
+  RoleCode.PURCHASING_STAFF,
+  RoleCode.PRODUCTION_DEPARTMENT
+]);

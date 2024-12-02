@@ -35,6 +35,7 @@ import {
   WarehouseStaffGuardDiv
 } from '@/components/authentication/createRoleGuard';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { MaterialExportActions } from './components/ExportReceiptAction';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -58,6 +59,17 @@ export default function ExportReceiptDetail() {
   const onRender = () => {
     setRender((render: number) => render + 1);
   };
+  const materials =
+    exportReceipt?.materialExportReceiptDetail?.map((detail) => ({
+      id: detail.id,
+      name: detail.materialReceipt.materialPackage.name,
+      barcode: detail.materialReceipt.materialPackage.code,
+      quantity: detail.quantityByPack,
+      unit: detail.materialReceipt.materialPackage.packUnit,
+      imageUrl:
+        detail.materialReceipt.materialPackage.materialVariant.image ||
+        '/placeholder.svg?height=200&width=200'
+    })) || [];
   const fetchData = async () => {
     setIsLoading(true); // Start loading
 
@@ -138,14 +150,14 @@ export default function ExportReceiptDetail() {
       ) : (
         <>
           <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
-            {/* {exportReceipt?.type === 'MATERIAL' ? (
-              <div>Material Receipt {exportReceipt?.code || 'N'}</div>
-            ) : (
-              <div>Product Receipt {exportReceipt?.code}</div>
-            )} */}
-
             <div>Material Export Receipt {exportReceipt?.code || 'N/A'}</div>
           </h1>
+          <MaterialExportActions
+            status={exportReceipt?.status || ''}
+            isLoading={isLoading}
+            handleFinishExport={handleFinishExport}
+            materials={materials}
+          />
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -153,11 +165,13 @@ export default function ExportReceiptDetail() {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold"> {exportReceipt?.materialExportReceiptDetail
-                  ? calculateTotalItemsReceived(exportReceipt.materialExportReceiptDetail)
-                  : 0}</div>
-                                  <p className="text-xs text-muted-foreground">Total items from this receipt</p>
-
+                <div className="text-2xl font-bold">
+                  {' '}
+                  {exportReceipt?.materialExportReceiptDetail
+                    ? calculateTotalItemsReceived(exportReceipt.materialExportReceiptDetail)
+                    : 0}
+                </div>
+                <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
             <Card>
@@ -166,7 +180,9 @@ export default function ExportReceiptDetail() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{convertTitleToTitleCase(exportReceipt?.type)}</div>
+                <div className="text-2xl font-bold">
+                  {convertTitleToTitleCase(exportReceipt?.type)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {exportReceipt?.type === 'PRODUCTION' ? 'Export for manufacturing purpose' : ''}
                 </p>
@@ -180,65 +196,15 @@ export default function ExportReceiptDetail() {
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-2xl font-bold capitalize">{convertTitleToTitleCase(exportReceipt?.status)}</div>
+                    <div className="text-2xl font-bold capitalize">
+                      {convertTitleToTitleCase(exportReceipt?.status)}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       {exportReceipt?.status === 'EXPORTING'
                         ? 'Export in progress'
                         : 'Export completed'}
                     </p>
                   </div>
-                  {exportReceipt?.status === 'EXPORTING' && (
-                    <WarehouseStaffGuardDiv>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button disabled={isLoading}>Finish</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to finish exporting the material? This action
-                              cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleFinishExport('EXPORTED', 'staff')}>
-                              Confirm
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </WarehouseStaffGuardDiv>
-                  )}
-                  {exportReceipt?.status === 'EXPORTED' && (
-                    <ProductionDepartmentGuardDiv>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button disabled={isLoading}>Finish</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to finish exporting the material? This action
-                              cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                handleFinishExport('PRODUCTION_APPROVED', 'production')
-                              }>
-                              Confirm
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </ProductionDepartmentGuardDiv>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -266,9 +232,9 @@ export default function ExportReceiptDetail() {
                       </p>
                       <p>
                         <strong>Production batch:</strong>{' '}
-                        <Link 
-                        to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
-                        className="flex text-primary underline underline-offset-2">
+                        <Link
+                          to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
+                          className="flex text-primary underline underline-offset-2">
                           {exportReceipt?.materialExportRequest.productionBatch?.code || 'N/A'}
                         </Link>
                       </p>
