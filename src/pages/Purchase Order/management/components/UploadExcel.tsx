@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/Dialog';
-import { CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
+import { CircleCheckBig, FileUp, Trash } from 'lucide-react';
 import Colors from '@/constants/color';
 import ExcelIcon from '@/assets/images/ExcelFile_Icon.png';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { Step, Stepper } from 'react-form-stepper';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { importPurchaseOrder } from '@/api/services/purchaseOrder';
 import Loading from '@/components/common/Loading';
 
@@ -32,7 +32,7 @@ const errorMessages = {
   invalidProductionPlan: {
     statusCode: 415,
     message: 'Invalid Production Plan, the production plan is not available',
-    clientMessage: 'The uploaded file contains invalid Production Plan.'
+    clientMessage: 'The uploaded file contains an invalid Production Plan.'
   },
   errorInFile: {
     message: 'There is error Purchase Order sheet. Please fix before upload again !!!',
@@ -42,7 +42,6 @@ const errorMessages = {
 };
 
 const UploadExcel: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -116,6 +115,21 @@ const UploadExcel: React.FC = () => {
     if (response.message === errorMessages.errorInFile.message && response.errors) {
       setErrorFileLink(response.errors);
       setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
+    } else if (
+      response.statusCode === errorMessages.invalidFileType.statusCode &&
+      response.message === errorMessages.invalidFileType.message
+    ) {
+      setUploadError(errorMessages.invalidFileType.clientMessage);
+    } else if (
+      response.statusCode === errorMessages.invalidFormat.statusCode &&
+      response.message === errorMessages.invalidFormat.message
+    ) {
+      setUploadError(errorMessages.invalidFormat.clientMessage);
+    } else if (
+      response.statusCode === errorMessages.invalidProductionPlan.statusCode &&
+      response.message.includes(errorMessages.invalidProductionPlan.message)
+    ) {
+      setUploadError(errorMessages.invalidProductionPlan.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
@@ -174,7 +188,7 @@ const UploadExcel: React.FC = () => {
         </div>
       )}
 
-      {selectedFile && !isUploadComplete && (
+      {selectedFile && (
         <div className="flex flex-col bg-gray-100 border border-dashed border-gray-300 rounded-lg mt-4 pb-3">
           <div className="flex justify-between items-center p-4">
             <div className="flex items-center">
@@ -197,7 +211,7 @@ const UploadExcel: React.FC = () => {
               </div>
             )}
             {uploadError && (
-              <p className="text-red-600" dangerouslySetInnerHTML={{ __html: uploadError }}></p>
+              <p className="text-red-600 mt-2" dangerouslySetInnerHTML={{ __html: uploadError }} />
             )}
           </div>
         </div>
