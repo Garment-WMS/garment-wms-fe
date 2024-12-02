@@ -1,4 +1,3 @@
-import { get, post } from './ApiCaller';
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
@@ -6,6 +5,7 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
 import privateCall from '../PrivateCaller';
 import Cookies from 'js-cookie';
+import { get, post } from '../ApiCaller';
 export const purchaseOrderApi = {
   getOne: (id: string) => get(`/purchase-order/${id}`),
   getAll: () => get('/purchase-order/all')

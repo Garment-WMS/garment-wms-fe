@@ -287,7 +287,16 @@ const RouterComponent: React.FC = () => {
           path: '/report/:id',
           element: <InspectionRequestDetails />
         },
-        { path: '/production-batch', element: <ProductionBatchManagement /> },
+        // { path: '/production-batch', element: <ProductionBatchManagement /> },
+        {
+          path: '/production-batch',
+          element: (
+            <RoleBasedRedirect
+              warehouseStaffComponent={<ProductionBatchManagement />}
+              productionDepartmentComponent={<ProductionBatchManagement />}
+            />
+          )
+        },
         { path: '/production-batch/:id', element: <ProductionBatchDetail /> },
         {
           path: '/warehouse-staff',
