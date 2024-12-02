@@ -161,9 +161,7 @@ export default function WarehouseApproval({
           description: 'The warehouse request has been successfully approved.',
           duration: 5000
         });
-        if (chat?.discussion) {
-          const response = await postChatFn(chat?.discussion?.id, 'status:Arrvied->Approved');
-        }
+
         onApproval();
       } else {
         throw new Error(res.errors[0] || 'Unknown error occurred');
@@ -211,9 +209,7 @@ export default function WarehouseApproval({
           description: 'The warehouse request has been successfully declined.',
           duration: 5000
         });
-        if (chat?.discussion) {
-          const response = await postChatFn(chat?.discussion?.id, 'status:Arrvied->Rejected');
-        }
+
         onApproval();
       } else {
         throw new Error(res.errors[0] || 'Unknown error occurred');
@@ -256,7 +252,9 @@ export default function WarehouseApproval({
             <div className="text-center">
               <p className="text-sm font-medium">Warehouse Manager</p>
               <p className="text-xs text-muted-foreground">
-                {manager ? ((manager?.account?.firstName + ' ' + manager?.account?.lastName)):("Wait for assign")}
+                {manager
+                  ? manager?.account?.firstName + ' ' + manager?.account?.lastName
+                  : 'Wait for assign'}
               </p>
             </div>
           </div>
