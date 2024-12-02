@@ -1,4 +1,3 @@
-'use client'
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
@@ -6,6 +5,11 @@ import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select"
 import { PlusCircle, Trash2 } from 'lucide-react'
+import privateCall from '@/api/PrivateCaller'
+import { materialApi, materialTypeApi } from '@/api/services/materialApi'
+import { toast } from '@/hooks/use-toast'
+import { UOM } from '@/types/MaterialTypes'
+import { useNavigate } from 'react-router-dom'
 
 interface Material {
   id: string
@@ -29,9 +33,14 @@ interface MaterialPackage {
 }
 
 export default function CreateMaterialVariant() {
-  const [materials, setMaterials] = useState<Material[]>([])
+  const [materialType, setMaterialType] = useState<Material[]>([]);
+  const [uom, setUom] = useState<UOM[]>([]);
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
+  const [image, setImage] = useState<File | null>(null); 
+  const [imagePreview, setImagePreview] = useState<string | null>(null) // State to store preview URL
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState()
+  const [data, setData] = useState({
     materialId: '',
     name: '',
     reorderLevel: 0,
@@ -39,39 +48,49 @@ export default function CreateMaterialVariant() {
     packages: [] as MaterialPackage[]
   })
 
-//   useEffect(() => {
-//     fetchMaterials()
-//   }, [])
+  useEffect(() => {
+    fetchMaterialTypes()
+  }, [])
 
-//   const fetchMaterials = async () => {
-//     try {
-//       // TODO: Replace with actual API call
-//       const response = await fetch('/api/materials')
-//       const data = await response.json()
-//       setMaterials(data)
-//     } catch (error) {
-//       console.error('Error fetching materials:', error)
-//     }
-//   }
+  const fetchMaterialTypes = async () => {
+    try {
+      const materialTypeResponse = await privateCall(materialTypeApi.getAll());
+      setMaterialType(materialTypeResponse.data.data);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Failed to fetch material types',
+        title: 'Error'
+      });
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file)); // Generate preview URL
+    }
+  };
+
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setData(prev => ({ ...prev, [name]: value }))
   }
 
   const addAttribute = () => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       attributes: [...prev.attributes, { name: '', value: '', type: 'STRING' }]
     }))
   }
 
   const updateAttribute = (index: number, field: keyof MaterialAttribute, value: string) => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       attributes: prev.attributes.map((attr, i) => 
         i === index ? { ...attr, [field]: value } : attr
@@ -80,14 +99,14 @@ export default function CreateMaterialVariant() {
   }
 
   const removeAttribute = (index: number) => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       attributes: prev.attributes.filter((_, i) => i !== index)
     }))
   }
 
   const addPackage = () => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       packages: [...prev.packages, { 
         name: '', 
@@ -102,7 +121,7 @@ export default function CreateMaterialVariant() {
   }
 
   const updatePackage = (index: number, field: keyof MaterialPackage, value: string | number) => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       packages: prev.packages.map((pkg, i) => 
         i === index ? { ...pkg, [field]: value } : pkg
@@ -111,7 +130,7 @@ export default function CreateMaterialVariant() {
   }
 
   const removePackage = (index: number) => {
-    setFormData(prev => ({
+    setData(prev => ({
       ...prev,
       packages: prev.packages.filter((_, i) => i !== index)
     }))
@@ -122,26 +141,41 @@ export default function CreateMaterialVariant() {
     setLoading(true)
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/material-variants', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
+      const formDataToSubmit = new FormData();
 
-      if (response.ok) {
-        // router.push('/material-variants')
+      formDataToSubmit.append('createMaterialDto', JSON.stringify(data));
+
+      console.log('Image file before appending:', image); // Check the file object
+      if (image) {
+        formDataToSubmit.append('file', image);
+      }
+      
+      
+      const config = {
+        'Content-Type': 'multipart/form-data',
+      }
+
+      
+      
+      const response = await privateCall(materialApi.createMaterialVariant(formDataToSubmit,config));
+
+      if (response.status === 201) {
+        toast({
+          variant: 'success',
+          description: 'Material variant created successfully',
+          title: 'Success'
+        });
+        navigate('/material-variant')
       } else {
-        throw new Error('Failed to create material variant')
+        throw new Error('Failed to create material variant');
       }
     } catch (error) {
-      console.error('Error creating material variant:', error)
+      console.error('Error creating material variant:', error);
     } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 bg-white mx-auto p-4 rounded-md">
@@ -150,6 +184,17 @@ export default function CreateMaterialVariant() {
       </div>
 
       <div className="space-y-4">
+      <div>
+        <Label htmlFor="image">Image</Label>
+        <Input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} />
+        {imagePreview && (
+            <img 
+              src={imagePreview} 
+              alt="Selected Preview" 
+              className="mt-4 max-w-xs rounded-md border" 
+            />
+          )}
+      </div>
         <div>
           <Label htmlFor="materialId">Material</Label>
           <Select name="materialId" onValueChange={(value) => handleSelectChange('materialId', value)}>
@@ -157,7 +202,7 @@ export default function CreateMaterialVariant() {
               <SelectValue placeholder="Select a material" />
             </SelectTrigger>
             <SelectContent>
-              {materials.map((material) => (
+              {materialType.map((material) => (
                 <SelectItem key={material.id} value={material.id}>
                   {material.name}
                 </SelectItem>
@@ -168,24 +213,24 @@ export default function CreateMaterialVariant() {
 
         <div>
           <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required />
+          <Input id="name" name="name" value={data.name} onChange={handleInputChange} required />
         </div>
 
-        <div>
+        {/* <div>
           <Label htmlFor="reorderLevel">Reorder Level</Label>
           <Input 
             id="reorderLevel" 
             name="reorderLevel" 
             type="number" 
-            value={formData.reorderLevel} 
+            value={data.reorderLevel} 
             onChange={handleInputChange} 
             required 
           />
-        </div>
+        </div> */}
 
         <div>
           <Label className='m-4'>Attributes</Label>
-          {formData.attributes.map((attr, index) => (
+          {data.attributes.map((attr, index) => (
             <div key={index} className="flex items-center space-x-2 mt-2">
               <Input 
                 placeholder="Name" 
@@ -223,48 +268,70 @@ export default function CreateMaterialVariant() {
 
         <div>
           <Label className='m-4'>Packages</Label>
-          {formData.packages.map((pkg, index) => (
+          {data.packages.map((pkg, index) => (
             <div key={index} className="space-y-2 mt-2 p-4 border rounded">
+              <div>
+                <Label>Name</Label>
               <Input 
                 placeholder="Name" 
                 value={pkg.name} 
                 onChange={(e) => updatePackage(index, 'name', e.target.value)} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>Pack Unit</Label>
+                <Input 
                 placeholder="Pack Unit" 
                 value={pkg.packUnit} 
                 onChange={(e) => updatePackage(index, 'packUnit', e.target.value)} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>UOM per Pack</Label>
+                <Input 
                 type="number" 
                 placeholder="UOM per Pack" 
                 value={pkg.uomPerPack} 
                 onChange={(e) => updatePackage(index, 'uomPerPack', parseFloat(e.target.value))} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>Width of the package</Label>
+                <Input 
                 type="number" 
                 placeholder="Packed Width" 
                 value={pkg.packedWidth} 
                 onChange={(e) => updatePackage(index, 'packedWidth', parseFloat(e.target.value))} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>Length of the package</Label>
+                <Input 
                 type="number" 
                 placeholder="Packed Length" 
                 value={pkg.packedLength} 
                 onChange={(e) => updatePackage(index, 'packedLength', parseFloat(e.target.value))} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>Height of the package</Label>
+                <Input 
                 type="number" 
                 placeholder="Packed Height" 
                 value={pkg.packedHeight} 
                 onChange={(e) => updatePackage(index, 'packedHeight', parseFloat(e.target.value))} 
               />
-              <Input 
+              </div>
+              <div>
+                <Label>Weight of the package</Label>
+                <Input 
                 type="number" 
                 placeholder="Packed Weight" 
                 value={pkg.packedWeight} 
                 onChange={(e) => updatePackage(index, 'packedWeight', parseFloat(e.target.value))} 
               />
+              </div>
+              
               <Button type="button" variant="ghost" onClick={() => removePackage(index)}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Remove Package
