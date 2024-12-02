@@ -56,6 +56,10 @@ export interface ChartProps {
 export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   const [defectTypes, setDefectTypes] = useState<{ type: string; percentage: number }[]>([]);
   const { data: defectsData } = useGetAllDefects();
+  const totalReports = inspectionRequest?.reduce(
+    (total, request) => total + (request?.inspectionReport?.inspectionReportDetail?.length ?? 0),
+    0
+  );
 
   useEffect(() => {
     if (defectsData?.data && inspectionRequest?.length) {
@@ -115,10 +119,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Material Inspection Report</CardTitle>
         <CardDescription>
-          Total reports:{' '}
-          <span className="font-bold text-lg text-primaryLight">
-            {inspectionRequest?.length ?? 0}
-          </span>
+          Total reports: <span className="font-bold text-lg text-primaryLight">{totalReports}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-6">
@@ -231,7 +232,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
             <div className="flex items-center justify-between w-full text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                <span>Total Inspected: {totalMaterials + (defectTypes?.length ?? 0)}</span>
+                <span>Total Inspected: {totalReports}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Cog className="h-5 w-5" />

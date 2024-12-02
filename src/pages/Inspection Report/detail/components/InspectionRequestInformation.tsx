@@ -10,7 +10,7 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Box, Calendar, Edit3, FileText, Shirt, Type } from 'lucide-react';
+import { Box, Calendar, ClipboardCopy, Edit3, FileText, Shirt, Type } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
@@ -85,7 +85,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
                 <div className="flex items-center">
                   <Type className="text-gray-500 mr-2" />
                   <div>
-                    <dt className="font-medium text-gray-500">Request Code</dt>
+                    <dt className="font-medium text-gray-500">Inspection Request</dt>
                     <dd className="text-gray-800">
                       <Badge className="bg-primaryLight">{requestCode}</Badge>
                     </dd>
@@ -108,7 +108,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
 
                 {/* Created At */}
                 <div className="flex items-center">
-                  <Calendar className="text-gray-500 mr-2" />
+                  <ClipboardCopy className="text-gray-500 mr-2" />
                   <div>
                     <dt className="font-medium text-gray-500">Import Request</dt>
                     <dd className="text-primaryLight underline cursor-pointer">
