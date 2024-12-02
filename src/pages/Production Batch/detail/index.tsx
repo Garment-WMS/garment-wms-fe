@@ -149,47 +149,6 @@ const ProductionBatchDetail: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" />
-            Production Plan
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium">Plan Name:</p>
-              <p>{productionPlanDetail?.productionPlan?.name}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Plan Code:</p>
-              <p>{productionPlanDetail?.productionPlan?.code}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Plan Status:</p>
-              <Badge className="bg-blue-500">{productionPlanDetail?.productionPlan?.status}</Badge>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Expected Start Date:</p>
-              <p>
-                {new Date(
-                  productionPlanDetail?.productionPlan?.expectedStartDate
-                ).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Expected End Date:</p>
-              <p>
-                {new Date(
-                  productionPlanDetail?.productionPlan?.expectedEndDate
-                ).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5" />
             Import Requests
           </CardTitle>
