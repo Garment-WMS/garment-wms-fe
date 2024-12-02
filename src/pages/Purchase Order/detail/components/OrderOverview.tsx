@@ -1,6 +1,8 @@
 import { Badge } from '@/components/ui/Badge';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { convertDate } from '@/helpers/convertDate';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import { XCircle } from 'lucide-react';
 import React from 'react';
 
 interface KeyValueDisplayProps {
@@ -8,6 +10,7 @@ interface KeyValueDisplayProps {
   value: string | number;
   className?: string;
   valueColor?: string;
+  nameColor?: string;
 }
 
 interface OrderOverviewProps {
@@ -25,18 +28,20 @@ interface OrderOverviewProps {
   totalFailImportQuantity: number | null;
   totalQuantityToImport: number;
   productionPlanCode: string;
+  cancelledAt?: string;
 }
 
 const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
   name,
   value,
   className = '',
+  nameColor = 'text-gray-600',
   valueColor = 'text-gray-900'
 }) => {
   return (
     <div
       className={`flex items-center gap-4 py-3 border-b border-gray-100 last:border-0 ${className}`}>
-      <span className="text-[15px] text-gray-600 flex-1">{name}</span>
+      <span className={`text-[15px] ${nameColor} flex-1`}>{name}</span>
       <span className={`text-[18px] font-medium ${valueColor}`}>{value}</span>
     </div>
   );
@@ -66,13 +71,28 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   totalFailImportQuantity,
   totalQuantityToImport,
   productionPlanCode,
-  finishDate
+  finishDate,
+  cancelledAt
 }) => {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Purchase Order Overview</h1>
+        <div className="flex flex-col items-start">
+          <div className="flex flex-row items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">Purchase Order Overview</h1>
+            <XCircle className="w-9 h-9 text-red-600" />
+          </div>
+          {status === PurchaseOrderStatus.CANCELLED && (
+            <KeyValueDisplay
+              name="Cancelled At"
+              value={cancelledAt ? convertDateWithTime(cancelledAt) : '-'}
+              valueColor={'text-red-800'}
+              nameColor="text-red-600"
+            />
+          )}
+        </div>
+
         <StatusBadge status={status} />
       </div>
 

@@ -38,7 +38,6 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 const PurchaseOrderList: React.FC = () => {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const { toast } = useToast();
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -52,6 +51,7 @@ const PurchaseOrderList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [selectedPO, setSelectedPO] = useState<{ id: string; poNumber: string } | null>(null);
+
   const handleConfirmCancel = async () => {
     if (selectedPO) {
       const validCancelReason =
@@ -66,6 +66,7 @@ const PurchaseOrderList: React.FC = () => {
             title: 'Purchase Order Cancelled',
             description: `Purchase Order ${selectedPO.poNumber} has been successfully cancelled.`
           });
+          navigate(`/purchase-order/${selectedPO.id}`);
         } else {
           handleBackendErrors(response);
         }
