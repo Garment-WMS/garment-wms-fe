@@ -15,12 +15,13 @@ import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 type Props = {};
 export interface Filter {
   label: string;
@@ -37,7 +38,7 @@ const ImportRequestList = (props: Props) => {
       const res = await getProductionBatchFn();
       const data = res.data;
       const uniqueCodes = new Set();
-      const mappedArray = data.reduce((acc:any, item:any) => {
+      const mappedArray = data.reduce((acc: any, item: any) => {
         if (item.code && !uniqueCodes.has(item.code)) {
           uniqueCodes.add(item.code);
           acc.push({ label: item.code, value: item.code });
@@ -53,13 +54,13 @@ const ImportRequestList = (props: Props) => {
     try {
       const res = await getAllPurchaseOrdersNoPage();
       const uniqueCodes = new Set();
-const mappedArray = res.reduce((acc: any, item: any) => {
-  if (item.code && !uniqueCodes.has(item.code)) {
-    uniqueCodes.add(item.code);
-    acc.push({ label: item.code, value: item.code });
-  }
-  return acc;
-}, []);
+      const mappedArray = res.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
       setPurchaseOrderFilter(mappedArray);
     } catch (error) {
       console.error('Failed to fetch purchase order data', error);
@@ -123,16 +124,16 @@ const mappedArray = res.reduce((acc: any, item: any) => {
 
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
-      header: 'Import request code',
+      header: 'Code',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div>{row.original.code}</div>
-          </div>
-        );
-      }
+      cell: ({ row }) => (
+        <div>
+          <Link to={`/import-request/${row.original.id}`} className="text-blue-500 hover:underline">
+            {row.original.code}
+          </Link>
+        </div>
+      )
     },
 
     {
@@ -175,11 +176,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+        const formattedDate = date.toLocaleString();
         return (
           <div>
             <div>{formattedDate}</div>
@@ -193,7 +190,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+          className={`${badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })} w-[110px] flex justify-center`}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
@@ -238,13 +235,14 @@ const mappedArray = res.reduce((acc: any, item: any) => {
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
           searchPlaceholder="Input request code"
-          searchWidth='lg:w-[200px]'
+          searchWidth="lg:w-[200px]"
         />
-        <div className="flex items-center flex-row justify-center mb-9">
+
+        <PurchasingStaffGuardDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request
           </Button>
-        </div>
+        </PurchasingStaffGuardDiv>
       </div>
     </div>
   );

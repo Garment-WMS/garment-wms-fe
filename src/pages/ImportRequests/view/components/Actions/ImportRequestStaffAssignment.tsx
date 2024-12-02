@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { getImportReceiptFn } from '@/api/purchase-staff/importRequestApi';
 import { TiDocument } from 'react-icons/ti';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
+type AssignmentStatus = 'AWAIT_TO_IMPORT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
   currentStatus: string;
@@ -22,8 +22,12 @@ interface WarehouseStaffAssignmentProps {
 
 const getStatusDetails = (status: AssignmentStatus) => {
   switch (status) {
-    case 'WAITING FOR ASSIGNMENT':
-      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: Clock };
+    case 'AWAIT_TO_IMPORT':
+      return {
+        label: 'Waiting for import',
+        color: 'bg-yellow-500 text-white',
+        icon: Clock
+      };
     case 'IMPORTING':
       return {
         label: 'In Progress',
@@ -65,7 +69,11 @@ export default function WarehouseStaffAssignment({
       setImportReceipt(response.data);
     };
 
-    if (currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') {
+    if (
+      currentStatus == 'IMPORTING' ||
+      currentStatus == 'IMPORTED' ||
+      currentStatus == 'AWAIT_TO_IMPORT'
+    ) {
       getImportReceipt();
     }
   }, []);
@@ -130,13 +138,16 @@ export default function WarehouseStaffAssignment({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && importReceipt && (
-            <Link to={`/import-receipt/${importReceipt[0]?.id}`}>
-              <Button variant={'default'} className="ml-4">
-                Go to Receipt
-              </Button>
-            </Link>
-          )}
+          {(currentStatus == 'IMPORTING' ||
+            currentStatus == 'IMPORTED' ||
+            currentStatus == 'AWAIT_TO_IMPORT') &&
+            importReceipt && (
+              <Link to={`/import-receipt/${importReceipt[0]?.id}`}>
+                <Button variant={'default'} className="ml-4">
+                  Go to Receipt
+                </Button>
+              </Link>
+            )}
         </div>
       </CardFooter>
     </Card>

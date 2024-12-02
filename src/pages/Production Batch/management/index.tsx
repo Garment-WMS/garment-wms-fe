@@ -10,9 +10,9 @@ const ProductionBatchManagement = () => {
       <ProductionBatchIntroduction />
       {/* Import Buttonm */}
       <div className="flex justify-end items-center mb-6">
-        <Button>
+        {/* <Button>
           <Plus className="mr-2 h-4 w-4" /> Add New Plan
-        </Button>
+        </Button> */}
       </div>
       {/* Production Batch List */}
       <ProductionBatchList />

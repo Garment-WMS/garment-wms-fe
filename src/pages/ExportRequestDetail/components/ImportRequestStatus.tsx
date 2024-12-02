@@ -12,7 +12,6 @@ type Props = {};
 const ImportRequestStatus = (props: Props) => {
   const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
 
-  const id = exportRequest?.id.slice(0, 4);
   const status = exportRequest?.status;
   const createdDate = exportRequest?.createdAt
     ? new Date(exportRequest.createdAt).toLocaleDateString() +
@@ -30,9 +29,9 @@ const ImportRequestStatus = (props: Props) => {
 
   const getAssignedTo = (status: any) => {
     switch (status) {
-      case 'AAA':
+      case '':
       case 'APPROVED':
-      case 'ARRIVED':
+      case 'DECLINED':
         return {
           role: 'Warehouse Manager',
           avatar: exportRequest?.warehouseManager?.account?.avatarUrl,
@@ -42,10 +41,11 @@ const ImportRequestStatus = (props: Props) => {
             exportRequest?.warehouseManager?.account?.firstName
         };
       case 'PENDING':
+      case 'EXPORTED':
       case 'PRODUCTION_APPROVED':
       case 'PRODUCTION_REJECTED':
         return {
-          role: 'Purchasing Staff',
+          role: 'Production Department',
           avatar: exportRequest?.productionDepartment?.account?.avatarUrl,
           name:
             exportRequest?.productionDepartment?.account?.lastName +
@@ -55,7 +55,7 @@ const ImportRequestStatus = (props: Props) => {
             exportRequest?.productionDepartment?.account?.lastName.slice(0, 1) +
             exportRequest?.productionDepartment?.account?.firstName.slice(0, 1)
         };
-      case 'IMPORTING':
+      case 'EXPORTING':
         return {
           role: 'Warehouse Stafff',
           avatar: exportRequest?.warehouseStaff?.account?.avatarUrl,
@@ -64,6 +64,7 @@ const ImportRequestStatus = (props: Props) => {
             ' ' +
             exportRequest?.warehouseStaff?.account?.firstName
         };
+
       default:
         return { role: 'Unassigned', avatar: null };
     }
@@ -78,7 +79,7 @@ const ImportRequestStatus = (props: Props) => {
     ">
       <div className="flex flex-col justify-center items-center gap-1">
         <div className="font-primary font-bold lg:text-xl">Export Request</div>
-        <span className="font-primary font-bold lg:text-xl">#{id}</span>
+        <span className="font-primary  lg:text-sm">#{exportRequest?.code}</span>
         <div className="font-primary text-sm">Assigned to</div>
         <Avatar>
           {assignedTo.avatar ? (
