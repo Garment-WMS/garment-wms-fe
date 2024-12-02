@@ -22,17 +22,29 @@ import { ProductionBatch } from '@/types/ProductionBatch';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
 type Props = {};
-
+export interface Filter {
+  label: string;
+  value: string;
+}
 const ImportRequestList = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [purchaseOrderData, setPurchaseOrderData] = useState<PurchaseOrder[]>([]);
-  const [productionBatchData, setProductionBatchData] = useState<ProductionBatch[]>([]);
 
+  const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
+  const [purchaseOrderFilter, setPurchaseOrderFilter] = useState<Filter[]>([]);
   const fetchProductionBatch = async () => {
     try {
       const res = await getProductionBatchFn();
-      setProductionBatchData(res.data);
+      const data = res.data;
+      const uniqueCodes = new Set();
+      const mappedArray = data.reduce((acc:any, item:any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setProductionBatchFilter(mappedArray);
     } catch (error) {
       console.error('Failed to fetch production batch data', error);
     }
@@ -40,17 +52,24 @@ const ImportRequestList = (props: Props) => {
   const fetchPurchaseOrder = async () => {
     try {
       const res = await getAllPurchaseOrdersNoPage();
-      setPurchaseOrderData(res);
+      const uniqueCodes = new Set();
+const mappedArray = res.reduce((acc: any, item: any) => {
+  if (item.code && !uniqueCodes.has(item.code)) {
+    uniqueCodes.add(item.code);
+    acc.push({ label: item.code, value: item.code });
+  }
+  return acc;
+}, []);
+      setPurchaseOrderFilter(mappedArray);
     } catch (error) {
       console.error('Failed to fetch purchase order data', error);
     }
-  }
+  };
   useEffect(() => {
     fetchPurchaseOrder();
     fetchProductionBatch();
   }, []);
-  console.log('purchaseOrderData', purchaseOrderData);
-  console.log('productionBatchData', productionBatchData);
+
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
 
@@ -129,22 +148,22 @@ const ImportRequestList = (props: Props) => {
     {
       header: 'Purchase order',
       accessorKey: 'poDelivery.purchaseOrder.code',
-      enableColumnFilter: false,
-      // filterOptions: DeliveryType.map((delivery) => ({
-      //   label: delivery.label,
-      //   value: delivery.value
-      // })),
-      cell: ({ row }) => <div>{(row.original?.poDelivery?.purchaseOrder?.code) || 'N/A'}</div>
+      enableColumnFilter: true,
+      filterOptions: purchaseOrderFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
     },
     {
       header: 'Production batch',
       accessorKey: 'productionBatch.code',
-      enableColumnFilter: false,
-      // filterOptions: DeliveryType.map((delivery) => ({
-      //   label: delivery.label,
-      //   value: delivery.value
-      // })),
-      cell: ({ row }) => <div>{(row.original?.productionBatch?.code) || 'N/A'}</div>
+      enableColumnFilter: true,
+      filterOptions: productionBatchFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
     {
       header: 'Create date',
@@ -207,20 +226,19 @@ const ImportRequestList = (props: Props) => {
   return (
     <div className="pb-4 ">
       <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-
-          <TanStackBasicTable
-            isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
-            paginatedTableData={paginatedTableData ?? undefined}
-            columns={importRequestColumn}
-            pagination={pagination}
-            setPagination={setPagination}
-            sorting={sorting}
-            setSorting={setSorting}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-            searchColumnId="code"
-            searchPlaceholder="Search by import request code"
-          />
+        <TanStackBasicTable
+          isTableDataLoading={isimportRequestLoading && isFetching} // Use the persistent loading state
+          paginatedTableData={paginatedTableData ?? undefined}
+          columns={importRequestColumn}
+          pagination={pagination}
+          setPagination={setPagination}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          searchColumnId="code"
+          searchPlaceholder="Search by import request code"
+        />
         <div className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request
