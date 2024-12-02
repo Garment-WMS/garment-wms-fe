@@ -63,6 +63,8 @@ import ProductionBatchDetail from '@/pages/Production Batch/detail';
 import WarehouseStaffManagement from '@/pages/WarehouseStaff/Management';
 import WarehouseStaffDetai from '@/pages/WarehouseStaff/Detail';
 import WarehouseStaffDetail from '@/pages/WarehouseStaff/Detail';
+import CreateMaterialVariant from '@/pages/Material/create';
+import CreateProductVariant from '@/pages/Product/Create';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -247,8 +249,16 @@ const RouterComponent: React.FC = () => {
           element: <MaterialManagement />
         },
         {
+          path: '/material-variant/create',
+          element: <CreateMaterialVariant />
+        },
+        {
           path: '/product-variant',
           element: <ProductManagement />
+        },
+        {
+          path: '/product-variant/create',
+          element: <CreateProductVariant />
         },
         {
           path: '/product-variant/:id',
