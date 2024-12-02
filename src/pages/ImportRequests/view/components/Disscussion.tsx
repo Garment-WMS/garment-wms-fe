@@ -13,6 +13,7 @@ import { useGetProfile } from '@/hooks/useGetProfile';
 type Props = {
   onApproval: () => void;
 };
+
 const getInitials = (name: string | undefined): string => {
   if (!name) return 'WM';
   return (
@@ -23,12 +24,13 @@ const getInitials = (name: string | undefined): string => {
       .toUpperCase() || 'WM'
   );
 };
+
 const Discussion = (props: Props) => {
   const chat: any = useSelector(importRequestSelector.importRequest);
   const [message, setMessage] = useState('');
   const { toast } = useToast();
   const user = useGetProfile();
-  console.log(user);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
@@ -36,7 +38,7 @@ const Discussion = (props: Props) => {
         await postChatFn(chat.discussion.id, message);
         toast({
           variant: 'success',
-          title: 'Send Message succesffully',
+          title: 'Send Message successfully',
           description: 'Send message to discussion successfully'
         });
         setMessage('');
@@ -44,15 +46,15 @@ const Discussion = (props: Props) => {
       } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Send Message unsuccesffully',
-          description: 'We are running into some issue!, please be paitent'
+          title: 'Send Message unsuccessfully',
+          description: 'We are running into some issues! Please be patient.'
         });
         console.error('Error posting message:', error);
       }
     }
   };
+
   const renderMessage = (messageText: string) => {
-    // Check for status update format: status:oldStatus->newStatus
     const statusMatch = messageText.match(/^status:(.+)->(.+)$/);
     if (statusMatch) {
       const [_, oldStatus, newStatus] = statusMatch;
@@ -66,7 +68,6 @@ const Discussion = (props: Props) => {
       );
     }
 
-    // Check for system message
     if (messageText.startsWith('system:')) {
       return (
         <p className="text-sm bg-secondary p-3 rounded-lg font-bold">
@@ -84,23 +85,30 @@ const Discussion = (props: Props) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mb-4">
-          {chat?.discussion?.chat.map((message: any) => (
-            <div key={message.id} className="flex items-start space-x-4">
-              <Avatar>
-                <AvatarImage src={message.sender.avatarUrl} alt={message.sender.username} />
-                <AvatarFallback>{message.sender.username.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="font-semibold">{message.sender.username}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(message.createdAt).toLocaleString()}
-                  </span>
+          {chat?.discussion?.chat.map((message: any) => {
+            const sender = message.sender || {
+              username: 'System',
+              avatarUrl: '/path-to-system-avatar.png' // Replace with actual path
+            };
+
+            return (
+              <div key={message.id} className="flex items-start space-x-4">
+                <Avatar>
+                  <AvatarImage src={sender.avatarUrl} alt={sender.username} />
+                  <AvatarFallback>{getInitials(sender.username)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold">{sender.username}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(message.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="mt-1">{renderMessage(message.message)}</div>
                 </div>
-                <p className="text-sm mt-1"> {renderMessage(message.message)}</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-start space-x-4 justify-center">
