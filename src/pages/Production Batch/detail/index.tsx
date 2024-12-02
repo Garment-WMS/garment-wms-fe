@@ -12,6 +12,7 @@ import {
   TableRow
 } from '@/components/ui/Table';
 import { Package, Box } from 'lucide-react';
+import EmptyDatacomponent from '@/components/common/EmptyData';
 
 const ProductionBatchDetail = () => {
   const { id } = useParams();
@@ -52,7 +53,7 @@ const ProductionBatchDetail = () => {
         <CardContent className="flex flex-col items-center">
           <div className="flex flex-row justify-center">
             <img
-              src={productionPlanDetail.productSize.productVariant.image}
+              src={productionPlanDetail?.productSize?.productVariant?.image || ''}
               alt="Product Variant"
               className="w-64 h-64 object-cover rounded mt-2"
             />
@@ -90,26 +91,30 @@ const ProductionBatchDetail = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created At</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {materialExportRequest.map((request: any) => (
-                <TableRow key={request.id}>
-                  <TableCell>{request.code}</TableCell>
-                  <TableCell>
-                    <Badge className="bg-slate-500">{request.status}</Badge>
-                  </TableCell>
-                  <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
+          {materialExportRequest.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created At</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {materialExportRequest.map((request: any) => (
+                  <TableRow key={request.id}>
+                    <TableCell>{request.code}</TableCell>
+                    <TableCell>
+                      <Badge className="bg-slate-500">{request.status}</Badge>
+                    </TableCell>
+                    <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <EmptyDatacomponent />
+          )}
         </CardContent>
       </Card>
     </div>

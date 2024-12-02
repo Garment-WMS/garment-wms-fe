@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/Dialog';
-import { ArrowLeft, CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
+import { CircleCheckBig, FileUp, Trash, XCircle } from 'lucide-react';
 import Colors from '@/constants/color';
 import ExcelIcon from '@/assets/images/ExcelFile_Icon.png';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { Step, Stepper } from 'react-form-stepper';
 import { useNavigate } from 'react-router-dom';
-import { importPurchaseOrder } from '@/api/services/purchaseOrder';
+import { importProductionBatch } from '@/api/services/productionBatch';
 import Loading from '@/components/common/Loading';
 
 const MAX_FILE_SIZE_KB = 500;
@@ -24,18 +24,13 @@ const errorMessages = {
     clientMessage:
       'The uploaded file format does not match the required template. Please use the correct template and try again.'
   },
-  invalidPOInfoHeader: {
-    statusCode: 415,
-    message: 'Invalid format, POInfo table header is invalid',
-    clientMessage: 'The uploaded file contains invalid data. The POInfo table header is incorrect.'
-  },
   invalidProductionPlan: {
     statusCode: 415,
     message: 'Invalid Production Plan, the production plan is not available',
-    clientMessage: 'The uploaded file contains invalid Production Plan.'
+    clientMessage: 'The uploaded file contains an invalid Production Plan.'
   },
   errorInFile: {
-    message: 'There is error in the file',
+    message: 'There is an error in the file',
     clientMessage:
       'We found issues in the uploaded file. <a href="{errors}" target="_blank" class="underline text-blue-600">Click here</a> to download the file with errors and correct them.'
   }
@@ -48,8 +43,8 @@ const UploadExcelProductionBatch: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isUploadComplete, setIsUploadComplete] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [poId, setPoID] = useState<string | null>(null);
-  const [poNumber, setPoNumber] = useState<string | null>(null);
+  const [batchId, setBatchId] = useState<string | null>(null);
+  const [batchCode, setBatchCode] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState(0);
 
@@ -87,7 +82,7 @@ const UploadExcelProductionBatch: React.FC = () => {
 
   const uploadFileToServer = async (file: File) => {
     try {
-      const response = await importPurchaseOrder(file);
+      const response = await importProductionBatch(file);
       if (response.statusCode !== 200 && response.statusCode !== 201) {
         handleUploadErrors(response);
         setActiveStep(0);
@@ -95,10 +90,10 @@ const UploadExcelProductionBatch: React.FC = () => {
         setIsUploadComplete(true);
         setActiveStep(1);
         if (response.data?.id) {
-          setPoID(response.data?.id);
+          setBatchId(response.data?.id);
         }
-        if (response?.data?.poNumber) {
-          setPoNumber(response?.data?.poNumber);
+        if (response?.data?.code) {
+          setBatchCode(response?.data?.code);
         }
       }
     } catch (error: any) {
@@ -114,7 +109,7 @@ const UploadExcelProductionBatch: React.FC = () => {
       response.statusCode === errorMessages.invalidFileType.statusCode &&
       response.message === errorMessages.invalidFileType.message
     ) {
-      setUploadError(errorMessages.invalidFileType.message);
+      setUploadError(errorMessages.invalidFileType.clientMessage);
     } else if (
       response.statusCode === errorMessages.invalidFormat.statusCode &&
       response.message === errorMessages.invalidFormat.message
@@ -146,7 +141,7 @@ const UploadExcelProductionBatch: React.FC = () => {
     setSelectedFile(null);
     setIsUploadComplete(false);
     setUploadError(null);
-    setPoID(null);
+    setBatchId(null);
     setActiveStep(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -155,7 +150,6 @@ const UploadExcelProductionBatch: React.FC = () => {
 
   const renderUploadExcel = () => (
     <div>
-      {/* File Upload Section */}
       {!selectedFile && !uploadError && (
         <div
           className={`flex flex-col gap-5 justify-center items-center border-2 ${
@@ -249,11 +243,11 @@ const UploadExcelProductionBatch: React.FC = () => {
       <CircleCheckBig color={Colors.success} size={80} className="text-center mb-1" />
       <div className="text-center">
         <h1 className="font-bold text-xl text-green-600">
-          Purchase Order: {poNumber} uploaded successfully!
+          Production Batch: {batchCode} uploaded successfully!
         </h1>
         <p className=" text-gray-500 mt-2">
-          Your purchase order has been uploaded successfully. You can now proceed to view or manage
-          it.
+          Your production batch has been uploaded successfully. You can now proceed to view or
+          manage it.
         </p>
       </div>
     </main>
@@ -307,11 +301,11 @@ const UploadExcelProductionBatch: React.FC = () => {
             <Button
               className="w-40"
               onClick={() => {
-                if (poId) {
-                  navigate(`/purchase-order/${poId}`);
+                if (batchId) {
+                  navigate(`/production-batch/${batchId}`);
                 }
               }}>
-              View purchase order
+              View Production Batch
             </Button>
           </div>
         )}
