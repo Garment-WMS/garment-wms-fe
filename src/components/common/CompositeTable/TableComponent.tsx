@@ -27,7 +27,6 @@ export default function TanStackBasicTableTableComponent<TData, TValue>({
       header.column.toggleSorting(undefined, true);
     }
   };
-  console.log('table row',table.getRowModel().rows);
   return (
     <div className="space-y-4">
       <div className="rounded-md border">

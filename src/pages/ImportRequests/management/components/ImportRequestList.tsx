@@ -19,6 +19,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
+import { getProductionBatchFn } from '@/api/services/productionBatchApi';
+import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
 type Props = {};
 
 const ImportRequestList = (props: Props) => {
@@ -26,6 +28,29 @@ const ImportRequestList = (props: Props) => {
   const location = useLocation();
   const [purchaseOrderData, setPurchaseOrderData] = useState<PurchaseOrder[]>([]);
   const [productionBatchData, setProductionBatchData] = useState<ProductionBatch[]>([]);
+
+  const fetchProductionBatch = async () => {
+    try {
+      const res = await getProductionBatchFn();
+      setProductionBatchData(res.data);
+    } catch (error) {
+      console.error('Failed to fetch production batch data', error);
+    }
+  };
+  const fetchPurchaseOrder = async () => {
+    try {
+      const res = await getAllPurchaseOrdersNoPage();
+      setPurchaseOrderData(res);
+    } catch (error) {
+      console.error('Failed to fetch purchase order data', error);
+    }
+  }
+  useEffect(() => {
+    fetchPurchaseOrder();
+    fetchProductionBatch();
+  }, []);
+  console.log('purchaseOrderData', purchaseOrderData);
+  console.log('productionBatchData', productionBatchData);
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
 
@@ -77,16 +102,6 @@ const ImportRequestList = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  const fetchPurchaseOrders = async () => {
-    try {
-      
-    } catch (error) {
-      
-    }
-  }
-  useEffect(() => {
-    
-  }, []);
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
       header: 'Import request code',
@@ -110,6 +125,26 @@ const ImportRequestList = (props: Props) => {
         value: delivery.value
       })),
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
+    },
+    {
+      header: 'Purchase order',
+      accessorKey: 'poDelivery.purchaseOrder.code',
+      enableColumnFilter: false,
+      // filterOptions: DeliveryType.map((delivery) => ({
+      //   label: delivery.label,
+      //   value: delivery.value
+      // })),
+      cell: ({ row }) => <div>{(row.original?.poDelivery?.purchaseOrder?.code) || 'N/A'}</div>
+    },
+    {
+      header: 'Production batch',
+      accessorKey: 'productionBatch.code',
+      enableColumnFilter: false,
+      // filterOptions: DeliveryType.map((delivery) => ({
+      //   label: delivery.label,
+      //   value: delivery.value
+      // })),
+      cell: ({ row }) => <div>{(row.original?.productionBatch?.code) || 'N/A'}</div>
     },
     {
       header: 'Create date',
