@@ -68,6 +68,7 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
               innerRadius={90}
               outerRadius={130}
               showLegend={false}
+              showValue={false}
             />
           ) : (
             <EmptyDatacomponent />
@@ -86,7 +87,7 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
+                  <TableHead className="text-right mr-2">Quantity</TableHead>
                   <TableHead className="text-right">Percentage</TableHead>
                 </TableRow>
               </TableHeader>
@@ -116,7 +117,9 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
                         </Tooltip>
                       </TooltipProvider>
                     </TableCell>
-                    <TableCell className="text-right">{defect.quantity || 0}</TableCell>
+                    <TableCell className="text-center text-primaryDark ml-5 text-lg font-semibold">
+                      {defect.quantity || 0}
+                    </TableCell>
                     <TableCell className="text-right">
                       {totalDefects > 0
                         ? `${Math.round((defect.quantity / totalDefects) * 100)}%`

@@ -1,4 +1,3 @@
-import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import Loading from '@/components/common/Loading';
 import { useGetInspectionRequestById } from '@/hooks/useGetInspectionRequestById';
 import { useParams } from 'react-router-dom';
@@ -30,6 +29,7 @@ const InspectionRequestDetails: React.FC = () => {
       createdAt: requestCreatedAt,
       updatedAt: requestUpdatedAt,
       importRequest,
+      importReqeustId,
       warehouseManager,
       inspectionDepartment,
       inspectionReport = null
@@ -41,15 +41,9 @@ const InspectionRequestDetails: React.FC = () => {
     poDelivery: { code: poDeliveryCode, purchaseOrder: { poNumber: purchaseOrderNumber } = {} } = {}
   } = importRequest || {};
 
-  const breadcrumbItems = [
-    { label: 'Inspection Request', href: '/report' },
-    { label: `Inspection Request #${requestCode}`, href: `/report/${id}` }
-  ];
-
   return (
     <section className="h-full w-full px-4 py-3 flex flex-col space-y-7">
       <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 ring-gray-300 flex flex-col gap-8">
-        <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={2} />
         {/* Inspection Information */}
         <InspectionRequestInformation
           requestCode={requestCode || ''}
@@ -70,6 +64,7 @@ const InspectionRequestDetails: React.FC = () => {
           inspectionReport={inspectionReport}
           importRequest={importRequest}
           inspectionDepartment={inspectionDepartment}
+          importRequestId={importReqeustId}
         />
 
         {/* Inspection Report Detail */}

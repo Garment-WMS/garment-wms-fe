@@ -25,6 +25,7 @@ interface OrderItemDetailsProps {
   totalInProgressDelivery?: number;
   totalPendingDelivery?: number;
   totalCancelDelivery?: number;
+  purchasingStaff?: any;
 }
 
 interface ImportQuantityCardProps {
@@ -69,7 +70,8 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   totalFinishDelivery = 0,
   totalInProgressDelivery = 0,
   totalPendingDelivery = 0,
-  totalCancelDelivery = 0
+  totalCancelDelivery = 0,
+  purchasingStaff = {}
 }) => {
   const navigate = useNavigate();
 
@@ -215,7 +217,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                     </div>
                     <Link
                       to={`/purchase-order/${poId}/po-delivery/${delivery.id}`}
-                      state={{ delivery, poNumber }}
+                      state={{ delivery, poNumber, purchasingStaff }}
                       className="flex items-center gap-2 text-primaryDark hover:opacity-80">
                       <h1 className="text-base font-semibold">View details</h1>
                       <ExternalLink size={18} />

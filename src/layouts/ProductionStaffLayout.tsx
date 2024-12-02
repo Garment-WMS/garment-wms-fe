@@ -9,7 +9,7 @@ import {
   TbShoppingCartCog,
   TbReceipt,
   TbPackageExport,
-  TbReceiptRefund 
+  TbReceiptRefund
 } from 'react-icons/tb';
 import { LuClipboardCopy, LuContainer } from 'react-icons/lu';
 import { MenuProps } from '@/constants/interface';
@@ -24,6 +24,11 @@ const ProductionStaffMenu: MenuProps[] = [
     title: 'Dashboard',
     renderIcon: <TbHome size={iconSize} />,
     link: '/dashboard'
+  },
+  {
+    title: 'Production Batch',
+    renderIcon: <LuContainer size={iconSize} />,
+    link: '/production-batch'
   },
   {
     title: 'Import/Export',
@@ -57,16 +62,16 @@ const ProductionStaffMenu: MenuProps[] = [
     renderIcon: <PiPackage size={iconSize} />,
     isGroup: true,
     children: [
-       {
-    title: 'Material',
-    renderIcon: <TbPackage size={iconSize} />,
-    link: '/material-variant'
-  },
-  {
-    title: 'Product',
-    renderIcon: <TbShirt size={iconSize} />,
-    link: '/product-variant'
-  },
+      {
+        title: 'Material',
+        renderIcon: <TbPackage size={iconSize} />,
+        link: '/material-variant'
+      },
+      {
+        title: 'Product',
+        renderIcon: <TbShirt size={iconSize} />,
+        link: '/product-variant'
+      }
     ]
   },
   {
@@ -83,15 +88,15 @@ const ProductionStaffMenu: MenuProps[] = [
 const ProductionStaffLayout = (props: Props) => {
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-row">
-    <SideBar menu={ProductionStaffMenu} />
-    <div className="flex flex-col gap-4 w-full h-full">
-      <TopBar />
-      <div className="flex-1 p-4 min-h-0 overflow-scroll">
-        <Outlet />
+      <SideBar menu={ProductionStaffMenu} />
+      <div className="flex flex-col gap-4 w-full h-full">
+        <TopBar />
+        <div className="flex-1 p-4 min-h-0 overflow-scroll">
+          <Outlet />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default ProductionStaffLayout;

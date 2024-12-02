@@ -53,7 +53,9 @@ const PurchaseOrderDetails: React.FC = () => {
     totalInProgressPoDelivery,
     totalPendingPoDelivery,
     totalCancelledPoDelivery,
-    productionPlan
+    productionPlan,
+    finishDate,
+    purchasingStaff
   } = purchaseOrder;
 
   return (
@@ -74,6 +76,7 @@ const PurchaseOrderDetails: React.FC = () => {
           totalFailImportQuantity={totalFailImportQuantity}
           totalQuantityToImport={totalQuantityToImport}
           productionPlanCode={productionPlan?.code}
+          finishDate={finishDate}
         />
         {/* Order to details */}
         <div className="hidden">
@@ -90,6 +93,7 @@ const PurchaseOrderDetails: React.FC = () => {
           totalInProgressDelivery={totalInProgressPoDelivery}
           totalPendingDelivery={totalPendingPoDelivery}
           totalCancelDelivery={totalCancelledPoDelivery}
+          purchasingStaff={purchasingStaff}
         />
       </div>
     </section>

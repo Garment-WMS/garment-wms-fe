@@ -19,8 +19,12 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import UploadExcelProductionBatch from './UploadExcel';
+import { ROLES_ENUM } from '@/enums/role';
 
 const ProductionBatchList: React.FC = () => {
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const userRole = userData?.role;
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -60,7 +64,9 @@ const ProductionBatchList: React.FC = () => {
     {
       header: 'Batch Code',
       accessorKey: 'code',
-      cell: ({ row }) => <ProductionBatchDetailsModal batchId={row.original.id} />,
+      cell: ({ row }) => (
+        <span className=" font-semibold ">{row?.original?.code || 'View Details'}</span>
+      ),
       enableColumnFilter: false
     },
     {
@@ -165,6 +171,9 @@ const ProductionBatchList: React.FC = () => {
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Production Batch List</h1>
+        {userRole === ROLES_ENUM.PRODUCTION_DEPARTMENT && (
+          <UploadExcelProductionBatch fileName="production batch" triggerButtonLabel="Import" />
+        )}
       </div>
       <div className="overflow-auto h-[700px] mt-4">
         <TanStackBasicTable
