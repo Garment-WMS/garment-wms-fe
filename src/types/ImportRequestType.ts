@@ -1,6 +1,7 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { ProductionBatch } from './ProductionBatch';
 import { ProductSize } from './ProductType';
+import { InspectionDepartment } from './InspectionDepartment';
 
 export interface ImportRequest {
   managerNote: string;
@@ -35,6 +36,7 @@ export interface ImportRequest {
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
+  inspectionDepartment: InspectionDepartment
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
 }
@@ -68,6 +70,7 @@ export interface ImportRequest {
   rejectAt: string | null;
   rejectReason: string | null;
   warehouseManagerId: string | null;
+  purchaseOrder: PurchaseOrder;
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
@@ -221,6 +224,7 @@ type PODelivery = {
 type PurchaseOrder = {
   id: string;
   poNumber: string;
+  code: string;
   quarterlyProductionPlanId: string | null;
   purchasingStaffId: string;
   currency: string;

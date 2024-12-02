@@ -28,7 +28,13 @@ export const materialApi = {
   getAllNoArgument: () => get(`${materialVariant}`),
   getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
   addImage: (id: string, data: FormData, config: any) =>
-    post(`${materialVariant}/${id}/image`, data, undefined, config)
+    post(`${materialVariant}/${id}/image`, data, undefined, config),
+  getAllUom(){
+    return get(`/uom`)
+  },
+  createMaterialVariant(data: FormData, config: any){
+    return post(`${materialVariant}/form-data`, data, undefined, config)
+  }
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`)

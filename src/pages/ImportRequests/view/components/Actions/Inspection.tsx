@@ -30,7 +30,6 @@ const InspectionStep: React.FC<Props> = ({
 }) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null); // Store carousel API
-  console.log('importRequest', importRequest);
   // Step actions data (can be dynamic)
   const stepsActions = [
     {

@@ -115,18 +115,18 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
       );
     }
   },
-  {
-    header: 'Remain Quantity',
-    accessorKey: '',
-    enableColumnFilter: false,
-    cell: ({ row }) => {
-      return (
-        <div className='flex'>
-          <div className=''>{row.original?.remainQuantityByPack}</div>
-        </div>
-      );
-    }
-  },
+  // {
+  //   header: 'Remain Quantity',
+  //   accessorKey: '',
+  //   enableColumnFilter: false,
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className='flex'>
+  //         <div className=''>{row.original?.remainQuantityByPack}</div>
+  //       </div>
+  //     );
+  //   }
+  // },
   {
     header: 'Status',
     accessorKey: 'status',
@@ -374,18 +374,18 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
       );
     }
   },
-  {
-    header: 'Remain Quantity',
-    accessorKey: '',
-    enableColumnFilter: false,
-    cell: ({ row }) => {
-      return (
-        <div className='flex'>
-          <div className=''>{row.original?.remainQuantityByUom}</div>
-        </div>
-      );
-    }
-  },
+  // {
+  //   header: 'Remain Quantity',
+  //   accessorKey: '',
+  //   enableColumnFilter: false,
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className='flex'>
+  //         <div className=''>{row.original?.remainQuantityByUom}</div>
+  //       </div>
+  //     );
+  //   }
+  // },
   {
     header: 'Status',
     accessorKey: 'status',

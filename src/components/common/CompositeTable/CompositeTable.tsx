@@ -16,6 +16,7 @@ interface TanStackBasicTableProps<TData, TValue> extends TableProps<TData, TValu
   totalPages?: number;
   searchColumnId?: string;
   searchPlaceholder?: string;
+  searchWidth?: string;
 }
 
 export default function TanStackBasicTable<TData, TValue>({
@@ -34,7 +35,8 @@ export default function TanStackBasicTable<TData, TValue>({
   showToolbar = true,
   totalPages,
   searchColumnId,
-  searchPlaceholder = 'Search'
+  searchPlaceholder = 'Search',
+  searchWidth = 'lg:w-[350px]'
 }: TanStackBasicTableProps<TData, TValue>) {
   // Calculate total pages based on totalFiltered and pageSize
   const calculatedTotalPages = Math.ceil((paginatedTableData?.total || 0) / pagination.pageSize);
@@ -100,6 +102,7 @@ export default function TanStackBasicTable<TData, TValue>({
           table={table}
           searchColumnId={searchColumnId}
           searchPlaceholder={searchPlaceholder}
+          searchWidth=''
         />
       )}
       {isTableDataLoading ? (

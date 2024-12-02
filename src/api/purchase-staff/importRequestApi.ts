@@ -2,6 +2,7 @@ import { UseImportRequestsInput, UseImportRequestsResponse } from '@/types/Impor
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { get, post } from '../ApiCaller';
 import privateCall from '../PrivateCaller';
+import { replaceAll } from '@/helpers/replaceAll';
 
 let importRequestUrl = '/import-request';
 
@@ -62,10 +63,11 @@ export const getAllImportRequestFn = async ({
   // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
-  const filters = columnFilters.map((filter) => {
-    // Replace dots with underscores only if there are any dots in the id
-    const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
 
+
+  const filters = columnFilters.map((filter) => {
+    // Replace all dots in the id with underscores
+    const fieldKey = replaceAll(filter.id,'_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
     return {
       id: fieldKey,
       value: filter.value
@@ -132,10 +134,17 @@ export const getMyImportRequestFn = async ({
   // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
-  const filters = columnFilters.map((filter) => {
-    // Replace dots with underscores only if there are any dots in the id
-    const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
+  // const filters = columnFilters.map((filter) => {
+  //   const fieldKey = filter.id.includes('_') ? filter.id.replace('_', '.') : filter.id;
 
+  //   return {
+  //     id: fieldKey,
+  //     value: filter.value
+  //   };
+  // });
+  const filters = columnFilters.map((filter) => {
+    // Replace all dots in the id with underscores
+    const fieldKey = replaceAll(filter.id,'_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
     return {
       id: fieldKey,
       value: filter.value
