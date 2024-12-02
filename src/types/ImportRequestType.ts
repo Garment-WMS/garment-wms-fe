@@ -1,6 +1,7 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { ProductionBatch } from './ProductionBatch';
 import { ProductSize } from './ProductType';
+import { InspectionDepartment } from './InspectionDepartment';
 
 export interface ImportRequest {
   managerNote: string;
@@ -35,6 +36,7 @@ export interface ImportRequest {
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
+  inspectionDepartment: InspectionDepartment
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
 }
