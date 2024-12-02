@@ -13,6 +13,8 @@ const ImportRequestSheet = (props: Props) => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   let poDeliveryId = importRequest?.poDelivery?.id;
   let purchaseOrder = importRequest?.poDelivery?.purchaseOrder.poNumber;
+  let purchaseOrderId = importRequest?.poDelivery?.purchaseOrder?.id;
+  const POcode = importRequest?.poDelivery?.purchaseOrder?.code || "N/A"
   let planDeliveryDate = importRequest?.poDelivery?.expectedDeliverDate;
   let actualDeliveryDate = importRequest?.poDelivery?.deliverDate;
   let productionBatch = importRequest?.productionBatch;
@@ -31,7 +33,7 @@ const ImportRequestSheet = (props: Props) => {
           {purchaseOrder && (
             <div className="font-primary font-semibold text-sm">
             Purchase Order:{' '}
-            <Link to={'/'} className="text-bluePrimary underline underline-offset-2">
+            <Link to={`/purchase-order/${purchaseOrderId}`} className="text-bluePrimary underline underline-offset-2">
               {purchaseOrder}
             </Link>
           </div>
@@ -39,17 +41,17 @@ const ImportRequestSheet = (props: Props) => {
         {productionBatch && (
             <div className="font-primary font-semibold text-sm">
             Production Batch:{' '}
-            <Link to={'/'} className="text-bluePrimary underline underline-offset-2">
+            <Link to={`/production-batch/${productionBatch?.id}`} className="text-bluePrimary underline underline-offset-2">
               {productionBatch.code}
             </Link>
           </div>
         )}
           {poDeliveryId && (
-            <div className="font-primary font-semibold text-sm">
+            <div className="font-primary font-semibold text-sm flex gap-1">
             PO delivery:{' '}
-            <Link to={'/'} className="text-bluePrimary underline underline-offset-2">
-              {poDeliveryId?.slice(0, 8)}
-            </Link>
+            <div  className="text-bluePrimary">
+              {POcode}
+            </div>
           </div>
           )}
           

@@ -33,7 +33,7 @@ const ImportRequestSheet: React.FC = () => {
         <div className="flex flex-col gap-2">
           <div className="font-primary font-semibold text-sm">
             Production Batch:{' '}
-            <Link to={'/'} className="text-bluePrimary underline underline-offset-2">
+            <Link to={`/production-batch/${productionBatch?.id}`} className="text-bluePrimary underline underline-offset-2">
               {productionBatch?.code || 'N/A'}
             </Link>
           </div>

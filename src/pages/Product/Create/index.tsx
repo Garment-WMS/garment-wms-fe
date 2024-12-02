@@ -181,7 +181,7 @@ export default function CreateProductVariant() {
       } else {
         throw new Error('Failed to create material variant');
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorList = error.response.data.message;
       toast({
         variant: 'destructive',
