@@ -5,10 +5,11 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
 import privateCall from '../PrivateCaller';
 import Cookies from 'js-cookie';
-import { get, post } from '../ApiCaller';
+import { get, patch, post } from '../ApiCaller';
 export const purchaseOrderApi = {
   getOne: (id: string) => get(`/purchase-order/${id}`),
-  getAll: () => get('/purchase-order/all')
+  getAll: () => get('/purchase-order/all'),
+  cancel: (id: string) => patch(`/purchase-order/${id}/cancel`)
 };
 
 export const getAllPurchaseOrdersNoPage = async (): Promise<any> => {
@@ -172,5 +173,40 @@ export const getPurchaseOrderStatistic = async (): Promise<ApiResponse> => {
   } catch (error: any) {
     console.error('Failed to fetch purchase order by ID:', error);
     throw new Error('Failed to fetch purchase order');
+  }
+};
+
+export const cancelPurchaseOrder = async (
+  id: string,
+  cancelledReason: string
+): Promise<ApiResponse> => {
+  try {
+    const endpoint = `/purchase-order/${id}/cancel`;
+    const body = { cancelledReason };
+    const accessToken = Cookies.get('accessToken');
+
+    const config = patch(
+      endpoint,
+      body,
+      {}, // No additional query params
+      {
+        'Content-Type': 'application/json',
+        Authorization: accessToken ? `Bearer ${accessToken}` : ''
+      }
+    );
+
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Failed to cancel purchase order:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'Failed to cancel purchase order.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred while canceling the purchase order.');
   }
 };
