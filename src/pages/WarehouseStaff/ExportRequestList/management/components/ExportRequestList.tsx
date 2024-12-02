@@ -14,9 +14,10 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetMaterialExportRequest, useGetMyMaterialExportRequest } from '@/hooks/useGetMaterialExportRequest';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
@@ -75,14 +76,22 @@ const ExportRequestTable = (props: Props) => {
       header: 'Code',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.code}</div>
+      cell: ({ row }) => (
+        <div>
+          <Link to={`/export-request/${row.original.id}`} className="text-blue-500 hover:underline">
+            {row.original.code}
+          </Link>
+        </div>
+      )
     },
     {
       header: 'Status',
       accessorKey: 'status',
       cell: ({ row }) => (
-        <Badge variant={row.original.status === 'PENDING' ? 'warning' : 'success'}>
-          {row.original.status}
+        <Badge
+          variant={row.original.status === 'PENDING' ? 'warning' : 'success'}
+          className="w-[140px] flex items-center justify-center pr-0 pl-0">
+          {convertTitleToTitleCase(row.original.status)}
         </Badge>
       )
     },
@@ -90,7 +99,9 @@ const ExportRequestTable = (props: Props) => {
       header: 'Production Batch',
       accessorKey: 'productionBatch.name',
       enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.productionBatch?.name || 'N/A'}</div>
+      cell: ({ row }) => (
+        <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
+      )
     },
     {
       header: 'Created By',
@@ -105,51 +116,21 @@ const ExportRequestTable = (props: Props) => {
               {row.original.productionDepartment?.account?.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-center align-middle">
             {row.original.productionDepartment?.account?.firstName}{' '}
             {row.original.productionDepartment?.account?.lastName}
           </div>
         </div>
       )
     },
-    {
-      header: 'Assigned By',
-      enableColumnFilter: false,
-      accessorKey: 'productionDepartment.account',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <Avatar className="mr-2">
-            <AvatarImage src={row.original.productionDepartment?.account?.avatarUrl || ''} />
-            <AvatarFallback className="flex items-center">
-              {row.original.productionDepartment?.account?.firstName?.charAt(0)}
-              {row.original.productionDepartment?.account?.lastName?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            {row.original.productionDepartment?.account?.firstName}{' '}
-            {row.original.productionDepartment?.account?.lastName}
-          </div>
-        </div>
-      )
-    },
+    
     {
       header: 'Created At',
       enableColumnFilter: false,
       accessorKey: 'createdAt',
-      cell: ({ row }) => <div>{new Date(row.original.createdAt).toDateString()}</div>
+      cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString()}</div>
     },
-    {
-      header: 'Code',
-      accessorKey: 'code',
-      enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.productFormula?.code || 'N/A'}</div>
-    },
-    // {
-    //   header: 'Description',
-    //   enableColumnFilter: false,
-    //   accessorKey: 'description',
-    //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
-    // },
+
     {
       id: 'actions',
       cell: ({ row }) => (

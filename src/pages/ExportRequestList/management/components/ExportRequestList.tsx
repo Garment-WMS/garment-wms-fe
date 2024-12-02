@@ -104,28 +104,8 @@ const ExportRequestTable = (props: Props) => {
         <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
       )
     },
-    // {
-    //   header: 'Created By',
-    //   enableColumnFilter: false,
-    //   accessorKey: 'productionDepartment.account',
-    //   cell: ({ row }) => (
-    //     <div className="flex items-center">
-    //       <Avatar className="mr-2">
-    //         <AvatarImage src={row.original.productionDepartment?.account?.avatarUrl || ''} />
-    //         <AvatarFallback className="flex items-center">
-    //           {row.original.productionDepartment?.account?.firstName?.charAt(0)}
-    //           {row.original.productionDepartment?.account?.lastName?.charAt(0)}
-    //         </AvatarFallback>
-    //       </Avatar>
-    //       <div className="text-center align-middle">
-    //         {row.original.productionDepartment?.account?.firstName}{' '}
-    //         {row.original.productionDepartment?.account?.lastName}
-    //       </div>
-    //     </div>
-    //   )
-    // },
     {
-      header: 'Assigned By',
+      header: 'Created By',
       enableColumnFilter: false,
       accessorKey: 'productionDepartment.account',
       cell: ({ row }) => (
@@ -137,31 +117,21 @@ const ExportRequestTable = (props: Props) => {
               {row.original.productionDepartment?.account?.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-center align-middle">
             {row.original.productionDepartment?.account?.firstName}{' '}
             {row.original.productionDepartment?.account?.lastName}
           </div>
         </div>
       )
     },
+    
     {
       header: 'Created At',
       enableColumnFilter: false,
       accessorKey: 'createdAt',
       cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString()}</div>
     },
-    {
-      header: 'Code',
-      accessorKey: 'code',
-      enableColumnFilter: false,
-      cell: ({ row }) => <div>{row.original.productFormula?.code || 'N/A'}</div>
-    },
-    // {
-    //   header: 'Description',
-    //   enableColumnFilter: false,
-    //   accessorKey: 'description',
-    //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
-    // },
+
     {
       id: 'actions',
       cell: ({ row }) => (
