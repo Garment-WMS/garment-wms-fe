@@ -34,12 +34,10 @@ interface MaterialPackage {
 
 export default function CreateMaterialVariant() {
   const [materialType, setMaterialType] = useState<Material[]>([]);
-  const [uom, setUom] = useState<UOM[]>([]);
   const [loading, setLoading] = useState(false)
   const [image, setImage] = useState<File | null>(null); 
   const [imagePreview, setImagePreview] = useState<string | null>(null) // State to store preview URL
   const navigate = useNavigate()
-  const [formData, setFormData] = useState()
   const [data, setData] = useState({
     materialId: '',
     name: '',

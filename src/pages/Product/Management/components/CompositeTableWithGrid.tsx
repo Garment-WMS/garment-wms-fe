@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Grid, List } from 'lucide-react';
 import KanbanDisplayList from '@/components/common/KanbanDisplayList/KanbanDisplayList';
 import { DataTableToolbar } from '@/components/common/CompositeTable/DataTableToolbar';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
+import { useNavigate } from 'react-router-dom';
 
 type DisplayState = 'grid' | 'list';
 export default function CompositeTableWithGrid<TData, TValue>({
@@ -63,6 +65,7 @@ export default function CompositeTableWithGrid<TData, TValue>({
   const handleDisplayChange = (state: string) => {
     setDisplayState(state as DisplayState);
   };
+  const navigate = useNavigate();
   // to reset page index to first page
   useEffect(() => {
     if (setPagination) {
@@ -82,6 +85,9 @@ export default function CompositeTableWithGrid<TData, TValue>({
       ) : (
         <>
           <div className="flex justify-end mb-4">
+          <WarehouseManagerGuardDiv className='mx-4'>
+            <Button onClick={()=> navigate('/product-variant/create')}>Add</Button>
+            </WarehouseManagerGuardDiv>
             <Button onClick={() => handleDisplayChange('grid')} variant="outline" size="icon">
               <Grid size={20} />
             </Button>

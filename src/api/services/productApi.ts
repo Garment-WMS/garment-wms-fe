@@ -48,7 +48,10 @@ export const productVariantApi = {
       quantityRangeStart,
       quantityRangeEnd,
       productFormulaMaterials
-    })
+    }),
+    createProductVariant(data: FormData, config: any){
+      return post(`${productVariantPath}/form-data`, data, undefined, config)
+    }
 };
 
 export const productApi = {
