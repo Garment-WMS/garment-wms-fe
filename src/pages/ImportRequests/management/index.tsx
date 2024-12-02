@@ -16,7 +16,7 @@ const ImportRequestManagement = () => {
           <AnalystSection />
         </Card>
       </div> */}
-          <ImportRequestList />
+      <ImportRequestList />
     </div>
   );
 };

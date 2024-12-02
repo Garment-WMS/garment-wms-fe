@@ -24,24 +24,46 @@ export const exportRequestApi = {
     action: string,
     managerNote: string,
     warehouseStaffId: string,
-    data: any
-  ) =>
-    post(`/material-export-request/${id}/manager-approve`, {
-      action,
-      managerNote,
-      warehouseStaffId,
-      materialExportReceipt: data
-    })
+    data: any,
+    exportExpectedStartedAt?: string,
+    exportExpectedFinishedAt?: string
+  ) => {
+    if (action == 'REJECTED') {
+      return post(`/material-export-request/${id}/manager-approve`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined
+      });
+    } else {
+      return post(`/material-export-request/${id}/manager-approve`, {
+        action,
+        managerNote: managerNote != '' ? managerNote : undefined,
+        warehouseStaffId,
+        materialExportReceipt: data,
+        exportExpectedStartedAt,
+        exportExpectedFinishedAt
+      });
+    }
+  }
 };
 export const approveExportRequestFn = async (
   id: string,
   action: string,
   managerNote: string,
   warehouseStaffId: string,
-  data: any
+  data: any,
+  exportExpectedStartedAt?: string,
+  exportExpectedFinishedAt?: string
 ) => {
   const res = await privateCall(
-    exportRequestApi.approveRequest(id, action, managerNote, warehouseStaffId, data)
+    exportRequestApi.approveRequest(
+      id,
+      action,
+      managerNote,
+      warehouseStaffId,
+      data,
+      exportExpectedStartedAt,
+      exportExpectedFinishedAt
+    )
   );
   return res.data;
 };
