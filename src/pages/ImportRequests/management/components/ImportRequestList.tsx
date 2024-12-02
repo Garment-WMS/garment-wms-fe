@@ -147,7 +147,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
     },
     {
-      header: 'PO',
+      header: 'Purchase Order',
       accessorKey: 'poDelivery.purchaseOrder.code',
       enableColumnFilter: true,
       filterOptions: purchaseOrderFilter.map((delivery) => ({
@@ -157,7 +157,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
     },
     {
-      header: 'PB',
+      header: 'Production Batch',
       accessorKey: 'productionBatch.code',
       enableColumnFilter: true,
       filterOptions: productionBatchFilter.map((delivery) => ({

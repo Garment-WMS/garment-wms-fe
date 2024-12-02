@@ -104,7 +104,7 @@ const ExportReceiptTable = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
+        <Link className="flex justify-center items-center text-blue-500 underline" to="">
           <Avatar className="mr-2 ">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
@@ -160,11 +160,7 @@ const ExportReceiptTable = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+        const formattedDate = date.toLocaleString();
         return (
           <div>
             <div>{formattedDate}</div>

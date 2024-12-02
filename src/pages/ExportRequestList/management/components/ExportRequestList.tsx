@@ -148,7 +148,7 @@ const ExportRequestTable = (props: Props) => {
       header: 'Created At',
       enableColumnFilter: false,
       accessorKey: 'createdAt',
-      cell: ({ row }) => <div>{new Date(row.original.createdAt).toDateString()}</div>
+      cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString()}</div>
     },
     {
       header: 'Code',

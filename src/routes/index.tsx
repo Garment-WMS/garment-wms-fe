@@ -304,6 +304,7 @@ const RouterComponent: React.FC = () => {
             <RoleBasedRedirect
               purchasingStaffComponent={<ProductionBatchManagement />}
               productionDepartmentComponent={<ProductionBatchManagement />}
+              managerComponent={<ProductionBatchManagement />}
             />
           )
         },
