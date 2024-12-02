@@ -292,7 +292,7 @@ const RouterComponent: React.FC = () => {
           path: '/production-batch',
           element: (
             <RoleBasedRedirect
-              warehouseStaffComponent={<ProductionBatchManagement />}
+              purchasingStaffComponent={<ProductionBatchManagement />}
               productionDepartmentComponent={<ProductionBatchManagement />}
             />
           )

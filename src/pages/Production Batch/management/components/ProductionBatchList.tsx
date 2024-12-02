@@ -64,7 +64,9 @@ const ProductionBatchList: React.FC = () => {
     {
       header: 'Batch Code',
       accessorKey: 'code',
-      cell: ({ row }) => <ProductionBatchDetailsModal batchId={row.original.id} />,
+      cell: ({ row }) => (
+        <span className=" font-semibold ">{row?.original?.code || 'View Details'}</span>
+      ),
       enableColumnFilter: false
     },
     {

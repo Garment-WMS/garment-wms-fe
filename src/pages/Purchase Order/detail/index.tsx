@@ -54,7 +54,8 @@ const PurchaseOrderDetails: React.FC = () => {
     totalPendingPoDelivery,
     totalCancelledPoDelivery,
     productionPlan,
-    finishDate
+    finishDate,
+    purchasingStaff
   } = purchaseOrder;
 
   return (
@@ -92,6 +93,7 @@ const PurchaseOrderDetails: React.FC = () => {
           totalInProgressDelivery={totalInProgressPoDelivery}
           totalPendingDelivery={totalPendingPoDelivery}
           totalCancelDelivery={totalCancelledPoDelivery}
+          purchasingStaff={purchasingStaff}
         />
       </div>
     </section>
