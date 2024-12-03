@@ -16,7 +16,7 @@ const ImportRequestCreation: React.FC = () => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   let purchasingStaff = importRequest?.purchasingStaff as any;
   let inspectionStaff = importRequest?.inspectionRequest[0]?.inspectionDepartment as any;
-  console.log('inspec', inspectionStaff)
+  console.log('inspec', inspectionStaff);
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
@@ -39,12 +39,9 @@ const ImportRequestCreation: React.FC = () => {
                 <p className="text-xs text-muted-foreground">{purchasingStaff?.account.email}</p>
               </div>
             </>
-          ):(
-            <div>
-              Not found purchasing staff
-            </div>
+          ) : (
+            <div>Not found purchasing staff</div>
           )}
-          
         </div>
 
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
@@ -59,11 +56,6 @@ const ImportRequestCreation: React.FC = () => {
               <File className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Type:</span>
               <span>{convertTitleToTitleCase(importRequest?.type)}</span>
-            </div>
-            <div className="flex items-center text-sm">
-              <User className="mr-3 h-5 w-5 text-muted-foreground" />
-              <span className="font-medium w-24">Assigned:</span>
-              <span>Inspection Department</span>
             </div>
           </div>
         </div>
