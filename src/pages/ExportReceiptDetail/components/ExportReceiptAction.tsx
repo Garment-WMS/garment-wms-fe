@@ -32,6 +32,7 @@ interface Material {
 }
 
 interface MaterialExportActionsProps {
+  code: string;
   status: string;
   isLoading: boolean;
   handleFinishExport: (status: string, type: string) => Promise<void>;
@@ -39,6 +40,7 @@ interface MaterialExportActionsProps {
 }
 
 export function MaterialExportActions({
+  code,
   status,
   isLoading,
   handleFinishExport,
@@ -47,7 +49,21 @@ export function MaterialExportActions({
   return (
     <Card className="p-6 mb-6">
       <div className="flex items-center justify-between">
+      <h1 className="text-3xl font-bold text-bluePrimary">
+            <div>Material Export Receipt {code}</div>
+          </h1>
         <div className="space-x-2">
+          
+        </div>
+        <div className="space-x-2 flex justify-center items=center">
+          <Button variant="outline">
+            <Printer className="mr-2 h-4 w-4" />
+            Print
+          </Button>
+          {/* <Button variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button> */}
           {status === 'EXPORTING' && (
             <WarehouseStaffGuardDiv>
               <AlertDialog>
@@ -140,16 +156,6 @@ export function MaterialExportActions({
               </AlertDialog>
             </ProductionDepartmentGuardDiv>
           )}
-        </div>
-        <div className="space-x-2">
-          <Button variant="outline">
-            <Printer className="mr-2 h-4 w-4" />
-            Print
-          </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
         </div>
       </div>
     </Card>
