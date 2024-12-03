@@ -25,7 +25,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/Label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
@@ -45,6 +44,8 @@ import { useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Barcode from 'react-barcode';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
+import { Textarea } from '@/components/ui/Textarea';
 
 type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'PENDING';
 
@@ -337,7 +338,7 @@ export default function WarehouseApproval({
         </CardContent>
         <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
           {currentStatus === 'PENDING' && (
-            <div className="flex space-x-4">
+            <WarehouseManagerGuardDiv className="flex space-x-4">
               <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
                 <AlertDialogTrigger asChild>
                   <Tooltip>
@@ -575,7 +576,7 @@ export default function WarehouseApproval({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            </div>
+            </WarehouseManagerGuardDiv>
           )}
         </CardFooter>
       </Card>
