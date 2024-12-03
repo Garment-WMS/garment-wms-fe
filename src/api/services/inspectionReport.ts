@@ -1,7 +1,7 @@
 import { InspectionReportListResponse } from '@/types/InspectionReportListResponse';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { get } from './ApiCaller';
+import { get } from '../ApiCaller';
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 

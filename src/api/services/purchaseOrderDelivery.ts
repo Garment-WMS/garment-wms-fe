@@ -1,6 +1,6 @@
 import { ApiResponse } from '@/types/ApiResponse';
-import { get, post } from './ApiCaller';
 import axios from 'axios';
+import { get } from '../ApiCaller';
 
 export const getPurchaseOrderDeliveryByPoId = async (id: string): Promise<ApiResponse> => {
   try {

@@ -182,11 +182,11 @@ const ProductionBatchDetail: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="grid sm:grid-cols-2 gap-6 justify-center">
+          <div className="grid sm:grid-cols-2 gap-6 justify-center space-y-3">
             {productionBatchMaterialVariant.map((material: any) => (
               <Card
                 key={material.id}
-                className="border rounded-lg shadow-lg overflow-hidden w-[36rem]  mx-auto">
+                className="border rounded-lg shadow-lg overflow-hidden w-[32rem]  mx-auto">
                 {/* Image Container */}
                 <div className="h-24 bg-white flex justify-center items-center">
                   <img
