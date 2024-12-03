@@ -92,6 +92,30 @@ export default function DashboardPage() {
       value: product.quantity
     }));
   };
+  const formatStatus = (status: string) => {
+    // List of known statuses and their proper capitalization
+    const statusMap: { [key: string]: string } = {
+      IMPORTED: 'Imported',
+      CANCELLED: 'Cancelled',
+      AWAIT_TO_EXPORT: 'Await To Export',
+      AWAIT_TO_IMPORT: 'Await To Import',
+      IN_PROGRESS: 'In Progress',
+      COMPLETED: 'Completed',
+      FAILED: 'Failed',
+      PENDING: 'Pending',
+      EXPORTED: 'Exported',
+      EXPORTING: 'Exporting'
+      // Add more statuses here as needed
+    };
+
+    // If the status is in the map, return the mapped value
+    if (statusMap[status]) {
+      return statusMap[status];
+    }
+
+    return status;
+    // Otherwise, replace underscores with spaces and capitalize each word
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -140,62 +164,13 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4 md:grid-cols-2  ">
-          <Card>
-            <CardHeader>
-              <CardTitle>Raw Material Chart</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer
-                config={{
-                  stock: {
-                    label: 'Stock',
-                    color: 'hsl(252, 76%, 54%)'
-                  }
-                }}
-                className="">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart layout="vertical" data={getMaterialData()}>
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="value" fill="hsl(252, 76%, 54%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Production Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer
-                config={{
-                  production: {
-                    label: 'Production',
-                    color: 'hsl(142, 76%, 36%)'
-                  }
-                }}
-                className="">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={getProductData()}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="value" fill="hsl(142, 76%, 36%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Raw Material Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-2 h-[750px]">
+            <div className="grid grid-cols-3 gap-2 ">
               {getMaterialData()
                 .slice(0, 10)
                 .map((material: any, i: number) => (
@@ -235,7 +210,7 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {importReceipts.map((receipt) => (
+                {importReceipts.slice(0, 10).map((receipt) => (
                   <TableRow key={receipt.id}>
                     <TableCell>
                       <Link
@@ -246,6 +221,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       <Badge
+                        className="w-[120px] flex items-center justify-center"
                         variant={
                           receipt.status == 'IMPORTED'
                             ? 'success'
@@ -253,7 +229,7 @@ export default function DashboardPage() {
                               ? 'destructive'
                               : 'default'
                         }>
-                        {receipt.status}
+                        {formatStatus(receipt.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -262,7 +238,9 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
                     <TableCell>
-                      {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}
+                      {receipt.finishedAt
+                        ? new Date(receipt.finishedAt).toLocaleString()
+                        : 'Not yet'}
                     </TableCell>
                     <TableCell>
                       <div className="flex">
@@ -323,14 +301,15 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       <Badge
+                        className="w-[120px] flex items-center justify-center"
                         variant={
-                          receipt.status == 'IMPORTED'
+                          receipt.status == 'EXPORTED'
                             ? 'success'
                             : receipt.status == 'CANCELLED'
                               ? 'destructive'
                               : 'default'
                         }>
-                        {receipt.status}
+                        {formatStatus(receipt.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -338,7 +317,9 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
                     <TableCell>
-                      {receipt.finishedAt ? new Date(receipt.finishedAt).toLocaleString() : 'N/A'}
+                      {receipt.finishedAt
+                        ? new Date(receipt.finishedAt).toLocaleString()
+                        : 'Not yet'}
                     </TableCell>
                     <TableCell>
                       <div className="flex">
