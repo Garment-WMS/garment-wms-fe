@@ -9,6 +9,7 @@ import { convertDate } from '@/helpers/convertDate';
 import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { PurchaseOrderStatus, PurchaseOrderStatusLabels } from '@/enums/purchaseOrderStatus';
 import { useGetAllPurchaseOrder } from '@/hooks/useGetAllPurchaseOrder';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DialogStatusTableProps {
   selectedStatus: string;
@@ -47,8 +48,6 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
         }
       : undefined;
 
-  const totalPages = pageMeta ? Math.ceil((pageMeta.totalPages || 0) / pagination.pageSize) : 0;
-
   const getColorVariant = (status: PurchaseOrderStatus) => {
     switch (status) {
       case PurchaseOrderStatus.IN_PROGRESS:
@@ -67,22 +66,13 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
       header: 'PO Number',
       accessorKey: 'poNumber',
       cell: ({ row }) => (
-        <div
-          className="ml-2 font-semibold cursor-pointer text-primary underline hover:opacity-50"
-          onClick={() => navigate(`/purchase-staff/purchase-order/${row.original.id}`)}>
+        <span
+          className="font-bold cursor-pointer text-primary underline hover:opacity-70"
+          onClick={() => navigate(`/purchase-order/${row.original.id}`)}>
           {row.original.poNumber}
-        </div>
+        </span>
       ),
       enableColumnFilter: false
-    },
-    {
-      header: 'Production Plan ID',
-      accessorKey: 'quarterlyProductionPlanId',
-      enableColumnFilter: false,
-      cell: ({ getValue }) => {
-        const value = getValue<string>();
-        return <div className="ml-9 font-semibold">{value ? value : 'PL123'}</div>;
-      }
     },
     {
       header: 'Supplier',
@@ -141,6 +131,40 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
         const colorVariant = getColorVariant(status);
         return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
       }
+    },
+    {
+      header: 'Progress',
+      accessorKey: 'progress',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const totalImportQuantity = row.original.totalImportQuantity || 0;
+        const totalQuantityToImport = row.original.totalQuantityToImport || 1; // Avoid division by zero
+        const progress = (totalImportQuantity / totalQuantityToImport) * 100;
+
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <div className="flex items-center gap-1 flex-row">
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 w-full cursor-pointer">
+                    <div className="w-36 bg-gray-200 rounded-full h-4 flex-shrink-0">
+                      <div
+                        className="bg-blue-500 h-4 rounded-full"
+                        style={{ width: `${progress}%` }}></div>
+                    </div>
+                    <span className="text-sm text-gray-600 font-medium">
+                      {`${progress.toFixed(0)}%`}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{`${totalImportQuantity} / ${totalQuantityToImport}`}</p>
+                </TooltipContent>
+              </div>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
     }
   ];
 
@@ -166,7 +190,7 @@ const DialogStatusTable: React.FC<DialogStatusTableProps> = ({ selectedStatus })
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
         showToolbar={false}
-        totalPages={totalPages}
+        totalPages={pageMeta?.totalPages || 0}
       />
     </div>
   );

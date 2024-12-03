@@ -83,6 +83,7 @@ const ProgressChart = () => {
               outerRadius={118}
               labelType="value"
               showLegend={false}
+              showValue={false}
             />
             <ProgressList statistics={statistics} onViewDetails={handleViewDetails} />
           </div>
