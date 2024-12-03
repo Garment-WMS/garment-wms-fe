@@ -665,6 +665,19 @@ export default function MaterialReceipt() {
                         <Badge className="bg-slate-500">
                           {inspectionReport?.type === 'MATERIAL' ? 'Material' : 'Product'}
                         </Badge>
+                        <p>
+                          <strong>
+                            Total Inspected{' '}
+                            {inspectionReport?.type === 'MATERIAL' ? 'materials' : 'products'}:{' '}
+                          </strong>{' '}
+                          <span className="text-slate-700 font-semibold">
+                            {inspectionReport?.inspectionReportDetail?.reduce(
+                              (sum: number, detail: InspectionReportDetail) =>
+                                sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
+                              0
+                            ) || 0}
+                          </span>
+                        </p>
                       </p>
                       <p>
                         <strong>Approved Quantity (By Pack):</strong>{' '}
@@ -687,16 +700,6 @@ export default function MaterialReceipt() {
                                   defectSum + defect.quantityByPack,
                                 0
                               ),
-                            0
-                          ) || 0}
-                        </span>
-                      </p>
-                      <p>
-                        <strong>Total Items:</strong>{' '}
-                        <span className="text-primaryLight font-semibold">
-                          {inspectionReport?.inspectionReportDetail?.reduce(
-                            (sum: number, detail: InspectionReportDetail) =>
-                              sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
                             0
                           ) || 0}
                         </span>

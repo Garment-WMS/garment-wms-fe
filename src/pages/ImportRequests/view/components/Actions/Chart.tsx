@@ -54,7 +54,9 @@ export interface ChartProps {
 }
 
 export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
-  const [defectTypes, setDefectTypes] = useState<{ type: string; percentage: number }[]>([]);
+  const [defectTypes, setDefectTypes] = useState<
+    { type: string; value: number; percentage: number }[]
+  >([]);
   const { data: defectsData } = useGetAllDefects();
   const totalReports = inspectionRequest?.reduce(
     (total, request) => total + (request?.inspectionReport?.inspectionReportDetail?.length ?? 0),
@@ -63,35 +65,35 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
 
   useEffect(() => {
     if (defectsData?.data && inspectionRequest?.length) {
-      const defects: { type: string; percentage: number }[] = [];
-      // const staticDefects = defectsData?.data;
+      const defects: { type: string; value: number; percentage: number }[] = [];
       const staticDefects = Array.isArray(defectsData.data) ? defectsData.data : [];
+      let totalDefectCount = 0;
 
-      // Map over static defects and combine with inspectionRequest data
-      staticDefects.forEach((staticDefect: { description: string }) => {
-        const matchingDefect = inspectionRequest
-          ?.flatMap(
-            (request) =>
-              request?.inspectionReport?.inspectionReportDetail?.flatMap(
-                (detail: any) => detail?.inspectionReportDetailDefect ?? []
-              ) ?? []
-          )
-          ?.find(
-            (detailDefect: any) =>
-              detailDefect?.description?.toLowerCase() === staticDefect?.description?.toLowerCase()
-          );
+      staticDefects.forEach((defect: { id: string; description: string }) => {
+        let totalDefectQuantity = 0;
 
-        if (matchingDefect) {
-          defects.push({
-            type: staticDefect?.description ?? 'Unknown Defect',
-            percentage: Math.floor(Math.random() * 30) + 10 // Mock percentage for now
+        inspectionRequest.forEach((request) => {
+          request?.inspectionReport?.inspectionReportDetail?.forEach((detail: any) => {
+            detail?.inspectionReportDetailDefect?.forEach((detailDefect: any) => {
+              if (detailDefect.defectId === defect.id) {
+                totalDefectQuantity += detailDefect.quantityByPack;
+              }
+            });
           });
-        } else {
-          defects.push({
-            type: staticDefect?.description ?? 'Unknown Defect',
-            percentage: Math.floor(Math.random() * 30) + 10 // Mock percentage if not found
-          });
-        }
+        });
+
+        totalDefectCount += totalDefectQuantity;
+
+        defects.push({
+          type: defect.description,
+          value: totalDefectQuantity,
+          percentage: 0 // Temporary, calculated below
+        });
+      });
+
+      // Calculate percentage for each defect
+      defects.forEach((defect) => {
+        defect.percentage = totalDefectCount > 0 ? (defect.value / totalDefectCount) * 100 : 0;
       });
 
       setDefectTypes(defects);
@@ -111,16 +113,14 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
 
   const passRate = React.useMemo(() => {
     const passed = totalMaterials ?? 0;
-    const total = passed + (defectTypes?.length ?? 0);
+    const total = passed + defectTypes.reduce((sum, defect) => sum + defect.value, 0);
     return total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
   }, [totalMaterials, defectTypes]);
+
   return (
     <Card className="flex flex-col w-full max-w-5xl">
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Material Inspection Report</CardTitle>
-        <CardDescription>
-          Total reports: <span className="font-bold text-lg text-primaryLight">{totalReports}</span>
-        </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-6">
         {currentStatus === 'INSPECTING' && (
@@ -144,7 +144,11 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                   <Pie
                     data={[
                       { status: 'passed', quantity: totalMaterials, fill: Colors.success },
-                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: Colors.error }
+                      {
+                        status: 'failed',
+                        quantity: defectTypes.reduce((sum, defect) => sum + defect.value, 0),
+                        fill: Colors.error
+                      }
                     ]}
                     dataKey="quantity"
                     nameKey="status"
@@ -153,7 +157,11 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                     paddingAngle={2}>
                     {[
                       { status: 'passed', quantity: totalMaterials, fill: Colors.success },
-                      { status: 'failed', quantity: defectTypes?.length ?? 0, fill: Colors.error }
+                      {
+                        status: 'failed',
+                        quantity: defectTypes.reduce((sum, defect) => sum + defect.value, 0),
+                        fill: Colors.error
+                      }
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry?.fill} />
                     ))}
@@ -199,7 +207,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                           <div className="flex justify-between text-sm font-medium cursor-pointer">
                             <span className="truncate">{defect?.type ?? 'Unknown Defect'}</span>
                             <span className="text-muted-foreground">
-                              {defect?.percentage ?? 0}%
+                              {defect?.percentage.toFixed(1)}%
                             </span>
                           </div>
                         </TooltipTrigger>
@@ -208,7 +216,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <Progress value={defect?.percentage ?? 0} className="h-2 rounded-full" />
+                    <Progress value={defect?.percentage} className="h-2 rounded-full" />
                   </div>
                 ))}
               </div>
@@ -226,7 +234,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
               </div>
               <div className="flex items-center gap-2">
                 <XCircle className="h-5 w-5 text-red-500" />
-                <span>Failed: {defectTypes?.length ?? 0}</span>
+                <span>Failed: {defectTypes.reduce((sum, defect) => sum + defect.value, 0)}</span>
               </div>
             </div>
             <div className="flex items-center justify-between w-full text-muted-foreground">
@@ -242,7 +250,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
           </>
         )}
         <h1>Please contact Inspection team if it takes long time</h1>
-        {/* <InspectionReportDialog inspectionReport={inspectionRequest.ins}/> */}
         {inspectionRequest?.[0]?.inspectionReport && (
           <InspectionReportDialog
             inspectionReqId={inspectionRequest[0].id}
