@@ -13,18 +13,42 @@ import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetMaterialExportRequest } from '@/hooks/useGetMaterialExportRequest';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
+import { ExportRequestStatus } from '@/types/exportRequest';
+import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
+import { getProductionBatchFn } from '@/api/services/productionBatchApi';
+import exp from 'constants';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
+  const fetchProductionBatch = async () => {
+    try {
+      const res = await getProductionBatchFn();
+      const data = res.data;
+      const uniqueCodes = new Set();
+      const mappedArray = data.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setProductionBatchFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch production batch data', error);
+    }
+  };
+  useEffect(() => {
+    fetchProductionBatch();
+  }, []);
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/')[0];
 
@@ -51,7 +75,6 @@ const ExportRequestTable = (props: Props) => {
     columnFilters: debouncedColumnFilters,
     pagination
   });
-  console.log(exportRequestData);
 
   const paginatedTableData =
     exportRequestData && pageMeta
@@ -95,12 +118,29 @@ const ExportRequestTable = (props: Props) => {
     {
       header: 'Status',
       accessorKey: 'status',
+      filterOptions: ExportRequestStatus.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
       cell: ({ row }) => (
         <Badge
-          className={`${getStatusColor(row.original.status)} w-[140px] flex items-center justify-center pr-0 pl-0`}>
+          variant={
+            ExportRequestStatus.find((status) => status.value === row.original.status)?.variant
+          }
+          className="w-[140px] flex items-center justify-center pr-0 pl-0">
           {convertTitleToTitleCase(row.original.status)}
         </Badge>
       )
+    },
+    {
+      header: 'Production Batch',
+      accessorKey: 'productionBatch.code',
+      enableColumnFilter: true,
+      filterOptions: productionBatchFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
     {
       header: 'Production Batch',
@@ -110,26 +150,6 @@ const ExportRequestTable = (props: Props) => {
         <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
       )
     },
-    // {
-    //   header: 'Created By',
-    //   enableColumnFilter: false,
-    //   accessorKey: 'productionDepartment.account',
-    //   cell: ({ row }) => (
-    //     <div className="flex items-center">
-    //       <Avatar className="mr-2">
-    //         <AvatarImage src={row.original.productionDepartment?.account?.avatarUrl || ''} />
-    //         <AvatarFallback className="flex items-center">
-    //           {row.original.productionDepartment?.account?.firstName?.charAt(0)}
-    //           {row.original.productionDepartment?.account?.lastName?.charAt(0)}
-    //         </AvatarFallback>
-    //       </Avatar>
-    //       <div className="text-center align-middle">
-    //         {row.original.productionDepartment?.account?.firstName}{' '}
-    //         {row.original.productionDepartment?.account?.lastName}
-    //       </div>
-    //     </div>
-    //   )
-    // },
     {
       header: 'Created By',
       enableColumnFilter: false,
@@ -143,13 +163,14 @@ const ExportRequestTable = (props: Props) => {
               {row.original.productionDepartment?.account?.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-center align-middle">
             {row.original.productionDepartment?.account?.firstName}{' '}
             {row.original.productionDepartment?.account?.lastName}
           </div>
         </div>
       )
     },
+
     {
       header: 'Created At',
       enableColumnFilter: false,

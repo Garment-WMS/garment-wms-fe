@@ -25,7 +25,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/Label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
@@ -46,11 +45,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Barcode from 'react-barcode';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Loading from '@/components/common/Loading';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
+import { Textarea } from '@/components/ui/Textarea';
 
 type ApprovalStatus = any;
 
 interface WarehouseApprovalProps {
   requestId: string;
+  code: string;
   manager?: any;
   currentStatus: string;
   requestDetails: string;
@@ -134,6 +136,7 @@ const getInitials = (name: string | undefined): string => {
 
 export default function WarehouseApproval({
   warehouseStaff,
+  code,
   requestId,
   manager,
   currentStatus,
@@ -304,7 +307,7 @@ export default function WarehouseApproval({
       <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
         <CardHeader className="items-center pb-2">
           <CardTitle className="text-2xl">Warehouse Manager Approval</CardTitle>
-          <p className="text-sm text-muted-foreground">Request #{requestId}</p>
+          <p className="text-sm text-muted-foreground">Request #{code}</p>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
@@ -379,7 +382,7 @@ export default function WarehouseApproval({
         </CardContent>
         <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
           {currentStatus === 'PENDING' && (
-            <div className="flex space-x-4">
+            <WarehouseManagerGuardDiv className="flex space-x-4">
               <AlertDialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
                 <AlertDialogTrigger asChild>
                   <Tooltip>
@@ -622,7 +625,7 @@ export default function WarehouseApproval({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            </div>
+            </WarehouseManagerGuardDiv>
           )}
         </CardFooter>
       </Card>

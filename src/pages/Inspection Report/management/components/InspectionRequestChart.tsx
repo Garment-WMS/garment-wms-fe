@@ -80,10 +80,10 @@ const InspectionRequestChart = () => {
           <PieChartComponent
             data={chartData}
             colors={[Colors.green[500], Colors.blue[500]]}
-            width={280}
-            height={280}
-            innerRadius={80}
-            outerRadius={110}
+            width={250}
+            height={300}
+            innerRadius={50}
+            outerRadius={118}
             labelType="value"
             showLegend={true}
             legendHeight={5}

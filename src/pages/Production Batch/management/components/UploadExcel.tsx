@@ -29,10 +29,20 @@ const errorMessages = {
     message: 'Invalid Production Plan, the production plan is not available',
     clientMessage: 'The uploaded file contains an invalid Production Plan.'
   },
+  exceedQuantity: {
+    statusCode: 400,
+    message: 'Exceed quantity to produce in plan detail, you can not create this production batch',
+    clientMessage: 'The quantity exceeds the allowed limit in the production plan detail.'
+  },
   errorInFile: {
     message: 'There is an error in the file',
     clientMessage:
       'We found issues in the uploaded file. <a href="{errors}" target="_blank" class="underline text-blue-600">Click here</a> to download the file with errors and correct them.'
+  },
+  worksheetNotFound: {
+    message: 'Invalid file format, worksheet not found',
+    clientMessage:
+      'This is not the production batch worksheet. Please use the correct template and try again.'
   }
 };
 
@@ -105,23 +115,27 @@ const UploadExcelProductionBatch: React.FC = () => {
   };
 
   const handleUploadErrors = (response: any) => {
-    if (
-      response.statusCode === errorMessages.invalidFileType.statusCode &&
-      response.message === errorMessages.invalidFileType.message
-    ) {
-      setUploadError(errorMessages.invalidFileType.clientMessage);
+    if (response?.message === errorMessages.exceedQuantity?.message) {
+      setUploadError(errorMessages.exceedQuantity?.clientMessage);
     } else if (
-      response.statusCode === errorMessages.invalidFormat.statusCode &&
-      response.message === errorMessages.invalidFormat.message
+      response.statusCode === errorMessages.invalidFileType?.statusCode &&
+      response.message === errorMessages.invalidFileType?.message
     ) {
-      setUploadError(errorMessages.invalidFormat.clientMessage);
-    } else if (response.message === errorMessages.errorInFile.message && response.errors) {
-      setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
+      setUploadError(errorMessages.invalidFileType?.clientMessage);
     } else if (
-      response.statusCode === errorMessages.invalidProductionPlan.statusCode &&
-      response.message.includes(errorMessages.invalidProductionPlan.message)
+      response.statusCode === errorMessages.invalidFormat?.statusCode &&
+      response.message === errorMessages.invalidFormat?.message
     ) {
-      setUploadError(errorMessages.invalidProductionPlan.clientMessage);
+      setUploadError(errorMessages.invalidFormat?.clientMessage);
+    } else if (response?.message === errorMessages.errorInFile?.message && response.errors) {
+      setUploadError(errorMessages.errorInFile?.clientMessage.replace('{errors}', response.errors));
+    } else if (
+      response.statusCode === errorMessages.invalidProductionPlan?.statusCode &&
+      response.message.includes(errorMessages.invalidProductionPlan?.message)
+    ) {
+      setUploadError(errorMessages.invalidProductionPlan?.clientMessage);
+    } else if (response?.message === errorMessages.worksheetNotFound?.message) {
+      setUploadError(errorMessages.worksheetNotFound?.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
@@ -200,39 +214,20 @@ const UploadExcelProductionBatch: React.FC = () => {
                 <Loading />
               </div>
             ) : uploadError ? (
-              <p className="text-red-600 mt-2">Upload failed</p>
+              <div className="mt-4 flex flex-col bg-red-100 p-4 rounded-lg border border-red-300">
+                <div className="flex items-center mb-2">
+                  <XCircle size={30} color="red" />
+                  <p className="ml-2 text-sm font-semibold text-red-600">{selectedFile?.name}</p>
+                </div>
+                <p
+                  className="text-sm text-red-600"
+                  dangerouslySetInnerHTML={{ __html: uploadError }}
+                />
+              </div>
             ) : (
               <p className="text-green-600 mt-2">Upload successful</p>
             )}
           </div>
-        </div>
-      )}
-
-      {uploadError && (
-        <div className="mt-4 flex flex-col bg-red-100 p-4 rounded-lg border border-red-300">
-          <div className="flex items-center mb-2">
-            <XCircle size={30} color="red" />
-            <p className="ml-2 text-sm font-semibold text-red-600">{selectedFile?.name}</p>
-          </div>
-          <p className="text-sm text-red-600" dangerouslySetInnerHTML={{ __html: uploadError }} />
-        </div>
-      )}
-
-      {isUploadComplete && !uploadError && selectedFile && (
-        <div className="mt-4 flex items-center justify-between bg-gray-100 p-4 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <img src={ExcelIcon} alt="Excel Icon" className="w-8 h-8" />
-            <div>
-              <p className="text-sm text-gray-700 font-bold">{selectedFile.name}</p>
-              <p className="text-xs text-green-600">Upload successfully</p>
-            </div>
-          </div>
-          <Trash
-            size={25}
-            color="red"
-            className="cursor-pointer hover:opacity-30"
-            onClick={handleDeleteFile}
-          />
         </div>
       )}
     </div>

@@ -99,8 +99,9 @@ export default function WarehouseImportDialog({
           sorting: debouncedSorting,
           columnFilters: debouncedColumnFilters
         })
-        setProductionBatches(res.data);
-        console.log(res.data);
+        const filteredBatches = res.data.filter(batch => batch.importRequest === null);
+
+        setProductionBatches(filteredBatches);
       } catch (error) {
         console.error(error);
       }

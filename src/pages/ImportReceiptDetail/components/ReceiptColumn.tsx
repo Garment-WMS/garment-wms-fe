@@ -1,6 +1,7 @@
 import { badgeVariants } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
 import capitalizeFirstLetter from "@/helpers/capitalizeFirstLetter";
+import { convertTitleToTitleCase } from "@/helpers/convertTitleToCaseTitle";
 import { CustomColumnDef } from "@/types/CompositeTable";
 import { MaterialReceipt } from "@/types/ImportReceipt";
 import { MaterialExportReceipt,  ReceiptStatusLabel } from "@/types/MaterialTypes";
@@ -71,28 +72,6 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
       );
     }
   },
-  {
-    header: 'Expired Date',
-    accessorKey: 'expireDate',
-    enableColumnFilter: false,
-    cell: ({ row }) => {
-      const dateString = row.original?.expireDate;
-      if (!dateString) {
-        return <div>N/A</div>;
-      }
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-      return (
-        <div>
-          <div>{formattedDate}</div>
-        </div>
-      );
-    }
-  },
   // {
   //   header: 'Material',
   //   accessorKey: 'material.name',
@@ -110,7 +89,7 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex'>
-          <div className=''>{row.original?.quantityByPack}</div>
+          <div className="text-left">{row.original.quantityByPack} {convertTitleToTitleCase  (row.original?.materialPackage?.packUnit)}</div>
         </div>
       );
     }
@@ -330,28 +309,6 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
       );
     }
   },
-  {
-    header: 'Expired Date',
-    accessorKey: 'expireDate',
-    enableColumnFilter: false,
-    cell: ({ row }) => {
-      const dateString = row.original?.expireDate;
-      if (!dateString) {
-        return <div>N/A</div>;
-      }
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-      return (
-        <div>
-          <div>{formattedDate}</div>
-        </div>
-      );
-    }
-  },
   // {
   //   header: 'Material',
   //   accessorKey: 'material.name',
@@ -364,12 +321,12 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
   // },
   {
     header: 'Import Quantity',
-    accessorKey: 'quantityByPack',
+    accessorKey: 'quantityByUom',
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
         <div className='flex'>
-          <div className=''>{row.original?.quantityByUom}</div>
+          <div className="text-left">{row.original.quantityByUom} {convertTitleToTitleCase  (row.original?.productSize?.productVariant?.product?.name)}</div>
         </div>
       );
     }

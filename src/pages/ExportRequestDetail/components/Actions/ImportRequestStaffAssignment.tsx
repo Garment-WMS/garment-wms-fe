@@ -146,20 +146,18 @@ export default function WarehouseStaffAssignment({
                 {warehouseManager?.account ? (
                   <div className="flex items-center">
                     <Avatar className="mr-2">
-                      <AvatarImage src={warehouseManager?.account?.avatarUrl} />
-                      <AvatarFallback className="bg-gray-200 rounded-full p-2 m-1">
-                        {' '}
-                        {warehouseManager?.account?.firstName.slice(0, 1) +
-                          ' ' +
-                          warehouseManager?.account?.lastName.slice(0, 1)}
+                      <AvatarImage src={warehouseManager.account.avatarUrl} />
+                      <AvatarFallback>
+                        {warehouseManager.account.firstName.slice(0, 1)}
+                        {warehouseManager.account.lastName.slice(0, 1)}
                       </AvatarFallback>
                     </Avatar>
-                    {warehouseManager?.account?.firstName +
-                      ' ' +
-                      warehouseManager?.account?.lastName || 'Not assigned'}
+                    <div className="flex items-center">
+                      {warehouseManager.account.firstName} {warehouseManager.account.lastName}
+                    </div>
                   </div>
                 ) : (
-                  'Not yet'
+                  <span>Not yet</span>
                 )}
               </span>
             </div>

@@ -65,6 +65,7 @@ import WarehouseStaffDetai from '@/pages/WarehouseStaff/Detail';
 import WarehouseStaffDetail from '@/pages/WarehouseStaff/Detail';
 import CreateMaterialVariant from '@/pages/Material/create';
 import CreateProductVariant from '@/pages/Product/Create';
+import WarehouseStaffExportReceiptList from '@/pages/WarehouseStaff/ExportReceiptList/management';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -234,7 +235,17 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/export-receipt/',
-          element: <ExportReceiptList />
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<ExportReceiptList />}
+              warehouseStaffComponent={<WarehouseStaffExportReceiptList />}
+              productionDepartmentComponent={<ExportReceiptList />}
+              purchasingStaffComponent={<ExportReceiptList />}
+              inspectingDepartmentComponent={<ExportReceiptList />}
+              factoryDirectorComponent={<ExportReceiptList />}
+            />
+          )
+          // element: <ExportReceiptList />
         },
         {
           path: '/material-variant/:id',
@@ -304,6 +315,7 @@ const RouterComponent: React.FC = () => {
             <RoleBasedRedirect
               purchasingStaffComponent={<ProductionBatchManagement />}
               productionDepartmentComponent={<ProductionBatchManagement />}
+              managerComponent={<ProductionBatchManagement />}
             />
           )
         },

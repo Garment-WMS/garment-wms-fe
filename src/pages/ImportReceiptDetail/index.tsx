@@ -72,6 +72,7 @@ import Discussion from './components/Disscussion';
 import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import ProductReceiptLabel from './components/ProductReceiptLabels';
+import { ImportReceiptAction } from './components/ImportReceiptAction';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -308,13 +309,18 @@ export default function MaterialReceipt() {
         </div>
       ) : (
         <>
-          <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
+          {/* <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
             {importReceipt?.type === 'MATERIAL' ? (
               <div>Material Receipt {importReceipt?.code}</div>
             ) : (
               <div>Product Receipt {importReceipt?.code}</div>
             )}
-          </h1>
+          </h1> */}
+          <ImportReceiptAction
+          isLoading={isLoading}
+          handleFinishImporting={handleFinishImporting}
+          handleFinishImport={handleFinishImport}
+          />
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -465,7 +471,7 @@ export default function MaterialReceipt() {
                         : 'Import completed'}
                     </p>
                   </div>
-                  <WarehouseStaffGuardDiv>
+                  {/* <WarehouseStaffGuardDiv>
                     {importReceipt?.status === 'IMPORTING' && (
                       <Button onClick={handleFinishImport} disabled={isLoading}>
                         Add Label
@@ -478,7 +484,7 @@ export default function MaterialReceipt() {
                         Start Importing
                       </Button>
                     )}
-                  </WarehouseStaffGuardDiv>
+                  </WarehouseStaffGuardDiv> */}
                 </div>
               </CardContent>
             </Card>

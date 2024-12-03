@@ -220,13 +220,18 @@ interface Account {
   deletedAt: string | null;
   updatedAt: string;
 }
-export const Status: { label: string; value: string; variant: any }[] = [
-  { label: 'Wait approval', value: 'ARRIVED', variant: 'info' },
-  { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
+export const ExportRequestStatus: { label: string; value: string; variant: StatusVariant }[] = [
+  { label: 'Pending', value: 'PENDING', variant: 'info' },
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
-  { label: 'Inspecting', value: 'INSPECTING', variant: 'warning' },
-  { label: 'Inspected', value: 'INSPECTED', variant: 'success' },
-  { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
-  { label: 'Imported', value: 'IMPORTED', variant: 'success' },
-  { label: 'Canceled', value: 'CANCELED', variant: 'danger' }
+  { label: 'Rejected', value: 'REJECTED', variant: 'danger' },
+  { label: 'Cancelled', value: 'CANCELLED', variant: 'destructive' },
+  { label: 'Await to Export', value: 'AWAIT_TO_EXPORT', variant: 'warning' },
+  { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
+  { label: 'Exported', value: 'EXPORTED', variant: 'success' },
+  { label: 'Production Approved', value: 'PRODUCTION_APPROVED', variant: 'success' },
+  { label: 'Production Rejected', value: 'PRODUCTION_REJECTED', variant: 'danger' },
+  { label: 'Returned', value: 'RETURNED', variant: 'info' }
 ];
+
+type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default' | 'danger';
+

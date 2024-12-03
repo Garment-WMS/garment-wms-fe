@@ -23,11 +23,22 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { ROLES_ENUM } from '@/enums/role';
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
+import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
+import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
+import { Textarea } from '@/components/ui/Textarea';
 
 const PurchaseOrderList: React.FC = () => {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  const userRole = userData?.role;
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -37,6 +48,71 @@ const PurchaseOrderList: React.FC = () => {
     pageIndex: 0,
     pageSize: 8
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [selectedPO, setSelectedPO] = useState<{ id: string; poNumber: string } | null>(null);
+
+  const handleConfirmCancel = async () => {
+    if (selectedPO) {
+      const validCancelReason =
+        cancelReason && cancelReason.trim() ? cancelReason.trim() : 'No reason provided';
+      try {
+        const response = await cancelPurchaseOrder(selectedPO.id, validCancelReason);
+        console.log(response);
+
+        if (response?.statusCode === 200) {
+          toast({
+            variant: 'success',
+            title: 'Purchase Order Cancelled',
+            description: `Purchase Order ${selectedPO.poNumber} has been successfully cancelled.`
+          });
+          navigate(0);
+        } else {
+          handleBackendErrors(response);
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response) {
+          handleBackendErrors(error.response.data);
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: `An unexpected error occurred while cancelling Purchase Order ${selectedPO.poNumber}.`
+          });
+        }
+      } finally {
+        setIsModalOpen(false);
+        setCancelReason('');
+        setSelectedPO(null);
+      }
+    }
+  };
+
+  // Helper function to handle backend errors
+  const handleBackendErrors = (response: any) => {
+    if (response?.errors?.length > 0) {
+      const backendError = response.errors[0];
+      if (backendError.property === 'cancelledReason' && backendError.constraints) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Cancellation Reason',
+          description: backendError.constraints.isString || response.message || 'Invalid input.'
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Cancellation Failed',
+          description: response.message || 'An unexpected error occurred.'
+        });
+      }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Cancellation Failed',
+        description: response.message || 'An unexpected error occurred.'
+      });
+    }
+  };
 
   const { isFetching, purchaseOrderList, pageMeta } = useGetAllPurchaseOrder({
     sorting: debouncedSorting,
@@ -52,6 +128,10 @@ const PurchaseOrderList: React.FC = () => {
   } = useGetAllProductionPlans({});
   const handleViewClick = (requestId: string) => {
     navigate(`/purchase-order/${requestId}`);
+  };
+  const handleCancelClick = (id: string, poNumber: string) => {
+    setSelectedPO({ id, poNumber });
+    setIsModalOpen(true);
   };
 
   const paginatedTableData =
@@ -216,6 +296,15 @@ const PurchaseOrderList: React.FC = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+              <PurchasingStaffGuardDiv>
+                {row.original?.status === PurchaseOrderStatus.IN_PROGRESS && (
+                  <DropdownMenuItem
+                    onClick={() => handleCancelClick(request.id, request.poNumber)}
+                    className="text-red-500 hover:text-red-600">
+                    Cancel
+                  </DropdownMenuItem>
+                )}
+              </PurchasingStaffGuardDiv>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -227,9 +316,9 @@ const PurchaseOrderList: React.FC = () => {
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Purchase Order Lists</h1>
-        {userRole === ROLES_ENUM.PURCHASING_STAFF && (
-          <UploadExcel fileName="purchase order" triggerButtonLabel="Import" />
-        )}
+        <PurchasingStaffGuardDiv>
+          <UploadExcel />
+        </PurchasingStaffGuardDiv>
       </div>
       {/* Set fixed height for the table */}
       <div className="overflow-auto h-[700px]">
@@ -247,6 +336,37 @@ const PurchaseOrderList: React.FC = () => {
           searchColumnId="status"
         />
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Cancel Purchase Order</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel Purchase Order{' '}
+              <span className="font-semibold text-primaryLight">{selectedPO?.poNumber}</span>? This
+              action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              className="h-40"
+              id="cancelReason"
+              placeholder="Enter reason for cancellation"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmCancel} disabled={!cancelReason.trim()}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

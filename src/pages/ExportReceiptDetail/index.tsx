@@ -149,10 +149,11 @@ export default function ExportReceiptDetail() {
         </div>
       ) : (
         <>
-          <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
+          {/* <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
             <div>Material Export Receipt {exportReceipt?.code || 'N/A'}</div>
-          </h1>
+          </h1> */}
           <MaterialExportActions
+            code={exportReceipt?.code || 'N/A'}
             status={exportReceipt?.status || ''}
             isLoading={isLoading}
             handleFinishExport={handleFinishExport}

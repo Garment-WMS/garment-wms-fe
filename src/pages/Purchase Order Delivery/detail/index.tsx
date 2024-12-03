@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/Badge';
-import { Clock, Package } from 'lucide-react';
+import { Clock, Package, XCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
@@ -11,22 +11,19 @@ import { Avatar } from '@radix-ui/react-avatar';
 import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import avaImg from '@/assets/images/avatar.png';
 import { convertToVietnamesePhoneNumber } from '../../../helpers/convertPhoneNumber';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 const PurchaseOrderDeliveryDetails = () => {
   const location = useLocation();
-  const { delivery, poNumber, purchasingStaff } = location.state as {
+  const { delivery, poNumber, purchasingStaff, cancelledAt } = location.state as {
     delivery: PODelivery;
     poNumber: string;
     purchasingStaff: any;
+    cancelledAt?: string;
   };
-  const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
-    (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
-    0
-  );
-  const totalQuantity = delivery.poDeliveryDetail.reduce(
-    (sum: number, detail: PODeliveryDetail) => sum + (detail.quantityByPack || 0),
-    0
-  );
+  // const importReciptId =
+  //   delivery?.importRequest?.inspectionRequest?.inspectionRequest?.importReceipt?.id;
+  // console.log(delivery);
 
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
@@ -51,7 +48,12 @@ const PurchaseOrderDeliveryDetails = () => {
           <div className="flex flex-col gap-2">
             <h1 className="text-lg font-medium text-gray-700">Purchase Order Delivery</h1>
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-primaryDark">{delivery?.code}</h1>
+              <div className="flex flex-row items-center gap-3">
+                <h1 className="text-2xl font-bold text-primaryDark">{delivery?.code}</h1>
+                {delivery.status === PurchaseOrderDeliveryStatus.CANCELLED && (
+                  <XCircle className="w-9 h-9 text-red-600" />
+                )}
+              </div>
               <Badge
                 className={`px-3 py-1 rounded-md text-md ${getStatusBadgeClass(delivery.status)}`}>
                 {delivery.status}
@@ -63,16 +65,27 @@ const PurchaseOrderDeliveryDetails = () => {
               <Clock />
               <span className="text-sm">Estimated Delivery:</span>
               <span className="font-medium">
-                {convertDate(delivery.expectedDeliverDate) || 'N/A'}
+                {delivery.expectedDeliverDate ? convertDate(delivery.expectedDeliverDate) : '-'}
               </span>
             </div>
-            <div className="flex items-center text-green-600 gap-2">
-              <Package />
-              <span className="text-sm">Actual Delivery:</span>
-              <span className="font-medium">
-                {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
-              </span>
-            </div>
+            {delivery.status !== PurchaseOrderDeliveryStatus.CANCELLED && (
+              <div className="flex items-center text-green-600 gap-2">
+                <Package />
+                <span className="text-sm">Actual Delivery:</span>
+                <span className="font-medium">
+                  {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
+                </span>
+              </div>
+            )}
+            {delivery.status === PurchaseOrderDeliveryStatus.CANCELLED && (
+              <div className="flex items-center text-red-600 gap-2">
+                <XCircle />
+                <span className="text-sm">Cancelled At:</span>
+                <span className="font-medium">
+                  {cancelledAt ? convertDateWithTime(cancelledAt || '') : '-'}
+                </span>
+              </div>
+            )}
           </div>
         </section>
 

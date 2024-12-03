@@ -57,7 +57,11 @@ const InspectionReportList = () => {
       accessorKey: 'importRequest.code',
       cell: ({ row }) =>
         row.original.importRequest?.code ? (
-          <Badge className="bg-slate-500">{row.original.importRequest.code}</Badge>
+          <Link
+            to={`/import-request/${row.original.importRequest.id}`}
+            className="font-semibold text-primary underline">
+            {row.original.importRequest.code}
+          </Link>
         ) : (
           <div className="text-slate-400">N/A</div>
         ),
