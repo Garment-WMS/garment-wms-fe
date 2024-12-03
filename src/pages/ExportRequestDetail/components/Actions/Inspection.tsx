@@ -75,6 +75,7 @@ const InspectionStep: React.FC<Props> = ({
         <ExportRequestConfirmation
           currentStatus={currentStatus}
           requestId={exportRequest?.code}
+          exportRequestId={exportRequest?.id}
           warehouseManager={exportRequest?.warehouseManager}
           warehouseStaff={exportRequest?.warehouseStaff}
           lastedUpdate={exportRequest?.updatedAt}

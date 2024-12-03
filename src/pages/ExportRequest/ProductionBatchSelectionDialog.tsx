@@ -65,12 +65,13 @@ export default function ProductionBatchSelectionDialog({
   };
   function getBadgeClasses(status: string): { variant: 'default' | 'secondary'; bgClass: string } {
     switch (status) {
-      case 'IMPORTING':
-      case 'EXECUTING':
+      case 'PENDING':
         return { variant: 'default', bgClass: 'bg-yellow-500' }; // Yellow for active states
       case 'FINISHED':
         return { variant: 'secondary', bgClass: 'bg-green-500' }; // Green for completed
-      case 'PENDING':
+      case 'MANUFACTURING':
+      case 'IMPORTING':
+      case 'EXECUTING':
         return { variant: 'secondary', bgClass: 'bg-gray-500' }; // Gray for pending
       case 'CANCELED':
         return { variant: 'secondary', bgClass: 'bg-red-500' }; // Red for canceled
@@ -93,7 +94,10 @@ export default function ProductionBatchSelectionDialog({
                 <DialogTitle>Select Production Batch</DialogTitle>
               </DialogHeader>
               {isLoading ? (
-                <Loading />
+                <div className="flex items-center justify-center">
+                  {' '}
+                  <Loading size="60" />
+                </div>
               ) : (
                 <ScrollArea className="h-[400px] p-6 pt-0">
                   {productionBatches.map((batch) => (

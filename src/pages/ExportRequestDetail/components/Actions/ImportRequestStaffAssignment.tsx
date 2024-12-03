@@ -20,21 +20,38 @@ interface WarehouseStaffAssignmentProps {
   lastedUpdate: any;
 }
 
-const getStatusDetails = (status: AssignmentStatus) => {
+const getStatusDetails = (status: any) => {
   switch (status) {
-    case 'WAITING FOR ASSIGNMENT':
-      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: Clock };
+    case 'PRODUCTION_APPROVED':
+      return {
+        label: 'Exported',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
     case 'EXPORTING':
       return {
-        label: 'In Progress',
-        color: 'bg-blue-500 text-white',
-        icon: Info
+        label: 'Exporting',
+        color: 'bg-blue-500 text-blue-950',
+        icon: ClipboardCheck
       };
     case 'EXPORTED':
-      return { label: 'Exported', color: 'bg-green-500 text-green-950', icon: ClipboardCheck };
-
+      return {
+        label: 'Exported',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'PRODUCTION_REJECTED':
+      return {
+        label: 'Exported',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
     default:
-      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: AlertCircle };
+      return {
+        label: 'Not Reached yet',
+        color: 'bg-muted text-muted-foreground',
+        icon: AlertCircle
+      };
   }
 };
 
@@ -65,7 +82,12 @@ export default function WarehouseStaffAssignment({
       setExportReceipt(response.data.data);
     };
 
-    if (currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') {
+    if (
+      currentStatus == 'EXPORTING' ||
+      currentStatus == 'EXPORTED' ||
+      currentStatus == 'PRODUCTION_APPROVED' ||
+      currentStatus == 'PRODUCTION_REJECTED'
+    ) {
       getExportReceipt();
     }
   }, []);
@@ -122,8 +144,8 @@ export default function WarehouseStaffAssignment({
               <span className="font-medium w-24">Assigned by:</span>
               <span>
                 {warehouseManager?.account ? (
-                  <>
-                    <Avatar>
+                  <div className="flex items-center">
+                    <Avatar className="mr-2">
                       <AvatarImage src={warehouseManager?.account?.avatarUrl} />
                       <AvatarFallback className="bg-gray-200 rounded-full p-2 m-1">
                         {' '}
@@ -135,7 +157,7 @@ export default function WarehouseStaffAssignment({
                     {warehouseManager?.account?.firstName +
                       ' ' +
                       warehouseManager?.account?.lastName || 'Not assigned'}
-                  </>
+                  </div>
                 ) : (
                   'Not yet'
                 )}
@@ -155,13 +177,17 @@ export default function WarehouseStaffAssignment({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') && exportReceipt && (
-            <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
-              <Button variant={'default'} className="ml-4">
-                Go to Receipt
-              </Button>
-            </Link>
-          )}
+          {(currentStatus == 'EXPORTING' ||
+            currentStatus == 'EXPORTED' ||
+            currentStatus == 'PRODUCTION_APPROVED' ||
+            currentStatus == 'PRODUCTION_REJECTED') &&
+            exportReceipt && (
+              <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
+                <Button variant={'default'} className="ml-4">
+                  Go to Receipt
+                </Button>
+              </Link>
+            )}
         </div>
       </CardFooter>
     </Card>

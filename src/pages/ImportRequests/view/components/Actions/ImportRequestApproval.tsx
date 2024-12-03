@@ -117,7 +117,7 @@ export default function WarehouseApproval({
   const [isConfirmDeclineDialogOpen, setIsConfirmDeclineDialogOpen] = useState(false);
   const [selectedInspector, setSelectedInspector] = useState<StaffMember | null>(null);
   const [selectedAssignee, setSelectedAssignee] = useState<StaffMember | null>(null);
-  const chat: any = useSelector(importRequestSelector.importRequest);
+  const importRequest: any = useSelector(importRequestSelector.importRequest);
   const { toast } = useToast();
   const { id } = useParams();
   const [selectedInspectionTimeFrame, setSelectedInspectionTimeFrame] = useState<any>();
@@ -272,11 +272,39 @@ export default function WarehouseApproval({
                 <span className="font-medium w-24">Assigned to:</span>
                 {warehouseStaff?.account ? (
                   <Badge variant={'outline'}>
-                    <Avatar className="h-8 w-8 mr-2">
-                      <AvatarImage src={warehouseStaff?.account?.avaUrl} alt="Profile picture" />
-                      <AvatarFallback>Staff</AvatarFallback>
-                    </Avatar>
-                    {warehouseStaff?.account?.lastName + ' ' + warehouseStaff?.account?.firstName}
+                    <div>
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarImage
+                            src={warehouseStaff?.account?.avaUrl}
+                            alt="Profile picture"
+                          />
+                          <AvatarFallback>Staff</AvatarFallback>
+                        </Avatar>
+                        {warehouseStaff?.account?.lastName +
+                          ' ' +
+                          warehouseStaff?.account?.firstName}
+                      </div>
+                      <div>
+                        {new Date(importRequest.importExpectedStartedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
+                        {' - '}
+                        {new Date(importRequest.importExpectedFinishedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
+                      </div>
+                    </div>
                   </Badge>
                 ) : (
                   <h4>Not yet</h4>
@@ -287,16 +315,39 @@ export default function WarehouseApproval({
                 <span className="font-medium w-24">Inspect by:</span>
                 {inspectionDepartment?.account ? (
                   <Badge variant={'outline'}>
-                    <Avatar className="h-8 w-8 mr-2">
-                      <AvatarImage
-                        src={inspectionDepartment?.account?.avaUrl}
-                        alt="Profile picture"
-                      />
-                      <AvatarFallback>Inspec</AvatarFallback>
-                    </Avatar>
-                    {inspectionDepartment?.account?.lastName +
-                      ' ' +
-                      inspectionDepartment?.account?.firstName}
+                    <div>
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarImage
+                            src={inspectionDepartment?.account?.avaUrl}
+                            alt="Profile picture"
+                          />
+                          <AvatarFallback>Staff</AvatarFallback>
+                        </Avatar>
+                        {inspectionDepartment?.account?.lastName +
+                          ' ' +
+                          inspectionDepartment?.account?.firstName}
+                      </div>
+                      <div>
+                        {new Date(importRequest.inspectExpectedStartedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
+                        {' - '}
+                        {new Date(importRequest.inspectExpectedFinishedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
+                      </div>
+                    </div>
                   </Badge>
                 ) : (
                   <h4>Not Yet</h4>

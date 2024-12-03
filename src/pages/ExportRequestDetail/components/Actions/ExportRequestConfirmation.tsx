@@ -5,6 +5,9 @@ import { Clock, ClipboardCheck, User, AlertCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useEffect, useState } from 'react';
+import privateCall from '@/api/PrivateCaller';
+import { exportReceiptApi } from '@/api/services/exportReceiptApi';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
@@ -15,23 +18,29 @@ interface WarehouseStaffAssignmentProps {
   warehouseManager?: any;
   warehouseStaff?: any;
   lastedUpdate: any;
+  exportRequestId: any;
 }
 
-const getStatusDetails = (status: AssignmentStatus) => {
+const getStatusDetails = (status: any) => {
   switch (status) {
-    case 'WAITING FOR ASSIGNMENT':
-      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: Clock };
-    case 'IMPORTING':
+    case 'PRODUCTION_APPROVED':
       return {
-        label: 'In Progress',
-        color: 'bg-blue-500 text-white',
-        icon: Info
+        label: 'Production Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
       };
-    case 'IMPORTED':
-      return { label: 'Imported', color: 'bg-green-500 text-green-950', icon: ClipboardCheck };
-
+    case 'PRODUCTION_REJECTED':
+      return {
+        label: 'Exported',
+        color: 'bg-red-500 text-red-950',
+        icon: ClipboardCheck
+      };
     default:
-      return { label: 'Not Reached', color: 'bg-muted text-muted-foreground', icon: AlertCircle };
+      return {
+        label: 'Not Reached yet',
+        color: 'bg-muted text-muted-foreground',
+        icon: AlertCircle
+      };
   }
 };
 
@@ -52,10 +61,26 @@ export default function ExportRequestConfirmation({
   warehouseManager,
   warehouseStaff,
   lastedUpdate,
-  productionDepartment
+  productionDepartment,
+  exportRequestId
 }: WarehouseStaffAssignmentProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
+  const [exportReceipt, setExportReceipt] = useState<any>();
+  useEffect(() => {
+    const getExportReceipt = async () => {
+      const response = await privateCall(exportReceiptApi.getOneByRequestId(exportRequestId));
+      setExportReceipt(response.data.data);
+    };
 
+    if (
+      currentStatus == 'EXPORTING' ||
+      currentStatus == 'EXPORTED' ||
+      currentStatus == 'PRODUCTION_APPROVED' ||
+      currentStatus == 'PRODUCTION_REJECTED'
+    ) {
+      getExportReceipt();
+    }
+  }, []);
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
@@ -127,13 +152,17 @@ export default function ExportRequestConfirmation({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'IMPORTING' || currentStatus == 'IMPORTED') && (
-            <Link to={``}>
-              <Button variant={'default'} className="ml-4">
-                Go to Receipt
-              </Button>
-            </Link>
-          )}
+          {(currentStatus == 'EXPORTING' ||
+            currentStatus == 'EXPORTED' ||
+            currentStatus == 'PRODUCTION_APPROVED' ||
+            currentStatus == 'PRODUCTION_REJECTED') &&
+            exportReceipt && (
+              <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
+                <Button variant={'default'} className="ml-4">
+                  Go to Receipt
+                </Button>
+              </Link>
+            )}
         </div>
       </CardFooter>
     </Card>

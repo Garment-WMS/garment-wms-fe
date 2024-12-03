@@ -25,8 +25,8 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/Badge';
 import { PiShirtFoldedBold } from 'react-icons/pi';
 import { GiCardboardBoxClosed } from 'react-icons/gi';
-import { Avatar } from '@radix-ui/react-avatar';
-import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [importReceipts, setImportReceipts] = useState<any[]>([]);
@@ -104,7 +104,8 @@ export default function DashboardPage() {
       FAILED: 'Failed',
       PENDING: 'Pending',
       EXPORTED: 'Exported',
-      EXPORTING: 'Exporting'
+      EXPORTING: 'Exporting',
+      IMPORTING: 'Importing'
       // Add more statuses here as needed
     };
 
@@ -244,7 +245,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex">
-                        <Avatar className="mr-2">
+                        <Avatar className="mr-2 w-10 h-10 rounded-full">
                           <AvatarImage src={receipt.warehouseStaff.account.avatarUrl} />
                           <AvatarFallback>
                             {' '}
@@ -256,7 +257,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex">
-                        <Avatar className="mr-2">
+                        <Avatar className="mr-2 w-10 h-10 rounded-full">
                           <AvatarImage src={receipt.warehouseManager.account.avatarUrl} />
                           <AvatarFallback>
                             {' '}
@@ -286,7 +287,7 @@ export default function DashboardPage() {
                   <TableHead>Started At</TableHead>
                   <TableHead>Finished At</TableHead>
                   <TableHead>Warehouse Staff</TableHead>
-                  <TableHead>Managed by</TableHead>
+                  <TableHead>Finished at </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -334,20 +335,9 @@ export default function DashboardPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex">
-                        <Avatar className="mr-2">
-                          <AvatarImage src={receipt.warehouseManager?.account.avatarUrl} />
-                          <AvatarFallback>
-                            {' '}
-                            {receipt.warehouseManager
-                              ? `${receipt.warehouseManager?.account.firstName.slice(0, 1)} ${receipt.warehouseManager?.account.lastName.slice(0, 1)}`
-                              : 'NA'}
-                          </AvatarFallback>
-                        </Avatar>
-                        {receipt.warehouseManager
-                          ? `${receipt.warehouseManager?.account.firstName} ${receipt.warehouseManager?.account.lastName}`
-                          : 'N/A'}
-                      </div>
+                      {receipt.finishedAt
+                        ? new Date(receipt.finishedAt).toLocaleString()
+                        : 'Not yet'}
                     </TableCell>
                   </TableRow>
                 ))}

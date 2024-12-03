@@ -56,6 +56,7 @@ const ImportRequestStatus = (props: Props) => {
             exportRequest?.productionDepartment?.account?.firstName.slice(0, 1)
         };
       case 'EXPORTING':
+      case 'AWAIT_TO_EXPORT':
         return {
           role: 'Warehouse Stafff',
           avatar: exportRequest?.warehouseStaff?.account?.avatarUrl,
