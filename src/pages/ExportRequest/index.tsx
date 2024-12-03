@@ -75,7 +75,7 @@ export default function ExportMaterialPage() {
 
     if (selectedBatch) {
       selectedBatch.productionBatchMaterialVariant.forEach((material: Material) => {
-        const totalAmount = material.quantityByUom * productQuantity;
+        const totalAmount = material.quantityByUom;
         const materialName = material.materialVariant.name;
         const unit = material.materialVariant.material.materialUom.uomCharacter;
         if (totals[materialName]) {
@@ -203,6 +203,7 @@ export default function ExportMaterialPage() {
                 <Input
                   id="product-quantity"
                   type="number"
+                  readOnly
                   value={productQuantity}
                   onChange={(e) => handleQuantityChange(parseInt(e.target.value, 10))}
                 />
@@ -215,7 +216,7 @@ export default function ExportMaterialPage() {
       {selectedBatch && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Production Batch Materials</CardTitle>
+            <CardTitle>Materials required for Production Batch</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -256,7 +257,7 @@ export default function ExportMaterialPage() {
       {selectedBatch && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Total Materials Needed</CardTitle>
+            <CardTitle>Export request summary</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

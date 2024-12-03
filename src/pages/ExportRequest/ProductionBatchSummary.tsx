@@ -48,9 +48,7 @@ export function ProductionBatchSummary({ selectedBatch, onEdit }: ProductionBatc
             </div>
             <div className="flex justify-between items-center">
               <span>Quantity:</span>
-              <span className="text-muted-foreground">
-                {selectedBatch.productionPlanDetail.quantityToProduce}
-              </span>
+              <span className="text-muted-foreground">{selectedBatch.quantityToProduce}</span>
             </div>
           </>
         ) : (

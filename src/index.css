@@ -162,16 +162,16 @@
 }
 
 .rbc-event {
-  @apply bg-transparent text-primary-foreground rounded-md;
+  @apply bg-blue-500 text-primary-foreground rounded-md;
 }
-.rbc-event.rbc-selected,
+/* .rbc-event.rbc-selected,
 .rbc-day-slot .rbc-selected.rbc-background-event {
   @apply bg-transparent !important;
 }
 .rbc-day-slot .rbc-event,
 .rbc-day-slot .rbc-background-event {
   @apply border-none !important;
-}
+} */
 
 .rbc-today {
   @apply bg-accent;
