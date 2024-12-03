@@ -65,7 +65,7 @@ const PurchaseOrderDeliveryDetails = () => {
               <Clock />
               <span className="text-sm">Estimated Delivery:</span>
               <span className="font-medium">
-                {convertDate(delivery.expectedDeliverDate) || 'N/A'}
+                {delivery.expectedDeliverDate ? convertDate(delivery.expectedDeliverDate) : '-'}
               </span>
             </div>
             {delivery.status !== PurchaseOrderDeliveryStatus.CANCELLED && (
@@ -91,9 +91,7 @@ const PurchaseOrderDeliveryDetails = () => {
 
         {/* Material List */}
         <section className="mt-6">
-          <h2 className="text-xl font-semibold text-primaryDark mb-4">
-            Materials {importReciptId}
-          </h2>
+          <h2 className="text-xl font-semibold text-primaryDark mb-4">Materials</h2>
           {delivery.poDeliveryDetail.map((detail: PODeliveryDetail) => (
             <MaterialList key={detail.id} detail={detail} status={delivery?.status} />
           ))}
