@@ -65,7 +65,7 @@ export default function WarehouseStaffAssignment({
       setExportReceipt(response.data.data);
     };
 
-    if (currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') {
+    if (currentStatus == 'APPROVED' || currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') {
       getExportReceipt();
     }
   }, []);
@@ -158,7 +158,7 @@ export default function WarehouseStaffAssignment({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') && exportReceipt && (
+          {(currentStatus == 'APPROVED' || currentStatus == 'EXPORTING' || currentStatus == 'EXPORTED') && exportReceipt && (
             <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
               <Button variant={'default'} className="ml-4">
                 Go to Receipt

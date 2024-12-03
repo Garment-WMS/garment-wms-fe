@@ -46,6 +46,7 @@ const InspectionStep: React.FC<Props> = ({
       content: (
         <WarehouseApproval
           requestId={id as string}
+          code={exportRequest?.code}
           currentStatus={currentStatus}
           manager={exportRequest?.warehouseManager}
           requestDetails={exportRequest?.managerNote as string}

@@ -88,6 +88,7 @@ const ExportRequestTable = (props: Props) => {
     {
       header: 'Status',
       accessorKey: 'status',
+      
       cell: ({ row }) => (
         <Badge
           variant={row.original.status === 'PENDING' ? 'warning' : 'success'}
