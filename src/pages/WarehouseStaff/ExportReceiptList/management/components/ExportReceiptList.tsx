@@ -20,7 +20,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useGetAllExportReceipt } from '@/hooks/useGetAllExportReceipt';
+import { useGetAllExportReceipt, useGetMyMaterialExportReceipt } from '@/hooks/useGetAllExportReceipt';
 import { ExportReceiptStatus, ExportReceiptType, MaterialExportReceipt } from '@/types/ExportReceipt';
 import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 type Props = {};
@@ -50,7 +50,7 @@ const ExportReceiptTable = (props: Props) => {
     pageSize: 10 //default page size
   });
 
-  const { pageMeta, exportReceiptsList, isLoading, isFetching } = useGetAllExportReceipt({
+  const { pageMeta, exportReceiptsList, isLoading, isFetching } = useGetMyMaterialExportReceipt({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
@@ -80,7 +80,6 @@ const ExportReceiptTable = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  console.log('exportReceiptsList', paginatedTableData);
 
   const importRequestColumn: CustomColumnDef<MaterialExportReceipt>[] = [
     {

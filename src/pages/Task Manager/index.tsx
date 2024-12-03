@@ -244,9 +244,9 @@ export default function TaskManagerOverview() {
                 defaultView="day"
                 date={selectedDate}
                 onNavigate={(newDate) => setSelectedDate(newDate)}
-                min={new Date(selectedDate.setHours(0, 0, 0, 0))}
-                max={new Date(selectedDate.setHours(23, 59, 59, 999))}
-                step={15}
+                min={new Date(selectedDate.setHours(9, 0, 0, 0))}
+                max={new Date(selectedDate.setHours(17, 59, 59, 999))}
+                step={7.5}
                 onSelectEvent={handleSelectEvent}
                 timeslots={4}
                 resources={resources}
@@ -335,7 +335,10 @@ export default function TaskManagerOverview() {
                     Expected End date: {new Date(selectedTask.expectedFinishedAt).toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Actual Started At: {new Date(selectedTask.startedAt).toLocaleString()}
+                    Actual Started At:
+                    {selectedTask.startedAt
+                      ? new Date(selectedTask.startedAt).toLocaleString()
+                      : 'Not yet'}
                   </p>
 
                   <p className="text-xs text-muted-foreground mb-4">

@@ -94,8 +94,8 @@ export default function AssignStaffPopup({
       });
       return;
     } else if (
-      selectedInspectionTimeFrame?.expectFinishedAt &&
-      slotInfo.start < selectedInspectionTimeFrame?.expectFinishedAt
+      selectedInspectionTimeFrame?.expectedFinishedAt &&
+      slotInfo.start < selectedInspectionTimeFrame?.expectedFinishedAt
     ) {
       toast({
         variant: 'destructive',

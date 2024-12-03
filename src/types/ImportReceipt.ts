@@ -69,6 +69,7 @@ type InspectionReport = {
   inspectionRequestId: string;
   code: string;
   createdAt: string;
+  inspectionReportDetail: InspectionReportDetail[];
   updateAt: string;
   deletedAt: string | null;
   inspectionRequest: InspectionRequest;

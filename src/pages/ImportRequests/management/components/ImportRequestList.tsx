@@ -21,7 +21,10 @@ import { PurchaseOrder } from '@/types/PurchaseOrder';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
-import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+import {
+  PurchasingStaffGuardAndProductionDepartmentDiv,
+  PurchasingStaffGuardDiv
+} from '@/components/authentication/createRoleGuard';
 type Props = {};
 export interface Filter {
   label: string;
@@ -147,7 +150,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
     },
     {
-      header: 'PO',
+      header: 'Purchase Order',
       accessorKey: 'poDelivery.purchaseOrder.code',
       enableColumnFilter: true,
       filterOptions: purchaseOrderFilter.map((delivery) => ({
@@ -157,7 +160,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
     },
     {
-      header: 'PB',
+      header: 'Production Batch',
       accessorKey: 'productionBatch.code',
       enableColumnFilter: true,
       filterOptions: productionBatchFilter.map((delivery) => ({
@@ -238,11 +241,11 @@ const ImportRequestList = (props: Props) => {
           searchWidth="lg:w-[200px]"
         />
 
-        <PurchasingStaffGuardDiv className="flex items-center flex-row justify-center mb-9">
+        <PurchasingStaffGuardAndProductionDepartmentDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Import Request
           </Button>
-        </PurchasingStaffGuardDiv>
+        </PurchasingStaffGuardAndProductionDepartmentDiv>
       </div>
     </div>
   );

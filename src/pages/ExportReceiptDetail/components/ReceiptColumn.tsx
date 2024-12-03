@@ -1,12 +1,13 @@
-import { badgeVariants } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/button";
-import capitalizeFirstLetter from "@/helpers/capitalizeFirstLetter";
-import { CustomColumnDef } from "@/types/CompositeTable";
-import { ExportReceiptStatus, MaterialExportReceiptDetail } from "@/types/ExportReceipt";
-import { MaterialReceipt } from "@/types/ImportReceipt";
-import { MaterialExportReceipt,  ReceiptStatusLabel } from "@/types/MaterialTypes";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { ColumnDef } from "@tanstack/react-table";
+import { badgeVariants } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/button';
+import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { CustomColumnDef } from '@/types/CompositeTable';
+import { ExportReceiptStatus, MaterialExportReceiptDetail } from '@/types/ExportReceipt';
+import { MaterialReceipt } from '@/types/ImportReceipt';
+import { MaterialExportReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { ColumnDef } from '@tanstack/react-table';
 
 export const getStatusBadgeVariant = (status: string) => {
   const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
@@ -109,8 +110,8 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original?.quantityByPack}</div>
+        <div className="flex">
+          <div className="">{row.original?.quantityByPack}</div>
         </div>
       );
     }
@@ -121,8 +122,8 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original?.remainQuantityByPack}</div>
+        <div className="flex">
+          <div className="">{row.original?.remainQuantityByPack}</div>
         </div>
       );
     }
@@ -137,8 +138,11 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
         {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
       </div>
     ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
+    filterOptions: ReceiptStatusLabel.map((status) => ({
+      label: status.label,
+      value: status.value
+    }))
+  }
 ];
 
 export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceiptDetail>[] = [
@@ -238,12 +242,15 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceiptD
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original?.quantityByPack}</div>
+        <div className="flex">
+          <div className="text-left">
+            {row.original.quantityByPack}{' '}
+            {convertTitleToTitleCase(row.original?.materialReceipt?.materialPackage?.packUnit)}
+          </div>
         </div>
       );
     }
-  },
+  }
   // {
   //   header: 'Remain Quantity',
   //   accessorKey: '',
@@ -268,5 +275,4 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceiptD
   //   ),
   //   filterOptions: ExportReceiptStatus.map((status) => ({ label: status.label, value: status.value }))
   // },
-
 ];

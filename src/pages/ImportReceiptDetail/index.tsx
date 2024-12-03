@@ -72,6 +72,7 @@ import Discussion from './components/Disscussion';
 import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import ProductReceiptLabel from './components/ProductReceiptLabels';
+import { ImportReceiptAction } from './components/ImportReceiptAction';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -97,6 +98,7 @@ export default function MaterialReceipt() {
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isBlockedDialogOpen, setIsBlockedDialogOpen] = useState(false);
   const [render, setRender] = useState<number>(0);
 
   const onRender = () => {
@@ -173,25 +175,32 @@ export default function MaterialReceipt() {
       if (res.statusCode === 200) {
         toast({
           variant: 'success',
-          title: 'Import finished successfully',
-          description: 'The import receipt has been marked as imported.'
+          title: 'Import started successfully',
+          description: 'The import receipt process has begun.'
         });
         fetchImportRequestData();
         fetchData();
         setShowConfirmDialog(false);
       } else {
+        throw res; // Throw the response if it's not a 200 status
+      }
+    } catch (error: any) {
+      console.log(error.response);
+      if (error.response.data.statusCode === 409) {
+        setIsBlockedDialogOpen(true);
+        setBlockingInventoryPlans(error.response.data.errors);
         toast({
           variant: 'destructive',
-          title: 'Import finished unsuccessfully',
-          description: 'The import receipt has not been marked as imported.'
+          title: 'Failed to start import',
+          description: 'Inventory plan blocking importing process.'
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to start import',
+          description: 'There was a problem initiating the import process.'
         });
       }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to finish import',
-        description: 'There was a problem finishing the import process.'
-      });
     } finally {
       setIsLoading(false);
     }
@@ -275,6 +284,7 @@ export default function MaterialReceipt() {
   const qualityData = calculateQualityData(importReceipt?.inspectionReport?.inspectionReportDetail);
   const inspectionRequestId = inspectionReport?.inspectionRequest?.id;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [blockingInventoryPlans, setBlockingInventoryPlans] = useState<any[]>([]);
   const handleFinishImporting = async () => {
     if (importReceipt?.status === 'AWAIT_TO_IMPORT') {
       setIsDialogOpen(true); // Open the confirmation dialog
@@ -288,7 +298,6 @@ export default function MaterialReceipt() {
   };
   const confirmImporting = async () => {
     await handleStartImportRequest();
-    //onStartImport(); // Execute the importing process
     setIsDialogOpen(false); // Close the dialog
   };
   return (
@@ -300,13 +309,18 @@ export default function MaterialReceipt() {
         </div>
       ) : (
         <>
-          <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
+          {/* <h1 className="text-3xl font-bold mb-6 text-bluePrimary">
             {importReceipt?.type === 'MATERIAL' ? (
               <div>Material Receipt {importReceipt?.code}</div>
             ) : (
               <div>Product Receipt {importReceipt?.code}</div>
             )}
-          </h1>
+          </h1> */}
+          <ImportReceiptAction
+          isLoading={isLoading}
+          handleFinishImporting={handleFinishImporting}
+          handleFinishImport={handleFinishImport}
+          />
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -334,16 +348,72 @@ export default function MaterialReceipt() {
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
-            {/* <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Quality Pass Rate</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">98.5%</div>
-                <p className="text-xs text-muted-foreground">Inspection rate</p>
-              </CardContent>
-            </Card> */}
+            <Dialog open={isBlockedDialogOpen} onOpenChange={setIsBlockedDialogOpen}>
+              <DialogContent className="min-w-[800px]">
+                <DialogHeader>
+                  <DialogTitle>Inventory Plans Blocking Import</DialogTitle>
+                  <DialogDescription>
+                    The following inventory report plans are in progress and blocking the import:
+                  </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[60vh]">
+                  {blockingInventoryPlans.map((plan) => (
+                    <Card key={plan.id} className="mb-4">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="text-xl">{plan.title}</CardTitle>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {plan.code}
+                              </Badge>
+                              <Badge
+                                variant={plan.type === 'PARTIAL' ? 'secondary' : 'default'}
+                                className="text-xs">
+                                {plan.type}
+                              </Badge>
+                              <Badge
+                                variant={
+                                  plan.status === 'AWAIT'
+                                    ? 'warning'
+                                    : plan.status === 'IN_PROGRESS'
+                                      ? 'default'
+                                      : 'success'
+                                }
+                                className="text-xs">
+                                {plan.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground"> Expectation start date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(plan.from).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Expectation end date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(plan.to).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        <Button variant="link" asChild className="p-0 h-auto font-normal">
+                          <Link to={`/inventory-plan/${plan.id}`}>View Plan Details →</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </ScrollArea>
+                <DialogFooter>
+                  <Button onClick={() => setIsBlockedDialogOpen(false)}>Close</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Quality Check Summary</CardTitle>
@@ -361,7 +431,7 @@ export default function MaterialReceipt() {
                     <p className="text-xs font-medium text-muted-foreground">Total Passed</p>
                     <div className="text-2xl font-bold text-green-600">
                       {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
-                        (sum, detail) => sum + detail.approvedQuantityByPack,
+                        (sum: any, detail: any) => sum + detail.approvedQuantityByPack,
                         0
                       ) || 0}
                     </div>
@@ -370,10 +440,10 @@ export default function MaterialReceipt() {
                     <p className="text-xs font-medium text-muted-foreground">Total Failed</p>
                     <div className="text-2xl font-bold text-red-600">
                       {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
-                        (sum, detail) =>
+                        (sum: any, detail: any) =>
                           sum +
                           (detail.inspectionReportDetailDefect?.reduce(
-                            (defectSum, defect) => defectSum + defect.quantityByPack,
+                            (defectSum: any, defect: any) => defectSum + defect.quantityByPack,
                             0
                           ) || 0),
                         0
@@ -401,7 +471,7 @@ export default function MaterialReceipt() {
                         : 'Import completed'}
                     </p>
                   </div>
-                  <WarehouseStaffGuardDiv>
+                  {/* <WarehouseStaffGuardDiv>
                     {importReceipt?.status === 'IMPORTING' && (
                       <Button onClick={handleFinishImport} disabled={isLoading}>
                         Add Label
@@ -414,7 +484,7 @@ export default function MaterialReceipt() {
                         Start Importing
                       </Button>
                     )}
-                  </WarehouseStaffGuardDiv>
+                  </WarehouseStaffGuardDiv> */}
                 </div>
               </CardContent>
             </Card>

@@ -1,3 +1,4 @@
+import { getMyExportReceipt } from "@/api/services/exportReceiptApi";
 import { getOneMaterialExportReceiptFn } from "@/api/services/materialApi";
 import { MaterialExportReceiptResponse } from "@/types/MaterialTypes";
 import { InputType } from "@/types/Shared";
@@ -29,3 +30,4 @@ export const useGetMaterialExportReceipt = (id:string,{
 
     return {pageMeta, exportReceiptData,isFetching, isLoading };
   };
+ 

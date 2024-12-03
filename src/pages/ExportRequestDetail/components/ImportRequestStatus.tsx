@@ -82,11 +82,9 @@ const ImportRequestStatus = (props: Props) => {
         <span className="font-primary  lg:text-sm">#{exportRequest?.code}</span>
         <div className="font-primary text-sm">Assigned to</div>
         <Avatar>
-          {assignedTo.avatar ? (
-            <AvatarImage src={assignedTo.avatar} alt={assignedTo.role} />
-          ) : (
-            <AvatarFallback>{assignedTo.name?.slice(0, 2)}</AvatarFallback>
-          )}
+          <AvatarImage src={assignedTo.avatar} alt={assignedTo.role} />
+
+          <AvatarFallback>{assignedTo.name?.slice(0, 2)}</AvatarFallback>
         </Avatar>
         <div className="font-primary text-sm">{assignedTo.name}</div>
         <div className="font-primary text-sm">{assignedTo.role}</div>
