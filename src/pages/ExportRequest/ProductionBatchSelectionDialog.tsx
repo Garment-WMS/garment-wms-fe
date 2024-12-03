@@ -119,7 +119,7 @@ export default function ProductionBatchSelectionDialog({
                           Size: {batch.productionPlanDetail.productSize.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Quantity: {batch.productionPlanDetail.quantityToProduce}
+                          Quantity: {batch.quantityToProduce}
                         </p>
                       </CardContent>
                     </Card>
