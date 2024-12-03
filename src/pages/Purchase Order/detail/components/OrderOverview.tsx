@@ -166,14 +166,6 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
               <XCircle className="w-9 h-9 text-red-600" />
             )}
           </div>
-          {status === PurchaseOrderStatus.CANCELLED && (
-            <KeyValueDisplay
-              name="Cancelled At"
-              value={cancelledAt ? convertDateWithTime(cancelledAt) : '-'}
-              valueColor={'text-red-800'}
-              nameColor="text-red-600"
-            />
-          )}
         </div>
 
         <div className="flex flex-row items-center gap-3">
@@ -201,11 +193,21 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="space-y-1">
           <KeyValueDisplay name="Purchase Order Date" value={convertDate(orderDate)} />
           <KeyValueDisplay name="Expected Finished Date" value={convertDate(expectedFinishDate)} />
-          <KeyValueDisplay
-            name="Finished Date"
-            value={finishDate ? convertDate(finishDate) : '-'}
-            valueColor={finishDate ? 'text-green-600' : 'text-gray-900'}
-          />
+          {status !== PurchaseOrderStatus.CANCELLED && (
+            <KeyValueDisplay
+              name="Finished Date"
+              value={finishDate ? convertDateWithTime(finishDate) : '-'}
+              valueColor={finishDate ? 'text-green-600' : 'text-gray-900'}
+            />
+          )}
+          {status === PurchaseOrderStatus.CANCELLED && (
+            <KeyValueDisplay
+              name="Cancelled At"
+              value={cancelledAt ? convertDateWithTime(cancelledAt) : '-'}
+              valueColor={'text-red-800'}
+              nameColor="text-red-600"
+            />
+          )}
         </div>
       </div>
 

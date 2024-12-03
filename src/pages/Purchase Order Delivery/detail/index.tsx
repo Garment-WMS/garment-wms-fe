@@ -21,6 +21,9 @@ const PurchaseOrderDeliveryDetails = () => {
     purchasingStaff: any;
     cancelledAt?: string;
   };
+  // const importReciptId =
+  //   delivery?.importRequest?.inspectionRequest?.inspectionRequest?.importReceipt?.id;
+  // console.log(delivery);
 
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
@@ -65,13 +68,15 @@ const PurchaseOrderDeliveryDetails = () => {
                 {convertDate(delivery.expectedDeliverDate) || 'N/A'}
               </span>
             </div>
-            <div className="flex items-center text-green-600 gap-2">
-              <Package />
-              <span className="text-sm">Actual Delivery:</span>
-              <span className="font-medium">
-                {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
-              </span>
-            </div>
+            {delivery.status !== PurchaseOrderDeliveryStatus.CANCELLED && (
+              <div className="flex items-center text-green-600 gap-2">
+                <Package />
+                <span className="text-sm">Actual Delivery:</span>
+                <span className="font-medium">
+                  {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
+                </span>
+              </div>
+            )}
             {delivery.status === PurchaseOrderDeliveryStatus.CANCELLED && (
               <div className="flex items-center text-red-600 gap-2">
                 <XCircle />
@@ -86,7 +91,9 @@ const PurchaseOrderDeliveryDetails = () => {
 
         {/* Material List */}
         <section className="mt-6">
-          <h2 className="text-xl font-semibold text-primaryDark mb-4">Materials</h2>
+          <h2 className="text-xl font-semibold text-primaryDark mb-4">
+            Materials {importReciptId}
+          </h2>
           {delivery.poDeliveryDetail.map((detail: PODeliveryDetail) => (
             <MaterialList key={detail.id} detail={detail} status={delivery?.status} />
           ))}

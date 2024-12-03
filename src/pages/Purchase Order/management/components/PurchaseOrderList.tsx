@@ -32,10 +32,10 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/Dialog';
-import { Input } from '@/components/ui/Input';
 import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
+import { Textarea } from '@/components/ui/Textarea';
 
 const PurchaseOrderList: React.FC = () => {
   const { toast } = useToast();
@@ -349,7 +349,8 @@ const PurchaseOrderList: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <Input
+            <Textarea
+              className="h-40"
               id="cancelReason"
               placeholder="Enter reason for cancellation"
               value={cancelReason}
