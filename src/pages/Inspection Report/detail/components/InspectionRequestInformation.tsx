@@ -17,6 +17,7 @@ import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhone
 import { Gender } from '@/enums/gender';
 import fallbackAvatar from '@/assets/images/avaPlaceholder.jpg';
 import { Link } from 'react-router-dom';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -66,7 +67,12 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               {InspectionRequestStatusLabels[requestStatus]}
             </Badge>
           </CardTitle>
-          <CardDescription>Created on {convertDate(requestCreatedAt)}</CardDescription>
+          <CardDescription>
+            Reqeuested at
+            <span className="text-slate-600 ml-2 font-semibold">
+              {convertDateWithTime(requestCreatedAt)}
+            </span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

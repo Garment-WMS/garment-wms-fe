@@ -68,7 +68,10 @@ const InspectionRequestDetails: React.FC = () => {
         />
 
         {/* Inspection Report Detail */}
-        <InspectionRequestChart inspectionReport={inspectionReport} />
+        <InspectionRequestChart
+          inspectionRequestType={requestType}
+          inspectionReport={inspectionReport}
+        />
       </div>
     </section>
   );

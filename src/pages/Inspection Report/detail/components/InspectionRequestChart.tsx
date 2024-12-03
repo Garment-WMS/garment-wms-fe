@@ -17,11 +17,13 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import DefectsSummary from './DefectsSummary';
 import { useGetAllDefects } from '@/hooks/useGetAllDefects';
 import { InspectionRequestType } from '@/enums/inspectionRequestType';
-import { convertDate } from '@/helpers/convertDate';
 import { Link } from 'react-router-dom';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
-const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectionReport }) => {
+const InspectionRequestChart: React.FC<{
+  inspectionReport: any;
+  inspectionRequestType: string;
+}> = ({ inspectionReport, inspectionRequestType }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedDefectDetails, setSelectedDefectDetails] = useState<any[]>([]);
   const { data: defectData, isPending: isDefectsLoading } = useGetAllDefects();
@@ -48,17 +50,17 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
     setSelectedDefectDetails(mappedDefects);
     setOpenDialog(true);
   };
+  console.log(inspectionReport);
 
   return (
     <div>
-      <Card className="w-full ">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Inspection Report Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Inspection Details</h3>
               <div className="overflow-x-auto">
                 <Table className="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden shadow-md px-3">
                   <TableHeader className="bg-gray-100">
@@ -74,7 +76,7 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {inspectionReport?.type === InspectionRequestType.MATERIAL
+                    {inspectionRequestType === InspectionRequestType.MATERIAL
                       ? inspectionReport.inspectionReportDetail.map((detail: any) => (
                           <TableRow key={detail.id}>
                             <TableCell>
@@ -98,10 +100,10 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
                                 {inspectionReport.importReceipt?.code || 'N/A'}
                               </Link>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-green-600">
                               {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
-                            <TableCell className="text-right text-red-700">
+                            <TableCell className="text-right text-slate-700 font-semibold">
                               {detail?.quantityByPack ||
                                 detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
                                 0}
@@ -157,7 +159,7 @@ const InspectionRequestChart: React.FC<{ inspectionReport: any }> = ({ inspectio
                             <TableCell className="text-green-700">
                               {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right text-slate-700 font-semibold">
                               {detail?.quantityByPack ||
                                 detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
                                 0}
