@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetProductionBatchById } from '@/hooks/useGetProductionBatchById';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
@@ -18,6 +18,7 @@ import { getIconAttributes } from '@/helpers/getIconAttributes';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { Button } from '@/components/ui/button';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
+import { convertDate } from '@/helpers/convertDate';
 
 interface ProductionBatchDetailProps {
   productionPlanDetail: any;
@@ -225,7 +226,13 @@ const ProductionBatchDetail: React.FC = () => {
                     key={request.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleRowClick(request.id)}>
-                    <TableCell>{request.code}</TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/import-request/${request.id}`}
+                        className="font-semibold text-primary underline">
+                        {request.code}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary">{request.status}</Badge>
                     </TableCell>
@@ -265,11 +272,17 @@ const ProductionBatchDetail: React.FC = () => {
               <TableBody>
                 {materialExportRequest.map((request: any) => (
                   <TableRow key={request.id}>
-                    <TableCell>{request.code}</TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/export-request/${request.id}`}
+                        className="font-semibold text-primary underline">
+                        {request.code}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary">{request.status}</Badge>
                     </TableCell>
-                    <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
+                    <TableCell>{convertDateWithTime(request.createdAt)}</TableCell>
                     <TableCell>{request.description || 'N/A'}</TableCell>
                   </TableRow>
                 ))}

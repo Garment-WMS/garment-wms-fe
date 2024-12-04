@@ -36,7 +36,6 @@ import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { Textarea } from '@/components/ui/Textarea';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const PurchaseOrderList: React.FC = () => {

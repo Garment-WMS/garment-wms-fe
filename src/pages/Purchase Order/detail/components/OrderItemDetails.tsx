@@ -36,7 +36,6 @@ interface ImportQuantityCardProps {
   variant?: 'finish' | 'in-progress' | 'pending' | 'cancel';
 }
 
-// ImportQuantityCard Component
 const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
   title,
   value,
@@ -61,7 +60,6 @@ const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
   );
 };
 
-// OrderItemDetails Component
 const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   poDelivery,
   poId,
@@ -92,7 +90,11 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     }
   };
 
-  const renderRedirectButton = (delivery: PODelivery, poid: string) => {
+  const renderRedirectButton = (delivery: PODelivery, poid: string, hasOtherPending: boolean) => {
+    if (delivery.isExtra && hasOtherPending) {
+      return null;
+    }
+
     let path = '';
     let color = '';
     let label = '';
@@ -103,11 +105,6 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
         label = 'Create Import Request';
         path = `/import-request/create/material/${delivery.id}`;
         break;
-      // case PurchaseOrderDeliveryStatus.FINISHED:
-      //   color = 'bg-green-400';
-      //   label = 'View Details';
-      //   path = `/purchase-order/${poid}/po-delivery/${delivery.id}`;
-      //   break;
       default:
         return null;
     }
@@ -136,11 +133,15 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     );
   };
 
+  const hasOtherPending = poDelivery.some(
+    (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra
+  );
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-primaryDark">Purchase Delivery</h1>
-        <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-2 rounded-full shadow-md">
+        <div className="flex items-center space-x-2 bg-primaryLight text-white px-4 py-2 rounded-full shadow-md">
           <span className="text-sm font-medium">Total:</span>
           <span className="text-xl font-semibold">{totalDelivery}</span>
         </div>
@@ -205,7 +206,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                       }
                     </Badge>
                   }
-                  redirectButton={renderRedirectButton(delivery, poId || '')}
+                  redirectButton={renderRedirectButton(delivery, poId || '', hasOtherPending)}
                   isExtra={delivery.isExtra}
                   defaultOpen={false}>
                   <div className="flex items-center justify-between mt-5 gap-6">
