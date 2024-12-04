@@ -106,7 +106,7 @@ const ProductionBatchList: React.FC = () => {
           case ProductionBatchStatus.FINISHED:
             colorVariant = 'bg-green-500 text-white';
             break;
-          case ProductionBatchStatus.CANCELED:
+          case ProductionBatchStatus.CANCELLED:
             colorVariant = 'bg-red-500 text-white';
             break;
           default:

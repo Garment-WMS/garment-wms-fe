@@ -57,8 +57,8 @@ const getStatusDetails = (status: string) => {
       return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
     case 'COMPLETED':
       return { label: 'Completed', color: 'bg-green-500 text-green-950', icon: CheckCircle };
-    case 'CANCELED':
-      return { label: 'Canceled', color: 'bg-red-500 text-red-950', icon: XCircle };
+    case 'CANCELLED':
+      return { label: 'Cancelled', color: 'bg-red-500 text-red-950', icon: XCircle };
     default:
       return { label: status, color: 'bg-gray-500 text-gray-950', icon: Clock };
   }

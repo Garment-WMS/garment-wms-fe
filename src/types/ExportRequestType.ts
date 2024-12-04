@@ -270,7 +270,7 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Await to export', value: 'AWAIT_TO_EXPORT', variant: 'warning' },
   { label: 'Production Rejected', value: 'PRODUCTION_REJECTED', variant: 'destructive' },
   { label: 'Production Approved', value: 'PRODUCTION_APPROVED', variant: 'success' },
-  { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
+  { label: 'Cancelled', value: 'CANCELLED', variant: 'destructive' }
 ];
 type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default' | 'danger';
 export interface UseImportRequestsResponse {

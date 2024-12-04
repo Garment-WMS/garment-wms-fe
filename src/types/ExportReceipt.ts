@@ -40,7 +40,7 @@ export type MaterialReceipt = {
   quantityByPack: number;
   materialPackage: MaterialPackage;
   remainQuantityByPack: number;
-  status: 'IMPORTING' | 'IMPORTED' | 'CANCELED' | 'AVAILABLE' | 'USED';
+  status: 'IMPORTING' | 'IMPORTED' | 'CANCELLED' | 'AVAILABLE' | 'USED';
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -108,7 +108,7 @@ export type ExportReceipt = {
   warehouseManagerId: string;
   inspectionReportId: string | null;
   code: string;
-  status: 'EXPORTING' | 'EXPORTED' | 'CANCELED';
+  status: 'EXPORTING' | 'EXPORTED' | 'CANCELLED';
   type: 'PRODUCTION' | 'DISCHARGE';
   note: string | null;
   startedAt: string;

@@ -73,7 +73,7 @@ export default function ProductionBatchSelectionDialog({
       case 'IMPORTING':
       case 'EXECUTING':
         return { variant: 'secondary', bgClass: 'bg-gray-500' }; // Gray for pending
-      case 'CANCELED':
+      case 'CANCELLED':
         return { variant: 'secondary', bgClass: 'bg-red-500' }; // Red for canceled
       default:
         return { variant: 'secondary', bgClass: 'bg-gray-500' }; // Default gray

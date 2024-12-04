@@ -11,7 +11,7 @@ type Props = {
 
 const statusOrder = [
   'PENDING',
-  'CANCELED',
+  'CANCELLED',
   'REJECTED',
   'APPROVED',
   'AWAIT_TO_EXPORT',

@@ -5,7 +5,7 @@ export const importRequestStatusList = [
   },
   {
     title: 'Request approval',
-    state: ['REJECTED', 'CANCELED', 'APPROVED']
+    state: ['REJECTED', 'CANCELLED', 'APPROVED']
   },
   {
     title: 'Material Delivery',
@@ -18,7 +18,7 @@ export const importRequestStatusList = [
 ];
 export const statusOrder = [
   'PENDING',
-  'CANCELED',
+  'CANCELLED',
   'REJECTED',
   'APPROVED',
   'DELIVERING',

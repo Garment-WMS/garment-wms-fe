@@ -37,8 +37,8 @@ const getStatusDetails = (status: string) => {
       return { label: 'Open', color: 'bg-blue-500 text-blue-950' };
     case 'DONE':
       return { label: 'Completed', color: 'bg-green-500 text-green-950' };
-    case 'CANCELED':
-      return { label: 'Canceled', color: 'bg-red-500 text-red-950' };
+    case 'CANCELLED':
+      return { label: 'Cancelled', color: 'bg-red-500 text-red-950' };
     default:
       return { label: status, color: 'bg-gray-500 text-gray-950' };
   }
