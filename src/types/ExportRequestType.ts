@@ -267,6 +267,7 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Approved', value: 'APPROVED', variant: 'success' },
   { label: 'Exporting', value: 'EXPORTING', variant: 'warning' },
   { label: 'Exported', value: 'EXPORTED', variant: 'success' },
+  { label: 'Await to export', value: 'AWAIT_TO_EXPORT', variant: 'warning' },
   { label: 'Production Rejected', value: 'PRODUCTION_REJECTED', variant: 'destructive' },
   { label: 'Production Approved', value: 'PRODUCTION_APPROVED', variant: 'success' },
   { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }

@@ -8,7 +8,7 @@ import useLogout from '@/hooks/useLogout';
 import SideBarMenuItem from './SideBarMenuItem';
 
 const SideBar: React.FC<SideBarProps> = ({ menu }) => {
-  const title = 'Garment Storage';
+  const title = 'Garment Inventory';
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const [activeTitle, setActiveTitle] = useState(menu[0]?.title || '');

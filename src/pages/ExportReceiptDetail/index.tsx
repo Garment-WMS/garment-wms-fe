@@ -142,7 +142,7 @@ export default function ExportReceiptDetail() {
   }, [id, dispatch, render]);
   return (
     <div className="container mx-auto p-4">
-      {isLoading && exportReceipt ? (
+      {isLoading ? (
         // Show the loading component when `isLoading` is true
         <div className="flex items-center justify-center min-h-screen">
           <Loading size="100" />

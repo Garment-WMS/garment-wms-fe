@@ -86,7 +86,7 @@ export function MaterialExportActions({
                   </ScrollArea>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTING', 'staff')}>
+                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>

@@ -44,14 +44,15 @@ import { useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Barcode from 'react-barcode';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Loading from '@/components/common/Loading';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 import { Textarea } from '@/components/ui/Textarea';
 
-type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'PENDING';
+type ApprovalStatus = any;
 
 interface WarehouseApprovalProps {
   requestId: string;
-  code:string;
+  code: string;
   manager?: any;
   currentStatus: string;
   requestDetails: string;
@@ -75,6 +76,36 @@ const getStatusDetails = (status: ApprovalStatus) => {
         icon: AlertCircle
       };
     case 'APPROVED':
+      return {
+        label: 'Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'AWAIT_TO_EXPORT':
+      return {
+        label: 'Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'PRODUCTION_APPROVED':
+      return {
+        label: 'Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'EXPORTING':
+      return {
+        label: 'Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'EXPORTED':
+      return {
+        label: 'Approved',
+        color: 'bg-green-500 text-green-950',
+        icon: ClipboardCheck
+      };
+    case 'PRODUCTION_REJECTED':
       return {
         label: 'Approved',
         color: 'bg-green-500 text-green-950',
@@ -128,6 +159,7 @@ export default function WarehouseApproval({
   const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
   const [notFullFilledMaterialExportRequestDetails, setNotFullFilledMaterialExportRequestDetails] =
     useState([]);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -175,6 +207,7 @@ export default function WarehouseApproval({
       );
 
       toast({
+        variant: 'success',
         title: 'Request Approved',
         description: 'The warehouse request has been successfully approved.',
         duration: 5000
@@ -232,6 +265,8 @@ export default function WarehouseApproval({
     }
 
     setIsSubmitting(true);
+    setLoading(true);
+    setRecommendedMaterials([]);
     try {
       const data = await getRecommendedMaterialReceiptFn(requestId, selectedAlgorithm);
       setRecommendedMaterials(data.data);
@@ -256,6 +291,7 @@ export default function WarehouseApproval({
         duration: 5000
       });
     } finally {
+      setLoading(false);
       setIsSubmitting(false);
     }
   };
@@ -307,22 +343,30 @@ export default function WarehouseApproval({
               </div>
               <div className="flex items-center text-sm">
                 <User className="mr-3 h-5 w-5 text-muted-foreground" />
-                <span className="font-medium w-24">Manager:</span>
+                <span className="font-medium w-40">Staff Export Assigned:</span>
                 <span>
-                  {manager?.account?.firstName
-                    ? manager?.account?.firstName + ' ' + manager?.account?.lastName
-                    : 'Not assigned'}
+                  {warehouseStaff?.account ? (
+                    <Badge variant={'outline'}>
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarImage
+                            src={warehouseStaff?.account?.avaUrl}
+                            alt="Profile picture"
+                          />
+                          <AvatarFallback>Staff</AvatarFallback>
+                        </Avatar>
+                        {warehouseStaff?.account?.lastName +
+                          ' ' +
+                          warehouseStaff?.account?.firstName}
+                      </div>
+                      <div></div>
+                    </Badge>
+                  ) : (
+                    <h4>Not yet</h4>
+                  )}
                 </span>
               </div>
-              <div className="flex items-center text-sm">
-                <User className="mr-3 h-5 w-5 text-muted-foreground" />
-                <span className="font-medium w-24">Manager:</span>
-                <span>
-                  {manager?.account?.firstName
-                    ? manager?.account?.firstName + ' ' + manager?.account?.lastName
-                    : 'Not assigned'}
-                </span>
-              </div>
+
               <div className="flex items-center text-sm">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
@@ -378,6 +422,11 @@ export default function WarehouseApproval({
                         </SelectContent>
                       </Select>
                     </div>
+                    {isLoading && (
+                      <div className="flex items-center justify-center m-10">
+                        <Loading size="40" />
+                      </div>
+                    )}
                     {notFullFilledMaterialExportRequestDetails.length > 0 && (
                       <Alert variant="destructive" className="mt-4 mb-4">
                         <AlertCircle className="h-4 w-4" />
@@ -394,7 +443,7 @@ export default function WarehouseApproval({
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {recommendedMaterials.map((material, index) => (
                             <Card key={index} className="overflow-hidden">
-                              <div className="aspect-square relative">
+                              <div className="aspect-square relative flex items-center justify-center">
                                 <img
                                   src={
                                     material.materialReceipt.materialPackage.materialVariant

@@ -14,6 +14,7 @@ const statusOrder = [
   'CANCELED',
   'REJECTED',
   'APPROVED',
+  'AWAIT_TO_EXPORT',
   'EXPORTING',
   'EXPORTED',
   'PRODUCTION_REJECTED',

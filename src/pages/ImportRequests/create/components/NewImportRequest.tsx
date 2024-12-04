@@ -22,6 +22,7 @@ import ImportRequestDetails from './ImportRequestDetails';
 import { PODeliveryDetail } from '@/types/PurchaseOrder';
 import WarehouseImportDialog from './WarehouseImportDialog';
 import { PODelivery, PurchaseOrder } from '@/types/ProductionPlan';
+import Loading from '@/components/common/Loading';
 
 type Props = {};
 
@@ -56,6 +57,7 @@ const NewImportRequest = (props: Props) => {
   const [selectedPoDelivery, setSelectedPoDelivery] = useState<PODelivery>();
   const [poDeliveryDetails, setPoDeliverydetails] = useState<PODeliveryDetail[]>([]);
   const [isNewPoDelivery, setIsNewdelivery] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { id } = useParams();
 
@@ -68,7 +70,7 @@ const NewImportRequest = (props: Props) => {
         });
         return;
       }
-
+      setIsLoading(true);
       const formatedPoDeliveryDetails = poDeliveryDetails.map((detail: any) => {
         return {
           ...detail,
@@ -98,6 +100,8 @@ const NewImportRequest = (props: Props) => {
         title: 'Uh oh! Something went wrong.',
         description: error.message || 'There was a problem with your request.'
       });
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -108,7 +112,11 @@ const NewImportRequest = (props: Props) => {
     form.handleSubmit(onSubmit)();
     setDialogOpen(false); // Close the dialog after submit
   };
-
+if(isLoading){
+    return <div className="w-full h-screen pt-4 flex flex-col justify-center items-center gap-4">
+      <Loading/>
+  </div>
+}
   return (
     <div className="w-full pt-4 flex flex-col gap-4">
       <div className="font-extrabold font-primary flex justify-center text-bluePrimary text-md md:text-3xl">

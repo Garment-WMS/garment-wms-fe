@@ -25,7 +25,7 @@ const ExportRequestCreation: React.FC<Props> = (props) => {
 
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
-        {productionDepartment ? (
+          {productionDepartment ? (
             <>
               <Avatar className="w-20 h-20 mb-4">
                 <AvatarImage src={productionDepartment?.account?.avatarUrl} alt="John Doe" />
@@ -35,15 +35,14 @@ const ExportRequestCreation: React.FC<Props> = (props) => {
                 <p className="text-sm font-medium">
                   Created by {productionDepartment?.account.firstName}
                 </p>
-                <p className="text-xs text-muted-foreground">{productionDepartment?.account.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  {productionDepartment?.account.email}
+                </p>
               </div>
             </>
-          ):(
-            <div>
-              Not found purchasing staff
-            </div>
+          ) : (
+            <div>Not found purchasing staff</div>
           )}
-          
         </div>
 
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
@@ -54,11 +53,11 @@ const ExportRequestCreation: React.FC<Props> = (props) => {
               <span className="font-medium w-24">Created:</span>
               <span>{new Date(productionDepartment?.account.createdAt).toLocaleString()}</span>
             </div>
-            {/* <div className="flex items-center text-sm">
+            <div className="flex items-center text-sm">
               <File className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Type:</span>
-              {convertTitleToTitleCase(importRequest?.type)}
-            </div> */}
+              Export Material for Production
+            </div>
           </div>
         </div>
       </CardContent>

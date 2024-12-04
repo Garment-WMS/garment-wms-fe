@@ -84,7 +84,7 @@ function SelectionSummary({
           )}
         </div>
         <div className="flex justify-between items-center">
-          <span>PO Batch:</span>
+          <span>PO Delivery:</span>
           {selectedPoDelivery ? (
             <Badge variant="outline" className="flex items-center gap-2">
               {selectedPoDelivery.code}
@@ -160,7 +160,6 @@ export default function WarehouseImportDialog({
         // if (defaultPodeliveryId) {
           if (defaultPodeliveryId) {
             const selectedDelivery = findPoDeliveryById(data, defaultPodeliveryId);
-            console.log('selectedDelivery', selectedDelivery);
             if (selectedDelivery) {
               const {  po, poDelivery } = selectedDelivery;
               setSelectedPO(po);

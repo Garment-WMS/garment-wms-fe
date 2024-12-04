@@ -87,14 +87,21 @@ const ExportRequestTable = (props: Props) => {
         }
       : undefined;
 
-  function formatString(input: string): string {
-    return input
-      .toLowerCase() // Convert the entire string to lowercase first
-      .split('_') // Split by underscores
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
-      .join(' '); // Join the words back with spaces
-  }
-
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'AWAIT_TO_EXPORT':
+      case 'PENDING':
+        return 'bg-yellow-500';
+      case 'PRODUCTION_REJECTED':
+      case 'CANCELLED':
+        return 'bg-red-500';
+      case 'PRODUCTION_APPROVED':
+        return 'bg-green-500';
+      case 'EXPORTING':
+      case 'EXPORTED':
+        return 'bg-blue-500';
+    }
+  };
   const exportRequestColumns: CustomColumnDef<any>[] = [
     {
       header: 'Code',
@@ -117,7 +124,9 @@ const ExportRequestTable = (props: Props) => {
       })),
       cell: ({ row }) => (
         <Badge
-          variant={ExportRequestStatus.find((status) => status.value === row.original.status)?.variant}
+          variant={
+            ExportRequestStatus.find((status) => status.value === row.original.status)?.variant
+          }
           className="w-[140px] flex items-center justify-center pr-0 pl-0">
           {convertTitleToTitleCase(row.original.status)}
         </Badge>
@@ -161,14 +170,25 @@ const ExportRequestTable = (props: Props) => {
         </div>
       )
     },
-    
+
     {
       header: 'Created At',
       enableColumnFilter: false,
       accessorKey: 'createdAt',
-      cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString()}</div>
+      cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString() || 'Not yet'}</div>
     },
-
+    {
+      header: 'Last updated at',
+      accessorKey: 'code',
+      enableColumnFilter: false,
+      cell: ({ row }) => <div>{new Date(row.original.updatedAt).toLocaleString() || 'Not yet'}</div>
+    },
+    // {
+    //   header: 'Description',
+    //   enableColumnFilter: false,
+    //   accessorKey: 'description',
+    //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
+    // },
     {
       id: 'actions',
       cell: ({ row }) => (
