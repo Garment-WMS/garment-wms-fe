@@ -24,6 +24,7 @@ import ProductionPlanIntroduction from './components/Introduction';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { FactoryDirectorGuardDiv } from '@/components/authentication/createRoleGuard';
 import ProductionPlanSummary from './components/ProductionPlanSummary';
+import { convertTitleToTitleCase } from '../../../helpers/convertTitleToCaseTitle';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -126,7 +127,7 @@ const ProductionPlanManagement = () => {
                   </Link>
                   <span>
                     <Badge className="bg-gray-500 ml-2 text-white px-2 py-1 rounded">
-                      {plan.code}
+                      {convertTitleToTitleCase(plan.code)}
                     </Badge>
                   </span>
                   <Badge

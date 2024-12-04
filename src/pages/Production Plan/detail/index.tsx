@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, PlayCircle } from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
+import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { ProductionPlanDetail as ProductionPlanDetailType } from '@/types/ProductionPlan';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/Dialog';
 
 interface SummaryCardProps {
   title: string;
@@ -47,7 +56,30 @@ const getStatusBadgeStyle = (status: string) => {
 const ProductionPlanDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStartingPlan, setIsStartingPlan] = useState(false);
   const { data, isPending, isError } = useGetProductionPlanById(id!);
+  const { startPlan } = useStartProductionPlan();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleStartPlan = () => {
+    if (data?.data) {
+      setIsStartingPlan(true);
+      startPlan(
+        { id: data.data.id },
+        {
+          onSuccess: () => {
+            setIsStartingPlan(false);
+            closeModal();
+            navigate(0);
+          },
+          onError: () => setIsStartingPlan(false)
+        }
+      );
+    }
+  };
 
   if (isPending) {
     return (
@@ -77,7 +109,7 @@ const ProductionPlanDetail = () => {
   const plan = data.data;
 
   return (
-    <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1  flex flex-col gap-8">
+    <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 flex flex-col gap-8">
       {/* Header Card */}
       <Card className="mb-6 border-b-4">
         <CardHeader className="border-b border-gray-200">
@@ -86,9 +118,21 @@ const ProductionPlanDetail = () => {
               <CardTitle className="text-3xl font-bold text-blue-800">{plan.name}</CardTitle>
               <Badge className="bg-primaryLight mt-1">{plan.code}</Badge>
             </div>
-            <Badge className={`px-3 py-1 rounded text-lg ${getStatusBadgeStyle(plan.status)}`}>
-              {convertTitleToTitleCase(plan.status)}
-            </Badge>
+            <div className="flex flex-row items-center gap-2">
+              <Badge className={`px-3 py-1 rounded text-lg ${getStatusBadgeStyle(plan.status)}`}>
+                {convertTitleToTitleCase(plan.status)}
+              </Badge>
+              {plan.status === ProductionPlanStatus.PLANNING && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={openModal}>
+                  <PlayCircle className="mr-2 h-4 w-4" />
+                  Start Plan
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -104,7 +148,6 @@ const ProductionPlanDetail = () => {
         <CardContent className="pt-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => {
-              // Extract values for cards
               const defectQuantity = detail?.productPlanDetailDefectQuantity || 0;
               const producedQuantity = detail?.productPlanDetailProducedQuantity || 0;
 
@@ -120,7 +163,7 @@ const ProductionPlanDetail = () => {
                   </div>
                   {/* Product Details */}
                   <CardContent className="p-4">
-                    <div className=" mb-3">
+                    <div className="mb-3">
                       <h3 className="text-lg font-semibold text-gray-800">
                         {detail.productSize.productVariant.name} - {detail.productSize.size}
                       </h3>
@@ -154,6 +197,45 @@ const ProductionPlanDetail = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              Start Production Plan
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Are you sure you want to start the production plan?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 bg-red-50 border-l-4 border-red-400 p-4">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+              <p className="ml-3 text-sm text-red-700">
+                This action will initiate the production process. Please ensure all prerequisites
+                are met.
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 sm:mt-8 sm:flex sm:flex-row-reverse gap-3">
+            <Button
+              variant="default"
+              className="bg-green-600 text-white hover:bg-green-700"
+              onClick={handleStartPlan}
+              disabled={isStartingPlan}>
+              {isStartingPlan ? 'Starting...' : 'Yes, Start Plan'}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeModal}
+              className="mt-3 sm:mt-0 ring-1 ring-red-500 text-red-500 hover:text-red-300">
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

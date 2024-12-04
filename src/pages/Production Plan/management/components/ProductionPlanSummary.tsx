@@ -43,7 +43,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
   const customStyling: StylingOption = {
     headerHeight: 50, // Makes the header larger
     ganttHeight: 400, // Sets Gantt chart height
-    columnWidth: 300, // Reduce column width for smaller width
+    columnWidth: 280, // Reduce column width for smaller width
     listCellWidth: '', // Narrower name column
     rowHeight: 45, // Reduces row height for better spacing
     barCornerRadius: 5, // Adds rounded corners to bars
@@ -55,7 +55,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
     barBackgroundSelectedColor: '#b0b0b0', // Selected background color
     barProgressColor: '#4caf50', // Progress bar color
     barProgressSelectedColor: '#388e3c', // Selected progress color
-    todayColor: '#ffeb3b', // Highlight today's column
+    todayColor: Colors.green[500], // Highlight today's column
     arrowColor: '#9e9e9e', // Relationship arrow color
     arrowIndent: 15 // Space for arrow alignment
   };

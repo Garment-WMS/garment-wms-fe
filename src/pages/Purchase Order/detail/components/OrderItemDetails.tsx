@@ -191,7 +191,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                 />
               ))
           : poDelivery.map((delivery) => {
-              const totalMaterialAmount = delivery.poDeliveryDetail.reduce(
+              const totalMaterialAmount = delivery?.poDeliveryDetail?.reduce(
                 (sum: number, detail: PODeliveryDetail) => sum + (detail.totalAmount || 0),
                 0
               );
@@ -216,7 +216,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                       <div className="text-right flex items-center gap-3">
                         <div className="text-slate-600">Total Amount:</div>
                         <div className="text-lg font-bold text-blue-600">
-                          {totalMaterialAmount.toLocaleString()} VND
+                          {totalMaterialAmount?.toLocaleString()} VND
                         </div>
                       </div>
                     </div>
