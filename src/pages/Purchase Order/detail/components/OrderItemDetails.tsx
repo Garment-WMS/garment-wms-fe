@@ -74,7 +74,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   cancelledAt = ''
 }) => {
   const navigate = useNavigate();
-
+  console.log(poDelivery);
   const getStatusBadgeClass = (status: PurchaseOrderDeliveryStatus) => {
     switch (status) {
       case PurchaseOrderDeliveryStatus.PENDING:

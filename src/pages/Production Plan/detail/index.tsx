@@ -178,16 +178,16 @@ const ProductionPlanDetail = () => {
 
                     <div className="mt-4 grid grid-cols-2 gap-4">
                       <SummaryCard
-                        title="Defect Quantity"
-                        value={defectQuantity}
-                        icon={<AlertCircle className="h-5 w-5" />}
-                        variant="error"
-                      />
-                      <SummaryCard
                         title="Produced Quantity"
                         value={producedQuantity}
                         icon={<CheckCircle className="h-5 w-5" />}
                         variant="success"
+                      />
+                      <SummaryCard
+                        title="Defect Quantity"
+                        value={defectQuantity}
+                        icon={<AlertCircle className="h-5 w-5" />}
+                        variant="error"
                       />
                     </div>
                   </CardContent>
