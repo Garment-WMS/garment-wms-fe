@@ -82,8 +82,8 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
             {title}
           </h1>
         </div>
-        <div className="pt-2 overflow-y-auto max-h-[calc(100vh-150px)]">
-        <ul className="pt-2">
+        <div className="py-2 overflow-y-auto max-h-[calc(100vh-150px)] mt-6">
+        <ul className="">
           {menu.map((menuItem, index) => (
             <SideBarMenuItem
               key={index}
