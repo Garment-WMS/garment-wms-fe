@@ -36,6 +36,7 @@ import { cancelPurchaseOrder } from '@/api/services/purchaseOrder';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { Textarea } from '@/components/ui/Textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const PurchaseOrderList: React.FC = () => {
   const { toast } = useToast();
@@ -163,21 +164,6 @@ const PurchaseOrderList: React.FC = () => {
       cell: ({ row }) => <div className="mr-5">{row.original.supplier?.supplierName}</div>
     },
     {
-      header: 'Total Amount',
-      accessorKey: 'totalAmount',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const totalAmount = row.original.subTotalAmount;
-        const currency = row.original.currency;
-        return (
-          <div className="ml-1 flex items-center gap-2">
-            <span>{totalAmount.toLocaleString()}</span>
-            <span className="text-slate-500">{currency}</span>
-          </div>
-        );
-      }
-    },
-    {
       header: 'Order Date',
       accessorKey: 'orderDate',
       enableColumnFilter: false,
@@ -233,26 +219,56 @@ const PurchaseOrderList: React.FC = () => {
       }
     },
     {
-      header: 'No of delivery',
+      header: 'No of Delivery',
       accessorKey: 'totalPoDelivery',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        const statuses = [
+          {
+            value: row.original.totalFinishedPoDelivery,
+            color: 'bg-green-600 text-white'
+          },
+          {
+            value: row.original.totalInProgressPoDelivery,
+            color: 'bg-blue-600 text-white'
+          },
+          {
+            value: row.original.totalPendingPoDelivery,
+            color: 'bg-yellow-600 text-white'
+          },
+          {
+            value: row.original.totalCancelledPoDelivery,
+            color: 'bg-red-600 text-white'
+          }
+        ];
+
+        const visibleStatuses = statuses.filter((status) => status.value > 0);
+
         return (
-          <div className="text-center text-xl">
-            <Badge className="bg-blue-700">{row.original.totalPoDelivery || 0}</Badge>
+          <div className="flex flex-wrap gap-2">
+            {visibleStatuses.length > 0 ? (
+              visibleStatuses.map((status, index) => (
+                <div
+                  key={index}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center ${status.color}`}>
+                  <span className="font-bold text-sm">{status.value}</span>
+                </div>
+              ))
+            ) : (
+              <span className="text-gray-500 text-sm font-medium">-</span>
+            )}
           </div>
         );
       }
     },
     {
-      header: 'Progress',
+      header: 'Material Import Progress',
       accessorKey: 'progress',
       enableColumnFilter: false,
       cell: ({ row }) => {
         const totalImportQuantity = row.original.totalImportQuantity || 0;
         const totalQuantityToImport = row.original.totalQuantityToImport || 1; // Avoid division by zero
         const progress = (totalImportQuantity / totalQuantityToImport) * 100;
-
         return (
           <TooltipProvider>
             <Tooltip>
@@ -319,6 +335,33 @@ const PurchaseOrderList: React.FC = () => {
         <PurchasingStaffGuardDiv>
           <UploadExcel />
         </PurchasingStaffGuardDiv>
+      </div>
+      <div className="flex flex-row justify-center">
+        <Card className="mt-4 max-w-[50%]">
+          <CardHeader>
+            <CardTitle className="font-semibold text-gray-800 text-sm">
+              Purchase Delivery Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-row items-center justify-center gap-8">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-green-600"></div>
+              <span className="text-sm font-medium text-gray-700">Finished</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-blue-600"></div>
+              <span className="text-sm font-medium text-gray-700">In Progress</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-yellow-600"></div>
+              <span className="text-sm font-medium text-gray-700">Pending</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-red-600"></div>
+              <span className="text-sm font-medium text-gray-700">Cancelled</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       {/* Set fixed height for the table */}
       <div className="overflow-auto h-[700px]">

@@ -17,6 +17,7 @@ import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhone
 import { Gender } from '@/enums/gender';
 import fallbackAvatar from '@/assets/images/avaPlaceholder.jpg';
 import { Link } from 'react-router-dom';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 const statusColors: Record<InspectionRequestStatus, string> = {
   [InspectionRequestStatus.CANCELLED]: 'bg-red-500',
@@ -39,6 +40,7 @@ interface InspectionRequestInformationProps {
   importRequest?: ImportRequest;
   inspectionDepartment?: any;
   importRequestId?: string;
+  importReceiptCode?: string;
 }
 
 const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
@@ -49,7 +51,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestCreatedAt,
   importRequest,
   inspectionDepartment,
-  importRequestId
+  importReceiptCode
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
 
@@ -67,121 +69,70 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               {InspectionRequestStatusLabels[requestStatus]}
             </Badge>
           </CardTitle>
-          <CardDescription>Created on {convertDate(requestCreatedAt)}</CardDescription>
+          <CardDescription>
+            Reqeuested at
+            <span className="text-slate-600 ml-2 font-semibold">
+              {convertDateWithTime(requestCreatedAt)}
+            </span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="inspectItem">
-                {InspectionRequestTypeLabels[requestType]}s
-              </TabsTrigger>
-            </TabsList>
-
-            {/* General Tab */}
-            <TabsContent value="general" className="mt-4">
-              <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Request Code */}
-                <div className="flex items-center">
-                  <Type className="text-gray-500 mr-2" />
-                  <div>
-                    <dt className="font-medium text-gray-500">Inspection Request</dt>
-                    <dd className="text-gray-800">
-                      <Badge className="bg-primaryLight">{requestCode}</Badge>
-                    </dd>
-                  </div>
-                </div>
-                {/* Type */}
-                <div className="flex items-center">
-                  {requestType === InspectionRequestType.MATERIAL ? (
-                    <Box className="text-gray-500 mr-2" />
-                  ) : (
-                    <Shirt className="text-gray-500 mr-2" />
-                  )}
-                  <div>
-                    <dt className="font-medium text-gray-500">Type</dt>
-                    <dd className="font-semibold uppercase text-primaryLight">
-                      {InspectionRequestTypeLabels[requestType]}
-                    </dd>
-                  </div>
-                </div>
-
-                {/* Created At */}
-                <div className="flex items-center">
-                  <ClipboardCopy className="text-gray-500 mr-2" />
-                  <div>
-                    <dt className="font-medium text-gray-500">Import Request</dt>
-                    <dd className="text-primaryLight underline cursor-pointer">
-                      <Link
-                        to={`/import-request/${importRequest?.id}`}
-                        className="text-primaryLight underline cursor-pointer">
-                        {importRequest?.code}
-                      </Link>
-                    </dd>
-                  </div>
-                </div>
-
-                {/* Note */}
-                <div className="flex flex-col">
-                  <div className="flex items-center mb-1">
-                    <Edit3 className="text-gray-500 mr-2" />
-                    <dt className="font-medium text-gray-500">Note</dt>
-                  </div>
-                  <Input
-                    type="text"
-                    defaultValue={requestNote || 'No notes provided'}
-                    placeholder="Enter note here..."
-                    className="text-gray-400"
-                    disabled={!requestNote}
-                  />
-                </div>
-              </dl>
-            </TabsContent>
-
-            {/* Materials Tab */}
-            <TabsContent value="inspectItem" className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                {importRequestDetails.map((detail) => (
-                  <div
-                    key={detail.id}
-                    className="flex bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                    {/* Image Section */}
-                    <div className="w-24 h-24 flex-shrink-0 bg-gray-100 flex items-center justify-center p-2">
-                      <img
-                        src={
-                          detail.materialPackage?.materialVariant?.image ||
-                          'https://via.placeholder.com/150'
-                        }
-                        alt={detail.materialPackage?.name || 'Material'}
-                        className="object-contain w-full h-full"
-                      />
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex flex-col justify-center gap-2 flex-grow p-4">
-                      <h3 className="font-semibold text-xl text-gray-800 truncate mb-2">
-                        {detail.materialPackage?.materialVariant?.name || 'Unknown Material'}
-                      </h3>
-                      <div className="flex justify-between items-center text-sm text-gray-600">
-                        <div>
-                          <strong>Code:</strong>{' '}
-                          <Badge className="bg-gray-500 text-white px-2 py-1 rounded-lg">
-                            {detail.materialPackage?.code || 'N/A'}
-                          </Badge>
-                        </div>
-                        <div>
-                          <strong>Quantity:</strong>{' '}
-                          <span className="lowercase text-primaryLight font-semibold">
-                            {detail.quantityByPack} {detail.materialPackage?.packUnit}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Request Code */}
+            <div className="flex items-center">
+              <Type className="text-gray-500 mr-2" />
+              <div>
+                <dt className="font-medium text-gray-500">Inspection Request</dt>
+                <dd className="text-gray-800">
+                  <Badge className="bg-primaryLight">{requestCode}</Badge>
+                </dd>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+            {/* Type */}
+            <div className="flex items-center">
+              {requestType === InspectionRequestType.MATERIAL ? (
+                <Box className="text-gray-500 mr-2" />
+              ) : (
+                <Shirt className="text-gray-500 mr-2" />
+              )}
+              <div>
+                <dt className="font-medium text-gray-500">Type</dt>
+                <dd className="font-semibold uppercase text-primaryLight">
+                  {InspectionRequestTypeLabels[requestType]}
+                </dd>
+              </div>
+            </div>
+
+            {/* Created At */}
+            <div className="flex items-center">
+              <ClipboardCopy className="text-gray-500 mr-2" />
+              <div>
+                <dt className="font-medium text-gray-500">Import Request</dt>
+                <dd className="text-primaryLight underline cursor-pointer">
+                  <Link
+                    to={`/import-request/${importRequest?.id}`}
+                    className="text-primaryLight underline cursor-pointer">
+                    {importRequest?.code}
+                  </Link>
+                </dd>
+              </div>
+            </div>
+
+            {/* Note */}
+            <div className="flex items-center">
+              <ReceiptText className="text-gray-500 mr-2" />
+              <div>
+                <dt className="font-medium text-gray-500">Import Receipt</dt>
+                <dd className="text-primaryLight underline cursor-pointer">
+                  <Link
+                    to={`/import-request/${importRequest?.id}`}
+                    className="text-primaryLight underline cursor-pointer">
+                    {importReceiptCode}
+                  </Link>
+                </dd>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

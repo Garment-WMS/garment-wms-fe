@@ -196,8 +196,8 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
           {status !== PurchaseOrderStatus.CANCELLED && (
             <KeyValueDisplay
               name="Finished Date"
-              value={finishDate ? convertDateWithTime(finishDate) : '-'}
-              valueColor={finishDate ? 'text-green-600' : 'text-gray-900'}
+              value={finishDate ? convertDateWithTime(finishDate) : 'Not Yet'}
+              valueColor={finishDate ? 'text-green-600' : 'text-gray-400'}
             />
           )}
           {status === PurchaseOrderStatus.CANCELLED && (

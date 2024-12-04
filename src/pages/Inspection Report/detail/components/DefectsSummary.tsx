@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -32,23 +32,27 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
     value: defect.quantity
   }));
 
+  // Generate consistent colors for defects based on their IDs
   const colors = [
-    Colors.red[500],
-    Colors.green[500],
-    Colors.blue[500],
-    Colors.yellow[500],
-    Colors.purple[500],
-    Colors.orange[500]
+    Colors.red[700],
+    Colors.green[700],
+    Colors.blue[700],
+    Colors.yellow[700],
+    Colors.purple[700],
+    Colors.orange[700]
   ];
 
-  const defectColors = defects.map((defect, index) => ({
-    id: defect.id,
-    color: colors[index % colors.length]
-  }));
+  const defectColors = useMemo(() => {
+    const colorMap = new Map<string, string>();
+    defects.forEach((defect, index) => {
+      const color = colors[index % colors.length];
+      colorMap.set(defect.id, color);
+    });
+    return colorMap;
+  }, [defects, colors]);
 
   const getColorForDefect = (defectId: string) => {
-    const foundColor = defectColors.find((item) => item.id === defectId);
-    return foundColor ? foundColor.color : Colors.greyText;
+    return defectColors.get(defectId) || Colors.greyText;
   };
 
   // Check if all quantities are zero
@@ -62,7 +66,7 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects }) => {
           {!isAllZero ? (
             <PieChartComponent
               data={chartData}
-              colors={colors}
+              colors={Array.from(defectColors.values())}
               width={300}
               height={270}
               innerRadius={90}

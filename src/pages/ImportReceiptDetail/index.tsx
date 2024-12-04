@@ -317,9 +317,9 @@ export default function MaterialReceipt() {
             )}
           </h1> */}
           <ImportReceiptAction
-          isLoading={isLoading}
-          handleFinishImporting={handleFinishImporting}
-          handleFinishImport={handleFinishImport}
+            isLoading={isLoading}
+            handleFinishImporting={handleFinishImporting}
+            handleFinishImport={handleFinishImport}
           />
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
             <Card>
@@ -422,9 +422,13 @@ export default function MaterialReceipt() {
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Total Inspected</p>
-                    <div className="text-2xl font-bold">
-                      {importReceipt?.inspectionReport?.inspectionReportDetail?.length || 0}
+                    <div className="flex flex-col items-center justify-center ">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Total {inspectionReport?.type === 'MATERIAL' ? 'Materials' : 'Products'}
+                      </p>
+                      <div className="text-2xl font-bold text-gray-800">
+                        {importReceipt?.inspectionReport?.inspectionReportDetail?.length || 0}
+                      </div>
                     </div>
                   </div>
                   <div>
@@ -661,6 +665,19 @@ export default function MaterialReceipt() {
                         <Badge className="bg-slate-500">
                           {inspectionReport?.type === 'MATERIAL' ? 'Material' : 'Product'}
                         </Badge>
+                        <p>
+                          <strong>
+                            Total Inspected{' '}
+                            {inspectionReport?.type === 'MATERIAL' ? 'materials' : 'products'}:{' '}
+                          </strong>{' '}
+                          <span className="text-slate-700 font-semibold">
+                            {inspectionReport?.inspectionReportDetail?.reduce(
+                              (sum: number, detail: InspectionReportDetail) =>
+                                sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
+                              0
+                            ) || 0}
+                          </span>
+                        </p>
                       </p>
                       <p>
                         <strong>Approved Quantity (By Pack):</strong>{' '}
@@ -683,16 +700,6 @@ export default function MaterialReceipt() {
                                   defectSum + defect.quantityByPack,
                                 0
                               ),
-                            0
-                          ) || 0}
-                        </span>
-                      </p>
-                      <p>
-                        <strong>Total Items:</strong>{' '}
-                        <span className="text-primaryLight font-semibold">
-                          {inspectionReport?.inspectionReportDetail?.reduce(
-                            (sum: number, detail: InspectionReportDetail) =>
-                              sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
                             0
                           ) || 0}
                         </span>

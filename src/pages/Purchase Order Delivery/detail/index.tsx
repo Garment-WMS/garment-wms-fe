@@ -1,11 +1,10 @@
 import { Badge } from '@/components/ui/Badge';
 import { Clock, Package, XCircle } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
 import MaterialList from './components/MaterialList';
 import { PODelivery, PODeliveryDetail } from '@/types/PurchaseOrder';
 import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar } from '@radix-ui/react-avatar';
 import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -65,7 +64,9 @@ const PurchaseOrderDeliveryDetails = () => {
               <Clock />
               <span className="text-sm">Estimated Delivery:</span>
               <span className="font-medium">
-                {delivery.expectedDeliverDate ? convertDate(delivery.expectedDeliverDate) : '-'}
+                {delivery.expectedDeliverDate
+                  ? convertDate(delivery.expectedDeliverDate)
+                  : 'Not Yet'}
               </span>
             </div>
             {delivery.status !== PurchaseOrderDeliveryStatus.CANCELLED && (
@@ -73,7 +74,7 @@ const PurchaseOrderDeliveryDetails = () => {
                 <Package />
                 <span className="text-sm">Actual Delivery:</span>
                 <span className="font-medium">
-                  {delivery.deliverDate ? convertDate(delivery.deliverDate) : '-'}
+                  {delivery.deliverDate ? convertDate(delivery.deliverDate) : 'Not Yet'}
                 </span>
               </div>
             )}
@@ -82,7 +83,7 @@ const PurchaseOrderDeliveryDetails = () => {
                 <XCircle />
                 <span className="text-sm">Cancelled At:</span>
                 <span className="font-medium">
-                  {cancelledAt ? convertDateWithTime(cancelledAt || '') : '-'}
+                  {cancelledAt ? convertDateWithTime(cancelledAt || '') : 'Not Yet'}
                 </span>
               </div>
             )}
@@ -121,20 +122,22 @@ const PurchaseOrderDeliveryDetails = () => {
               <h3 className="font-semibold text-xl text-gray-900">
                 {`${purchasingStaff?.account?.firstName || ''} ${purchasingStaff?.account?.lastName || ''}`}
               </h3>
-              <p className="text-sm text-gray-600">{purchasingStaff?.account?.email || 'N/A'}</p>
+              <p className="text-sm text-gray-600">
+                {purchasingStaff?.account?.email || 'Not Yet'}
+              </p>
             </div>
           </div>
           <div className="mt-6 space-y-4">
             <div className="flex justify-between items-center">
               <span className="font-medium text-gray-500">Account Username:</span>
               <span className="text-gray-800 font-medium">
-                {purchasingStaff?.account?.username || 'N/A'}
+                {purchasingStaff?.account?.username || 'Not Yet'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="font-medium text-gray-500">Phone:</span>
               <span className="text-gray-800 font-medium">
-                {convertToVietnamesePhoneNumber(purchasingStaff?.account?.phoneNumber || 'N/A')}
+                {convertToVietnamesePhoneNumber(purchasingStaff?.account?.phoneNumber || 'Not Yet')}
               </span>
             </div>
             <div className="flex justify-between items-center">
@@ -146,7 +149,7 @@ const PurchaseOrderDeliveryDetails = () => {
             <div className="flex justify-between items-center">
               <span className="font-medium text-gray-500">Date of Birth:</span>
               <span className="text-gray-800 font-medium">
-                {convertDate(purchasingStaff?.account?.dateOfBirth) || 'N/A'}
+                {convertDate(purchasingStaff?.account?.dateOfBirth) || 'Not Yet'}
               </span>
             </div>
           </div>

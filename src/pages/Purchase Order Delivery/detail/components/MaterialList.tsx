@@ -24,12 +24,12 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
   const displayImported =
     status === PurchaseOrderDeliveryStatus.FINISHED
       ? `${actualImportQuantity.toLocaleString()} ${pluralize(materialPackage.packUnit, actualImportQuantity)}`
-      : 'NOT YET';
+      : 'Not Yet';
 
   const displayFailed =
     status === PurchaseOrderDeliveryStatus.FINISHED
       ? `${failedQuantity.toLocaleString()} ${pluralize(materialPackage.packUnit, failedQuantity)}`
-      : '-';
+      : 'Not Yet';
 
   return (
     <Card className="w-full mb-4">
@@ -81,10 +81,8 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
           {/* Quantity and Expiry Info */}
           <div className="flex flex-col items-start gap-2">
             <div className="flex items-center gap-2">
-              <Box size={24} className="text-blue-500" />
-              <span className="text-3xl font-bold text-blue-600">
-                {quantityByPack.toLocaleString()}
-              </span>
+              <Box size={24} className="" />
+              <span className="text-3xl font-bold ">{quantityByPack.toLocaleString()}</span>
               <span className="text-lg font-semibold text-gray-600 lowercase">
                 {pluralize(materialPackage.packUnit, quantityByPack)}
               </span>

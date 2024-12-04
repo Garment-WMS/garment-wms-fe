@@ -65,10 +65,14 @@ const InspectionRequestDetails: React.FC = () => {
           importRequest={importRequest}
           inspectionDepartment={inspectionDepartment}
           importRequestId={importReqeustId}
+          importReceiptCode={inspectionReport?.importReceipt?.code}
         />
 
         {/* Inspection Report Detail */}
-        <InspectionRequestChart inspectionReport={inspectionReport} />
+        <InspectionRequestChart
+          inspectionRequestType={requestType}
+          inspectionReport={inspectionReport}
+        />
       </div>
     </section>
   );
