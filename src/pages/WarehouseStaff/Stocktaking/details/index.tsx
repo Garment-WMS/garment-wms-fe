@@ -619,7 +619,7 @@ export default function WarehousestaffStocktakingDetails() {
                 {convertTitleToTitleCase(inventoryReport.status)}
               </Badge>
               {inventoryReport.status === 'REPORTED' && (
-                <div className="mt-4">
+                <div className="mt-4 col-span-2">
                   <p>Recorded Quantity: {inventoryReport.totalExpectedQuantity}</p>
                   <p>Actual Quantity: {inventoryReport.totalActualQuantity}</p>
                   <p>
@@ -629,7 +629,7 @@ export default function WarehousestaffStocktakingDetails() {
                 </div>
               )}
               {inventoryReport.status === 'FINISHED' && (
-                <div className="mt-4">
+                <div className="mt-4 col-span-2">
                   <p>Recorded Quantity: {inventoryReport.totalExpectedQuantity}</p>
                   <p>Actual Quantity: {inventoryReport.totalManagerQuantityConfirm}</p>
                   <p>
