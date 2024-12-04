@@ -56,7 +56,8 @@ const PurchaseOrderDetails: React.FC = () => {
     productionPlan,
     finishDate,
     purchasingStaff,
-    cancelledAt
+    cancelledAt,
+    poMaterialSummary
   } = purchaseOrder;
 
   return (
@@ -79,9 +80,10 @@ const PurchaseOrderDetails: React.FC = () => {
           productionPlanCode={productionPlan?.code}
           finishDate={finishDate}
           cancelledAt={cancelledAt}
+          poMaterialSummary={poMaterialSummary}
         />
         {/* Order to details */}
-        <div className="hidden">
+        <div className="">
           <OrderToDetails supplier={supplier} />
         </div>
         {/* Order item details */}

@@ -1,0 +1,8 @@
+/* GanttChart.module.css */
+.hidden-columns .task-list-header {
+  display: none; /* Hides the task list header (Name, From, To) */
+}
+
+.hidden-columns .task-list-table {
+  display: none; /* Hides the task list rows (tasks content in the left column) */
+}

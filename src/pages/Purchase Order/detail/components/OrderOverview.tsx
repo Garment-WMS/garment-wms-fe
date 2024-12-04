@@ -19,6 +19,8 @@ import {
   DialogTitle
 } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@radix-ui/react-progress';
 
 interface KeyValueDisplayProps {
   name: string;
@@ -44,6 +46,7 @@ interface OrderOverviewProps {
   totalQuantityToImport: number;
   productionPlanCode: string;
   cancelledAt?: string;
+  poMaterialSummary?: any[];
 }
 
 const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
@@ -89,7 +92,8 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   totalQuantityToImport,
   productionPlanCode,
   finishDate,
-  cancelledAt
+  cancelledAt,
+  poMaterialSummary
 }) => {
   const { id } = useParams(); // Get purchase order ID from the route params
   const { toast } = useToast();
@@ -229,6 +233,56 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
             name="Items Remaining to Import"
             value={`${totalQuantityToImport.toLocaleString()} items`}
           />
+        </div>
+      </div>
+
+      {/* Material Summary */}
+      <div className="mt-3">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Material Summary</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {poMaterialSummary?.map((material) => {
+            const importPercentage =
+              (material.actualImportQuantity / material.quantityByPack) * 100;
+
+            return (
+              <Card key={material.id} className="overflow-hidden">
+                <CardHeader className="p-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                      <img
+                        src={material.materialVariant.image}
+                        alt={material.materialVariant.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder.svg';
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <CardTitle className="text-sm font-medium">{material.name}</CardTitle>
+                      <p className="text-xs text-muted-foreground">{material.code}</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="flex justify-between text-sm mb-2">
+                    <div className="flex flex-row items-center gap-2">
+                      <span>Pack Quantity: </span>
+                      <span className="text-primaryLight text-md">{material.quantityByPack}</span>
+                    </div>
+                    <div className="flex flex-row items-center gap-2"></div>
+                    <span>Imported:</span>
+                    <span className="text-green-600 text-md">{material.actualImportQuantity}</span>
+                  </div>
+                  <Progress value={importPercentage} className="w-full h-2" />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {importPercentage.toFixed(2)}% of pack quantity imported
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
