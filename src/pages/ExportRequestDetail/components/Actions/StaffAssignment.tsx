@@ -12,7 +12,15 @@ import {
 } from '@/components/ui/Dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
-import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCheckIcon,
+  ChevronLeft,
+  ChevronLeftCircleIcon,
+  ChevronRight,
+  EditIcon,
+  Plus
+} from 'lucide-react';
 import { getAllTasks, getTaskByRolefn, getTaskByTimeZoneAndRole } from '@/api/services/taskApi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getAccountByRole } from '@/api/account/accountApi';
@@ -23,6 +31,7 @@ import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import Loading from '@/components/common/Loading';
 import { useToast } from '@/hooks/use-toast';
+import { IoMdClose } from 'react-icons/io';
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
 export interface Props {
@@ -87,8 +96,8 @@ export default function AssignStaffPopup({
       });
       return;
     } else if (
-      selectedInspectionTimeFrame?.expectFinishedAt &&
-      slotInfo.start < selectedInspectionTimeFrame?.expectFinishedAt
+      selectedInspectionTimeFrame?.expectedFinishedAt &&
+      slotInfo.start < selectedInspectionTimeFrame?.expectedFinishedAt
     ) {
       toast({
         variant: 'destructive',
@@ -107,7 +116,10 @@ export default function AssignStaffPopup({
       start: slotInfo.start,
       end: slotInfo.end,
       resourceId: participant.accountId,
-      taskType: 'EXP-TAS-NEW'
+      id: Date.now(),
+      startedAt: newTask.start,
+      finishedAt: newTask.end,
+      code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`
     });
 
     setIsDialogOpen(true);
@@ -125,16 +137,16 @@ export default function AssignStaffPopup({
 
   const handleCreateTask = () => {
     if (newTask.title && newTask.start && newTask.end) {
+      const resetTasks = tasks.filter((task: any) => task.isNew != true);
       setTasks([
-        ...tasks,
+        ...resetTasks,
         {
           ...(newTask as any),
           id: Date.now(),
           startedAt: newTask.start,
           finishedAt: newTask.end,
-          expectedStartedAt: newTask.start,
-          expectedFinishedAt: newTask.end,
-          code: `${type == 'warehouseStaffId' ? `TAS-NEW` : `New Inspection Task`}`
+          code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`,
+          isNew: true
         }
       ]);
 
@@ -217,49 +229,48 @@ export default function AssignStaffPopup({
         }
       }}>
       <DialogTrigger asChild>
-        {staff ? (
-          <Badge variant="outline">
-            <div className="">
-              <div className="flex items-center">
-                <Avatar className="w-6 h-6 mr-2">
-                  <AvatarImage src={staff.account.avatarUrl} />
-                  <AvatarFallback>
-                    {staff.account.firstName.slice(0, 1) + staff.account.lastName.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
-                {staff.account.firstName + ' ' + staff.account.lastName}
-              </div>
+        <div className="relative group">
+          {staff ? (
+            <Badge variant="outline">
               <div>
+                <div className="flex items-center">
+                  <Avatar className="w-6 h-6 mr-2">
+                    <AvatarImage src={staff.account.avatarUrl} />
+                    <AvatarFallback>
+                      {staff.account.firstName.slice(0, 1) + staff.account.lastName.slice(0, 1)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {staff.account.firstName + ' ' + staff.account.lastName}
+                </div>
                 <div>
-                  {newTask.start && newTask.end
-                    ? `${new Date(newTask.start).toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      })} - ${new Date(newTask.end).toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      })}`
-                    : 'No date available'}
+                  <div>
+                    {newTask.start && newTask.end
+                      ? `${new Date(newTask.start).toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })} - ${new Date(newTask.end).toLocaleString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                        })}`
+                      : 'No date available'}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Badge>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => setIsOpen(true)} // Allow manual override
-          >
-            Assign Employee
-          </Button>
-        )}
+            </Badge>
+          ) : (
+            <Button variant="outline" onClick={() => setIsOpen(true)}>
+              Assign Employee
+            </Button>
+          )}
+        </div>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[825px]">
@@ -267,6 +278,7 @@ export default function AssignStaffPopup({
           <>
             <DialogHeader>
               <DialogTitle>Assign Staff to Tasks</DialogTitle>
+              <p>You can select, drag and drop to assign and re-assign the task</p>
               <div className="flex justify-between items-center my-4">
                 <Button variant="ghost" onClick={() => handleDateChange('prev')}>
                   <ChevronLeft className="w-5 h-5" />
@@ -298,11 +310,10 @@ export default function AssignStaffPopup({
                   eventPropGetter={(event: any) => ({
                     style: {
                       backgroundColor:
-                        event.title === 'New Warehouse Task'
-                          ? '#31ad70'
-                          : event.participantId === '2'
-                            ? '#ad4331'
-                            : '#246bfd'
+                        event.title === 'New Warehouse Task' ||
+                        event.title === 'New Inspection Task'
+                          ? '#31ad70' // Green for these tasks
+                          : '#246bfd' // Default color for others
                     }
                   })}
                   slotPropGetter={slotPropGetter}
@@ -326,7 +337,7 @@ export default function AssignStaffPopup({
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Assign Warehouse Task</DialogTitle>
+                  <DialogTitle>{newTask ? 'Re-Assign ' : ' Assign new '} Task</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="flex items-center justify-center">

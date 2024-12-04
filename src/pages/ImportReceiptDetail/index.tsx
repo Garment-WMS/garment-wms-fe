@@ -29,14 +29,7 @@ import { ImportReceipt } from '@/types/ImportReceipt';
 import importReceiptSelector from '../ImportReceiptList/slice/selector';
 import Loading from '@/components/common/Loading';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/Table';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,10 +62,11 @@ import {
 import { InspectionReportDetail } from '@/types/InspectionReportDetail';
 import { Badge } from '@/components/ui/Badge';
 import Discussion from './components/Disscussion';
-import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import ProductReceiptLabel from './components/ProductReceiptLabels';
 import { ImportReceiptAction } from './components/ImportReceiptAction';
+import ImportStepper from './components/ImportStepper';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -185,10 +179,9 @@ export default function MaterialReceipt() {
         throw res; // Throw the response if it's not a 200 status
       }
     } catch (error: any) {
-      console.log(error.response);
       if (error.response.data.statusCode === 409) {
         setIsBlockedDialogOpen(true);
-        setBlockingInventoryPlans(error.response.data.errors);
+        setBlockingInventoryPlans(error.response.data.errors.inventoryReportPlan);
         toast({
           variant: 'destructive',
           title: 'Failed to start import',
@@ -465,16 +458,7 @@ export default function MaterialReceipt() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold capitalize">
-                      {convertTitleToTitleCase(importReceipt?.status)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {importReceipt?.status === 'IMPORTING'
-                        ? 'Import in progress'
-                        : 'Import completed'}
-                    </p>
-                  </div>
+                  <ImportStepper currentStep={importReceipt?.status} />
                   {/* <WarehouseStaffGuardDiv>
                     {importReceipt?.status === 'IMPORTING' && (
                       <Button onClick={handleFinishImport} disabled={isLoading}>
