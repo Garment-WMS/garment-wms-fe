@@ -183,6 +183,18 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceiptD
     }
   },
   {
+    header: 'Material Variant',
+    accessorKey: 'materialPackage.materialVariant.name',
+    enableColumnFilter: false,
+    cell: ({ row }) => {
+      return (
+        <div>
+          <div>{row.original?.materialReceipt?.materialPackage?.materialVariant.name}</div>
+        </div>
+      );
+    }
+  },
+  {
     header: 'Export Date',
     accessorKey: 'importDate',
     enableColumnFilter: false,

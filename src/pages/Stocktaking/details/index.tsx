@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/Textarea';
 import { useParams } from 'react-router-dom';
 import privateCall from '@/api/PrivateCaller';
 import { inventoryReportApi } from '@/api/services/inventoryReportApi,';
@@ -91,40 +91,39 @@ export default function StocktakingDetails() {
     {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
-    },
-  ]
+    }
+  ];
   const validateQuantity = (value: number | null): string | null => {
-    if (value === null || value=== undefined || value < 0 || value > 99999) {
+    if (value === null || value === undefined || value < 0 || value > 99999) {
       return 'Quantity must be between 0 and 99999.';
     }
     return null;
   };
   async function onSubmit() {
-  console.log('ap',approvedDetails)
+    console.log('ap', approvedDetails);
     try {
+      // Validate all fields when submitting
+      const newFieldErrors: { [key: string]: string | null } = {};
+      let hasErrors = false;
 
-// Validate all fields when submitting
-const newFieldErrors: { [key: string]: string | null } = {};
-let hasErrors = false;
+      approvedDetails.details.forEach((detail) => {
+        const error = validateQuantity(detail.managerQuantityConfirm);
+        if (error) {
+          newFieldErrors[detail.inventoryReportDetailId] = error;
+          hasErrors = true; // Mark that there are validation errors
+        }
+      });
 
-approvedDetails.details.forEach((detail) => {
-  const error = validateQuantity(detail.managerQuantityConfirm);
-  if (error) {
-    newFieldErrors[detail.inventoryReportDetailId] = error;
-    hasErrors = true; // Mark that there are validation errors
-  }
-});
+      setFieldErrors(newFieldErrors); // Update field errors state
 
-setFieldErrors(newFieldErrors); // Update field errors state
-
-if (hasErrors) {
-  toast({
-    variant: 'destructive',
-    title: 'Validation Error',
-    description: 'Please ensure all quantities are valid (between 0 and 99999).',
-  });
-  return; 
-}
+      if (hasErrors) {
+        toast({
+          variant: 'destructive',
+          title: 'Validation Error',
+          description: 'Please ensure all quantities are valid (between 0 and 99999).'
+        });
+        return;
+      }
 
       // Validation: Ensure all details have valid quantities
       // const hasErrors = approvedDetails.details.some(
@@ -134,7 +133,7 @@ if (hasErrors) {
       //     detail.managerQuantityConfirm <= 0 ||
       //     detail.managerQuantityConfirm > 99999
       // );
-  
+
       // if (hasErrors) {
       //   toast({
       //     variant: 'destructive',
@@ -143,9 +142,9 @@ if (hasErrors) {
       //   });
       //   return; // Stop execution if validation fails
       // }
-  
+
       setIsLoading(true);
-  
+
       if (id) {
         const res = await privateCall(
           inventoryReportApi.approveInventoryReport(id, approvedDetails)
@@ -161,23 +160,20 @@ if (hasErrors) {
       setApprovedDetails((prev) => ({
         details: prev.details.map((detail) => ({
           ...detail,
-          actualQuantity: null,
-        })),
+          actualQuantity: null
+        }))
       }));
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to approve inventory report',
+        description: 'Failed to approve inventory report'
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-  const handleApproveChange = (id: string, value: number|null) => {
-   
-
-
+  const handleApproveChange = (id: string, value: number | null) => {
     const errorMessage = validateQuantity(value);
     // Update field errors
     setFieldErrors((prev) => ({
@@ -220,13 +216,13 @@ if (hasErrors) {
 
       setInventoryReport(response.data.data);
       // Initialize approvedDetails based on inventoryReportDetails
-      const initialApprovedDetails: DetailsToApprove[] = fetchedReport.inventoryReportDetail.flatMap(
-        (detail: InventoryReportDetailsToRender) => [
+      const initialApprovedDetails: DetailsToApprove[] =
+        fetchedReport.inventoryReportDetail.flatMap((detail: InventoryReportDetailsToRender) => [
           ...(detail.materialPackages
             ? detail.materialPackages.flatMap((item: MaterialPackageOfInventoryReport) =>
                 item.inventoryReportDetails.map((reportDetail) => ({
                   inventoryReportDetailId: reportDetail.id,
-                  managerQuantityConfirm: reportDetail.actualQuantity,
+                  managerQuantityConfirm: reportDetail.actualQuantity
                 }))
               )
             : []),
@@ -234,12 +230,11 @@ if (hasErrors) {
             ? detail.productSizes.flatMap((item: ProductSizeOfInventoryReport) =>
                 item.inventoryReportDetails.map((reportDetail) => ({
                   inventoryReportDetailId: reportDetail.id,
-                  managerQuantityConfirm: reportDetail.actualQuantity,
+                  managerQuantityConfirm: reportDetail.actualQuantity
                 }))
               )
-            : []),
-        ]
-      );
+            : [])
+        ]);
 
       setApprovedDetails({ details: initialApprovedDetails });
 
@@ -305,10 +300,11 @@ if (hasErrors) {
   console.log('ds', approvedDetails);
   return (
     <div className="container mx-auto p-4 w-full  bg-white rounded-xl shadow-sm border">
-      
-      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
+      <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
       <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold leading-none tracking-tight">Inventory Report #{inventoryReport?.code}</h1>
+        <h1 className="text-2xl font-bold leading-none tracking-tight">
+          Inventory Report #{inventoryReport?.code}
+        </h1>
         {/* <div>
           <Button variant="outline" className="mr-2">
             Sửa phiếu kiểm hàng
@@ -411,12 +407,15 @@ if (hasErrors) {
                                                     max={99999}
                                                     onChange={(e) => {
                                                       const inputValue = e.target.value;
-                                                  
+
                                                       // If the input is cleared, handle it as empty
                                                       if (inputValue === '') {
                                                         handleApproveChange(reportDetail.id, null); // Use `null` to indicate cleared input
                                                       } else {
-                                                        handleApproveChange(reportDetail.id, +inputValue); // Parse the value as a number
+                                                        handleApproveChange(
+                                                          reportDetail.id,
+                                                          +inputValue
+                                                        ); // Parse the value as a number
                                                       }
                                                     }}
                                                     onKeyDown={(e) => {
@@ -430,7 +429,7 @@ if (hasErrors) {
                                                       }
                                                     }}
                                                   />
-                                                   {fieldErrors[reportDetail.id] && (
+                                                  {fieldErrors[reportDetail.id] && (
                                                     <div className="text-red-500 text-xs">
                                                       {fieldErrors[reportDetail.id]}
                                                     </div>
@@ -559,12 +558,15 @@ if (hasErrors) {
                                                     max={99999}
                                                     onChange={(e) => {
                                                       const inputValue = e.target.value;
-                                                  
+
                                                       // If the input is cleared, handle it as empty
                                                       if (inputValue === '') {
                                                         handleApproveChange(reportDetail.id, null); // Use `null` to indicate cleared input
                                                       } else {
-                                                        handleApproveChange(reportDetail.id, +inputValue); // Parse the value as a number
+                                                        handleApproveChange(
+                                                          reportDetail.id,
+                                                          +inputValue
+                                                        ); // Parse the value as a number
                                                       }
                                                     }}
                                                     onKeyDown={(e) => {
@@ -578,7 +580,7 @@ if (hasErrors) {
                                                       }
                                                     }}
                                                   />
-                                                   {fieldErrors[reportDetail.id] && (
+                                                  {fieldErrors[reportDetail.id] && (
                                                     <div className="text-red-500 text-xs">
                                                       {fieldErrors[reportDetail.id]}
                                                     </div>
@@ -655,7 +657,7 @@ if (hasErrors) {
                 {convertTitleToTitleCase(inventoryReport.status)}
               </Badge>
               {inventoryReport.status === 'REPORTED' && (
-                <div className="mt-4">
+                <div className="mt-4 col-span-2">
                   <p>Recorded Quantity: {inventoryReport.totalExpectedQuantity}</p>
                   <p>Actual Quantity: {inventoryReport.totalActualQuantity}</p>
                   <p>
@@ -665,8 +667,11 @@ if (hasErrors) {
                 </div>
               )}
               {inventoryReport.status === 'FINISHED' && (
-                <div className="mt-4">
-                  <p>Recorded Quantity: {inventoryReport.totalExpectedQuantity}</p>
+                <div className="mt-4 col-span-2">
+                  <p>
+                    Recorded Quantity:{' '}
+                    <span>{inventoryReport.totalExpectedQuantity}</span>
+                  </p>
                   <p>Actual Quantity: {inventoryReport.totalManagerQuantityConfirm}</p>
                   <p>
                     Quantity of difference:{' '}
@@ -677,28 +682,28 @@ if (hasErrors) {
               )}
             </div>
             {inventoryReport.status === 'REPORTED' && (
-               <div className="flex justify-center items-center mt-4 w-full">
-               <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                 <AlertDialogTrigger asChild>
-                   <Button type="button"> Balanced Inventory</Button>
-                 </AlertDialogTrigger>
-                 <AlertDialogContent>
-                   <AlertDialogHeader>
-                     <AlertDialogTitle>Confirm Balanced Inventory </AlertDialogTitle>
-                     <AlertDialogDescription>
-                       Are you sure you want to balence inventory. It will automatically adjust
-                       inventory receipt base on your input quantity
-                     </AlertDialogDescription>
-                   </AlertDialogHeader>
-                   <AlertDialogFooter>
-                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                     <AlertDialogAction onClick={onSubmit} type="submit">
-                       Continue
-                     </AlertDialogAction>
-                   </AlertDialogFooter>
-                 </AlertDialogContent>
-               </AlertDialog>
-             </div>
+              <div className="flex justify-center items-center mt-4 w-full">
+                <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button"> Balanced Inventory</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Balanced Inventory </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to balence inventory. It will automatically adjust
+                        inventory receipt base on your input quantity
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={onSubmit} type="submit">
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             )}
           </CardContent>
         </Card>

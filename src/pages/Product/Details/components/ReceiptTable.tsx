@@ -47,18 +47,6 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
       }
     },
     {
-      header: 'Product Size code',
-      accessorKey: 'productSize.code',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div >{row.original.productSize.code || 'N/A'}</div>
-          </div>
-        );
-      }
-    },
-    {
       header: 'Product Size name',
       accessorKey: 'productSize.name',
       enableColumnFilter: false,
@@ -93,23 +81,21 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
       }
     },
     {
-      header: 'Expired Date',
-      accessorKey: 'expireDate',
+      header: 'Type',
+      accessorKey: 'isDefect',
       enableColumnFilter: false,
       cell: ({ row }) => {
-        const dateString = row.original.expireDate;
-        if (!dateString) {
+        const isDefect = row.original.isDefect;
+        console.log(isDefect)
+        let result 
+        if (isDefect === null || isDefect === undefined) {
           return <div>N/A</div>;
+        }else {
+          isDefect ? result = 'Disqualified' : result = 'Qualified'
         }
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
         return (
           <div>
-            <div>{formattedDate}</div>
+            <div className={!isDefect? `text-green-500` : `text-red-500`}>{result}</div>
           </div>
         );
       }

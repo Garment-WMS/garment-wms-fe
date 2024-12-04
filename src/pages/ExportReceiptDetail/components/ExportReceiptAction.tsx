@@ -129,7 +129,7 @@ export function MaterialExportActions({
             <ProductionDepartmentGuardDiv>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button disabled={isLoading}>
+                  <Button className='flex justify-center items-center gap-2' disabled={isLoading}>
                     <GiConfirmed />
                     Finish
                   </Button>

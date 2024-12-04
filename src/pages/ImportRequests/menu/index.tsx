@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import Import1 from '@/assets/images/import-1.svg';
 import Import2 from '@/assets/images/import-2.svg';
-import Import3 from '@/assets/images/import-3.svg';
 import Import4 from '@/assets/images/import-4.svg';
-import Import5 from '@/assets/images/import-5.svg';
-import Import6 from '@/assets/images/import-6.svg';
+
 
 const CreateImportRequestMenu: React.FC = () => {
   const items = [
@@ -15,7 +13,6 @@ const CreateImportRequestMenu: React.FC = () => {
     },
     { label: 'Return Material', image: Import2, link: '/return-material' },
     { label: 'Product with Manufacturing Order', image: Import4, link: '/import-request/create/product' },
-    { label: 'Return Product', image: Import5, link: '/return-product' }
   ];
 
   return (
