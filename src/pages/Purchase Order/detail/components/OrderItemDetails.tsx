@@ -133,9 +133,11 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     );
   };
 
-  const hasOtherPending = poDelivery.some(
-    (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra
-  );
+  const hasOtherPending =
+    poDelivery &&
+    poDelivery?.some(
+      (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra
+    );
 
   return (
     <div className="mt-8">
