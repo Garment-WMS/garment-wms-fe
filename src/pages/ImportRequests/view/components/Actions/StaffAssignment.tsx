@@ -30,6 +30,7 @@ import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import Loading from '@/components/common/Loading';
 import { useToast } from '@/hooks/use-toast';
+import { IoMdClose } from 'react-icons/io';
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
 export interface Props {
@@ -113,7 +114,11 @@ export default function AssignStaffPopup({
         : '',
       start: slotInfo.start,
       end: slotInfo.end,
-      resourceId: participant.accountId
+      resourceId: participant.accountId,
+      id: Date.now(),
+      startedAt: newTask.start,
+      finishedAt: newTask.end,
+      code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`
     });
 
     setIsDialogOpen(true);
@@ -131,14 +136,16 @@ export default function AssignStaffPopup({
 
   const handleCreateTask = () => {
     if (newTask.title && newTask.start && newTask.end) {
+      const resetTasks = tasks.filter((task: any) => task.isNew != true);
       setTasks([
-        ...tasks,
+        ...resetTasks,
         {
           ...(newTask as any),
           id: Date.now(),
           startedAt: newTask.start,
           finishedAt: newTask.end,
-          code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`
+          code: `${type == 'warehouseStaffId' ? `New Warehouse Task` : `New Inspection Task`}`,
+          isNew: true
         }
       ]);
 
@@ -282,6 +289,7 @@ export default function AssignStaffPopup({
           <>
             <DialogHeader>
               <DialogTitle>Assign Staff to Tasks</DialogTitle>
+              <p>You can select, drag and drop to assign and re-assign the task</p>
               <div className="flex justify-between items-center my-4">
                 <Button variant="ghost" onClick={() => handleDateChange('prev')}>
                   <ChevronLeft className="w-5 h-5" />
@@ -313,11 +321,10 @@ export default function AssignStaffPopup({
                   eventPropGetter={(event: any) => ({
                     style: {
                       backgroundColor:
-                        event.title === 'New Warehouse Task'
-                          ? '#31ad70'
-                          : event.participantId === '2'
-                            ? '#ad4331'
-                            : '#246bfd'
+                        event.title === 'New Warehouse Task' ||
+                        event.title === 'New Inspection Task'
+                          ? '#31ad70' // Green for these tasks
+                          : '#246bfd' // Default color for others
                     }
                   })}
                   slotPropGetter={slotPropGetter}
@@ -325,7 +332,6 @@ export default function AssignStaffPopup({
                     event: (props) => (
                       <div className="text-white p-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap text-center">
                         {props.title}
-                        {props.title == 'New Warehouse Task' ? <AlertCircle /> : ''}
                       </div>
                     )
                   }}
@@ -342,7 +348,7 @@ export default function AssignStaffPopup({
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Assign Warehouse Task</DialogTitle>
+                  <DialogTitle>{newTask ? 'Re-Assign ' : ' Assign new '} Task</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="flex items-center justify-center">

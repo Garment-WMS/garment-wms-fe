@@ -36,15 +36,22 @@ import {
 } from '@/components/authentication/createRoleGuard';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { MaterialExportActions } from './components/ExportReceiptAction';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/Dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/Badge';
+import { FaPlay } from 'react-icons/fa';
 
-const chartData = [
-  { name: 'Red Button Box', quantity: 1500 },
-  { name: 'Blue Switch', quantity: 2000 },
-  { name: 'Green LED', quantity: 3000 },
-  { name: 'Black Casing', quantity: 1000 },
-  { name: 'White Cable', quantity: 5000 }
-];
-
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'; // For IMPORTING state
+import ImportStepper from './components/ImportStepper';
 export default function ExportReceiptDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -55,7 +62,10 @@ export default function ExportReceiptDetail() {
   const calculateTotalItemsReceived = (materialReceipt: any[]) => {
     return materialReceipt.reduce((total, item) => total + item.quantityByPack, 0);
   };
+  const [blockingInventoryPlans, setBlockingInventoryPlans] = useState<any[]>([]);
+  const [isBlockedDialogOpen, setIsBlockedDialogOpen] = useState(false);
   const [render, setRender] = useState<number>(0);
+
   const onRender = () => {
     setRender((render: number) => render + 1);
   };
@@ -87,13 +97,7 @@ export default function ExportReceiptDetail() {
           description: 'There was a problem with your request.'
         });
       }
-    } catch (error) {
-      setError('Something went wrong');
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'There was a problem with your request.'
-      });
+    } catch (error: any) {
     } finally {
       setIsLoading(false); // Stop loading
     }
@@ -124,17 +128,79 @@ export default function ExportReceiptDetail() {
           description: 'The export receipt has not been marked as finished.'
         });
       }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to finish export',
-        description: 'There was a problem finishing the export process.'
-      });
+    } catch (error: any) {
+      if (error.response.data.statusCode === 409) {
+        setIsBlockedDialogOpen(true);
+        setBlockingInventoryPlans(error.response.data.errors.inventoryReportPlan);
+        toast({
+          variant: 'destructive',
+          title: 'Failed to start import',
+          description: 'Inventory plan blocking importing process.'
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to start import',
+          description: 'There was a problem initiating the import process.'
+        });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const Stepper: React.FC<any> = ({ stepStatus }) => {
+    const stepMap: any[] = ['AWAIT_TO_IMPORT', 'IMPORTING', 'IMPORTED']; // Sample status fo
+    return (
+      <ol className="flex items-center w-full">
+        {stepMap.map((status, index) => {
+          let icon;
+          let bgColor;
+          let textColor;
+          let statusText;
+
+          // Determine styles and text based on the status
+          switch (status) {
+            case 'AWAIT_TO_IMPORT':
+              icon = <FaPlay />;
+              bgColor = 'bg-blue-100 dark:bg-blue-800';
+              textColor = 'text-blue-600 dark:text-blue-500';
+              statusText = 'Await to import';
+              break;
+            case 'IMPORTING':
+              icon = <AiOutlineLoading3Quarters className="animate-spin" />;
+              bgColor = 'bg-yellow-100 dark:bg-yellow-800';
+              textColor = 'text-yellow-600 dark:text-yellow-500';
+              statusText = 'Importing...';
+              break;
+            case 'IMPORTED':
+              icon = <IoIosCheckmarkCircleOutline />;
+              bgColor = 'bg-green-100 dark:bg-green-800';
+              textColor = 'text-green-600 dark:text-green-500';
+              statusText = 'Imported';
+              break;
+            default:
+              icon = <FaPlay />;
+              bgColor = 'bg-gray-100 dark:bg-gray-700';
+              textColor = 'text-gray-600 dark:text-gray-500';
+              statusText = 'Not started';
+              break;
+          }
+
+          return (
+            <li key={index} className={`flex w-full items-center ${textColor}`}>
+              <span
+                className={`flex items-center justify-center w-10 h-10 ${bgColor} rounded-full lg:h-12 lg:w-12 shrink-0`}>
+                {icon}
+              </span>
+              {/* Status Text */}
+              <div className="mt-1 text-sm">{statusText}</div>
+            </li>
+          );
+        })}
+      </ol>
+    );
+  };
   useEffect(() => {
     if (id) {
       fetchData();
@@ -175,6 +241,72 @@ export default function ExportReceiptDetail() {
                 <p className="text-xs text-muted-foreground">Total items from this receipt</p>
               </CardContent>
             </Card>
+            <Dialog open={isBlockedDialogOpen} onOpenChange={setIsBlockedDialogOpen}>
+              <DialogContent className="min-w-[800px]">
+                <DialogHeader>
+                  <DialogTitle>Inventory Plans Blocking Import</DialogTitle>
+                  <DialogDescription>
+                    The following inventory report plans are in progress and blocking the import:
+                  </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[60vh]">
+                  {blockingInventoryPlans.map((plan) => (
+                    <Card key={plan.id} className="mb-4">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="text-xl">{plan.title}</CardTitle>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {plan.code}
+                              </Badge>
+                              <Badge
+                                variant={plan.type === 'PARTIAL' ? 'secondary' : 'default'}
+                                className="text-xs">
+                                {plan.type}
+                              </Badge>
+                              <Badge
+                                variant={
+                                  plan.status === 'AWAIT'
+                                    ? 'warning'
+                                    : plan.status === 'IN_PROGRESS'
+                                      ? 'default'
+                                      : 'success'
+                                }
+                                className="text-xs">
+                                {plan.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground"> Expectation start date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(plan.from).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">Expectation end date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(plan.to).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        <Button variant="link" asChild className="p-0 h-auto font-normal">
+                          <Link to={`/stocktaking/plan/${plan.id}`}>View Plan Details →</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </ScrollArea>
+                <DialogFooter>
+                  <Button onClick={() => setIsBlockedDialogOpen(false)}>Close</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Receipt Type</CardTitle>
@@ -196,7 +328,7 @@ export default function ExportReceiptDetail() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div>
+                  {/* <div>
                     <div className="text-2xl font-bold capitalize">
                       {convertTitleToTitleCase(exportReceipt?.status)}
                     </div>
@@ -205,7 +337,8 @@ export default function ExportReceiptDetail() {
                         ? 'Export in progress'
                         : 'Export completed'}
                     </p>
-                  </div>
+                  </div> */}
+                  <ImportStepper currentStep={exportReceipt?.status} />
                 </div>
               </CardContent>
             </Card>

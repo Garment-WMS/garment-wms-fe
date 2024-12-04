@@ -47,6 +47,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Loading from '@/components/common/Loading';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 import { Textarea } from '@/components/ui/Textarea';
+import { IoMdClose } from 'react-icons/io';
 
 type ApprovalStatus = any;
 
@@ -228,7 +229,15 @@ export default function WarehouseApproval({
       setIsConfirmDialogOpen(false);
     }
   };
-
+  const handleRemoveStaff = (type: string) => {
+    if (type == 'inspection-department') {
+      setSelectedAssignee(null);
+      setSelectedWareHouseTimeFrame(null);
+    } else {
+      setSelectedAssignee(null);
+      setSelectedWareHouseTimeFrame(null);
+    }
+  };
   const handleDecline = async () => {
     setIsSubmitting(true);
     try {
@@ -557,6 +566,14 @@ export default function WarehouseApproval({
                         setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
                         role="warehouse-staff"
                       />
+                      {selectedAssignee && (
+                        <Button
+                          variant={'ghost'}
+                          className="hover:bg-red-400 ml-2"
+                          onClick={() => handleRemoveStaff('warehouse-staff')}>
+                          <IoMdClose />
+                        </Button>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="approveNote">Approval Note</Label>

@@ -32,7 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { importRequestApprovalFn, postChatFn } from '@/api/purchase-staff/importRequestApi';
 import { useParams } from 'react-router-dom';
 import { statusOrder } from '@/pages/ImportRequests/constants';
-import { IoIosSearch } from 'react-icons/io';
+import { IoIosSearch, IoMdClose } from 'react-icons/io';
 import AssignStaffPopup from './StaffAssignment';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 import { useSelector } from 'react-redux';
@@ -227,7 +227,17 @@ export default function WarehouseApproval({
       setIsConfirmDeclineDialogOpen(false);
     }
   };
-
+  const handleRemoveStaff = (type: string) => {
+    if (type == 'inspection-department') {
+      setSelectedInspector(null);
+      setSelectedInspectionTimeFrame(null);
+      setSelectedAssignee(null);
+      setSelectedWareHouseTimeFrame(null);
+    } else {
+      setSelectedAssignee(null);
+      setSelectedWareHouseTimeFrame(null);
+    }
+  };
   return (
     <TooltipProvider>
       <Card className="flex flex-col w-full max-w-5xl h-full justify-center ml-2">
@@ -408,6 +418,14 @@ export default function WarehouseApproval({
                             setSelectedTimeFrame={setSelectedInspectionTimeFrame}
                             role="inspection-department"
                           />
+                          {selectedInspector && (
+                            <Button
+                              variant={'ghost'}
+                              className="hover:bg-red-400 ml-2"
+                              onClick={() => handleRemoveStaff('inspection-department')}>
+                              <IoMdClose />
+                            </Button>
+                          )}
                         </div>
                         <div className="w-full flex items-center py-4 ">
                           <Label className="mr-2"> Warehouse staff:</Label>
@@ -419,6 +437,14 @@ export default function WarehouseApproval({
                             role="warehouse-staff"
                             selectedInspectionTimeFrame={selectedInspectionTimeFrame}
                           />
+                          {selectedAssignee && (
+                            <Button
+                              variant={'ghost'}
+                              className="hover:bg-red-400 ml-2"
+                              onClick={() => handleRemoveStaff('warehouse-staff')}>
+                              <IoMdClose />
+                            </Button>
+                          )}
                         </div>
 
                         <div className="space-y-2">
