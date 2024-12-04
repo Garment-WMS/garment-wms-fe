@@ -22,6 +22,7 @@ import { ProductionPlan } from '@/types/ProductionPlan';
 import { AlertTriangle, CalendarArrowDown, CalendarArrowUp, PlayCircle, Plus } from 'lucide-react';
 import ProductionPlanIntroduction from './components/Introduction';
 import { DialogDescription } from '@radix-ui/react-dialog';
+import { FactoryDirectorGuardDiv } from '@/components/authentication/createRoleGuard';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -96,11 +97,13 @@ const ProductionPlanManagement = () => {
   return (
     <div className="h-auto w-full px-4 py-3 flex flex-col space-y-3">
       <ProductionPlanIntroduction />
-      <div className="flex justify-end items-center mb-6">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add New Plan
-        </Button>
-      </div>
+      <FactoryDirectorGuardDiv>
+        <div className="flex justify-end items-center mb-6">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add New Plan
+          </Button>
+        </div>
+      </FactoryDirectorGuardDiv>
       {plans.map((plan: ProductionPlan) => (
         <Card key={plan.id} className="mb-6 shadow-md">
           <CardHeader>
