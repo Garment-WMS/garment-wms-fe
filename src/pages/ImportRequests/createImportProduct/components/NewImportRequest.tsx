@@ -24,8 +24,9 @@ import { ProductionPlanDetail, ProductSize } from '@/types/ProductionPlan';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import privateCall from '@/api/PrivateCaller';
 import ProductImportDetail from './ProductImportDetail';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
+import Loading from '@/components/common/Loading';
 
 type Props = {};
 
@@ -54,7 +55,7 @@ const formSchema = z.object({
 
 const NewImportRequest = (props: Props) => {
   const navigate = useNavigate(); // Initialize useNavigate
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const validateQuantityform = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -83,7 +84,7 @@ const NewImportRequest = (props: Props) => {
         });
         return;
       }
-
+      setIsLoading(true);
       const response = await privateCall(
         importRequestApi.createImportProduct({
           productionBatchId: selectedProductionBatch?.id,
@@ -110,6 +111,8 @@ const NewImportRequest = (props: Props) => {
         title: 'Uh oh! Something went wrong.',
         description: error.message || 'There was a problem with your request.'
       });
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,7 +122,11 @@ const NewImportRequest = (props: Props) => {
     onSubmit();
     setDialogOpen(false); // Close the dialog after submit
   };
-
+  if(isLoading) {
+    return <div className="w-full h-screen pt-4 flex flex-col justify-center items-center gap-4">
+      <Loading/>
+    </div>
+  }
   return (
     <div className="w-full pt-4 flex flex-col gap-4">
       <div className="font-extrabold font-primary flex justify-center text-bluePrimary text-md md:text-3xl">
