@@ -1,8 +1,9 @@
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle, Package } from 'lucide-react';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
 import { ProductionPlanDetail as ProductionPlanDetailType } from '@/types/ProductionPlan';
@@ -12,15 +13,13 @@ interface SummaryCardProps {
   title: string;
   value: number;
   icon: JSX.Element;
-  variant: 'success' | 'warning' | 'error' | 'info';
+  variant: 'success' | 'error';
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
   const variantStyles = {
     success: 'bg-green-50 border-green-200 text-green-700',
-    warning: 'bg-yellow-50 border-yellow-200 text-yellow-700',
-    error: 'bg-red-50 border-red-200 text-red-700',
-    info: 'bg-blue-50 border-blue-200 text-blue-700'
+    error: 'bg-red-50 border-red-200 text-red-700'
   };
   const selectedStyles = variantStyles[variant];
   return (
@@ -44,13 +43,6 @@ const getStatusBadgeStyle = (status: string) => {
       return 'bg-gray-500 text-white';
   }
 };
-
-const mockProductionPlanDetailData = (detailId: string) => ({
-  importedQuantity: Math.floor(Math.random() * 500),
-  defectQuantity: Math.floor(Math.random() * 50),
-  approvedQuantity: Math.floor(Math.random() * 450),
-  manufacturingQuantity: Math.floor(Math.random() * 400)
-});
 
 const ProductionPlanDetail = () => {
   const { id } = useParams();
@@ -112,7 +104,10 @@ const ProductionPlanDetail = () => {
         <CardContent className="pt-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => {
-              const mockData = mockProductionPlanDetailData(detail.id);
+              // Extract values for cards
+              const defectQuantity = detail?.productPlanDetailDefectQuantity || 0;
+              const producedQuantity = detail?.productPlanDetailProducedQuantity || 0;
+
               return (
                 <Card key={detail.id} className="shadow-lg rounded-lg overflow-hidden">
                   {/* Product Image */}
@@ -140,28 +135,16 @@ const ProductionPlanDetail = () => {
 
                     <div className="mt-4 grid grid-cols-2 gap-4">
                       <SummaryCard
-                        title="Imported Quantity"
-                        value={mockData.importedQuantity}
-                        icon={<Package className="h-5 w-5" />}
-                        variant="info"
-                      />
-                      <SummaryCard
                         title="Defect Quantity"
-                        value={mockData.defectQuantity}
+                        value={defectQuantity}
                         icon={<AlertCircle className="h-5 w-5" />}
                         variant="error"
                       />
                       <SummaryCard
-                        title="Approved Quantity"
-                        value={mockData.approvedQuantity}
+                        title="Produced Quantity"
+                        value={producedQuantity}
                         icon={<CheckCircle className="h-5 w-5" />}
                         variant="success"
-                      />
-                      <SummaryCard
-                        title="Manufacturing Quantity"
-                        value={mockData.manufacturingQuantity}
-                        icon={<Package className="h-5 w-5" />}
-                        variant="warning"
                       />
                     </div>
                   </CardContent>

@@ -23,6 +23,7 @@ import { AlertTriangle, CalendarArrowDown, CalendarArrowUp, PlayCircle, Plus } f
 import ProductionPlanIntroduction from './components/Introduction';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { FactoryDirectorGuardDiv } from '@/components/authentication/createRoleGuard';
+import ProductionPlanSummary from './components/ProductionPlanSummary';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -104,6 +105,11 @@ const ProductionPlanManagement = () => {
           </Button>
         </div>
       </FactoryDirectorGuardDiv>
+
+      {/* Production Plan Summary */}
+      {<ProductionPlanSummary productionPlanList={plans} />}
+
+      {/* Production Plan List */}
       {plans.map((plan: ProductionPlan) => (
         <Card key={plan.id} className="mb-6 shadow-md">
           <CardHeader>
