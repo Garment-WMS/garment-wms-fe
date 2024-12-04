@@ -15,6 +15,9 @@ import {
 import { Package, Box, ClipboardList, Truck, CalendarDays, Layers } from 'lucide-react';
 import EmptyDatacomponent from '@/components/common/EmptyData';
 import { getIconAttributes } from '@/helpers/getIconAttributes';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import { Button } from '@/components/ui/button';
+import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
 
 interface ProductionBatchDetailProps {
   productionPlanDetail: any;
@@ -64,109 +67,77 @@ const ProductionBatchDetail: React.FC = () => {
     materialExportRequest,
     importRequest,
     productionPlanDetail,
-    productionBatchMaterialVariant
+    productionBatchMaterialVariant,
+    numberOfProducedProduct
   } = data?.data || {};
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
+        <ProductionDepartmentGuardDiv>
+          <Button>Create Export</Button>
+        </ProductionDepartmentGuardDiv>
+      </div>
 
       {/* Batch Information Card */}
       <Card className="overflow-hidden">
-        <CardHeader className="border-b">
+        <CardHeader className="border-b flex flex-row justify-between items-center">
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
             Batch Information
           </CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">No Produced Product:</span>
+            <span className="text-md font-semibold text-foreground">
+              {numberOfProducedProduct || 0}
+            </span>
+          </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
-            {/* Left Column - Image and Basic Info */}
-            <div className="p-6 space-y-6">
-              <div className="flex justify-center items-center aspect-video bg-muted/10 rounded-lg overflow-hidden">
-                <img
-                  src={productionPlanDetail?.productSize?.productVariant?.image || ''}
-                  alt="Product Variant"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1.5">
-                  <h3 className="text-sm font-medium text-muted-foreground">Code</h3>
-                  <p className="font-semibold">{code}</p>
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-sm font-medium text-muted-foreground">Name</h3>
-                  <p className="font-semibold">{name}</p>
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
-                  <Badge>{status}</Badge>
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-sm font-medium text-muted-foreground">Quantity</h3>
-                  <p className="font-semibold">{quantityToProduce}</p>
-                </div>
-              </div>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            {/* Image Section */}
+            <div className="flex justify-center items-center bg-muted/10 rounded-lg p-4">
+              <img
+                src={productionPlanDetail?.productSize?.productVariant?.image || ''}
+                alt="Product Variant"
+                className="h-32 w-32 object-contain rounded"
+              />
             </div>
 
-            {/* Right Column - Production Details and Product Info */}
-            <div className="p-6 space-y-8">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Production Details</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <h4 className="text-sm font-medium text-muted-foreground">Created At</h4>
-                    <p>{new Date(createdAt).toLocaleString()}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <h4 className="text-sm font-medium text-muted-foreground">Start Date</h4>
-                    <p>{startDate ? new Date(startDate).toLocaleString() : 'Not started'}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <h4 className="text-sm font-medium text-muted-foreground">Finished Date</h4>
-                    <p>{finishedDate ? new Date(finishedDate).toLocaleString() : 'Not finished'}</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <h4 className="text-sm font-medium text-muted-foreground">Expected Finish</h4>
-                    <p>
-                      {expectedFinishDate
-                        ? new Date(expectedFinishDate).toLocaleString()
-                        : 'Not set'}
-                    </p>
-                  </div>
-                </div>
+            {/* Details Section */}
+            <div className="col-span-2 grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Code</h3>
+                <p className="font-semibold">{code}</p>
               </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Product Information</h3>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">Product: </span>
-                      <span>
-                        {productionPlanDetail?.productSize?.productVariant?.product?.name}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">Variant: </span>
-                      <span>{productionPlanDetail?.productSize?.productVariant?.name}</span>
-                    </div>
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">Size: </span>
-                      <span>{productionPlanDetail?.productSize?.size}</span>
-                    </div>
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">UOM: </span>
-                      <span>
-                        {
-                          productionPlanDetail?.productSize?.productVariant?.product?.productUom
-                            ?.name
-                        }
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Name</h3>
+                <p className="font-semibold">{name}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
+                <Badge>{status}</Badge>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Quantity To Produce</h3>
+                <p className="font-semibold">{quantityToProduce}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Created At</h3>
+                <p>{convertDateWithTime(createdAt)}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Start Date</h3>
+                <p>{startDate ? convertDateWithTime(startDate) : 'Not yet'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Finished Date</h3>
+                <p>{finishedDate ? convertDateWithTime(finishedDate) : 'Not yet'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Expected Finish</h3>
+                <p>{expectedFinishDate ? convertDateWithTime(expectedFinishDate) : 'Not yet'}</p>
               </div>
             </div>
           </div>
