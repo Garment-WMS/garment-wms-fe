@@ -54,9 +54,9 @@ const ImportQuantityCard: React.FC<ImportQuantityCardProps> = ({
 
   return (
     <div className={`p-4 border rounded-lg flex flex-col items-center ${selectedStyles}`}>
-      <div className="text-3xl">{icon}</div>
-      <div className="mt-2 text-xl font-semibold text-center">{title}</div>
-      <div className="mt-1 text-2xl font-bold">{value}</div>
+      <div className="text-xl">{icon}</div>
+      <div className="mt-2 text-lg font-semibold text-center">{title}</div>
+      <div className="mt-1 text-xl font-bold">{value}</div>
     </div>
   );
 };
