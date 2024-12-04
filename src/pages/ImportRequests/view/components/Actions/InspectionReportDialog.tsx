@@ -87,7 +87,7 @@ export default function InspectionReportDialog({
                           </p>
                           <div className="flex items-center space-x-2">
                             <Progress
-                              value={(detail?.approvedQuantityByPack / (detail?.quantityByPack?? 0) ) * 100}
+                              value={(detail?.approvedQuantityByPack / ((detail?.approvedQuantityByPack + detail?.defectQuantityByPack) || 0)) * 100}
                               className="w-1/2"
                             />
                             <div className="flex justify-center items-center gap-2">
@@ -99,7 +99,7 @@ export default function InspectionReportDialog({
                           </div>
                           <div className="flex items-center space-x-2">
                             <Progress
-                              value={(detail.defectQuantityByPack / (detail?.quantityByPack?? 0)) * 100}
+                              value={(detail.defectQuantityByPack / ((detail?.approvedQuantityByPack + detail?.defectQuantityByPack) || 0)) * 100}
                               className="w-1/2"
                             />
                             <div className="flex justify-center items-center gap-2">

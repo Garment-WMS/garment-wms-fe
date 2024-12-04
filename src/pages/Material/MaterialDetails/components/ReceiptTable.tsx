@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReceiptChart } from './ReceiptChart';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
@@ -15,8 +15,9 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 type Props = {
   id: string;
+  receiptId: string| null;
 };
-const ReceiptTable: React.FC<Props> = ({ id }) => {
+const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
   const getStatusBadgeVariant = (status: string) => {
@@ -28,6 +29,11 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
     setIsOpened(true); 
   };
 
+  useEffect(() => {
+    if (receiptId) {
+      openDialog(receiptId);
+    }
+  }, [receiptId]);
   // // Function to close the dialog
   // const closeDialog = () => {
   //   setSelectedReceiptId(null); // Reset the ID
@@ -75,28 +81,6 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         const dateString = row.original?.importDate;
-        if (!dateString) {
-          return <div>N/A</div>;
-        }
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
-        return (
-          <div>
-            <div>{formattedDate}</div>
-          </div>
-        );
-      }
-    },
-    {
-      header: 'Expired Date',
-      accessorKey: 'expireDate',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const dateString = row.original?.expireDate;
         if (!dateString) {
           return <div>N/A</div>;
         }

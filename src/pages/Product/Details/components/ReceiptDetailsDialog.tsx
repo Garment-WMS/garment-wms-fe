@@ -48,9 +48,6 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">View Product Receipt Details</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
         {isLoading ? (
           <div>

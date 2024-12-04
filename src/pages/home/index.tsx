@@ -215,7 +215,7 @@ export default function DashboardPage() {
                   <TableRow key={receipt.id}>
                     <TableCell>
                       <Link
-                        to={`/export-receipt/${receipt.id}`}
+                        to={`/import-receipt/${receipt.id}`}
                         className="text-blue-500 underline">
                         {receipt.code}
                       </Link>
@@ -295,7 +295,7 @@ export default function DashboardPage() {
                   <TableRow key={receipt.id}>
                     <TableCell>
                       <Link
-                        to={`/import-receipt/${receipt.id}`}
+                        to={`/export-receipt/${receipt.id}`}
                         className="text-blue-500 underline">
                         {receipt.code}
                       </Link>

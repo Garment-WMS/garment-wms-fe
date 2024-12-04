@@ -252,6 +252,10 @@ const RouterComponent: React.FC = () => {
           element: <MaterialDetails />
         },
         {
+          path: '/material-variant/:id/receipt/:receiptId',
+          element: <MaterialDetails />
+        },
+        {
           path: '/material-variant/update/:id',
           element: <MaterialVariantUpdate />
         },
@@ -273,6 +277,10 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/product-variant/:id',
+          element: <ProductVariantDetails />
+        },
+        {
+          path: '/product-variant/:id/receipt/:receiptId',
           element: <ProductVariantDetails />
         },
         {
