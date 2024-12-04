@@ -276,7 +276,7 @@ export const Status: { label: string; value: string; variant: StatusVariant }[] 
   { label: 'Wait for Import', value: 'AWAIT_TO_IMPORT', variant: 'warning' },
   { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
   { label: 'Imported', value: 'IMPORTED', variant: 'success' },
-  { label: 'Canceled', value: 'CANCELED', variant: 'destructive' }
+  { label: 'Cancelled', value: 'CANCELLED', variant: 'destructive' }
 ];
 type StatusVariant = 'info' | 'destructive' | 'success' | 'warning' | 'default' | 'danger';
 export interface UseImportRequestsResponse {

@@ -5,7 +5,7 @@ export enum ProductionBatchStatus {
   IMPORTING = 'IMPORTING',
   IMPORTED = 'IMPORTED',
   FINISHED = 'FINISHED',
-  CANCELED = 'CANCELED'
+  CANCELLED = 'CANCELLED'
 }
 
 export const ProductionBatchStatusLabels: Record<ProductionBatchStatus, string> = {
@@ -15,7 +15,7 @@ export const ProductionBatchStatusLabels: Record<ProductionBatchStatus, string> 
   [ProductionBatchStatus.IMPORTING]: 'Importing',
   [ProductionBatchStatus.IMPORTED]: 'Imported',
   [ProductionBatchStatus.FINISHED]: 'Finished',
-  [ProductionBatchStatus.CANCELED]: 'Canceled'
+  [ProductionBatchStatus.CANCELLED]: 'Cancelled'
 };
 
 export const ProductionBatchStatusColors: Record<ProductionBatchStatus, string> = {
@@ -25,5 +25,5 @@ export const ProductionBatchStatusColors: Record<ProductionBatchStatus, string> 
   [ProductionBatchStatus.IMPORTING]: 'bg-blue-500 text-white',
   [ProductionBatchStatus.IMPORTED]: 'bg-teal-500 text-white',
   [ProductionBatchStatus.FINISHED]: 'bg-green-500 text-white',
-  [ProductionBatchStatus.CANCELED]: 'bg-red-500 text-white'
+  [ProductionBatchStatus.CANCELLED]: 'bg-red-500 text-white'
 };
