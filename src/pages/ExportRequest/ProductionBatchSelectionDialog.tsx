@@ -117,13 +117,13 @@ export default function ProductionBatchSelectionDialog({
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-muted-foreground">
-                          Product: {batch.productionPlanDetail.productSize.productVariant.name}
+                          Product: {batch?.productionPlanDetail?.productSize?.productVariant?.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Size: {batch.productionPlanDetail.productSize.name}
+                          Size: {batch?.productionPlanDetail?.productSize?.name}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Quantity: {batch.quantityToProduce}
+                          Quantity: {batch?.quantityToProduce}
                         </p>
                       </CardContent>
                     </Card>

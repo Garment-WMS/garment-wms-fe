@@ -113,7 +113,7 @@ export default function ScannerPopup() {
     if (!scannedItem) return null;
 
     const isProduct = 'productId' in scannedItem;
-    const detailsLink = isProduct ? `/product/${scannedItem.id}` : `/material/${scannedItem.id}`;
+    const detailsLink = isProduct ? `/product-variant/${scannedItem.id}` : `/material-variant/${scannedItem.id}`;
 
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">

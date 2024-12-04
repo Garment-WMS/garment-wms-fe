@@ -82,7 +82,8 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
             {title}
           </h1>
         </div>
-        <ul className="pt-6">
+        <div className="pt-2 overflow-y-auto max-h-[calc(100vh-150px)]">
+        <ul className="pt-2">
           {menu.map((menuItem, index) => (
             <SideBarMenuItem
               key={index}
@@ -101,6 +102,8 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
           <GoSignOut size={iconSize} />
           <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
         </div>
+        </div>
+        
       </div>
     </div>
   );
