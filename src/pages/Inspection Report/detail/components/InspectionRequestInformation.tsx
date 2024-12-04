@@ -40,6 +40,7 @@ interface InspectionRequestInformationProps {
   importRequest?: ImportRequest;
   inspectionDepartment?: any;
   importRequestId?: string;
+  importReceiptCode?: string;
 }
 
 const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
@@ -49,7 +50,8 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
   requestNote,
   requestCreatedAt,
   importRequest,
-  inspectionDepartment
+  inspectionDepartment,
+  importReceiptCode
 }) => {
   const importRequestDetails = importRequest?.importRequestDetail || [];
 
@@ -117,18 +119,18 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
             </div>
 
             {/* Note */}
-            <div className="flex flex-col">
-              <div className="flex items-center mb-1">
-                <Edit3 className="text-gray-500 mr-2" />
-                <dt className="font-medium text-gray-500">Note</dt>
+            <div className="flex items-center">
+              <ClipboardCopy className="text-gray-500 mr-2" />
+              <div>
+                <dt className="font-medium text-gray-500">Import Receipt</dt>
+                <dd className="text-primaryLight underline cursor-pointer">
+                  <Link
+                    to={`/import-request/${importRequest?.id}`}
+                    className="text-primaryLight underline cursor-pointer">
+                    {importReceiptCode}
+                  </Link>
+                </dd>
               </div>
-              <Input
-                type="text"
-                defaultValue={requestNote || 'No notes provided'}
-                placeholder="Enter note here..."
-                className="text-gray-400"
-                disabled={!requestNote}
-              />
             </div>
           </div>
         </CardContent>

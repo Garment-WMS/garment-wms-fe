@@ -3,14 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Cog, Package } from 'lucide-react';
 import Waiting from '@/assets/images/Waiting.png';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
@@ -24,7 +17,6 @@ import empty from '@/assets/images/empty.svg';
 import { useGetAllDefects } from '@/hooks/useGetAllDefects';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
-import { Badge } from '@/components/ui/Badge';
 import Colors from '@/constants/color';
 import InspectionReportDialog from './InspectionReportDialog';
 

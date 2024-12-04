@@ -68,7 +68,6 @@ const InspectionRequestChart: React.FC<{
                       <TableHead>Image</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Code</TableHead>
-                      <TableHead>Import Receipt</TableHead>
                       <TableHead>Inspected At</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">No. Pass</TableHead>
@@ -92,13 +91,6 @@ const InspectionRequestChart: React.FC<{
                             <TableCell>{detail.materialPackage?.name || 'N/A'}</TableCell>
                             <TableCell>
                               <Badge>{detail.materialPackage?.code || 'N/A'}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Link
-                                to={`/import-receipt/${inspectionReport.importReceipt?.id}`}
-                                className="text-bluePrimary underline underline-offset-2">
-                                {inspectionReport.importReceipt?.code || 'N/A'}
-                              </Link>
                             </TableCell>
                             <TableCell className="text-green-600">
                               {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
