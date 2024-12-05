@@ -11,7 +11,8 @@ import {
   UserCircle,
   Users,
   Printer,
-  ClipboardCheck
+  ClipboardCheck,
+  Calendar
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -67,6 +68,7 @@ import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import ProductReceiptLabel from './components/ProductReceiptLabels';
 import { ImportReceiptAction } from './components/ImportReceiptAction';
 import ImportStepper from './components/ImportStepper';
+import { convertDate } from '@/helpers/convertDate';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -407,47 +409,30 @@ export default function MaterialReceipt() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Card>
+
+            {/* Imported Date */}
+            <Card className="w-full">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Quality Check Summary</CardTitle>
-                <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Imported Date</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="flex flex-col items-center justify-center ">
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Total {inspectionReport?.type === 'MATERIAL' ? 'Materials' : 'Products'}
-                      </p>
-                      <div className="text-2xl font-bold text-gray-800">
-                        {importReceipt?.inspectionReport?.inspectionReportDetail?.length || 0}
-                      </div>
+                {importReceipt?.finishedAt ? (
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">Date</p>
+                    <div className="text-2xl font-bold">
+                      {convertDate(importReceipt?.finishedAt)}
+                    </div>
+                    <p className="text-xs font-medium text-muted-foreground">Time</p>
+                    <div className="text-xl font-semibold">
+                      {new Date(importReceipt?.finishedAt).toLocaleTimeString()}
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Total Passed</p>
-                    <div className="text-2xl font-bold text-green-600">
-                      {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
-                        (sum: any, detail: any) => sum + detail.approvedQuantityByPack,
-                        0
-                      ) || 0}
-                    </div>
+                ) : (
+                  <div className="flex items-center justify-center h-24">
+                    <p className="text-lg font-medium text-muted-foreground">Not yet</p>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Total Failed</p>
-                    <div className="text-2xl font-bold text-red-600">
-                      {importReceipt?.inspectionReport?.inspectionReportDetail?.reduce(
-                        (sum: any, detail: any) =>
-                          sum +
-                          (detail.inspectionReportDetailDefect?.reduce(
-                            (defectSum: any, defect: any) => defectSum + defect.quantityByPack,
-                            0
-                          ) || 0),
-                        0
-                      ) || 0}
-                    </div>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -630,18 +615,13 @@ export default function MaterialReceipt() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                   {/* Inspection Report Details */}
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                      Inspection Report Summary
-                    </h3>
-                    <div className="grid gap-2">
+                    <div className="grid gap-6">
                       <p>
                         <strong>Report Code:</strong>{' '}
                         <Link
                           to={`/report/${inspectionRequestId}`}
-                          className="font-semibold text-primary underline">
-                          <span className="text-primary font-semibold">
-                            {inspectionReport?.code || 'N/A'}
-                          </span>
+                          className=" text-primary underline">
+                          <span className="text-primary ">{inspectionReport?.code || 'N/A'}</span>
                         </Link>
                       </p>
                       <p>
@@ -649,19 +629,19 @@ export default function MaterialReceipt() {
                         <Badge className="bg-slate-500">
                           {inspectionReport?.type === 'MATERIAL' ? 'Material' : 'Product'}
                         </Badge>
-                        <p>
-                          <strong>
-                            Total Inspected{' '}
-                            {inspectionReport?.type === 'MATERIAL' ? 'materials' : 'products'}:{' '}
-                          </strong>{' '}
-                          <span className="text-slate-700 font-semibold">
-                            {inspectionReport?.inspectionReportDetail?.reduce(
-                              (sum: number, detail: InspectionReportDetail) =>
-                                sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
-                              0
-                            ) || 0}
-                          </span>
-                        </p>
+                      </p>
+                      <p>
+                        <strong>
+                          Total Inspected{' '}
+                          {inspectionReport?.type === 'MATERIAL' ? 'materials' : 'products'}:{' '}
+                        </strong>{' '}
+                        <span className="text-slate-700 font-semibold">
+                          {inspectionReport?.inspectionReportDetail?.reduce(
+                            (sum: number, detail: InspectionReportDetail) =>
+                              sum + detail.approvedQuantityByPack + detail.defectQuantityByPack,
+                            0
+                          ) || 0}
+                        </span>
                       </p>
                       <p>
                         <strong>Approved Quantity (By Pack):</strong>{' '}

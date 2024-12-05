@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/Badge';
 import { convertDate } from '@/helpers/convertDate';
@@ -10,8 +9,7 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Box, Calendar, ClipboardCopy, Edit3, FileText, Shirt, Type } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+import { Box, ClipboardCopy, ReceiptText, Shirt, Type } from 'lucide-react';
 import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
 import { Gender } from '@/enums/gender';
