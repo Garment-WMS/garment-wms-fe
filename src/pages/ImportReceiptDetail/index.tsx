@@ -225,6 +225,7 @@ export default function MaterialReceipt() {
         description: 'There was a problem finishing the import process.'
       });
     } finally {
+      handleCloseDialog();
       setIsLoading(false);
     }
   };
@@ -745,7 +746,7 @@ export default function MaterialReceipt() {
             )}
           </div>
           {
-            <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
+            <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
               <DialogContent className="max-w-4xl">
                 <DialogHeader>
                   <DialogTitle>Material Labels</DialogTitle>

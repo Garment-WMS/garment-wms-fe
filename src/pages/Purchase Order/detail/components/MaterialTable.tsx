@@ -81,7 +81,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       cell: ({ row }) => {
         const uomPerPack = row.original.actualImportQuantity;
         const packUnit = row.original.materialPackage.packUnit;
-        const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit ;
+        const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit;
         return (
           <div className="ml-1">
             <span>{uomPerPack}</span>{' '}

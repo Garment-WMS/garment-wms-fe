@@ -166,6 +166,10 @@ const RouterComponent: React.FC = () => {
           element: <CreateImportRequest />
         },
         {
+          path: '/import-request/create/return-maerial',
+          element: <CreateImportRequest />
+        },
+        {
           path: '/import-request/create/material/:id',
           element: <CreateImportRequest />
         },
@@ -252,6 +256,10 @@ const RouterComponent: React.FC = () => {
           element: <MaterialDetails />
         },
         {
+          path: '/material-variant/:id/receipt/:receiptId',
+          element: <MaterialDetails />
+        },
+        {
           path: '/material-variant/update/:id',
           element: <MaterialVariantUpdate />
         },
@@ -273,6 +281,10 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/product-variant/:id',
+          element: <ProductVariantDetails />
+        },
+        {
+          path: '/product-variant/:id/receipt/:receiptId',
           element: <ProductVariantDetails />
         },
         {

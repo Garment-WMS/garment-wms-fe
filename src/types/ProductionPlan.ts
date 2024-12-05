@@ -25,10 +25,7 @@ export interface ProductSize {
   inventoryStock?: any; // Placeholder for InventoryStock type
   InventoryReportPlanDetail: any[]; // Placeholder for InventoryReportPlanDetail type
 }
-export interface ImportRequestDetailForProduct{
-  
-}
-
+export interface ImportRequestDetailForProduct {}
 
 // Define the ProductionPlanDetail type
 export interface ProductionPlanDetail {
@@ -46,6 +43,8 @@ export interface ProductionPlanDetail {
   productSize: ProductSize;
   productionPlan: ProductionPlan;
   productionBatch: ProductionBatch[];
+  productPlanDetailDefectQuantity?: number;
+  productPlanDetailProducedQuantity?: number;
 }
 
 export interface FactoryDirector {
@@ -76,4 +75,3 @@ export interface ProductionPlan {
   productionPlanDetail: ProductionPlanDetail[]; // Association with ProductionPlanDetail
   factoryDirector: FactoryDirector; // Reference to the FactoryDirector
 }
-

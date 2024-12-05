@@ -46,12 +46,9 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">View Material Receipt Details</Button>
-      </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
         {isLoading ? (
-          <div>
+          <div className='flex justify-center items-center h-[50vh]'>
             <Loading />
           </div>
         ) : materialReceipt ? (

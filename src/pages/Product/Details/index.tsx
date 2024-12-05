@@ -22,7 +22,7 @@ import ProductSizeAndFormula from './components/ProductSizeAndFormula';
 type Props = {};
 
 const ProductVariantDetails = (props: Props) => {
-  const { id } = useParams<{ id: string }>();
+  const { id,receiptId } = useParams<{ id: string ,receiptId: string}>();
   const [isLoading, setIsLoading] = useState(false);
   const [productVariant, setProductVariant] = useState<ProductVariant>();
 
@@ -156,7 +156,7 @@ const ProductVariantDetails = (props: Props) => {
                     <Label className="text-xl">Receipt</Label>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <ReceiptTable id={productVariant.id}/>
+                    <ReceiptTable receiptId={receiptId} id={productVariant.id}/>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

@@ -1,5 +1,5 @@
 import { DataTable } from '@/components/ui/DataTable';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
@@ -21,8 +21,9 @@ import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 
 type Props = {
   id: string;
+  receiptId: string| undefined;
 };
-const ReceiptTable: React.FC<Props> = ({ id }) => {
+const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
  const getStatusBadgeVariant = (status: string) => {
@@ -33,6 +34,12 @@ const ReceiptTable: React.FC<Props> = ({ id }) => {
     setSelectedReceiptId(id); 
     setIsOpened(true); 
   };
+
+  useEffect(() => {
+    if (receiptId) {
+      openDialog(receiptId);
+    }
+  }, [receiptId]);
  const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
     {
       header: 'Receipt code',

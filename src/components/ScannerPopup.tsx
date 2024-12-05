@@ -133,7 +133,7 @@ export default function ScannerPopup() {
                 className="w-full h-40 object-cover rounded-md"
               />
             )}
-            {scannedItem.materialAttribute && scannedItem.materialAttribute.length > 0 && (
+            {/* {scannedItem.materialAttribute && scannedItem.materialAttribute.length > 0 && (
               <div>
                 <h4 className="font-semibold mb-2">Attributes:</h4>
                 <div className="grid grid-cols-2 gap-2">
@@ -145,7 +145,7 @@ export default function ScannerPopup() {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
             <Button asChild className="w-full">
               <a href={detailsLink} target="_blank" rel="noopener noreferrer">
                 View Details
@@ -162,10 +162,16 @@ export default function ScannerPopup() {
     if (!scannedReceipt) return null;
 
     const isMaterialReceipt = 'materialPackage' in scannedReceipt;
+    const isProductReceipt = 'productSize' in scannedReceipt;
     const isImportReceipt = 'warehouseStaff' in scannedReceipt;
-    const redirectUrl = isMaterialReceipt
-      ? `/import-receipt/${scannedReceipt.importReceiptId}`
-      : `/import-receipt/${scannedReceipt.id}`;
+    
+const redirectUrl = isMaterialReceipt
+? `/material-variant/${scannedReceipt?.materialPackage?.materialVariantId}/receipt/${scannedReceipt.id}`
+: isProductReceipt
+? `/product-variant/${scannedReceipt?.productSize?.productVariantId}/receipt/${scannedReceipt.id}`
+: isImportReceipt
+? `/import-receipt/${scannedReceipt.id}`
+: undefined;
 
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
@@ -205,6 +211,31 @@ export default function ScannerPopup() {
                   <p>
                     Remaining: {scannedReceipt.remainQuantityByPack}{' '}
                     {scannedReceipt.materialPackage.packUnit}
+                  </p>
+                </div>
+              </>
+            )}
+
+{isProductReceipt && (
+              <>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <span>{scannedReceipt?.productSize?.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span>Expires: {new Date(scannedReceipt?.expireDate).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div>
+                  <p>
+                    Quantity: {scannedReceipt?.quantityByUom}{' '}
+                    {scannedReceipt?.productSize?.productVariant?.product?.productUom?.uomCharacter}
+                  </p>
+                  <p>
+                    Remaining: {scannedReceipt?.remainQuantityByUom}{' '}
+                    {scannedReceipt?.productSize?.productVariant?.product?.productUom?.uomCharacter}
                   </p>
                 </div>
               </>
@@ -259,6 +290,11 @@ export default function ScannerPopup() {
     );
   };
 
+  const handleCloseDialog = () => {
+    setScannedItem(null);
+    setScannedReceipt(null);
+    setIsOpen(false);
+  }
   return (
     <div className="flex items-center justify-center">
       <Button onClick={() => setIsOpen(true)} className="bg-transparent text-blue-500">
@@ -282,7 +318,7 @@ export default function ScannerPopup() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleCloseDialog}
                   className="text-gray-400 hover:text-black">
                   <X className="h-6 w-6" />
                 </Button>

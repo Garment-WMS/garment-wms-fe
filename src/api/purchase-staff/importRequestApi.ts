@@ -9,6 +9,10 @@ let importRequestUrl = '/import-request';
 export const importRequestApi = {
   getOne: (id: string) => get(`${importRequestUrl}/${id}`),
   getAll: (queryString: string) => get(`${importRequestUrl}${queryString}`),
+  getReturn: () =>
+    get(
+      `material-export-request?filter[0][field]=status&filter[0][value]=PRODUCTION_REJECTED&filter[0][type]==`
+    ),
   getMyImportRequests: (queryString: string) => get(`${importRequestUrl}/my${queryString}`),
   approveRequest: (
     action: string,
@@ -43,6 +47,10 @@ export const importRequestApi = {
   getStatistic: () => get(`/import-request/statistic`),
   postChat: (id: string, message: string) => post(`/chat`, { discussionId: id, message })
 };
+export const getReturnImportRequest = async () => {
+  const res = await privateCall(importRequestApi.getReturn());
+  return res.data.data;
+};
 export const postChatFn = async (id: string, message: string) => {
   const res = await privateCall(importRequestApi.postChat(id, message));
   return res.data;
@@ -64,10 +72,9 @@ export const getAllImportRequestFn = async ({
   const filter: any[] = [];
   const order: any[] = [];
 
-
   const filters = columnFilters.map((filter) => {
     // Replace all dots in the id with underscores
-    const fieldKey = replaceAll(filter.id,'_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
+    const fieldKey = replaceAll(filter.id, '_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
     return {
       id: fieldKey,
       value: filter.value
@@ -144,7 +151,7 @@ export const getMyImportRequestFn = async ({
   // });
   const filters = columnFilters.map((filter) => {
     // Replace all dots in the id with underscores
-    const fieldKey = replaceAll(filter.id,'_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
+    const fieldKey = replaceAll(filter.id, '_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
     return {
       id: fieldKey,
       value: filter.value

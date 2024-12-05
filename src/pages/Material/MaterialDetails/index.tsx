@@ -32,7 +32,7 @@ import privateCall from '@/api/PrivateCaller';
 import ImageUploadWithDialog from './components/ImageUpload';
 
 const MaterialDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, receiptId } = useParams<{ id: string; receiptId: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [material, setMaterial] = useState<MaterialVariant>();
 
@@ -136,10 +136,9 @@ const MaterialDetails = () => {
       const formData = new FormData();
       formData.append('file', file);
       const config = {
-          'Content-Type': 'multipart/form-data',
-        
+        'Content-Type': 'multipart/form-data'
       };
-      await privateCall(materialApi.addImage(id, formData,config));
+      await privateCall(materialApi.addImage(id, formData, config));
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -161,7 +160,6 @@ const MaterialDetails = () => {
     return formatMaterialPackage;
   };
   const formatMaterialPackage = getMaterialPackage();
-
 
   const attribute = material?.materialAttribute;
   return (
@@ -193,24 +191,6 @@ const MaterialDetails = () => {
                 onImageUpload={handleUploadPhoto}
               />
             </div>
-
-            {/* <Tabs value={activeTab} onValueChange={setActiveTab} className="">
-            <TabsList className="gap-4">
-              <TabsTrigger value="general">General Information</TabsTrigger>
-              <TabsTrigger value="attributes">Attributes & Variants</TabsTrigger>
-              <TabsTrigger value="inventory">Inventory</TabsTrigger>
-            </TabsList>
-            <TabsContent value="general" className="mt-4">
-              <General materialVariant={material} />
-            </TabsContent>
-            <TabsContent value="attributes">
-              <VariantTable materialPackage={material?.materialPackage} />
-            </TabsContent>
-            <TabsContent value="inventory">
-              <ImportRequestTable />
-            </TabsContent>
-          </Tabs> */}
-
             <div className="flex flex-col gap-2">
               <Accordion
                 type="multiple"
@@ -245,7 +225,7 @@ const MaterialDetails = () => {
                     <Label className="text-xl">Receipt</Label>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <ReceiptTable id={id} />
+                    <ReceiptTable receiptId={receiptId || null} id={id} />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
