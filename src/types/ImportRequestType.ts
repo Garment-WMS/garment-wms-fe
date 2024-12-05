@@ -17,6 +17,7 @@ export interface ImportRequest {
     | 'INSPECTING'
     | 'INSPECTED'
     | 'IMPORTING'
+    | 'MATERIAL_RETURN'
     | 'IMPORTED'; // Expanded statuses
   type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Extended as needed
   startAt: string | null;
@@ -36,7 +37,7 @@ export interface ImportRequest {
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
-  inspectionDepartment: InspectionDepartment
+  inspectionDepartment: InspectionDepartment;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
 }

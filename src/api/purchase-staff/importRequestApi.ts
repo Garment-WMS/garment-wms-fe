@@ -11,8 +11,10 @@ export const importRequestApi = {
   getAll: (queryString: string) => get(`${importRequestUrl}${queryString}`),
   getReturn: () =>
     get(
-      `material-export-request?filter[0][field]=status&filter[0][value]=PRODUCTION_REJECTED&filter[0][type]==`
+      `/material-export-request?filter[0][field]=status&filter[0][value]=PRODUCTION_REJECTED&filter[0][type]==`
     ),
+  returnMaterial: (id: string) =>
+    post('/import-request/material-return', { materialExportRequestId: id }),
   getMyImportRequests: (queryString: string) => get(`${importRequestUrl}/my${queryString}`),
   approveRequest: (
     action: string,
@@ -46,6 +48,10 @@ export const importRequestApi = {
   getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`),
   getStatistic: () => get(`/import-request/statistic`),
   postChat: (id: string, message: string) => post(`/chat`, { discussionId: id, message })
+};
+export const returnMaterialFn = async (id: string) => {
+  const res = await privateCall(importRequestApi.returnMaterial(id));
+  return res.data;
 };
 export const getReturnImportRequest = async () => {
   const res = await privateCall(importRequestApi.getReturn());

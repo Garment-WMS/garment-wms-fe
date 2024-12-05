@@ -14,7 +14,7 @@ const ImportRequestSheet = (props: Props) => {
   let poDeliveryId = importRequest?.poDelivery?.id;
   let purchaseOrder = importRequest?.poDelivery?.purchaseOrder.poNumber;
   let purchaseOrderId = importRequest?.poDelivery?.purchaseOrder?.id;
-  const POcode = importRequest?.poDelivery?.purchaseOrder?.code || "N/A"
+  const POcode = importRequest?.poDelivery?.purchaseOrder?.code || 'N/A';
   let planDeliveryDate = importRequest?.poDelivery?.expectedDeliverDate;
   let actualDeliveryDate = importRequest?.poDelivery?.deliverDate;
   let productionBatch = importRequest?.productionBatch;
@@ -32,29 +32,30 @@ const ImportRequestSheet = (props: Props) => {
         <div className="flex flex-col gap-2">
           {purchaseOrder && (
             <div className="font-primary font-semibold text-sm">
-            Purchase Order:{' '}
-            <Link to={`/purchase-order/${purchaseOrderId}`} className="text-bluePrimary underline underline-offset-2">
-              {purchaseOrder}
-            </Link>
-          </div>
-        )}
-        {productionBatch && (
+              Purchase Order:{' '}
+              <Link
+                to={`/purchase-order/${purchaseOrderId}`}
+                className="text-bluePrimary underline underline-offset-2">
+                {purchaseOrder}
+              </Link>
+            </div>
+          )}
+          {productionBatch && (
             <div className="font-primary font-semibold text-sm">
-            Production Batch:{' '}
-            <Link to={`/production-batch/${productionBatch?.id}`} className="text-bluePrimary underline underline-offset-2">
-              {productionBatch.code}
-            </Link>
-          </div>
-        )}
+              Production Batch:{' '}
+              <Link
+                to={`/production-batch/${productionBatch?.id}`}
+                className="text-bluePrimary underline underline-offset-2">
+                {productionBatch.code}
+              </Link>
+            </div>
+          )}
           {poDeliveryId && (
             <div className="font-primary font-semibold text-sm flex gap-1">
-            PO delivery:{' '}
-            <div  className="text-bluePrimary">
-              {POcode}
+              PO delivery: <div className="text-bluePrimary">{POcode}</div>
             </div>
-          </div>
           )}
-          
+
           {/* <div className='font-primary font-semibold text-sm'>
                     Production plan: <Link to={'/'} className='text-bluePrimary underline underline-offset-2'>PL-201</Link>
                 </div> */}
@@ -66,7 +67,7 @@ const ImportRequestSheet = (props: Props) => {
           {planDeliveryDate && (
             <div className="font-primary font-semibold text-sm">
               Plan Delivery Date:
-             {planDeliveryDate ?  new Date(planDeliveryDate).toLocaleDateString(): 'Not yet'}
+              {planDeliveryDate ? new Date(planDeliveryDate).toLocaleDateString() : 'Not yet'}
             </div>
           )}
           {actualDeliveryDate && (

@@ -141,11 +141,10 @@ export default function WarehouseImportDialog({
   };
 
   const findPoDeliveryById = (plans: any[], deliveryId: string) => {
-      for (const po of plans) {
-        const poDelivery = po.poDelivery.find((delivery: any) => delivery.id === deliveryId);
-        if (poDelivery) {
-          return { po, poDelivery };
-        
+    for (const po of plans) {
+      const poDelivery = po.poDelivery.find((delivery: any) => delivery.id === deliveryId);
+      if (poDelivery) {
+        return { po, poDelivery };
       }
     }
     return null;
@@ -158,18 +157,18 @@ export default function WarehouseImportDialog({
         // setProductionPlan(data);
         setPurchaseOrder(data);
         // if (defaultPodeliveryId) {
-          if (defaultPodeliveryId) {
-            const selectedDelivery = findPoDeliveryById(data, defaultPodeliveryId);
-            if (selectedDelivery) {
-              const {  po, poDelivery } = selectedDelivery;
-              setSelectedPO(po);
-              setSelectedPoDelivery(poDelivery);
-              setPurchaseOrder(data);
-              setPoBatch(po.poDelivery);
-              setPoDeliverydetails(poDelivery.poDeliveryDetail);
-              setIsNewdelivery(true);
-            }
+        if (defaultPodeliveryId) {
+          const selectedDelivery = findPoDeliveryById(data, defaultPodeliveryId);
+          if (selectedDelivery) {
+            const { po, poDelivery } = selectedDelivery;
+            setSelectedPO(po);
+            setSelectedPoDelivery(poDelivery);
+            setPurchaseOrder(data);
+            setPoBatch(po.poDelivery);
+            setPoDeliverydetails(poDelivery.poDeliveryDetail);
+            setIsNewdelivery(true);
           }
+        }
         // }
       } catch (err) {
       } finally {
@@ -248,109 +247,108 @@ export default function WarehouseImportDialog({
       case 1:
         return (
           <ScrollArea className="h-[300px] w-full rounded-md border">
-          <div className="p-4 space-y-4">
-            {filteredPurchaseOrders && filteredPurchaseOrders.map((po) => (
-              <Card 
-                key={po.id} 
-                className={`cursor-pointer transition-all duration-300 ${
-                  selectedPo?.id === po.id ? 'ring-2 ring-primary' : 'hover:bg-accent'
-                }`}
-                onClick={() => handleSelectPurchaseOrder(po)}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">{po.poNumber}</CardTitle>
-                    <Badge variant={po.status === 'IN_PROGRESS' ? 'default' : 'secondary'}>
-                      {convertTitleToTitleCase(po.status)}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Delivery Progress</span>
-                        <span className="text-sm">
-                          {po.totalFinishedPoDelivery} / {po.totalPoDelivery} Deliveries
-                        </span>
+            <div className="p-4 space-y-4">
+              {filteredPurchaseOrders &&
+                filteredPurchaseOrders.map((po) => (
+                  <Card
+                    key={po.id}
+                    className={`cursor-pointer transition-all duration-300 ${
+                      selectedPo?.id === po.id ? 'ring-2 ring-primary' : 'hover:bg-accent'
+                    }`}
+                    onClick={() => handleSelectPurchaseOrder(po)}>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-lg">{po.poNumber}</CardTitle>
+                        <Badge variant={po.status === 'IN_PROGRESS' ? 'default' : 'secondary'}>
+                          {convertTitleToTitleCase(po.status)}
+                        </Badge>
                       </div>
-                      <Progress 
-                        value={Number(calculatePercentage(po.totalFinishedPoDelivery, po.totalPoDelivery))} 
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Import Progress</span>
-                        <span className="text-sm">
-                          {po.totalImportQuantity} / {po.totalQuantityToImport} Items
-                        </span>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium">Delivery Progress</span>
+                            <span className="text-sm">
+                              {po.totalFinishedPoDelivery} / {po.totalPoDelivery} Deliveries
+                            </span>
+                          </div>
+                          <Progress
+                            value={Number(
+                              calculatePercentage(po.totalFinishedPoDelivery, po.totalPoDelivery)
+                            )}
+                            className="w-full"
+                          />
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium">Import Progress</span>
+                            <span className="text-sm">
+                              {po.totalImportQuantity} / {po.totalQuantityToImport} Items
+                            </span>
+                          </div>
+                          <Progress
+                            value={Number(
+                              calculatePercentage(po.totalImportQuantity, po.totalQuantityToImport)
+                            )}
+                            className="w-full"
+                          />
+                        </div>
                       </div>
-                      <Progress 
-                        value={Number(calculatePercentage(po.totalImportQuantity, po.totalQuantityToImport))} 
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </ScrollArea>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </ScrollArea>
         );
       case 2:
         return (
           <ScrollArea className="h-[300px] w-full rounded-md border">
-      <div className="p-4 space-y-4">
-        {poBatches && poBatches.map((batch) => (
-          <Card
-            key={batch.id}
-            className={cn(
-              "transition-colors duration-200",
-              batch.status !== 'PENDING'
-                ? 'bg-muted cursor-not-allowed'
-                : selectedPoDelivery?.id === batch.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-card hover:bg-accent'
-            )}
-            onClick={() => batch.status === 'PENDING' && setSelectedPoDelivery(batch)}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{batch.code}</CardTitle>
-              <Badge 
-                variant={batch.status === 'PENDING' ? 'warning' : 'outline'}
-                className="ml-auto"
-              >
-                {batch.status}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  {batch.status !== 'PENDING' ? (
-                    <AlertCircle className="h-4 w-4 text-yellow-500" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  )}
-                  <span>
-                    {batch.status !== 'PENDING' 
-                      ? 'Import request exists' 
-                      : 'Ready for import'
-                    }
-                  </span>
-                </div>
-
-              </div>
-              {batch.isExtra && (
-                <p className="text-sm mt-2 text-muted-foreground">
-                  Make-up import
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </ScrollArea>
+            <div className="p-4 space-y-4">
+              {poBatches &&
+                poBatches.map((batch) => (
+                  <Card
+                    key={batch.id}
+                    className={cn(
+                      'transition-colors duration-200',
+                      batch.status !== 'PENDING'
+                        ? 'bg-muted cursor-not-allowed'
+                        : selectedPoDelivery?.id === batch.id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-card hover:bg-accent'
+                    )}
+                    onClick={() => batch.status === 'PENDING' && setSelectedPoDelivery(batch)}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">{batch.code}</CardTitle>
+                      <Badge
+                        variant={batch.status === 'PENDING' ? 'warning' : 'outline'}
+                        className="ml-auto">
+                        {batch.status}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center space-x-4 text-sm">
+                        <div className="flex items-center space-x-2">
+                          {batch.status !== 'PENDING' ? (
+                            <AlertCircle className="h-4 w-4 text-yellow-500" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          )}
+                          <span>
+                            {batch.status !== 'PENDING'
+                              ? 'Import request exists'
+                              : 'Ready for import'}
+                          </span>
+                        </div>
+                      </div>
+                      {batch.isExtra && (
+                        <p className="text-sm mt-2 text-muted-foreground">Make-up import</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </ScrollArea>
         );
     }
   };
@@ -418,8 +416,7 @@ export default function WarehouseImportDialog({
               onClick={() => handleNext(selectedPoDelivery)}
               disabled={
                 // (step === 1 && !selectedPlan) ||
-                (step === 1 && !selectedPo) ||
-                (step === 2 && !selectedPoDelivery)
+                (step === 1 && !selectedPo) || (step === 2 && !selectedPoDelivery)
               }>
               {step < 2 ? 'Next' : 'Confirm'}
             </Button>
