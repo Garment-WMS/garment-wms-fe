@@ -215,27 +215,6 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         </div>
       </div>
 
-      {/* Import Summary Section */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Import Summary</h2>
-        <div className="space-y-1">
-          <KeyValueDisplay
-            name="Total Imported Items"
-            value={`${totalImportQuantity.toLocaleString()} items`}
-            valueColor="text-green-600"
-          />
-          <KeyValueDisplay
-            name="Failed Imports"
-            value={`${(totalFailImportQuantity || 0).toLocaleString()} items`}
-            valueColor="text-red-600"
-          />
-          <KeyValueDisplay
-            name="Items Remaining to Import"
-            value={`${totalQuantityToImport.toLocaleString()} items`}
-          />
-        </div>
-      </div>
-
       {/* Material Summary */}
       <div className="mt-3">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Material Summary</h2>
@@ -283,6 +262,27 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
               </Card>
             );
           })}
+        </div>
+      </div>
+
+      {/* Import Summary Section */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-4">Import Summary</h2>
+        <div className="space-y-1">
+          <KeyValueDisplay
+            name="Total Imported Items"
+            value={`${totalImportQuantity.toLocaleString()} items`}
+            valueColor="text-green-600"
+          />
+          <KeyValueDisplay
+            name="Failed Imports"
+            value={`${(totalFailImportQuantity || 0).toLocaleString()} items`}
+            valueColor="text-red-600"
+          />
+          <KeyValueDisplay
+            name="Items Remaining to Import"
+            value={`${totalQuantityToImport.toLocaleString()} items`}
+          />
         </div>
       </div>
 
