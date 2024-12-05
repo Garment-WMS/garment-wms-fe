@@ -1,5 +1,5 @@
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { PageMetaData } from './ImportRequestType';
+import { ImportRequest, PageMetaData } from './ImportRequestType';
 import { MaterialPackage } from './MaterialTypes';
 import { InspectionReportDetail } from './InspectionReportDetail';
 
@@ -60,6 +60,7 @@ type InspectionRequest = {
   updatedAt: string;
   deletedAt: string | null;
   importRequestId: string;
+  importRequest: ImportRequest;
   note: string | null;
   inspectionDepartment: any;
 };
@@ -69,6 +70,7 @@ type InspectionReport = {
   inspectionRequestId: string;
   code: string;
   createdAt: string;
+  importRequestId: string;
   inspectionReportDetail: InspectionReportDetail[];
   updateAt: string;
   deletedAt: string | null;
@@ -128,6 +130,7 @@ export type ImportReceipt = {
   warehouseManager: WarehouseStaff;
   warehouseStaff: WarehouseStaff;
   materialReceipt: MaterialReceipt[];
+  inspectionRequest:InspectionRequest
   productReceipt: any[]; // Replace with appropriate type if productReceipt has a defined structure
   inspectionReport: InspectionReport | null;
 };

@@ -74,7 +74,7 @@ const PurchaseOrderDeliveryDetails = () => {
                 <Package />
                 <span className="text-sm">Actual Delivery:</span>
                 <span className="font-medium">
-                  {delivery.deliverDate ? convertDate(delivery.deliverDate) : 'Not Yet'}
+                  {delivery.deliverDate ? convertDateWithTime(delivery.deliverDate) : 'Not Yet'}
                 </span>
               </div>
             )}

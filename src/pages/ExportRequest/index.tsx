@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/Textarea';
 import {
   Table,
   TableBody,
@@ -133,12 +133,13 @@ export default function ExportMaterialPage() {
       );
 
       if (response.statusCode === 201) {
+        const id = response.data.id;
         toast({
           variant: 'success',
           title: 'Export request created',
           description: 'Your material export request has been successfully created.'
         });
-        navigate('/export-request');
+        navigate(`/export-request/${id}`);
       } else {
         throw new Error('Unexpected status code: ' + response.statusCode);
       }

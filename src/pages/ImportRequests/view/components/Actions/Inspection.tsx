@@ -52,7 +52,7 @@ const InspectionStep: React.FC<Props> = ({
       content: (
         <WarehouseApproval
           onApproval={onApproval}
-          requestId="123"
+          requestId={importRequest?.code}
           currentStatus={currentStatus}
           manager={importRequest?.warehouseManager}
           requestDetails={importRequest?.managerNote}

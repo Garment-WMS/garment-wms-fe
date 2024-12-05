@@ -80,18 +80,32 @@ const ImportReceiptTable = (props: Props) => {
 
   const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
     {
-      header: 'Import request code',
+      header: 'Import receipt code',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        const id = row.original.id;
         return (
-          <div>
+          <Link to={`/import-receipt/${id}`} className='underline text-bluePrimary'>
             <div>{row.original.code}</div>
-          </div>
+          </Link>
         );
       }
     },
-
+    {
+      header: 'Import request code',
+      accessorKey: 'code',
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id
+        return (
+          <Link to={`/import-request/${id}`} className='underline text-bluePrimary'>
+            <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
+          </Link>
+        );
+      }
+    },
     {
       header: 'Type',
       accessorKey: 'type',
@@ -106,29 +120,24 @@ const ImportReceiptTable = (props: Props) => {
       header: 'Assigned to',
       accessorKey: 'creator',
       enableColumnFilter: false,
-      filterOptions: DeliveryType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
-          <div className='flex justify-center items-center'>
-             <Avatar className="mr-2 flex justify-center items-center">
-            <AvatarImage
-              src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseStaff?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseStaff?.account?.firstName}
-          </h4>
+        <Link className="flex text-blue-500 underline items-center" to="">
+          <div className="flex items-center">
+            <Avatar className="mr-2 flex justify-center items-center">
+              <AvatarImage
+                src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
+                  row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center align-middle">
+              {row?.original?.warehouseStaff?.account?.lastName +
+                ' ' +
+                row?.original?.warehouseStaff?.account?.firstName}
+            </div>
           </div>
-         
         </Link>
       )
     },
@@ -136,10 +145,6 @@ const ImportReceiptTable = (props: Props) => {
       header: 'Approved by',
       accessorKey: 'creator',
       enableColumnFilter: false,
-      filterOptions: DeliveryType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
           <div className='flex justify-center items-center'>
@@ -172,11 +177,7 @@ const ImportReceiptTable = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+        const formattedDate = date.toLocaleString();
         return (
           <div>
             <div>{formattedDate}</div>
@@ -211,7 +212,7 @@ const ImportReceiptTable = (props: Props) => {
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
-      filterOptions: ImportReceiptStatus.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: Status.map((status) => ({ label: status.label, value: status.value }))
     },
     {
       id: 'actions',
@@ -250,6 +251,7 @@ const ImportReceiptTable = (props: Props) => {
           setSorting={setSorting}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
+          searchWidth="w-[250px]"
           searchColumnId="code"
           searchPlaceholder="Search import receipt by code"
         />

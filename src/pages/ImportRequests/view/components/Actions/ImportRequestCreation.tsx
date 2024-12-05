@@ -16,7 +16,52 @@ const ImportRequestCreation: React.FC = () => {
   const importRequest: ImportRequest = useSelector(importRequestSelector.importRequest);
   let purchasingStaff = importRequest?.purchasingStaff as any;
   let inspectionStaff = importRequest?.inspectionRequest[0]?.inspectionDepartment as any;
-  console.log('inspec', inspectionStaff);
+  let productionDepartment = importRequest?.productionDepartment as any;
+  const renderStaff = () => {
+    if (
+      ['MATERIAL_BY_PO', 'MATERIAL_RETURN'].includes(importRequest?.type) &&
+      purchasingStaff
+    ) {
+      return (
+        <>
+          <Avatar className="w-20 h-20 mb-4">
+            <AvatarImage src={purchasingStaff?.account?.avatarUrl} alt="Purchasing Staff" />
+            <AvatarFallback>PS</AvatarFallback>
+          </Avatar>
+          <div className="text-center">
+            <p className="text-sm font-medium">
+              Created by {purchasingStaff?.account.firstName}
+            </p>
+            <p className="text-xs text-muted-foreground">{purchasingStaff?.account.email}</p>
+          </div>
+        </>
+      );
+    }
+
+    if (['PRODUCT_BY_BATCH'].includes(importRequest?.type) && productionDepartment) {
+      return (
+        <>
+          <Avatar className="w-20 h-20 mb-4">
+            <AvatarImage
+              src={productionDepartment?.account?.avatarUrl}
+              alt="Production Department"
+            />
+            <AvatarFallback>PD</AvatarFallback>
+          </Avatar>
+          <div className="text-center">
+            <p className="text-sm font-medium">
+              Created by {productionDepartment?.account.firstName}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {productionDepartment?.account.email}
+            </p>
+          </div>
+        </>
+      );
+    }
+
+    return <div className="text-sm text-muted-foreground">No staff assigned for this request type</div>;
+  };
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
@@ -26,22 +71,7 @@ const ImportRequestCreation: React.FC = () => {
 
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="col-span-1 md:col-span-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r pb-6 md:pb-0">
-          {purchasingStaff ? (
-            <>
-              <Avatar className="w-20 h-20 mb-4">
-                <AvatarImage src={purchasingStaff?.account?.avatarUrl} alt="John Doe" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div className="text-center">
-                <p className="text-sm font-medium">
-                  Created by {purchasingStaff?.account.firstName}
-                </p>
-                <p className="text-xs text-muted-foreground">{purchasingStaff?.account.email}</p>
-              </div>
-            </>
-          ) : (
-            <div>Not found purchasing staff</div>
-          )}
+        {renderStaff()}
         </div>
 
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">

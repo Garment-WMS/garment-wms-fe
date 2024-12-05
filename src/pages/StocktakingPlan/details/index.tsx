@@ -29,7 +29,8 @@ import {
 import {
   InventoryReportPlanToRender,
   InventoryReportPlanStatus,
-  InventoryReportStatus
+  InventoryReportStatus,
+  InventoryReportPlan
 } from '@/types/InventoryReport';
 import {
   Accordion,
@@ -50,6 +51,10 @@ import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import { ErrorDialog } from './components/ErrorDialog';
 import { ImportRequest } from '@/types/ImportRequestType';
 import { MaterialExportRequest } from '@/types/exportRequest';
+import { PlanErrorDialog } from './components/PlanErrorDialog';
+import { ReadOnlyTextArea } from '@/components/common/ReadOnlyTextArea';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 
 
 // const breadcrumbItems = [
@@ -72,6 +77,8 @@ const StocktakingPlanDetails = () => {
   const [isErrorDialogOpen,setIsErrorDialogOpen] = useState(false);
   const [errorImportRequests, setErrorImportRequests] = useState<ImportRequest[]>([]);
   const [errorExportRequests, setErrorExportRequests] = useState<MaterialExportRequest[]>([]);
+  const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
+  const [planErrorDialog, setPlanErrorDialog] = useState(false);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -98,6 +105,7 @@ const StocktakingPlanDetails = () => {
   const handleStartPlan = async () => {
     try {
       if (id) {
+        setIsLoading(true);
         const res = await privateCall(inventoryReportPlanApi.startInventoryReportPlan(id));
         if (res.status === 204) {
           toast({
@@ -112,19 +120,31 @@ const StocktakingPlanDetails = () => {
         throw new Error('ID is undefined');
       }
     } catch (error: any) {
+      const errMessage = error.response.data.message;
+      const errorList = error.response.data.errors;
       if (error.response.status === 409) {
-        const errorList = error.response.data.errors;
+      
         setErrorImportRequests(errorList.isAnyImportingImportRequest);
         setErrorExportRequests(errorList.isAnyExportingExportRequest);
         setIsErrorDialogOpen(true);
         
-      } else {
+      }
+      if (error.response.status === 400 && errorList) {
+        const errorList = error.response.data.errors;
+        setErrorPlanList(errorList);
+        setPlanErrorDialog(true);
+        
+      }
+      else {
       toast({
         title: 'error',
         variant: 'destructive',
-        description: error.message
+        description: errMessage
       });
     }
+  }
+  finally{
+    setIsLoading(false);
   }
 }
   useEffect(() => {
@@ -178,13 +198,13 @@ const StocktakingPlanDetails = () => {
             <div>
               <h3 className="text-md font-medium">From</h3>
               <p className="text-md text-muted-foreground">
-                {planData?.from ? format(new Date(planData.from), 'PPP') : 'N/A'}
+                {planData?.from ? formatDateTimeToDDMMYYYYHHMM(planData?.from)  : 'N/A'}
               </p>
             </div>
             <div>
               <h3 className="text-md font-medium">To</h3>
               <p className="text-md text-muted-foreground">
-                {planData?.to ? format(new Date(planData?.to), 'PPP') : 'N/A'}
+                {planData?.to ? formatDateTimeToDDMMYYYYHHMM(planData?.to) : 'N/A'}
               </p>
             </div>
             <div>
@@ -193,10 +213,25 @@ const StocktakingPlanDetails = () => {
                 {convertTitleToTitleCase(planData.type)} Plan
               </p>
             </div>
+            <div>
+              <h3 className="text-md font-medium">Started At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.from ? formatDateTimeToDDMMYYYYHHMM(planData?.startedAt)  : 'N/A'}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-md font-medium">Finished At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.to ? formatDateTimeToDDMMYYYYHHMM(planData?.finishedAt) : 'N/A'}
+              </p>
+            </div>
           </div>
           <div>
             <h3 className="text-md font-medium">Note</h3>
-            <p className="text-md text-muted-foreground">{planData?.note ? <div></div> : 'N/A'}</p>
+            <p className="text-md text-muted-foreground">{planData?.note ? 
+              <div>
+                <ReadOnlyTextArea className='w-1/2' content={planData?.note} />
+              </div> : 'N/A'}</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">Inventory Items</h3>
@@ -409,6 +444,11 @@ const StocktakingPlanDetails = () => {
         onClose={() => setIsErrorDialogOpen(false)}
         importRequests={errorImportRequests}
         exportRequests={errorExportRequests}
+      />
+      <PlanErrorDialog
+      planList={errorPlanList}
+      isOpen={planErrorDialog}
+      onClose={() => setPlanErrorDialog(false)}
       />
     </Card>
   );

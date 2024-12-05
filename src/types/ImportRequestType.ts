@@ -42,45 +42,6 @@ export interface ImportRequest {
   poDelivery: PODelivery;
 }
 
-export interface ImportRequest {
-  code: string;
-  id: string;
-  warehouseStaffId: string | null;
-  status:
-    | 'ARRIVED'
-    | 'PENDING'
-    | 'CANCELLED'
-    | 'REJECTED'
-    | 'APPROVED'
-    | 'INSPECTING'
-    | 'INSPECTED'
-    | 'IMPORTING'
-    | 'AWAIT_TO_IMPORT'
-    | 'IMPORTED'; // Expanded statuses
-  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
-  startAt: string | null;
-  finishAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  cancelAt: string | null;
-  cancelReason: string | null;
-  description: string;
-  poDeliveryId: string;
-  purchasingStaffId: string;
-  rejectAt: string | null;
-  rejectReason: string | null;
-  warehouseManagerId: string | null;
-  purchaseOrder: PurchaseOrder;
-  importRequestDetail: ImportRequestDetail[];
-  warehouseManager: WarehouseManager | null;
-  purchasingStaff: PurchasingStaff;
-  productionDepartment: WarehouseStaff;
-  warehouseStaff: WarehouseStaff | null;
-  poDelivery: PODelivery;
-  inspectionRequest: any;
-}
-
 export type ImportRequestDetail = {
   id: string;
   importRequestId: string;

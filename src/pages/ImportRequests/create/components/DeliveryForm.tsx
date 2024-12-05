@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon } from '@radix-ui/react-icons';
 
 import { Textarea } from '@/components/ui/textarea';
+import DayTimePicker from '@/components/common/DayTimePicker';
 
 type Props = {};
 
@@ -48,7 +49,7 @@ const DeliveryForm: React.FC<DeliveryFormProps> = ({ form, onSubmit }) => {
             render={({ field }) => (
               <FormItem className="w-full flex flex-col mt-5">
                 <FormLabel>Date of delivery</FormLabel>
-                <Popover>
+                {/* <Popover>
                   <PopoverTrigger asChild className="h-[60px] ">
                     <FormControl>
                       <Button
@@ -71,7 +72,10 @@ const DeliveryForm: React.FC<DeliveryFormProps> = ({ form, onSubmit }) => {
                       initialFocus
                     />
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
+                <DayTimePicker
+                date={field.value} setDate={field.onChange} 
+                />
                 <FormMessage />
               </FormItem>
             )}

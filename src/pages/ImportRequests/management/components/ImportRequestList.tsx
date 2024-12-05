@@ -133,7 +133,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => (
         <div>
           <Link to={`/import-request/${row.original.id}`} className="text-blue-500 hover:underline">
-            {row.original.code}
+            {row.original.code || 'N/A'}
           </Link>
         </div>
       )
@@ -238,7 +238,7 @@ const ImportRequestList = (props: Props) => {
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
           searchPlaceholder="Input request code"
-          searchWidth="lg:w-[200px]"
+          searchWidth="w-[150px]"
         />
 
         <PurchasingStaffGuardAndProductionDepartmentDiv className="flex items-center flex-row justify-center mb-9">

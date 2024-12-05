@@ -13,7 +13,7 @@ export const InventoryReportStatus = [
     {value: 'IN_PROGRESS', label: 'In Progress', variant: 'warning'},
     {value: 'CANCELLED', label: 'Cancelled', variant: 'destructive'},
     {value: 'FINISHED', label: 'Finished', variant: 'success'},
-    {value: 'REPORTED, label: Reported', variant: 'default'},
+    {value: 'REPORTED', label: 'Reported', variant: 'default'},
 ]
 
 
@@ -182,6 +182,8 @@ export interface InventoryReportPlanToRender{
     note:string,
     from: string,
     to: string,
+    startedAt: string,
+    finishedAt: string,
     createdAt?: string,
     updatedAt?: string,
     deletedAt?: string,

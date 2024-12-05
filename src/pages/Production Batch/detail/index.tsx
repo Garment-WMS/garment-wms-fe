@@ -12,13 +12,23 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import { Package, Box, ClipboardList, Truck, CalendarDays, Layers } from 'lucide-react';
+import {
+  Package,
+  Truck,
+  CalendarDays,
+  Layers,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  FileInput,
+  FileOutput
+} from 'lucide-react';
 import EmptyDatacomponent from '@/components/common/EmptyData';
 import { getIconAttributes } from '@/helpers/getIconAttributes';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { Button } from '@/components/ui/button';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
-import { convertDate } from '@/helpers/convertDate';
+import Colors from '@/constants/color';
+import { ExportRequestStatus } from '@/types/exportRequest';
 
 interface ProductionBatchDetailProps {
   productionPlanDetail: any;
@@ -76,9 +86,20 @@ const ProductionBatchDetail: React.FC = () => {
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
-        <ProductionDepartmentGuardDiv>
-          <Button>Create Export</Button>
-        </ProductionDepartmentGuardDiv>
+        <div className="flex flex-row items-center gap-2">
+          <ProductionDepartmentGuardDiv>
+            <Button className="bg-white ring-1 ring-primaryLight text-primaryLight">
+              <FileOutput size={18} color={Colors.primaryLightBackgroundColor} className="mr-3" />
+              Create Import
+            </Button>
+          </ProductionDepartmentGuardDiv>
+          <ProductionDepartmentGuardDiv>
+            <Button>
+              <FileInput size={18} color="#ffffff" className="mr-3" />
+              Create Export
+            </Button>
+          </ProductionDepartmentGuardDiv>
+        </div>
       </div>
 
       {/* Batch Information Card */}
@@ -87,6 +108,7 @@ const ProductionBatchDetail: React.FC = () => {
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
             Batch Information
+            <Badge className="ml-3">{status}</Badge>
           </CardTitle>
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">No Produced Product:</span>
@@ -109,24 +131,28 @@ const ProductionBatchDetail: React.FC = () => {
             {/* Details Section */}
             <div className="col-span-2 grid grid-cols-2 gap-4">
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Code</h3>
-                <p className="font-semibold">{code}</p>
+                <h3 className="text-sm font-medium text-muted-foreground">Product</h3>
+                <p className="font-semibold">{productionPlanDetail?.productSize?.name}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Name</h3>
                 <p className="font-semibold">{name}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
-                <Badge>{status}</Badge>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Quantity To Produce</h3>
-                <p className="font-semibold">{quantityToProduce}</p>
+                <h3 className="text-sm font-medium text-muted-foreground">Code</h3>
+                <p className="font-semibold text-primaryLight">{code}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Created At</h3>
                 <p>{convertDateWithTime(createdAt)}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Batch quantity</h3>
+                <p className="font-semibold">{quantityToProduce}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Planning quantity</h3>
+                <p className="font-semibold">{productionPlanDetail?.quantityToProduce}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Start Date</h3>
@@ -135,10 +161,6 @@ const ProductionBatchDetail: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Finished Date</h3>
                 <p>{finishedDate ? convertDateWithTime(finishedDate) : 'Not yet'}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Expected Finish</h3>
-                <p>{expectedFinishDate ? convertDateWithTime(expectedFinishDate) : 'Not yet'}</p>
               </div>
             </div>
           </div>
@@ -177,10 +199,7 @@ const ProductionBatchDetail: React.FC = () => {
                   </div>
                   <div className="flex flex-row justify-end items-center gap-2">
                     <p className="text-xs font-medium text-slate-500">Quantity: </p>{' '}
-                    <span className="font-bold text-xs">
-                      {material.quantityByUom}{' '}
-                      {material.materialVariant.material.materialUom.uomCharacter}
-                    </span>
+                    <span className="font-bold text-xs">{material.quantityByUom} </span>
                   </div>
                   <div>
                     <h4 className="text-xs font-medium text-muted-foreground mb-2">Attributes:</h4>
@@ -201,12 +220,76 @@ const ProductionBatchDetail: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Material Export Requests Card */}
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle className="flex items-center gap-2">
+            <FileInput className="h-5 w-5" />
+            Material Export Requests
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          {materialExportRequest.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created At</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {materialExportRequest.map((request: any) => {
+                  // Match the status to the corresponding `ExportRequestStatus` entry
+                  const matchedStatus = ExportRequestStatus.find(
+                    (status) => status.value === request.status
+                  );
+
+                  return (
+                    <TableRow key={request.id}>
+                      {/* Code */}
+                      <TableCell>
+                        <Link
+                          to={`/export-request/${request.id}`}
+                          className="font-semibold text-primary underline">
+                          {request.code}
+                        </Link>
+                      </TableCell>
+
+                      {/* Status with Dynamic Badge */}
+                      <TableCell>
+                        {matchedStatus ? (
+                          <Badge variant={matchedStatus.variant}>{matchedStatus.label}</Badge>
+                        ) : (
+                          <Badge variant="neutral">Unknown</Badge>
+                        )}
+                      </TableCell>
+
+                      {/* Created At */}
+                      <TableCell>{convertDateWithTime(request.createdAt)}</TableCell>
+
+                      {/* Description */}
+                      <TableCell>{request.description || 'N/A'}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="p-6">
+              <EmptyDatacomponent />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Import Requests Card */}
       <Card>
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5" />
-            Import Requests
+            <FileOutput className="h-5 w-5" />
+            Material Import Requests
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -238,52 +321,6 @@ const ProductionBatchDetail: React.FC = () => {
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
                     <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="p-6">
-              <EmptyDatacomponent />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Material Export Requests Card */}
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center gap-2">
-            <Truck className="h-5 w-5" />
-            Material Export Requests
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {materialExportRequest.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created At</TableHead>
-                  <TableHead>Description</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {materialExportRequest.map((request: any) => (
-                  <TableRow key={request.id}>
-                    <TableCell>
-                      <Link
-                        to={`/export-request/${request.id}`}
-                        className="font-semibold text-primary underline">
-                        {request.code}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{request.status}</Badge>
-                    </TableCell>
-                    <TableCell>{convertDateWithTime(request.createdAt)}</TableCell>
-                    <TableCell>{request.description || 'N/A'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

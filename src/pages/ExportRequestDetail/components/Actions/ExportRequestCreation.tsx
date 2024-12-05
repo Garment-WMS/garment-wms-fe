@@ -41,7 +41,7 @@ const ExportRequestCreation: React.FC<Props> = (props) => {
               </div>
             </>
           ) : (
-            <div>Not found purchasing staff</div>
+            <div>Not found production department</div>
           )}
         </div>
 

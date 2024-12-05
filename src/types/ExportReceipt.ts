@@ -18,6 +18,7 @@ export type MaterialExportReceipt = {
   updatedAt: string;
   deletedAt: string | null;
   warehouseStaff: User;
+  materialExportRequest: MaterialExportRequest;
   materialExportReceiptDetail: MaterialExportReceiptDetail[];
 };
 export interface MaterialExportReceiptDetail {

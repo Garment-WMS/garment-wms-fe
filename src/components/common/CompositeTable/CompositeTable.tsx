@@ -102,7 +102,7 @@ export default function TanStackBasicTable<TData, TValue>({
           table={table}
           searchColumnId={searchColumnId}
           searchPlaceholder={searchPlaceholder}
-          searchWidth=''
+          searchWidth={searchWidth}
         />
       )}
       {isTableDataLoading ? (

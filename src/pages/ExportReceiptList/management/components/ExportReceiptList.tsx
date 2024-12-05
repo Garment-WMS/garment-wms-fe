@@ -84,8 +84,6 @@ const ExportReceiptTable = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-  console.log('exportReceiptsList', paginatedTableData);
-
   const importRequestColumn: CustomColumnDef<MaterialExportReceipt>[] = [
     {
       header: 'Export receipt code',
@@ -95,19 +93,37 @@ const ExportReceiptTable = (props: Props) => {
         const code = row.original.code || 'N/A';
         return (
           <div>
-            <div>{code}</div>
+            <Link to={`/export-receipt/${row.original.id}`} className="text-blue-500 underline">
+              {code}
+            </Link>
           </div>
         );
       }
     },
 
     {
+      header: 'Export request Code',
+      accessorKey: 'materialExportRequest',
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const id = row.original?.materialExportRequest?.id;
+        return (
+          <div>
+            <Link to={`/export-request/${id}`} className="text-blue-500 underline">
+              {row.original?.materialExportRequest?.code}
+            </Link>
+          </div>
+        );
+      }
+    },
+    {
       header: 'Assigned to',
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex  items-center text-blue-500 underline" to="">
-          <Avatar className="mr-2 ">
+        <Link className="flex gap-2 items-center text-blue-500 underline" to="">
+          <Avatar className="">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
             />

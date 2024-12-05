@@ -109,29 +109,13 @@ const ExportRequestTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div>
-          <Link to={`/export-request/${row.original.id}`} className="text-blue-500 hover:underline">
+          <Link to={`/export-request/${row.original.id}`} className="text-blue-500 underline">
             {row.original.code}
           </Link>
         </div>
       )
     },
-    {
-      header: 'Status',
-      accessorKey: 'status',
-      filterOptions: ExportRequestStatus.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
-      cell: ({ row }) => (
-        <Badge
-          variant={
-            ExportRequestStatus.find((status) => status.value === row.original.status)?.variant
-          }
-          className="w-[140px] flex items-center justify-center pr-0 pl-0">
-          {convertTitleToTitleCase(row.original.status)}
-        </Badge>
-      )
-    },
+   
     {
       header: 'Production Batch',
       accessorKey: 'productionBatch.code',
@@ -140,7 +124,14 @@ const ExportRequestTable = (props: Props) => {
         label: delivery.label,
         value: delivery.value
       })),
-      cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
+      cell: ({ row }) => {
+        const id = row.original.productionBatch?.id
+        return (
+          <Link to={`/production-batch/${id}`} className='underline text-bluePrimary'>
+            <div>{row.original?.productionBatch?.code}</div>
+          </Link>
+        );
+      }
     },
     // {
     //   header: 'Production Batch',
@@ -190,6 +181,23 @@ const ExportRequestTable = (props: Props) => {
     //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
     // },
     {
+      header: 'Status',
+      accessorKey: 'status',
+      filterOptions: ExportRequestStatus.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => (
+        <Badge
+          variant={
+            ExportRequestStatus.find((status) => status.value === row.original.status)?.variant
+          }
+          className="w-[140px] flex items-center justify-center pr-0 pl-0">
+          {convertTitleToTitleCase(row.original.status)}
+        </Badge>
+      )
+    },
+    {
       id: 'actions',
       cell: ({ row }) => (
         <DropdownMenu>
@@ -224,7 +232,8 @@ const ExportRequestTable = (props: Props) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
-          searchPlaceholder="Search import receipt by code"
+          searchWidth='w-[200px]'
+          searchPlaceholder="Search export request code"
         />
         <ProductionDepartmentGuardDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>

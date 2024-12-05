@@ -138,45 +138,6 @@ interface StocktakingReportProps {
         );
       }
     },
-    // {
-    //     header: 'Expected Quantity',
-    //     accessorKey: 'totalExpectedQuantity',
-    //     enableColumnFilter: false,
-    //     enableSorting: false,
-    //     cell: ({ row }) => {
-    //       return (
-    //         <div>
-    //           <div>{row.original.totalExpectedQuantity}</div>
-    //         </div>
-    //       );
-    //     }
-    //   },
-    //   {
-    //     header: 'Actual Quantity',
-    //     accessorKey: 'totalActualQuantity',
-    //     enableColumnFilter: false,
-    //     enableSorting: false,
-    //     cell: ({ row }) => {
-    //       return (
-    //         <div>
-    //           <div>{row.original.totalActualQuantity}</div>
-    //         </div>
-    //       );
-    //     }
-    //   },
-    //   {
-    //     header: 'Manager Confirm Quantity',
-    //     accessorKey: 'totalManagerQuantityConfirm',
-    //     enableColumnFilter: false,
-    //     enableSorting: false,
-    //     cell: ({ row }) => {
-    //       return (
-    //         <div>
-    //           <div>{row.original.totalManagerQuantityConfirm}</div>
-    //         </div>
-    //       );
-    //     }
-    //   },
     {
       header: 'Status',
       accessorKey: 'status',
@@ -187,7 +148,7 @@ interface StocktakingReportProps {
           {(convertTitleToTitleCase(row.original.status ) ?? 'N/A')}
         </div>
       ),
-      filterOptions: InventoryReportPlanStatus.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: InventoryReportStatus.map((status) => ({ label: status.label ?? 'N/A', value: status.value }))
     },
     {
       id: 'actions',
@@ -246,7 +207,7 @@ const StocktakingReport = (props: Props) => {
     <div className='bg-white rounded-xl shadow-sm border-2'>
         <TanStackBasicTable
             searchColumnId='code'
-            searchPlaceholder='Search by code'
+            searchPlaceholder='Search by report code'
             columns={StocktakingColumn}
             paginatedTableData={dataWithPage}
             isTableDataLoading={false}
