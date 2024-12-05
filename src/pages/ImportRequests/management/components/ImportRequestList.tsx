@@ -133,7 +133,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => (
         <div>
           <Link to={`/import-request/${row.original.id}`} className="text-blue-500 hover:underline">
-            {row.original.code}
+            {row.original.code || 'N/A'}
           </Link>
         </div>
       )

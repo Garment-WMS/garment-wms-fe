@@ -77,11 +77,11 @@ const ImportRequestStatus = (props: Props) => {
       case 'AWAIT_TO_IMPORT':
         return {
           role: 'Warehouse Stafff',
-          avatar: importRequest?.purchasingStaff?.account?.avatarUrl,
+          avatar: importRequest?.warehouseStaff?.account?.avatarUrl,
           name:
-            importRequest?.purchasingStaff?.account?.lastName +
+            importRequest?.warehouseStaff?.account?.lastName +
             ' ' +
-            importRequest?.purchasingStaff?.account?.firstName
+            importRequest?.warehouseStaff?.account?.firstName
         };
       default:
         return { role: 'Unassigned', avatar: null };

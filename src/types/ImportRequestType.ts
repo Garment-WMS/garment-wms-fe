@@ -3,43 +3,7 @@ import { ProductionBatch } from './ProductionBatch';
 import { ProductSize } from './ProductType';
 import { InspectionDepartment } from './InspectionDepartment';
 
-export interface ImportRequest {
-  managerNote: string;
-  id: string;
-  warehouseStaffId: string | null;
-  status:
-    | 'ARRIVED'
-    | 'PENDING'
-    | 'CANCELLED'
-    | 'REJECTED'
-    | 'APPROVED'
-    | 'AWAIT_TO_IMPORT'
-    | 'INSPECTING'
-    | 'INSPECTED'
-    | 'IMPORTING'
-    | 'IMPORTED'; // Expanded statuses
-  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Extended as needed
-  startAt: string | null;
-  finishAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  cancelAt: string | null;
-  cancelReason: string | null;
-  description: string;
-  poDeliveryId: string;
-  purchasingStaffId: string;
-  productionBatch: ProductionBatch | null;
-  rejectAt: string | null;
-  rejectReason: string | null;
-  warehouseManagerId: string | null;
-  importRequestDetail: ImportRequestDetail[];
-  warehouseManager: WarehouseManager | null;
-  purchasingStaff: PurchasingStaff;
-  inspectionDepartment: InspectionDepartment
-  warehouseStaff: WarehouseStaff | null;
-  poDelivery: PODelivery;
-}
+
 
 export interface ImportRequest {
   code: string;
@@ -56,7 +20,7 @@ export interface ImportRequest {
     | 'IMPORTING'
     | 'AWAIT_TO_IMPORT'
     | 'IMPORTED'; // Expanded statuses
-  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES';
+  type: string;
   startAt: string | null;
   finishAt: string | null;
   createdAt: string;
@@ -68,6 +32,7 @@ export interface ImportRequest {
   poDeliveryId: string;
   purchasingStaffId: string;
   rejectAt: string | null;
+  managerNote: string;
   rejectReason: string | null;
   warehouseManagerId: string | null;
   purchaseOrder: PurchaseOrder;
