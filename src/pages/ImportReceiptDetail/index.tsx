@@ -227,6 +227,7 @@ export default function MaterialReceipt() {
         description: 'There was a problem finishing the import process.'
       });
     } finally {
+      handleCloseDialog();
       setIsLoading(false);
     }
   };
@@ -724,7 +725,7 @@ export default function MaterialReceipt() {
               </Card>
             )}
           </div>
-          {importReceipt?.type === 'MATERIAL' && (
+          {
             <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
               <DialogContent className="max-w-4xl">
                 <DialogHeader>
@@ -810,7 +811,7 @@ export default function MaterialReceipt() {
                 <Discussion chat={importReceipt?.discussion} onRender={onRender} />
               )}
             </Dialog>
-          )}
+          }
           {importReceipt?.type === 'PRODUCT' && (
             <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
               <DialogContent className="max-w-4xl">
