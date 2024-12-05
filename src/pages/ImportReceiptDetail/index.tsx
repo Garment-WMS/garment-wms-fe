@@ -763,6 +763,9 @@ export default function MaterialReceipt() {
                   </div>
                 </ScrollArea>
                 <DialogFooter>
+                  <Button variant="outline" onClick={handleCloseDialog}>
+                    Close
+                  </Button>
                   <MaterialReceiptLabels materialReceipts={importReceipt?.materialReceipt} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -833,7 +836,7 @@ export default function MaterialReceipt() {
                           Quantity: {item?.quantityByUom}{' '}
                           {item?.productSize?.productVariant?.product?.productUom?.uomCharacter}
                         </p>
-                        <p>Expire Date: {new Date(item?.expireDate).toLocaleDateString()}</p>
+                        <p>Product size: {item?.productSize?.size}</p>
                         <div className="mt-2">
                           <h3 className="font-semibold">Product barcode: </h3>
                           <Barcode value={item?.productSize?.code} width={1.5} height={50} />
@@ -847,6 +850,9 @@ export default function MaterialReceipt() {
                   </div>
                 </ScrollArea>
                 <DialogFooter>
+                  <Button variant="outline" onClick={handleCloseDialog}>
+                    Close
+                  </Button>
                   <ProductReceiptLabel productReceipts={importReceipt?.productReceipt} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

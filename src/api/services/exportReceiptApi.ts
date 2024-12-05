@@ -17,11 +17,11 @@ export const exportReceiptApi = {
       materialExportRequestId: id
     }),
   changeStatusProduction: (id: string, action: string) =>
-    post('/material-export-receipt/production-staff-process', {
+    post('/material-export-request/production-department-process', {
       action,
       materialExportRequestId: id
     }),
-    getAllMyExportReceipt: (queryString: string) => get(`${exportReceiptPath}/my${queryString}`)
+  getAllMyExportReceipt: (queryString: string) => get(`${exportReceiptPath}/my${queryString}`)
 };
 export const changeStatusFn = async (id: string, action: string, type: string) => {
   if (type == 'staff') {

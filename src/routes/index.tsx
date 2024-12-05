@@ -66,6 +66,7 @@ import WarehouseStaffDetail from '@/pages/WarehouseStaff/Detail';
 import CreateMaterialVariant from '@/pages/Material/create';
 import CreateProductVariant from '@/pages/Product/Create';
 import WarehouseStaffExportReceiptList from '@/pages/WarehouseStaff/ExportReceiptList/management';
+import CreateReturnImportRequest from '@/pages/ImportRequests/createReturnMaterial';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -164,6 +165,10 @@ const RouterComponent: React.FC = () => {
         {
           path: '/import-request/create/material',
           element: <CreateImportRequest />
+        },
+        {
+          path: '/import-request/create/return-material',
+          element: <CreateReturnImportRequest />
         },
         {
           path: '/import-request/create/material/:id',

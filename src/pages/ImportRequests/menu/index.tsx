@@ -3,7 +3,6 @@ import Import1 from '@/assets/images/import-1.svg';
 import Import2 from '@/assets/images/import-2.svg';
 import Import4 from '@/assets/images/import-4.svg';
 
-
 const CreateImportRequestMenu: React.FC = () => {
   const items = [
     {
@@ -11,8 +10,12 @@ const CreateImportRequestMenu: React.FC = () => {
       image: Import1,
       link: '/import-request/create/material'
     },
-    { label: 'Return Material', image: Import2, link: '/return-material' },
-    { label: 'Product with Manufacturing Order', image: Import4, link: '/import-request/create/product' },
+    { label: 'Return Material', image: Import2, link: '/import-request/create/return-material' },
+    {
+      label: 'Product with Manufacturing Order',
+      image: Import4,
+      link: '/import-request/create/product'
+    }
   ];
 
   return (

@@ -103,7 +103,9 @@ export default function WarehouseStaffAssignment({
             </div>
           </div>
         ) : (
-          <h3>Not yet</h3>
+          <div className="flex items-center justify-center flex-col">
+            <h3 className="text-xl">Not assigned yet</h3>
+          </div>
         )}
         <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
           <h3 className="text-lg font-semibold mb-4">Assignment Status</h3>

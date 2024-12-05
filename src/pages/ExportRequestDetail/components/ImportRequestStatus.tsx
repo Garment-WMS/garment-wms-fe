@@ -31,7 +31,7 @@ const ImportRequestStatus = (props: Props) => {
     switch (status) {
       case '':
       case 'APPROVED':
-      case 'DECLINED':
+      case 'REJECTED':
         return {
           role: 'Warehouse Manager',
           avatar: exportRequest?.warehouseManager?.account?.avatarUrl,

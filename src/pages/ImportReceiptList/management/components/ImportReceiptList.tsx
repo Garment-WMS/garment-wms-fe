@@ -121,9 +121,9 @@ const ImportReceiptTable = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline items-center" to="">
+        <Link className="flex text-blue-500 underline items-center justify-start" to="">
           <div className="flex items-center">
-            <Avatar className="mr-2 flex justify-center items-center">
+            <Avatar className="mr-2 flex  items-center justify-start">
               <AvatarImage
                 src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
               />
@@ -147,23 +147,22 @@ const ImportReceiptTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
-          <div className='flex justify-center items-center'>
+          <div className="flex justify-center items-center">
             <Avatar className="mr-2 flex justify-center items-center">
-            <AvatarImage
-              src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseManager?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseManager?.account?.firstName}
-          </h4>
+              <AvatarImage
+                src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
+                  row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <h4>
+              {row?.original?.warehouseManager?.account?.lastName +
+                ' ' +
+                row?.original?.warehouseManager?.account?.firstName}
+            </h4>
           </div>
-          
         </Link>
       )
     },

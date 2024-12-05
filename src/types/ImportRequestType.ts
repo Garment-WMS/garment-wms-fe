@@ -3,10 +3,8 @@ import { ProductionBatch } from './ProductionBatch';
 import { ProductSize } from './ProductType';
 import { InspectionDepartment } from './InspectionDepartment';
 
-
-
 export interface ImportRequest {
-  code: string;
+  managerNote: string;
   id: string;
   warehouseStaffId: string | null;
   status:
@@ -15,12 +13,13 @@ export interface ImportRequest {
     | 'CANCELLED'
     | 'REJECTED'
     | 'APPROVED'
+    | 'AWAIT_TO_IMPORT'
     | 'INSPECTING'
     | 'INSPECTED'
     | 'IMPORTING'
-    | 'AWAIT_TO_IMPORT'
+    | 'MATERIAL_RETURN'
     | 'IMPORTED'; // Expanded statuses
-  type: string;
+  type: 'MATERIAL_BY_PO' | 'OTHER_TYPES'; // Extended as needed
   startAt: string | null;
   finishAt: string | null;
   createdAt: string;
@@ -31,19 +30,16 @@ export interface ImportRequest {
   description: string;
   poDeliveryId: string;
   purchasingStaffId: string;
+  productionBatch: ProductionBatch | null;
   rejectAt: string | null;
-  managerNote: string;
   rejectReason: string | null;
-  productionBatch:ProductionBatch
   warehouseManagerId: string | null;
-  purchaseOrder: PurchaseOrder;
   importRequestDetail: ImportRequestDetail[];
   warehouseManager: WarehouseManager | null;
   purchasingStaff: PurchasingStaff;
-  productionDepartment: WarehouseStaff;
+  inspectionDepartment: InspectionDepartment;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
-  inspectionRequest: any;
 }
 
 export type ImportRequestDetail = {

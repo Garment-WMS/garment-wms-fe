@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/hooks/useDebouce';
 import { useGetImportRequests } from '@/hooks/useGetImportRequest';
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { DeliveryType, } from '@/types/ImportRequestType';
+import { DeliveryType } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -21,7 +21,11 @@ import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetAllExportReceipt } from '@/hooks/useGetAllExportReceipt';
-import { ExportReceiptStatus, ExportReceiptType, MaterialExportReceipt } from '@/types/ExportReceipt';
+import {
+  ExportReceiptStatus,
+  ExportReceiptType,
+  MaterialExportReceipt
+} from '@/types/ExportReceipt';
 import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 type Props = {};
 
@@ -80,18 +84,18 @@ const ExportReceiptTable = (props: Props) => {
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
 
-
   const importRequestColumn: CustomColumnDef<MaterialExportReceipt>[] = [
     {
       header: 'Export receipt code',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
-        const code = row.original.code || "N/A";
+        const code = row.original.code || 'N/A';
         return (
-          
           <div>
-            <Link to={`/export-receipt/${row.original.id}`} className="text-blue-500 underline">{code}</Link>
+            <Link to={`/export-receipt/${row.original.id}`} className="text-blue-500 underline">
+              {code}
+            </Link>
           </div>
         );
       }
@@ -102,18 +106,16 @@ const ExportReceiptTable = (props: Props) => {
       accessorKey: 'materialExportRequest',
       enableColumnFilter: false,
       enableSorting: false,
-      cell: ({ row }) =>{
+      cell: ({ row }) => {
         const id = row.original?.materialExportRequest?.id;
-        return(
-        <div>
-          <Link to={`/export-request/${id}`} className="text-blue-500 underline">
-            {row.original?.materialExportRequest?.code}
-          </Link>
-        </div>
-      )
+        return (
+          <div>
+            <Link to={`/export-request/${id}`} className="text-blue-500 underline">
+              {row.original?.materialExportRequest?.code}
+            </Link>
+          </div>
+        );
       }
-        
-        
     },
     {
       header: 'Assigned to',
@@ -210,10 +212,12 @@ const ExportReceiptTable = (props: Props) => {
       })),
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.type ?? '', ExportReceiptType) })}>
+          className={badgeVariants({
+            variant: getStatusBadgeVariant(row.original.type ?? '', ExportReceiptType)
+          })}>
           {formatString(row.original.type ?? 'N/A')}
         </div>
-      ),
+      )
     },
     {
       header: 'Status',
@@ -221,11 +225,16 @@ const ExportReceiptTable = (props: Props) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '', ExportReceiptStatus) })}>
+          className={badgeVariants({
+            variant: getStatusBadgeVariant(row.original.status ?? '', ExportReceiptStatus)
+          })}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
-      filterOptions: ExportReceiptStatus.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: ExportReceiptStatus.map((status) => ({
+        label: status.label,
+        value: status.value
+      }))
     },
     {
       id: 'actions',
