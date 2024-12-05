@@ -55,6 +55,31 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
     0
   );
 
+  const totalApproved = inspectionRequest?.reduce((total, request) => {
+    return (
+      total +
+      (request?.inspectionReport?.inspectionReportDetail?.reduce(
+        (sum: number, detail: any) => sum + (detail?.approvedQuantityByPack || 0),
+        0
+      ) ?? 0)
+    );
+  }, 0);
+
+  const totalDefected = inspectionRequest?.reduce((total, request) => {
+    return (
+      total +
+      (request?.inspectionReport?.inspectionReportDetail?.reduce(
+        (sum: number, detail: any) => sum + (detail?.defectQuantityByPack || 0),
+        0
+      ) ?? 0)
+    );
+  }, 0);
+
+  const passRate = React.useMemo(() => {
+    const total = totalApproved + totalDefected;
+    return total > 0 ? ((totalApproved / total) * 100).toFixed(1) : 0;
+  }, [totalApproved, totalDefected]);
+
   useEffect(() => {
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; value: number; percentage: number }[] = [];
@@ -63,7 +88,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
 
       staticDefects.forEach((defect: { id: string; description: string }) => {
         let totalDefectQuantity = 0;
-
         inspectionRequest.forEach((request) => {
           request?.inspectionReport?.inspectionReportDetail?.forEach((detail: any) => {
             detail?.inspectionReportDetailDefect?.forEach((detailDefect: any) => {
@@ -83,7 +107,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
         });
       });
 
-      // Calculate percentage for each defect
       defects.forEach((defect) => {
         defect.percentage = totalDefectCount > 0 ? (defect.value / totalDefectCount) * 100 : 0;
       });
@@ -91,23 +114,6 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
       setDefectTypes(defects);
     }
   }, [defectsData, inspectionRequest]);
-
-  const totalMaterials =
-    inspectionRequest?.reduce((total, request) => {
-      return (
-        total +
-        (request?.inspectionReport?.inspectionReportDetail?.reduce(
-          (sum: number, detail: any) => sum + (detail?.approvedQuantityByPack ?? 0),
-          0
-        ) ?? 0)
-      );
-    }, 0) ?? 0;
-
-  const passRate = React.useMemo(() => {
-    const passed = totalMaterials ?? 0;
-    const total = passed + defectTypes.reduce((sum, defect) => sum + defect.value, 0);
-    return total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
-  }, [totalMaterials, defectTypes]);
 
   return (
     <Card className="flex flex-col w-full max-w-5xl">
@@ -135,28 +141,16 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Pie
                     data={[
-                      { status: 'passed', quantity: totalMaterials, fill: Colors.success },
-                      {
-                        status: 'failed',
-                        quantity: defectTypes.reduce((sum, defect) => sum + defect.value, 0),
-                        fill: Colors.error
-                      }
+                      { status: 'passed', quantity: totalApproved, fill: Colors.success },
+                      { status: 'failed', quantity: totalDefected, fill: Colors.error }
                     ]}
                     dataKey="quantity"
                     nameKey="status"
                     innerRadius={60}
                     outerRadius={80}
                     paddingAngle={2}>
-                    {[
-                      { status: 'passed', quantity: totalMaterials, fill: Colors.success },
-                      {
-                        status: 'failed',
-                        quantity: defectTypes.reduce((sum, defect) => sum + defect.value, 0),
-                        fill: Colors.error
-                      }
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry?.fill} />
-                    ))}
+                    <Cell key="passed" fill={Colors.success} />
+                    <Cell key="failed" fill={Colors.error} />
                     <Label
                       content={({ viewBox }) => {
                         if (viewBox?.cx && viewBox?.cy) {
@@ -222,11 +216,11 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-500" />
-                <span>Passed: {totalMaterials}</span>
+                <span>Passed: {totalApproved}</span>
               </div>
               <div className="flex items-center gap-2">
                 <XCircle className="h-5 w-5 text-red-500" />
-                <span>Failed: {defectTypes.reduce((sum, defect) => sum + defect.value, 0)}</span>
+                <span>Failed: {totalDefected}</span>
               </div>
             </div>
             <div className="flex items-center justify-between w-full text-muted-foreground">
