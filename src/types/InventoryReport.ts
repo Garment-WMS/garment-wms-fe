@@ -182,6 +182,8 @@ export interface InventoryReportPlanToRender{
     note:string,
     from: string,
     to: string,
+    startedAt: string,
+    finishedAt: string,
     createdAt?: string,
     updatedAt?: string,
     deletedAt?: string,

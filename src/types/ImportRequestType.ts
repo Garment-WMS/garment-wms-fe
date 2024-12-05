@@ -34,6 +34,7 @@ export interface ImportRequest {
   rejectAt: string | null;
   managerNote: string;
   rejectReason: string | null;
+  productionBatch:ProductionBatch
   warehouseManagerId: string | null;
   purchaseOrder: PurchaseOrder;
   importRequestDetail: ImportRequestDetail[];

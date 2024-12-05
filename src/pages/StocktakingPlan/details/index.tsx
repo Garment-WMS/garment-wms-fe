@@ -213,6 +213,18 @@ const StocktakingPlanDetails = () => {
                 {convertTitleToTitleCase(planData.type)} Plan
               </p>
             </div>
+            <div>
+              <h3 className="text-md font-medium">Started At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.from ? formatDateTimeToDDMMYYYYHHMM(planData?.startedAt)  : 'N/A'}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-md font-medium">Finished At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.to ? formatDateTimeToDDMMYYYYHHMM(planData?.finishedAt) : 'N/A'}
+              </p>
+            </div>
           </div>
           <div>
             <h3 className="text-md font-medium">Note</h3>
