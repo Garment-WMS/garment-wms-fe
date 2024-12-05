@@ -117,19 +117,21 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
             </div>
 
             {/* Note */}
-            <div className="flex items-center">
-              <ReceiptText className="text-gray-500 mr-2" />
-              <div>
-                <dt className="font-medium text-gray-500">Import Receipt</dt>
-                <dd className="text-primaryLight underline cursor-pointer">
-                  <Link
-                    to={`/import-request/${importRequest?.id}`}
-                    className="text-primaryLight underline cursor-pointer">
-                    {importReceiptCode}
-                  </Link>
-                </dd>
+            {importReceiptCode && (
+              <div className="flex items-center">
+                <ReceiptText className="text-gray-500 mr-2" />
+                <div>
+                  <dt className="font-medium text-gray-500">Import Receipt</dt>
+                  <dd className="text-primaryLight underline cursor-pointer">
+                    <Link
+                      to={`/import-receipt/${importRequest?.id}`}
+                      className="text-primaryLight underline cursor-pointer">
+                      {importReceiptCode}
+                    </Link>
+                  </dd>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
