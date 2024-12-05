@@ -19,6 +19,8 @@ import { LogOut, User } from 'lucide-react';
 import placeholder from '@/assets/images/avatar.png';
 import useLogout from '@/hooks/useLogout';
 import ScannerPopup from './ScannerPopup';
+import { useSocket } from '@/hooks/useSocket';
+import { useEffect, useState } from 'react';
 type Props = {};
 
 const TopBar = (props: Props) => {
@@ -26,6 +28,23 @@ const TopBar = (props: Props) => {
   const user = useGetProfile();
   const iconSize = 32;
   const blue = Colors.blue[500];
+  const { onEvent, offEvent } = useSocket();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  useEffect(() => {
+    // Listen to `newNotification` event
+    const handleNewNotification = (data: any) => {
+      console.log('New notification:', data);
+      setNotifications((prev) => [...prev, data]);
+    };
+
+    onEvent('newNotification', handleNewNotification);
+
+    return () => {
+      // Cleanup listener on unmount
+      offEvent('newNotification');
+    };
+  }, [onEvent, offEvent]);
+  console.log('Notifications:', notifications);
   return (
     <div className="w-full h-20 pl-6 flex bg-white">
       <div className="w-full flex gap-2 justify-end items-center pr-8">
