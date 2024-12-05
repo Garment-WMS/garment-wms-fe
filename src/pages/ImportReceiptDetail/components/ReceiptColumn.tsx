@@ -1,13 +1,13 @@
-import { badgeVariants } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/button";
-import capitalizeFirstLetter from "@/helpers/capitalizeFirstLetter";
-import { convertTitleToTitleCase } from "@/helpers/convertTitleToCaseTitle";
-import { CustomColumnDef } from "@/types/CompositeTable";
-import { MaterialReceipt } from "@/types/ImportReceipt";
-import { MaterialExportReceipt,  ReceiptStatusLabel } from "@/types/MaterialTypes";
-import { ProductReceipt } from "@/types/ProductType";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { ColumnDef } from "@tanstack/react-table";
+import { badgeVariants } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/button';
+import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { CustomColumnDef } from '@/types/CompositeTable';
+import { MaterialReceipt } from '@/types/ImportReceipt';
+import { MaterialExportReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
+import { ProductReceipt } from '@/types/ProductType';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { ColumnDef } from '@tanstack/react-table';
 
 export const getStatusBadgeVariant = (status: string) => {
   const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
@@ -88,8 +88,11 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className="text-left">{row.original.quantityByPack} {convertTitleToTitleCase  (row.original?.materialPackage?.packUnit)}</div>
+        <div className="flex">
+          <div className="text-left">
+            {row.original.quantityByPack}{' '}
+            {convertTitleToTitleCase(row.original?.materialPackage?.packUnit)}
+          </div>
         </div>
       );
     }
@@ -116,8 +119,11 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
         {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
       </div>
     ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
+    filterOptions: ReceiptStatusLabel.map((status) => ({
+      label: status.label,
+      value: status.value
+    }))
+  }
 ];
 
 export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceipt>[] = [
@@ -217,8 +223,8 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceipt>
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original?.quantityByPack}</div>
+        <div className="flex">
+          <div className="">{row.original?.quantityByPack}</div>
         </div>
       );
     }
@@ -229,8 +235,8 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceipt>
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original?.remainQuantityByPack}</div>
+        <div className="flex">
+          <div className="">{row.original?.remainQuantityByPack}</div>
         </div>
       );
     }
@@ -245,9 +251,11 @@ export const materialExportReceiptColumn: CustomColumnDef<MaterialExportReceipt>
         {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
       </div>
     ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
-
+    filterOptions: ReceiptStatusLabel.map((status) => ({
+      label: status.label,
+      value: status.value
+    }))
+  }
 ];
 
 export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
@@ -325,12 +333,15 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className="text-left">{row.original.quantityByUom} {convertTitleToTitleCase  (row.original?.productSize?.productVariant?.product?.name)}</div>
+        <div className="flex">
+          <div className="text-left">
+            {row.original.quantityByUom}{' '}
+            {convertTitleToTitleCase(row.original?.productSize?.productVariant?.product?.name)}
+          </div>
         </div>
       );
     }
-  },
+  }
   // {
   //   header: 'Remain Quantity',
   //   accessorKey: '',
@@ -343,16 +354,16 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
   //     );
   //   }
   // },
-  {
-    header: 'Status',
-    accessorKey: 'status',
-    enableColumnFilter: true,
-    cell: ({ row }) => (
-      <div
-        className={badgeVariants({ variant: getStatusBadgeVariant(row.original?.status ?? '') })}>
-        {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
-      </div>
-    ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
+  // {
+  //   header: 'Status',
+  //   accessorKey: 'status',
+  //   enableColumnFilter: true,
+  //   cell: ({ row }) => (
+  //     <div
+  //       className={badgeVariants({ variant: getStatusBadgeVariant(row.original?.status ?? '') })}>
+  //       {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
+  //     </div>
+  //   ),
+  //   filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
+  // },
 ];

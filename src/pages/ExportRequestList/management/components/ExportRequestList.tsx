@@ -142,14 +142,14 @@ const ExportRequestTable = (props: Props) => {
       })),
       cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
-    {
-      header: 'Production Batch',
-      accessorKey: 'productionBatch.name',
-      enableColumnFilter: false,
-      cell: ({ row }) => (
-        <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
-      )
-    },
+    // {
+    //   header: 'Production Batch',
+    //   accessorKey: 'productionBatch.name',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => (
+    //     <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
+    //   )
+    // },
     {
       header: 'Created By',
       enableColumnFilter: false,

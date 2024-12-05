@@ -744,8 +744,8 @@ export default function MaterialReceipt() {
               </Card>
             )}
           </div>
-          {importReceipt?.type === 'MATERIAL' && (
-            <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
+          {
+            <Dialog open={showLabelModal} onOpenChange={setShowLabelModal}>
               <DialogContent className="max-w-4xl">
                 <DialogHeader>
                   <DialogTitle>Material Labels</DialogTitle>
@@ -782,6 +782,9 @@ export default function MaterialReceipt() {
                   </div>
                 </ScrollArea>
                 <DialogFooter>
+                  <Button variant="outline" onClick={handleCloseDialog}>
+                    Close
+                  </Button>
                   <MaterialReceiptLabels materialReceipts={importReceipt?.materialReceipt} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -830,7 +833,7 @@ export default function MaterialReceipt() {
                 <Discussion chat={importReceipt?.discussion} onRender={onRender} />
               )}
             </Dialog>
-          )}
+          }
           {importReceipt?.type === 'PRODUCT' && (
             <Dialog open={showLabelModal} onOpenChange={handleCloseDialog}>
               <DialogContent className="max-w-4xl">
@@ -852,7 +855,7 @@ export default function MaterialReceipt() {
                           Quantity: {item?.quantityByUom}{' '}
                           {item?.productSize?.productVariant?.product?.productUom?.uomCharacter}
                         </p>
-                        <p>Expire Date: {new Date(item?.expireDate).toLocaleDateString()}</p>
+                        <p>Product size: {item?.productSize?.size}</p>
                         <div className="mt-2">
                           <h3 className="font-semibold">Product barcode: </h3>
                           <Barcode value={item?.productSize?.code} width={1.5} height={50} />
@@ -866,6 +869,9 @@ export default function MaterialReceipt() {
                   </div>
                 </ScrollArea>
                 <DialogFooter>
+                  <Button variant="outline" onClick={handleCloseDialog}>
+                    Close
+                  </Button>
                   <ProductReceiptLabel productReceipts={importReceipt?.productReceipt} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

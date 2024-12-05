@@ -49,12 +49,10 @@ export function MaterialExportActions({
   return (
     <Card className="p-6 mb-6">
       <div className="flex items-center justify-between">
-      <h1 className="text-3xl font-bold text-bluePrimary">
-            <div>Material Export Receipt {code}</div>
-          </h1>
-        <div className="space-x-2">
-          
-        </div>
+        <h1 className="text-3xl font-bold text-bluePrimary">
+          <div>Material Export Receipt {code}</div>
+        </h1>
+        <div className="space-x-2"></div>
         <div className="space-x-2 flex justify-center items=center">
           <Button variant="outline">
             <Printer className="mr-2 h-4 w-4" />
@@ -124,37 +122,6 @@ export function MaterialExportActions({
                 </AlertDialogContent>
               </AlertDialog>
             </WarehouseStaffGuardDiv>
-          )}
-          {status === 'EXPORTED' && (
-            <ProductionDepartmentGuardDiv>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button className='flex justify-center items-center gap-2' disabled={isLoading}>
-                    <GiConfirmed />
-                    Finish
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="max-w-3xl">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Please review the materials below before Approving the export. Make sure that
-                      you receive all the material according to export request.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <ScrollArea className="h-[400px] rounded-md border p-4">
-                    <MaterialDetailsGrid materials={materials} />
-                  </ScrollArea>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
-                      Confirm
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </ProductionDepartmentGuardDiv>
           )}
         </div>
       </div>

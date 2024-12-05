@@ -81,6 +81,7 @@ const InspectionStep: React.FC<Props> = ({
           warehouseStaff={exportRequest?.warehouseStaff}
           lastedUpdate={exportRequest?.updatedAt}
           productionDepartment={exportRequest?.productionDepartment}
+          onApproval={onApproval}
         />
       )
     }

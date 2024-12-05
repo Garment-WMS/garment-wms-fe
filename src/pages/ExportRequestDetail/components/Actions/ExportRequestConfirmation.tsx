@@ -7,7 +7,25 @@ import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEffect, useState } from 'react';
 import privateCall from '@/api/PrivateCaller';
-import { exportReceiptApi } from '@/api/services/exportReceiptApi';
+import { changeStatusFn, exportReceiptApi } from '@/api/services/exportReceiptApi';
+import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
+import { GiConfirmed } from 'react-icons/gi';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MaterialDetailsGrid } from '@/pages/ExportReceiptDetail/components/MaterialDetailsGrid';
+import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/Textarea';
+import { Label } from '@/components/ui/Label';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
@@ -19,6 +37,7 @@ interface WarehouseStaffAssignmentProps {
   warehouseStaff?: any;
   lastedUpdate: any;
   exportRequestId: any;
+  onApproval: () => void;
 }
 
 const getStatusDetails = (status: any) => {
@@ -62,14 +81,75 @@ export default function ExportRequestConfirmation({
   warehouseStaff,
   lastedUpdate,
   productionDepartment,
-  exportRequestId
+  exportRequestId,
+  onApproval
 }: WarehouseStaffAssignmentProps) {
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
   const [exportReceipt, setExportReceipt] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [textArea, setTextArea] = useState('');
+
+  const handleFinishExport = async (status: string, type: string) => {
+    if (textArea == '') {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Reject reason',
+        description: 'Please fill in reject reason before confirming'
+      });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await changeStatusFn(
+        exportReceipt[0]?.materialExportRequest?.id as string,
+        status,
+        type
+      );
+
+      if (res.statusCode === 200) {
+        toast({
+          variant: 'success',
+          title: 'Export finished successfully',
+          description: 'The export receipt has been marked as finished.'
+        });
+        // Refresh the data after successful status change
+        onApproval();
+        setIsLoading(false);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Export finished unsuccessfully',
+          description: 'The export receipt has not been marked as finished.'
+        });
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to start import',
+        description: 'There was a problem initiating the import process.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
     const getExportReceipt = async () => {
       const response = await privateCall(exportReceiptApi.getOneByRequestId(exportRequestId));
       setExportReceipt(response.data.data);
+      setMaterials(
+        response.data.data[0]?.materialExportReceiptDetail?.map((detail: any) => ({
+          id: detail.id,
+          name: detail.materialReceipt.materialPackage.name,
+          barcode: detail.materialReceipt.materialPackage.code,
+          quantity: detail.quantityByPack,
+          unit: detail.materialReceipt.materialPackage.packUnit,
+          imageUrl:
+            detail.materialReceipt.materialPackage.materialVariant.image ||
+            '/placeholder.svg?height=200&width=200'
+        }))
+      );
     };
 
     if (
@@ -152,17 +232,70 @@ export default function ExportRequestConfirmation({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
-          {(currentStatus == 'EXPORTING' ||
-            currentStatus == 'EXPORTED' ||
-            currentStatus == 'PRODUCTION_APPROVED' ||
-            currentStatus == 'PRODUCTION_REJECTED') &&
-            exportReceipt && (
-              <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
-                <Button variant={'default'} className="ml-4">
-                  Go to Receipt
-                </Button>
-              </Link>
-            )}
+          {currentStatus == 'EXPORTED' && exportReceipt && (
+            <ProductionDepartmentGuardDiv className="flex w-full justify-center">
+              <AlertDialog>
+                <AlertDialogTrigger asChild className="m-2">
+                  <Button className="flex justify-center items-center gap-2" disabled={isLoading}>
+                    <GiConfirmed /> Approve request
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="max-w-3xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Please review the materials below before Approving the export. Make sure that
+                      you receive all the material according to export request.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <ScrollArea className="h-[400px] rounded-md border p-4">
+                    <MaterialDetailsGrid materials={materials} />
+                  </ScrollArea>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleFinishExport('PRODUCTION_APPROVED', 'production')}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <AlertDialog>
+                <AlertDialogTrigger asChild className="m-2">
+                  <Button
+                    variant="destructive"
+                    className="flex justify-center items-center gap-2"
+                    disabled={isLoading}>
+                    <AlertCircle /> Reject request
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Export Rejection</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to reject this export request?{' '}
+                      <br className="mt-2"></br>This action will reject all provided material and
+                      return all the materials to the warehouse!
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <Label>Reject reason*</Label>
+                  <Textarea
+                    value={textArea}
+                    onChange={(e) => setTextArea(e.target.value)}
+                    placeholder="Type in reason of rejecting, this is required"
+                  />
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-500"
+                      onClick={() => handleFinishExport('PRODUCTION_REJECTED', 'production')}>
+                      Confirm Rejection
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </ProductionDepartmentGuardDiv>
+          )}
         </div>
       </CardFooter>
     </Card>
