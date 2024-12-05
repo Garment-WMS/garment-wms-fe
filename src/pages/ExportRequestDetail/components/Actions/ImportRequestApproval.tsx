@@ -160,7 +160,9 @@ export default function WarehouseApproval({
   const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
   const [notFullFilledMaterialExportRequestDetails, setNotFullFilledMaterialExportRequestDetails] =
     useState([]);
+  const [totalExceedPercentage, setTotalExceedPercentage] = useState(0);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [exceedingMaterialsCount, setExceedingMaterialsCount] = useState(0);
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -279,7 +281,19 @@ export default function WarehouseApproval({
     try {
       const data = await getRecommendedMaterialReceiptFn(requestId, selectedAlgorithm);
       setRecommendedMaterials(data.data);
+      // Calculate the number of exceeding materials
+      const exceedingCount = data.data.filter(
+        (material: any) => material.exceedQuantityUom > 0
+      ).length;
+      const totalExceed = data.data.reduce(
+        (sum: any, material: any) => sum + material.exceedPercentage,
+        0
+      );
+      const avgExceedPercentage = (totalExceed / data.data.length).toFixed(2);
+      setTotalExceedPercentage(parseFloat(avgExceedPercentage));
+      setExceedingMaterialsCount(exceedingCount);
       toast({
+        variant: 'success',
         title: 'Recommendations Fetched',
         description: 'Material export recommendations have been retrieved.',
         duration: 5000
@@ -449,6 +463,19 @@ export default function WarehouseApproval({
                     {recommendedMaterials.length > 0 && (
                       <div className="space-y-2">
                         <Label>Recommended Materials</Label>
+                        <Alert variant="default" className="mb-4">
+                          <InfoIcon className="h-4 w-4 mr-2" />
+                          <AlertTitle>Exceeding Materials</AlertTitle>
+                          <AlertDescription>
+                            {exceedingMaterialsCount} out of {recommendedMaterials.length} materials
+                            exceed the requested amount.
+                            <br />
+                            Total exceed percentage:{' '}
+                            <span className="text-yellow-300 text-bold">
+                              {totalExceedPercentage}%
+                            </span>
+                          </AlertDescription>
+                        </Alert>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {recommendedMaterials.map((material, index) => (
                             <Card key={index} className="overflow-hidden">
@@ -471,6 +498,15 @@ export default function WarehouseApproval({
                                     Used Quantity: {material.quantityByPack}{' '}
                                     {material.materialReceipt.materialPackage.packUnit}
                                   </p>
+                                  {material.exceedQuantityUom > 0 && (
+                                    <p className="text-sm text-yellow-600">
+                                      Exceeds by: {material.exceedQuantityUom}{' '}
+                                      {
+                                        material.materialReceipt.materialPackage.materialVariant
+                                          .material.materialUom.uomCharacter
+                                      }
+                                    </p>
+                                  )}
                                 </div>
                                 <div className="pt-2 border-t flex">
                                   <Barcode
