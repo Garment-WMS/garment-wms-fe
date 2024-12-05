@@ -76,16 +76,23 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
       enableColumnFilter: false
     },
     {
-      header: 'Actual imports',
+      header: 'Actual Import Quantity',
       accessorKey: 'actualImports',
       cell: ({ row }) => {
         const uomPerPack = row.original.actualImportQuantity;
         const packUnit = row.original.materialPackage.packUnit;
         const pluralizedPackUnit = uomPerPack > 1 ? `${packUnit}s` : packUnit;
+
         return (
           <div className="ml-1">
-            <span>{uomPerPack}</span>{' '}
-            <span className="lowercase text-slate-800">{pluralizedPackUnit}</span>
+            {uomPerPack === 0 ? (
+              <span className="text-slate-500 ml-9">Not yet</span>
+            ) : (
+              <div className="ml-9">
+                <span>{uomPerPack}</span>{' '}
+                <span className="lowercase text-slate-800">{pluralizedPackUnit}</span>
+              </div>
+            )}
           </div>
         );
       },
@@ -94,9 +101,15 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
     {
       header: 'Total Amount',
       accessorKey: 'totalAmount',
-      cell: ({ getValue }) => (
-        <div className="font-semibold">{getValue<number>().toLocaleString()} VND</div>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue<number>();
+
+        return (
+          <div className="font-semibold">
+            {value ? `${value.toLocaleString()} VND` : 'Not available'}
+          </div>
+        );
+      },
       enableColumnFilter: false
     }
   ];
