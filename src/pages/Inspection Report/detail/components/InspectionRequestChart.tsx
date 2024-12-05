@@ -26,6 +26,8 @@ const InspectionRequestChart: React.FC<{
 }> = ({ inspectionReport, inspectionRequestType }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedDefectDetails, setSelectedDefectDetails] = useState<any[]>([]);
+  const [selectedInspectionDetail, setSelectedInspectionDetail] = useState<any | null>(null);
+
   const { data: defectData, isPending: isDefectsLoading } = useGetAllDefects();
 
   if (!inspectionReport || isDefectsLoading) {
@@ -38,7 +40,7 @@ const InspectionRequestChart: React.FC<{
 
   const defectsList = defectData?.data || [];
 
-  const handleViewDefects = (detailDefects: any[]) => {
+  const handleViewDefects = (detailDefects: any[], inspectionDetail: any) => {
     const mappedDefects = defectsList.map((defect: any) => {
       const matchingDefect = detailDefects.find((d) => d.defectId === defect.id);
       return {
@@ -48,9 +50,9 @@ const InspectionRequestChart: React.FC<{
       };
     });
     setSelectedDefectDetails(mappedDefects);
+    setSelectedInspectionDetail(inspectionDetail);
     setOpenDialog(true);
   };
-  console.log(inspectionReport);
 
   return (
     <div>
@@ -62,13 +64,13 @@ const InspectionRequestChart: React.FC<{
           <div className="space-y-6">
             <div>
               <div className="overflow-x-auto">
-                <Table className="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden shadow-md px-3">
+                <Table className="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden shadow-md">
                   <TableHeader className="bg-gray-100">
                     <TableRow>
-                      <TableHead>Image</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Code</TableHead>
-                      <TableHead>Inspected At</TableHead>
+                      <TableHead className="text-center">Image</TableHead>
+                      <TableHead className="text-left">Name</TableHead>
+                      <TableHead className="text-center">Code</TableHead>
+                      <TableHead className="text-center">Inspected At</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">No. Pass</TableHead>
                       <TableHead className="text-right">No. Failed</TableHead>
@@ -78,7 +80,7 @@ const InspectionRequestChart: React.FC<{
                     {inspectionRequestType === InspectionRequestType.MATERIAL
                       ? inspectionReport.inspectionReportDetail.map((detail: any) => (
                           <TableRow key={detail.id}>
-                            <TableCell>
+                            <TableCell className="text-center">
                               <img
                                 src={
                                   detail.materialPackage?.materialVariant?.image ||
@@ -88,11 +90,13 @@ const InspectionRequestChart: React.FC<{
                                 className="w-20 h-20 object-cover"
                               />
                             </TableCell>
-                            <TableCell>{detail.materialPackage?.name || 'N/A'}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-left">
+                              {detail.materialPackage?.name || 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-center">
                               <Badge>{detail.materialPackage?.code || 'N/A'}</Badge>
                             </TableCell>
-                            <TableCell className="text-green-600">
+                            <TableCell className="text-center text-green-600">
                               {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
                             <TableCell className="text-right text-slate-700 font-semibold">
@@ -111,7 +115,10 @@ const InspectionRequestChart: React.FC<{
                                     <span
                                       className="cursor-pointer underline"
                                       onClick={() =>
-                                        handleViewDefects(detail.inspectionReportDetailDefect || [])
+                                        handleViewDefects(
+                                          detail.inspectionReportDetailDefect || [],
+                                          detail
+                                        )
                                       }>
                                       <XCircleIcon className="inline h-5 w-5 text-red-500 mr-1" />
                                       {detail.defectQuantityByPack}
@@ -127,7 +134,7 @@ const InspectionRequestChart: React.FC<{
                         ))
                       : inspectionReport.inspectionReportDetail.map((detail: any) => (
                           <TableRow key={detail.id}>
-                            <TableCell>
+                            <TableCell className="text-center">
                               <img
                                 src={
                                   detail.productSize?.productVariant?.image ||
@@ -137,23 +144,18 @@ const InspectionRequestChart: React.FC<{
                                 className="w-20 h-20 object-cover"
                               />
                             </TableCell>
-                            <TableCell>{detail.productSize?.name || 'N/A'}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-left">
+                              {detail.productSize?.name || 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-center">
                               <Badge>{detail.productSize?.code || 'N/A'}</Badge>
                             </TableCell>
-                            <TableCell>
-                              <Link
-                                to={`/import-receipt/${inspectionReport.importReceipt?.id}`}
-                                className="text-bluePrimary underline underline-offset-2">
-                                {inspectionReport.importReceipt?.code || 'N/A'}
-                              </Link>
-                            </TableCell>
-                            <TableCell className="text-green-700">
+                            <TableCell className="text-center text-green-700">
                               {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
-                            <TableCell className="text-right text-slate-700 font-semibold">
-                              {detail?.quantityByPack ||
-                                detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
+                            <TableCell className="text-right text-gray-500 font-bold">
+                              {detail.quantityByPack ||
+                                detail.approvedQuantityByPack + detail.defectQuantityByPack ||
                                 0}
                             </TableCell>
                             <TableCell className="text-right text-green-500 font-bold">
@@ -167,7 +169,10 @@ const InspectionRequestChart: React.FC<{
                                     <span
                                       className="cursor-pointer underline"
                                       onClick={() =>
-                                        handleViewDefects(detail.inspectionReportDetailDefect || [])
+                                        handleViewDefects(
+                                          detail.inspectionReportDetailDefect || [],
+                                          detail
+                                        )
                                       }>
                                       <XCircleIcon className="inline h-5 w-5 text-red-500 mr-1" />
                                       {detail.defectQuantityByPack}
@@ -192,7 +197,10 @@ const InspectionRequestChart: React.FC<{
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogTitle>Defect Details</DialogTitle>
-          <DefectsSummary defects={selectedDefectDetails} />
+          <DefectsSummary
+            defects={selectedDefectDetails}
+            inspectionReportDetail={selectedInspectionDetail}
+          />
         </DialogContent>
       </Dialog>
     </div>

@@ -1,5 +1,6 @@
 export enum ProductionBatchStatus {
   EXECUTING = 'EXECUTING',
+  PENDING = 'PENDING',
   WAITING_FOR_EXPORTING_MATERIAL = 'WAITING_FOR_EXPORTING_MATERIAL',
   MANUFACTURING = 'MANUFACTURING',
   IMPORTING = 'IMPORTING',
@@ -10,6 +11,7 @@ export enum ProductionBatchStatus {
 
 export const ProductionBatchStatusLabels: Record<ProductionBatchStatus, string> = {
   [ProductionBatchStatus.EXECUTING]: 'Executing',
+  [ProductionBatchStatus.PENDING]: 'Pending',
   [ProductionBatchStatus.WAITING_FOR_EXPORTING_MATERIAL]: 'Waiting for exporting material',
   [ProductionBatchStatus.MANUFACTURING]: 'Manufacturing',
   [ProductionBatchStatus.IMPORTING]: 'Importing',
@@ -20,6 +22,7 @@ export const ProductionBatchStatusLabels: Record<ProductionBatchStatus, string> 
 
 export const ProductionBatchStatusColors: Record<ProductionBatchStatus, string> = {
   [ProductionBatchStatus.EXECUTING]: 'bg-yellow-500 text-white',
+  [ProductionBatchStatus.PENDING]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.WAITING_FOR_EXPORTING_MATERIAL]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.MANUFACTURING]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.IMPORTING]: 'bg-blue-500 text-white',
