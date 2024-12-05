@@ -475,7 +475,7 @@ export default function MaterialReceipt() {
                     <div className="flex items-center space-x-4 flex-col justify-center">
                       <Avatar className="w-[80px] h-[80px]">
                         <AvatarImage
-                          src={'/placeholder.svg?height=100&width=100'}
+                          src={importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment?.account.avatarUrl}
                           alt="John Doe"
                           className="w-[80px] h-[80px]"
                         />

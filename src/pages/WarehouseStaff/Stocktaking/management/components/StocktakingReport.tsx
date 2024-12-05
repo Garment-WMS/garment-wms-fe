@@ -54,58 +54,69 @@ const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
     }
   },
   {
-    header: 'Inventory report plan code',
-    accessorKey: 'code',
-    enableColumnFilter: false,
-    cell: ({ row }) => {
-      return (
-        <div>
-          <div>{row.original?.inventoryReportPlanDetail?.[0]?.inventoryReportPlan?.code}</div>
-        </div>
-      );
-    }
-  },
+      header: 'Inventory report plan code',
+      accessorKey: 'code',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const code = row.original?.inventoryReportPlanDetail?.[0]?.inventoryReportPlan?.code;
+        return (
+          <div>
+            <div>{code ? code : 'N/A' }</div>
+          </div>
+        );
+      }
+    },
   {
-    header: 'Reported By',
-    accessorKey: 'warehouseStaff.account.firstName',
-    enableColumnFilter: false,
-    enableSorting: false,
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={row.original.warehouseStaff?.account?.avatarUrl} alt="avatar" />
-            <AvatarFallback>{row.original.warehouseStaff?.account?.firstName}</AvatarFallback>
-          </Avatar>
-          <Label className="text-md">
-            {row.original.warehouseStaff?.account.firstName}{' '}
-            {row.original.warehouseStaff?.account.lastName}
-          </Label>
-        </div>
-      );
-    }
-  },
-  {
-    header: 'Balanced By',
-    accessorKey: 'warehouseManager.account.firstName',
-    enableColumnFilter: false,
-    enableSorting: false,
+      header: 'Reported By',
+      accessorKey: 'warehouseStaff.account.firstName',
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+              <Avatar className="w-8 h-8">
+                <AvatarImage
+                  src={row.original.warehouseStaff?.account?.avatarUrl}
+                  alt="avatar"
+                />
+                <AvatarFallback>
+                  {row.original.warehouseStaff?.account?.firstName}
+                </AvatarFallback>
+              </Avatar>
+              <Label className="text-md">
+                {row.original.warehouseStaff?.account.firstName}{' '}
+                {row.original.warehouseStaff?.account.lastName}
+              </Label>
+            </div>
+        );
+  }
+},
+{
+  header: 'Balanced By',
+  accessorKey: 'warehouseManager.account.firstName',
+  enableColumnFilter: false,
+  enableSorting: false,
 
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-2">
+  cell: ({ row }) => {
+    return (
+      <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={row.original.warehouseManager?.account?.avatarUrl} alt="avatar" />
-            <AvatarFallback>{row.original.warehouseManager?.account?.firstName}</AvatarFallback>
+            <AvatarImage
+              src={row.original.warehouseManager?.account?.avatarUrl}
+              alt="avatar"
+            />
+            <AvatarFallback>
+              {row.original.warehouseManager?.account?.firstName}
+            </AvatarFallback>
           </Avatar>
           <Label className="text-md">
             {row.original.warehouseManager?.account.firstName}{' '}
             {row.original.warehouseManager?.account.lastName}
           </Label>
         </div>
-      );
-    }
-  },
+    );
+}
+},
   {
     header: 'Time started',
     accessorKey: 'from',
@@ -115,7 +126,7 @@ const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
       if (!dateString) {
         return <div>N/A</div>;
       }
-
+   
       return (
         <div>
           <div>{formatDateTimeToDDMMYYYYHHMM(dateString)}</div>
@@ -132,7 +143,7 @@ const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
       if (!dateString) {
         return <div>N/A</div>;
       }
-
+   
       return (
         <div>
           <div>{formatDateTimeToDDMMYYYYHHMM(dateString)}</div>
@@ -140,61 +151,17 @@ const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
       );
     }
   },
-  // {
-  //     header: 'Expected Quantity',
-  //     accessorKey: 'totalExpectedQuantity',
-  //     enableColumnFilter: false,
-  //     enableSorting: false,
-  //     cell: ({ row }) => {
-  //       return (
-  //         <div>
-  //           <div>{row.original.totalExpectedQuantity}</div>
-  //         </div>
-  //       );
-  //     }
-  //   },
-  //   {
-  //     header: 'Actual Quantity',
-  //     accessorKey: 'totalActualQuantity',
-  //     enableColumnFilter: false,
-  //     enableSorting: false,
-  //     cell: ({ row }) => {
-  //       return (
-  //         <div>
-  //           <div>{row.original.totalActualQuantity}</div>
-  //         </div>
-  //       );
-  //     }
-  //   },
-  //   {
-  //     header: 'Manager Confirm Quantity',
-  //     accessorKey: 'totalManagerQuantityConfirm',
-  //     enableColumnFilter: false,
-  //     enableSorting: false,
-  //     cell: ({ row }) => {
-  //       return (
-  //         <div>
-  //           <div>{row.original.totalManagerQuantityConfirm}</div>
-  //         </div>
-  //       );
-  //     }
-  //   },
   {
     header: 'Status',
     accessorKey: 'status',
     enableColumnFilter: true,
     cell: ({ row }) => (
       <div
-        className={badgeVariants({
-          variant: getStatusBadgeVariant(row.original.status ?? '', InventoryReportStatus)
-        })}>
-        {convertTitleToTitleCase(row.original.status) ?? 'N/A'}
+        className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '', InventoryReportStatus) })}>
+        {(convertTitleToTitleCase(row.original.status ) ?? 'N/A')}
       </div>
     ),
-    filterOptions: InventoryReportPlanStatus.map((status) => ({
-      label: status.label,
-      value: status.value
-    }))
+    filterOptions: InventoryReportStatus.map((status) => ({ label: status.label ?? 'N/A', value: status.value }))
   },
   {
     id: 'actions',
@@ -212,13 +179,10 @@ const StocktakingColumn: CustomColumnDef<InventoryReport>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => {
-                const url = `/stocktaking/${row.original.id}`;
-                window.open(url, '_blank', 'noopener,noreferrer');
-              }}>
-              View
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+                              const url = `/stocktaking/${row.original.id}`;
+                              window.open(url, '_blank', 'noopener,noreferrer');
+                            }}>View</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

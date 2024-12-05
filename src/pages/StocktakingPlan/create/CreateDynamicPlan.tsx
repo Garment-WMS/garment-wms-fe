@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/Input';
 
 import { Label } from '@/components/ui/Label';
 
-import { Textarea } from '@/components/ui/textarea';
 
 import { MoveRight, Plus } from 'lucide-react';
 import DayTimePicker from '@/components/common/DayTimePicker';
@@ -36,6 +35,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import { useNavigate } from 'react-router-dom';
+import { Textarea } from '@/components/ui/Textarea';
 
 type Props = {};
 // interface inventoryReportPlanDetais {
@@ -150,6 +150,7 @@ const CreateDynamicPlan = (props: Props) => {
        const formattedValues = {
         ...values,
         inventoryReportPlanType:"PARTIAL",
+        note: values.note || '',
         from: values.from.toISOString(),
         to: values.to.toISOString(),
         inventoryReportPlanDetails: [

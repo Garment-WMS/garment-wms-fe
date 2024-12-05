@@ -56,7 +56,7 @@ export function SelectStaff({ error, assignment, staffList, chosenStaff, setChos
           {staffList.length > 0 ? (
             staffList.map((staff) => (
               <SelectItem
-                className="hover:bg-blue-100"
+                className="hover:bg-blue-100 "
                 disabled={chosenStaff.some((chosen) => chosen.id === staff.id)}
                 key={staff.id}
                 value={staff.id}>
