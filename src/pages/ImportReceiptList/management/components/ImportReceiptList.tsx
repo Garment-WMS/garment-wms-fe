@@ -80,14 +80,29 @@ const ImportReceiptTable = (props: Props) => {
 
   const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
     {
-      header: 'Import request code',
+      header: 'Import receipt code',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        const id = row.original.id;
         return (
-          <div>
+          <Link to={`/import-receipt/${id}`} className='underline text-bluePrimary'>
             <div>{row.original.code}</div>
-          </div>
+          </Link>
+        );
+      }
+    },
+    {
+      header: 'Import request code',
+      accessorKey: 'code',
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id
+        return (
+          <Link to={`/import-request/${id}`} className='underline text-bluePrimary'>
+            <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
+          </Link>
         );
       }
     },
@@ -237,6 +252,7 @@ const ImportReceiptTable = (props: Props) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
+          searchWidth="w-[250px]"
           searchPlaceholder="Search import receipt by code"
         />
       </div>

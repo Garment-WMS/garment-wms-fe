@@ -232,6 +232,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
             columnFilters={columnFilters}
             setColumnFilters={setColumnFilters}
             searchColumnId="code"
+            searchWidth="w-[150px]"
             searchPlaceholder="Search by import request code"
           />
         </div>

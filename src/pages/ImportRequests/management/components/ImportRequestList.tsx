@@ -238,7 +238,7 @@ const ImportRequestList = (props: Props) => {
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
           searchPlaceholder="Input request code"
-          searchWidth="lg:w-[200px]"
+          searchWidth="w-[150px]"
         />
 
         <PurchasingStaffGuardAndProductionDepartmentDiv className="flex items-center flex-row justify-center mb-9">

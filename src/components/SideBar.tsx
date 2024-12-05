@@ -6,6 +6,7 @@ import { GoSignOut } from 'react-icons/go';
 import { SideBarProps } from '@/constants/interface';
 import useLogout from '@/hooks/useLogout';
 import SideBarMenuItem from './SideBarMenuItem';
+import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 const SideBar: React.FC<SideBarProps> = ({ menu }) => {
   const title = 'Garment Inventory';
@@ -45,7 +46,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
           return item.title;
         }
         if (item.isGroup && item.children) {
-          const activeChild : any= findActiveMenu(item.children);
+          const activeChild: any = findActiveMenu(item.children);
           if (activeChild) return activeChild;
         }
       }
@@ -62,8 +63,7 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
       <div
         className={`${
           open ? 'w-[258px]' : 'w-20'
-        } bg-bluePrimary min-h-screen p-5 sticky pt-8 duration-300 ring-1 ring-blue-200`}
-      >
+        } bg-bluePrimary min-h-screen p-5 sticky pt-8 duration-300 ring-1 ring-blue-200`}>
         {window.innerWidth >= constraintWindowWidth && (
           <img
             src={control}
@@ -77,37 +77,59 @@ const SideBar: React.FC<SideBarProps> = ({ menu }) => {
           <h1
             className={`text-white origin-left font-semibold text-xl duration-200 font-primary ${
               !open && 'scale-0'
-            }`}
-          >
+            }`}>
             {title}
           </h1>
         </div>
-        <div className="py-2 overflow-y-auto max-h-[calc(100vh-150px)] mt-6">
-        <ul className="">
-          {menu.map((menuItem, index) => (
-            <SideBarMenuItem
-              key={index}
-              menu={menuItem}
-              open={open}
-              activeTitle={activeTitle}
-              handleMenuClick={handleMenuClick}
-            />
-          ))}
-        </ul>
-        <div
-          onClick={logout}
-          className={`flex font-semibold rounded-md p-2 cursor-pointer hover:bg-blue-500 text-white text-sm items-center gap-x-4 mt-2
-         ${!open && 'justify-center'}`}
-        >
-          <GoSignOut size={iconSize} />
-          <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
-        </div>
-        </div>
-        
+
+        {/* <div className="py-2 overflow-y-auto max-h-[calc(100vh-150px)] mt-6">
+          <ul className="">
+            {menu.map((menuItem, index) => (
+              <SideBarMenuItem
+                key={index}
+                menu={menuItem}
+                open={open}
+                activeTitle={activeTitle}
+                handleMenuClick={handleMenuClick}
+              />
+            ))}
+          </ul>
+          <div
+            onClick={logout}
+            className={`flex font-semibold rounded-md p-2 cursor-pointer hover:bg-blue-500 text-white text-sm items-center gap-x-4 mt-2
+         ${!open && 'justify-center'}`}>
+            <GoSignOut size={iconSize} />
+            <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
+          </div>
+        </div> */}
+         <ScrollArea.Root className="mt-6">
+          <ScrollArea.Viewport className="py-2 max-h-[calc(100vh-150px)] overflow-hidden">
+            <ul>
+              {menu.map((menuItem, index) => (
+                <SideBarMenuItem
+                  key={index}
+                  menu={menuItem}
+                  open={open}
+                  activeTitle={activeTitle}
+                  handleMenuClick={handleMenuClick}
+                />
+              ))}
+            </ul>
+            <div
+              onClick={logout}
+              className={`flex font-semibold rounded-md p-2 cursor-pointer hover:bg-blue-500 text-white text-sm items-center gap-x-4 mt-2
+           ${!open && 'justify-center'}`}>
+              <GoSignOut size={iconSize} />
+              <span className={`${!open && 'hidden'} origin-left duration-200`}>Logout</span>
+            </div>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical" className="bg-blue-300 rounded">
+            <ScrollArea.Thumb className="bg-blue-500 rounded" />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
       </div>
     </div>
   );
 };
 
 export default SideBar;
-
