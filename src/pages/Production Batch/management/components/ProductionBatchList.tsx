@@ -6,10 +6,13 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { convertDate } from '@/helpers/convertDate';
-import { ProductionBatchStatus, ProductionBatchStatusLabels } from '@/enums/productionBatch';
+import {
+  ProductionBatchStatus,
+  ProductionBatchStatusColors,
+  ProductionBatchStatusLabels
+} from '@/enums/productionBatch';
 import { useGetAllProductionBatch } from '@/hooks/useGetAllProductionBatch';
 import { ProductionBatch } from '@/types/ProductionBatch';
-import { ProductionBatchDetailsModal } from './ProductionBatchDetailModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +24,9 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import UploadExcelProductionBatch from './UploadExcel';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 const ProductionBatchList: React.FC = () => {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -31,7 +34,7 @@ const ProductionBatchList: React.FC = () => {
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 8
+    pageSize: 6
   });
   const handleViewClick = (requestId: string) => {
     navigate(`/production-batch/${requestId}`);
@@ -54,17 +57,45 @@ const ProductionBatchList: React.FC = () => {
         }
       : undefined;
 
-  const mockCode = (code: string | null | undefined, id: string) =>
-    code || `MOCK-CODE-${id.slice(0, 8)}`;
-  const mockDate = (date: string | null | undefined) =>
-    date ? convertDate(date) : convertDate(new Date().toISOString());
-
   const productionBatchColumns: CustomColumnDef<ProductionBatch>[] = [
+    {
+      header: 'Product',
+      id: 'product',
+      cell: ({ row }) => {
+        const productSize = row.original.productionPlanDetail?.productSize;
+        return (
+          <div className="flex items-center gap-4">
+            <img
+              src={productSize?.productVariant?.image || 'https://via.placeholder.com/50'}
+              alt={productSize?.productVariant?.name || 'Unknown Product'}
+              className="w-12 h-12 rounded-md object-cover"
+            />
+            <span className="font-semibold text-gray-800">
+              {productSize?.productVariant?.name || 'Unknown Product'} -{' '}
+              {productSize?.size || 'N/A'}
+            </span>
+          </div>
+        );
+      },
+      enableColumnFilter: false
+    },
     {
       header: 'Batch Code',
       accessorKey: 'code',
       cell: ({ row }) => (
-        <span className=" font-semibold ">{row?.original?.code || 'View Details'}</span>
+        <span className="font-semibold">{row?.original?.code || 'View Details'}</span>
+      ),
+      enableColumnFilter: false
+    },
+    {
+      header: 'Plan Code',
+      accessorKey: 'code',
+      cell: ({ row }) => (
+        <Link
+          to={`/production-plan/${row?.original?.productionPlanDetail?.productionPlanId}`}
+          className="text-blue-500 underline">
+          {row?.original?.productionPlanDetail?.code || 'View Details'}
+        </Link>
       ),
       enableColumnFilter: false
     },
@@ -92,53 +123,34 @@ const ProductionBatchList: React.FC = () => {
       cell: ({ row }) => {
         const status = row.original.status as ProductionBatchStatus;
         const statusLabel = ProductionBatchStatusLabels[status];
-        let colorVariant;
-        switch (status) {
-          case ProductionBatchStatus.EXECUTING:
-            colorVariant = 'bg-yellow-500 text-white';
-            break;
-          case ProductionBatchStatus.IMPORTING:
-            colorVariant = 'bg-blue-500 text-white';
-            break;
-          case ProductionBatchStatus.IMPORTED:
-            colorVariant = 'bg-teal-500 text-white';
-            break;
-          case ProductionBatchStatus.FINISHED:
-            colorVariant = 'bg-green-500 text-white';
-            break;
-          case ProductionBatchStatus.CANCELLED:
-            colorVariant = 'bg-red-500 text-white';
-            break;
-          default:
-            colorVariant = 'bg-gray-200 text-black';
-        }
+        const colorVariant = ProductionBatchStatusColors[status] || 'bg-gray-200 text-black';
         return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
       }
     },
     {
-      header: 'Start Date',
-      accessorKey: 'startDate',
-      cell: ({ row }) => <div className="ml-2">{mockDate(row.original.startDate)}</div>,
+      header: 'Created Date',
+      accessorKey: 'createdAt',
+      cell: ({ row }) => (
+        <div className="ml-2">{convertDateWithTime(row.original.createdAt || '')}</div>
+      ),
       enableColumnFilter: false
     },
     {
-      header: 'Expected Finish Date',
-      accessorKey: 'expectedFinishDate',
-      cell: ({ row }) => <div className="ml-2">{mockDate(row.original.expectedFinishDate)}</div>,
-      enableColumnFilter: false
-    },
-    {
-      header: 'Finished Date',
-      accessorKey: 'finishedDate',
-      cell: ({ row }) => <div className="ml-2">{mockDate(row.original.finishedDate)}</div>,
-      enableColumnFilter: false
-    },
-    {
-      header: 'Quantity to Produce',
+      header: 'Batch Quantity',
       accessorKey: 'quantityToProduce',
       cell: ({ row }) => (
-        <div className="ml-2 font-semibold text-center mr-9 ">
-          {row.original.quantityToProduce?.toLocaleString() || '0'}
+        <div className="text-center mr-5 font-semibold">
+          {row.original?.quantityToProduce || '0'}
+        </div>
+      ),
+      enableColumnFilter: false
+    },
+    {
+      header: 'Planning Quantity',
+      accessorKey: 'quantityToProduce',
+      cell: ({ row }) => (
+        <div className="text-center font-semibold mr-5">
+          {row.original.productionPlanDetail?.quantityToProduce || '0'}
         </div>
       ),
       enableColumnFilter: false
