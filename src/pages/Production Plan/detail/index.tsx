@@ -18,6 +18,7 @@ import {
   DialogDescription
 } from '@/components/ui/Dialog';
 import { convertDate } from '@/helpers/convertDate';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 interface SummaryCardProps {
   title: string;
@@ -171,6 +172,12 @@ const ProductionPlanDetail = () => {
             value={plan?.totalQuantityToProduce}
             valueColor="text-slate-600 "
             nameColor="text-green-800"
+          />
+          <KeyValueDisplay
+            name="Create Date"
+            value={convertDateWithTime(plan?.createdAt)}
+            valueColor="text-primaryLight"
+            nameColor="text-blue-800"
           />
           <KeyValueDisplay
             name="Expected Start Date"

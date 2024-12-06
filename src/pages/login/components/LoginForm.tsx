@@ -23,7 +23,7 @@ import { actions } from '../slice';
 import { user } from '../types';
 import Cookies from 'js-cookie';
 import { HTTP_MESSAGE, HTTP_STATUS_CODE } from '@/enums/httpStatus';
-import { Role } from '@/enums/role';
+import { Role, ROLES_ENUM } from '@/enums/role';
 import { authApi } from '@/api/auth/auth';
 import Loading from '@/components/common/Loading';
 
@@ -93,6 +93,9 @@ const LoginForm: React.FC = ({ className, ...props }: UserAuthFormProps) => {
         break;
       case 'inspection-department':
         login('INSPECTION_DEPARTMENT', values.email, values.password);
+        break;
+      case 'factory-director':
+        login(ROLES_ENUM.FACTORY_DIRECTOR, values.email, values.password);
         break;
       default:
         break;

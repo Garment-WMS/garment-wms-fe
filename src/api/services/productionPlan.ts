@@ -3,7 +3,8 @@ import { ApiResponse } from '@/types/ApiResponse';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
-import { get, patch } from '../ApiCaller';
+import { get, patch, post } from '../ApiCaller';
+import Cookies from 'js-cookie';
 
 interface StartProductionPlanInput {
   id: string;
@@ -99,5 +100,41 @@ export const getProductionPlanById = async ({
   } catch (error) {
     console.error(`Error fetching production plan with ID ${id}:`, error);
     throw new Error('Failed to fetch production plan');
+  }
+};
+
+export const importProductionPlan = async (file: File): Promise<ApiResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+  const accessToken = Cookies.get('accessToken');
+  const config = post(
+    '/production-plan',
+    formData,
+    {},
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
+
+  try {
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error uploading production plan:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data);
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred during file upload.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred during file upload.');
   }
 };
