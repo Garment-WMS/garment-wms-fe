@@ -27,29 +27,6 @@ interface DefectsSummaryProps {
 const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects, inspectionReportDetail }) => {
   const totalDefects = defects.reduce((sum, defect) => sum + defect.quantity, 0);
 
-  // Generate consistent colors for defects based on their IDs
-  const colors = [
-    'text-red-600',
-    'text-green-600',
-    'text-blue-600',
-    'text-yellow-600',
-    'text-purple-600',
-    'text-orange-600'
-  ];
-
-  const defectColors = useMemo(() => {
-    const colorMap = new Map<string, string>();
-    defects.forEach((defect, index) => {
-      const color = colors[index % colors.length];
-      colorMap.set(defect.id, color);
-    });
-    return colorMap;
-  }, [defects]);
-
-  const getColorForDefect = (defectId: string) => {
-    return defectColors.get(defectId) || 'text-gray-600';
-  };
-
   const isMaterial = !!inspectionReportDetail.materialPackage;
   const itemDetails = isMaterial
     ? inspectionReportDetail.materialPackage
@@ -134,8 +111,7 @@ const DefectsSummary: React.FC<DefectsSummaryProps> = ({ defects, inspectionRepo
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span
-                              className={`font-medium cursor-pointer ${getColorForDefect(defect.id)}`}>
+                            <span className="font-medium cursor-pointer text-red-500">
                               {defect.description.length > 20
                                 ? `${defect.description.slice(0, 20)}...`
                                 : defect.description}

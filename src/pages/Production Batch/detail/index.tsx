@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetProductionBatchById } from '@/hooks/useGetProductionBatchById';
 import Loading from '@/components/common/Loading';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, badgeVariants } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
 import Colors from '@/constants/color';
 import { ExportRequestStatus } from '@/types/exportRequest';
+import { getStatusBadgeVariant } from '@/pages/ImportRequests/management/helper';
 
 interface ProductionBatchDetailProps {
   productionPlanDetail: any;
@@ -43,6 +44,13 @@ interface ProductionBatchDetailProps {
   finishedDate: string | null;
   expectedFinishDate: string | null;
   productionBatchMaterialVariant: any[];
+}
+function formatString(input: string): string {
+  return input
+    .toLowerCase() // Convert the entire string to lowercase first
+    .split('_') // Split by underscores
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter of each word
+    .join(' '); // Join the words back with spaces
 }
 
 const ProductionBatchDetail: React.FC = () => {
@@ -317,7 +325,12 @@ const ProductionBatchDetail: React.FC = () => {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{request.status}</Badge>
+                      <div
+                        className={`${badgeVariants({
+                          variant: getStatusBadgeVariant(request.status ?? '')
+                        })} w-[110px] flex justify-center`}>
+                        {formatString(request.status ?? 'N/A')}
+                      </div>
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
                     <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>

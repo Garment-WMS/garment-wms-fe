@@ -60,7 +60,6 @@ const PurchaseOrderList: React.FC = () => {
       try {
         const response = await cancelPurchaseOrder(selectedPO.id, validCancelReason);
         console.log(response);
-
         if (response?.statusCode === 200) {
           toast({
             variant: 'success',
