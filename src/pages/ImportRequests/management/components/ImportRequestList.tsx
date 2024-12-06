@@ -25,15 +25,29 @@ import {
   PurchasingStaffGuardAndProductionDepartmentDiv,
   PurchasingStaffGuardDiv
 } from '@/components/authentication/createRoleGuard';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
+import { Textarea } from '@/components/ui/Textarea';
+import { cancelImportRequest } from '@/api/services/importRequestApi';
 type Props = {};
 export interface Filter {
   label: string;
   value: string;
 }
 const ImportRequestList = (props: Props) => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [selectedRequest, setSelectedRequest] = useState<{ id: string; code: string } | null>(null);
   const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
   const [purchaseOrderFilter, setPurchaseOrderFilter] = useState<Filter[]>([]);
   const fetchProductionBatch = async () => {
@@ -73,6 +87,46 @@ const ImportRequestList = (props: Props) => {
     fetchPurchaseOrder();
     fetchProductionBatch();
   }, []);
+
+  const handleCancelClick = (id: string, code: string) => {
+    setSelectedRequest({ id, code });
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (selectedRequest) {
+      try {
+        const response = await cancelImportRequest(
+          selectedRequest.id,
+          cancelReason || 'No reason provided'
+        );
+        if (response?.statusCode === 200) {
+          toast({
+            variant: 'success',
+            title: 'Import Request Cancelled',
+            description: `Import Request ${selectedRequest.code} has been successfully cancelled.`
+          });
+          navigate(`/import-request/${selectedRequest?.id}`);
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: response.message || 'An unexpected error occurred.'
+          });
+        }
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'An unexpected error occurred while cancelling the import request.'
+        });
+      } finally {
+        setIsModalOpen(false);
+        setCancelReason('');
+        setSelectedRequest(null);
+      }
+    }
+  };
 
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/import-request')[0]; // Get base path (either manager or purchase-staff)
@@ -216,6 +270,15 @@ const ImportRequestList = (props: Props) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+              <PurchasingStaffGuardDiv>
+                {request.status === 'ARRIVED' && (
+                  <DropdownMenuItem
+                    onClick={() => handleCancelClick(request.id, request?.code)}
+                    className="text-red-500 hover:text-red-600">
+                    Cancel
+                  </DropdownMenuItem>
+                )}
+              </PurchasingStaffGuardDiv>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -246,6 +309,35 @@ const ImportRequestList = (props: Props) => {
             Create new Import Request
           </Button>
         </PurchasingStaffGuardAndProductionDepartmentDiv>
+
+        {/* Cancel Confirmation Modal */}
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-red-500">Cancel Import Request</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to cancel Import Request{' '}
+                <span className="font-semibold text-primaryLight">{selectedRequest?.code}</span>?
+                This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <Textarea
+                placeholder="Enter reason for cancellation"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmCancel} disabled={!cancelReason.trim()}>
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

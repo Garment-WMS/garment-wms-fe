@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle, PlayCircle } from 'lucide-react';
+import { AlertCircle, CalendarCheck, CalendarX, CheckCircle, PlayCircle } from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
@@ -17,12 +17,21 @@ import {
   DialogTitle,
   DialogDescription
 } from '@/components/ui/Dialog';
+import { convertDate } from '@/helpers/convertDate';
 
 interface SummaryCardProps {
   title: string;
   value: number;
   icon: JSX.Element;
   variant: 'success' | 'error';
+}
+
+interface KeyValueDisplayProps {
+  name: string;
+  value: string | number;
+  className?: string;
+  valueColor?: string;
+  nameColor?: string;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
@@ -36,6 +45,22 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }
       <div className="text-2xl">{icon}</div>
       <div className="mt-1 text-sm font-medium text-center">{title}</div>
       <div className="mt-1 text-lg font-bold">{value}</div>
+    </div>
+  );
+};
+
+const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
+  name,
+  value,
+  className = '',
+  nameColor = 'text-gray-600',
+  valueColor = 'text-gray-900'
+}) => {
+  return (
+    <div
+      className={`flex items-center gap-4 py-3 border-b border-gray-100 last:border-0 ${className}`}>
+      <span className={`text-[15px] ${nameColor} flex-1`}>{name}</span>
+      <span className={`text-[18px] font-medium ${valueColor}`}>{value}</span>
     </div>
   );
 };
@@ -136,6 +161,35 @@ const ProductionPlanDetail = () => {
           </div>
         </CardHeader>
       </Card>
+
+      {/* Plan Summary Section */}
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-4">Production Plan Summary</h2>
+        <div className="space-y-1">
+          <KeyValueDisplay
+            name="Total Products to Produce"
+            value={plan?.totalQuantityToProduce}
+            valueColor="text-slate-600 "
+            nameColor="text-green-800"
+          />
+          <KeyValueDisplay
+            name="Expected Start Date"
+            value={convertDate(plan?.expectedStartDate)}
+            valueColor="text-green-600"
+            nameColor="text-green-800"
+          />
+          <KeyValueDisplay
+            name="Expected End Date"
+            value={convertDate(plan?.expectedEndDate)}
+            valueColor="text-red-600"
+            nameColor="text-red-800"
+          />
+          {/* <KeyValueDisplay
+            name="Items Remaining to Import"
+            value={`${totalQuantityToImport.toLocaleString()} items`}
+          /> */}
+        </div>
+      </section>
 
       {/* Product Details Section */}
       <Card>
