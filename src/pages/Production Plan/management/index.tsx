@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
@@ -19,7 +19,7 @@ import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { SortingState, ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import { ProductionPlan } from '@/types/ProductionPlan';
-import { AlertTriangle, CalendarArrowDown, CalendarArrowUp, PlayCircle, Plus } from 'lucide-react';
+import { AlertTriangle, CalendarArrowDown, CalendarArrowUp, PlayCircle } from 'lucide-react';
 import ProductionPlanIntroduction from './components/Introduction';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { FactoryDirectorGuardDiv } from '@/components/authentication/createRoleGuard';
@@ -135,16 +135,20 @@ const ProductionPlanManagement = () => {
                   </Badge>
                 </div>
               </CardTitle>
-              {plan.status === ProductionPlanStatus.PLANNING && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() => openModal(plan)}>
-                  <PlayCircle className="mr-2 h-4 w-4" />
-                  Start Plan
-                </Button>
-              )}
+              {
+                <FactoryDirectorGuardDiv>
+                  {plan.status === ProductionPlanStatus.PLANNING && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={() => openModal(plan)}>
+                      <PlayCircle className="mr-2 h-4 w-4" />
+                      Start Plan
+                    </Button>
+                  )}
+                </FactoryDirectorGuardDiv>
+              }
             </div>
           </CardHeader>
           <CardContent>

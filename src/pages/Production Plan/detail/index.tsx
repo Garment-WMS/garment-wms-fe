@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CalendarCheck, CalendarX, CheckCircle, PlayCircle } from 'lucide-react';
+import { AlertCircle, CalendarMinus, CalendarPlus, CheckCircle, PlayCircle } from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
@@ -24,7 +24,7 @@ interface SummaryCardProps {
   title: string;
   value: number;
   icon: JSX.Element;
-  variant: 'success' | 'error';
+  variant: 'success' | 'error' | 'manufacturing';
 }
 
 interface KeyValueDisplayProps {
@@ -38,7 +38,8 @@ interface KeyValueDisplayProps {
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
   const variantStyles = {
     success: 'bg-green-50 border-green-200 text-green-700',
-    error: 'bg-red-50 border-red-200 text-red-700'
+    error: 'bg-red-50 border-red-200 text-red-700',
+    manufacturing: 'bg-yellow-50 border-yellow-200 text-yellow-700'
   };
   const selectedStyles = variantStyles[variant];
   return (
@@ -138,7 +139,7 @@ const ProductionPlanDetail = () => {
     <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 flex flex-col gap-8">
       {/* Header Card */}
       <Card className="mb-6 border-b-4">
-        <CardHeader className="border-b border-gray-200">
+        <CardHeader className="flex flex-col gap-5 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <div className="flex flex-row items-center gap-5">
               <CardTitle className="text-3xl font-bold text-blue-800">{plan.name}</CardTitle>
@@ -160,6 +161,26 @@ const ProductionPlanDetail = () => {
               )}
             </div>
           </div>
+          {plan?.startDate && (
+            <div className="flex flex-row items-center justify-between ">
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-1 text-green-600">
+                  <CalendarPlus size={17} />
+                  <span>Start: </span>{' '}
+                </div>
+                <span className="text-green-700">{convertDateWithTime(plan?.startDate)}</span>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-1 text-red-600">
+                  <CalendarMinus size={17} />
+                  <span>Finish: </span>{' '}
+                </div>
+                <span className="text-red-700">
+                  {plan?.finishDate ? convertDateWithTime(plan?.finishDate) : 'Not Yet'}
+                </span>
+              </div>
+            </div>
+          )}
         </CardHeader>
       </Card>
 
@@ -191,10 +212,6 @@ const ProductionPlanDetail = () => {
             valueColor="text-red-600"
             nameColor="text-red-800"
           />
-          {/* <KeyValueDisplay
-            name="Items Remaining to Import"
-            value={`${totalQuantityToImport.toLocaleString()} items`}
-          /> */}
         </div>
       </section>
 
@@ -209,9 +226,6 @@ const ProductionPlanDetail = () => {
         <CardContent className="pt-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => {
-              const defectQuantity = detail?.productPlanDetailDefectQuantity || 0;
-              const producedQuantity = detail?.productPlanDetailProducedQuantity || 0;
-
               return (
                 <Card key={detail.id} className="shadow-lg rounded-lg overflow-hidden">
                   {/* Product Image */}
@@ -239,14 +253,20 @@ const ProductionPlanDetail = () => {
 
                     <div className="mt-4 grid grid-cols-2 gap-4">
                       <SummaryCard
+                        title="Manufacturing Quantity"
+                        value={detail?.productPlanDetailManufacturingQuantity ?? 0}
+                        icon={<PlayCircle className="h-5 w-5" />}
+                        variant="manufacturing"
+                      />
+                      <SummaryCard
                         title="Produced Quantity"
-                        value={producedQuantity}
+                        value={detail?.productPlanDetailProducedQuantity ?? 0}
                         icon={<CheckCircle className="h-5 w-5" />}
                         variant="success"
                       />
                       <SummaryCard
                         title="Defect Quantity"
-                        value={defectQuantity}
+                        value={detail?.productPlanDetailDefectQuantity ?? 0}
                         icon={<AlertCircle className="h-5 w-5" />}
                         variant="error"
                       />

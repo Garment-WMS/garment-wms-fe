@@ -45,6 +45,7 @@ export interface ProductionPlanDetail {
   productionBatch: ProductionBatch[];
   productPlanDetailDefectQuantity?: number;
   productPlanDetailProducedQuantity?: number;
+  productPlanDetailManufacturingQuantity?: number;
 }
 
 export interface FactoryDirector {

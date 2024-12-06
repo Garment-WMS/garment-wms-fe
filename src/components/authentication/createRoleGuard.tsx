@@ -47,3 +47,7 @@ export const PurchasingStaffGuardAndProductionDepartmentDiv = createRoleGuard([
   RoleCode.PURCHASING_STAFF,
   RoleCode.PRODUCTION_DEPARTMENT
 ]);
+export const FactoryDirectorGuardDivAndWarehouseManagerGuardDiv = createRoleGuard([
+  RoleCode.FACTORY_DIRECTOR,
+  RoleCode.WAREHOUSE_MANAGER
+]);

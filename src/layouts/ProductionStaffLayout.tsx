@@ -26,6 +26,11 @@ const ProductionStaffMenu: MenuProps[] = [
     link: '/dashboard'
   },
   {
+    title: 'Production Plan',
+    renderIcon: <TbCalendarCog size={iconSize} />,
+    link: '/production-plan'
+  },
+  {
     title: 'Production Batch',
     renderIcon: <LuContainer size={iconSize} />,
     link: '/production-batch'
