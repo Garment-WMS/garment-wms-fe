@@ -26,8 +26,8 @@ const NotificationListener = () => {
   const [isReadCount, setIsReadCount] = useState(0);
   useEffect(() => {
     const handleNewNotification = (data: any) => {
-      setNotifications((prev) => [...prev, data]);
-      setIsReadCount(countUnread([...notifications, data]));
+      setNotifications((prev) => [data,...prev]);
+      setIsReadCount(countUnread([data,...notifications]));
     };
 
     // Listen for the `newNotification` event
@@ -68,7 +68,7 @@ const NotificationListener = () => {
         const notifications = res.data.data;
         // const unreadCount = notifications.filter((notification: any) => !notification.isRead).length;
         setIsReadCount(countUnread(notifications)); // Update the unread count
-
+        notifications.sort((a:any, b:any) => new Date(b?.createdAt).getTime() - new Date(a?.createdAt).getTime());
         setNotifications(notifications);
       }
     } catch (error) {
@@ -78,6 +78,7 @@ const NotificationListener = () => {
   useEffect(() => {
     fetchNotifications();
   }, []);
+
   // const [expandedNotifications, setExpandedNotifications] = useState<string[]>([]);
 
   // const toggleExpand = (id: string) => {
@@ -86,6 +87,7 @@ const NotificationListener = () => {
   //   );
   // };
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Button variant="ghost" className="relative rounded-full">
@@ -154,6 +156,8 @@ const NotificationListener = () => {
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
+    
   );
 };
 
