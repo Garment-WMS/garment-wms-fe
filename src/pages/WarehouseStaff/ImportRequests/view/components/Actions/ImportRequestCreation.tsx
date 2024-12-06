@@ -17,7 +17,7 @@ const ImportRequestCreation: React.FC<Props> = (props) => {
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
       <CardHeader className="items-center pb-2">
         <CardTitle className="text-2xl">Import Request Creation</CardTitle>
-        <p className="text-sm text-muted-foreground">Request #1234</p>
+        <p className="text-sm text-muted-foreground">Request #{importRequest?.code || 'N/A'}</p>
       </CardHeader>
 
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
