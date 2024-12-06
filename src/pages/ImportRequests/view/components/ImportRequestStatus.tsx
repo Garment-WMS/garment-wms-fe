@@ -4,6 +4,8 @@ import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
 import importRequestSelector from '../../slice/selector';
 import { getSatusName, getStatusBadgeVariant } from '../../management/helper';
+import { convertDateWithTime } from '../../../../helpers/convertDateWithTime';
+import { Input } from '@/components/ui/Input';
 
 type Props = {};
 
@@ -21,6 +23,8 @@ const ImportRequestStatus = (props: Props) => {
   const closedAt = importRequest?.finishAt
     ? new Date(importRequest.finishAt).toLocaleDateString()
     : 'N/A';
+  const cancelledAt = importRequest?.cancelledAt;
+  const cancelledReason = importRequest?.cancelReason;
 
   const getAssignedTo = (status: ImportRequest['status']) => {
     switch (status) {
@@ -128,6 +132,29 @@ const ImportRequestStatus = (props: Props) => {
         <div className="flex justify-center items-center gap-2 font-primary text-sm">
           Closed at : <div className="font-primary text-xs text-bluePrimary">{closedAt}</div>
         </div>
+        {cancelledAt && (
+          <div className="flex justify-center items-center gap-2 font-primary text-sm">
+            Cancelled at :{' '}
+            <div className="font-primary text-xs text-red-600">
+              {convertDateWithTime(cancelledAt)}
+            </div>
+          </div>
+        )}
+        {cancelledAt && (
+          <div className="flex flex-col gap-1 w-full">
+            <label htmlFor="cancelReason" className="">
+              Cancelled Reason:
+            </label>
+            <Input
+              id="cancelReason"
+              type="text"
+              value={cancelledReason?.toString()}
+              disabled={true}
+              placeholder="Enter cancellation reason"
+              className="w-full h-20 text-sm border-red-300 focus:border-red-500 focus:ring-red-500 placeholder-red-300"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
