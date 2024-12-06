@@ -25,6 +25,7 @@ import { DialogDescription } from '@radix-ui/react-dialog';
 import { FactoryDirectorGuardDiv } from '@/components/authentication/createRoleGuard';
 import ProductionPlanSummary from './components/ProductionPlanSummary';
 import { convertTitleToTitleCase } from '../../../helpers/convertTitleToCaseTitle';
+import UploadExcelProductionPlan from './components/UploadExcelProductionPlan';
 
 const getStatusBadgeClass = (status: ProductionPlanStatus) => {
   switch (status) {
@@ -101,9 +102,7 @@ const ProductionPlanManagement = () => {
       <ProductionPlanIntroduction />
       <FactoryDirectorGuardDiv>
         <div className="flex justify-end items-center mb-6">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add New Plan
-          </Button>
+          <UploadExcelProductionPlan />
         </div>
       </FactoryDirectorGuardDiv>
 
