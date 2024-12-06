@@ -34,11 +34,13 @@ interface Staff {
 const getStatusDetails = (status: string) => {
   switch (status.toUpperCase()) {
     case 'OPEN':
-      return { label: 'Open', color: 'bg-blue-500 text-blue-950' };
+      return { label: 'Open', color: 'bg-yellow-500 text-yellow-950' };
     case 'DONE':
       return { label: 'Completed', color: 'bg-green-500 text-green-950' };
     case 'CANCELLED':
       return { label: 'Cancelled', color: 'bg-red-500 text-red-950' };
+    case 'IN_PROGRESS':
+      return { label: 'In progress', color: 'bg-blue-500 text-blue-950' };
     default:
       return { label: status, color: 'bg-gray-500 text-gray-950' };
   }
@@ -198,7 +200,7 @@ export default function TaskManagerOverview() {
     const { label, color } = getStatusDetails(event.status);
 
     return (
-      <div className={`flex items-center gap-2 p-2 rounded ${color}`}>
+      <div className={`flex items-center gap-2 p-2 rounded ${color} h-full`}>
         <TaskTypeIcon type={event.taskType} className="text-xl text-white" />
         <span className=" text-white">{event.title}</span>
       </div>
