@@ -27,6 +27,7 @@ const NotificationListener = () => {
   useEffect(() => {
     const handleNewNotification = (data: any) => {
       setNotifications((prev) => [...prev, data]);
+      setIsReadCount(countUnread([...notifications, data]));
     };
 
     // Listen for the `newNotification` event
@@ -57,13 +58,16 @@ const NotificationListener = () => {
     setIsReadCount((prev) => prev - 1);
     navigate(`${path}`);
   };
+  function countUnread(notifications: any[]) {
+    return notifications.filter((notification) => !notification.isRead).length;
+  }
   const fetchNotifications = async () => {
     try {
       const res = await privateCall(notificationApi.getAll());
       if (res.status === 200) {
         const notifications = res.data.data;
-        const unreadCount = notifications.filter((notification: any) => !notification.isRead).length;
-        setIsReadCount(unreadCount); // Update the unread count
+        // const unreadCount = notifications.filter((notification: any) => !notification.isRead).length;
+        setIsReadCount(countUnread(notifications)); // Update the unread count
 
         setNotifications(notifications);
       }
