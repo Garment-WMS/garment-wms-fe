@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { useRefreshToken } from '@/hooks/useRefreshToken';
@@ -27,14 +27,12 @@ export const useSocket = (): UseSocket => {
     }
 
     const newSocket = io(SOCKET_SERVER_URL, {
-      transports: ['websocket'],
       extraHeaders: {
         token: `${token}`,
       },
     });
 
     newSocket.on('connect', () => {
-      console.log('Socket connected:', newSocket.id);
       setIsSocketConnected(true); // Set connection status to true
     });
 
@@ -51,60 +49,70 @@ export const useSocket = (): UseSocket => {
       }
     });
 
-    // newSocket.on('disconnect', () => {
-    //   console.log('Socket disconnected');
-    //   setIsSocketConnected(false); // Set connection status to false
-    // });
+    newSocket.on('disconnect', () => {
+      setIsSocketConnected(false); // Set connection status to false
+    });
 
     setSocket(newSocket);
   };
 
-  const onEvent = (event: string, callback: (data: any) => void) => {
-    if (!socket) {
-      console.log('Socket instance not ready yet.');
-      return;
-    }
+  // const onEvent = (event: string, callback: (data: any) => void) => {
+  //   if (!socket || !isSocketConnected) {
+  //     console.log(`Socket not ready for event: ${event}`);
+  //     return;
+  //   }
   
-    if (!isSocketConnected) {
-      console.log(`Socket not connected. Delaying event listener for: ${event}`);
-      const interval = setInterval(() => {
-        if (isSocketConnected) {
-          console.log(`Listening to event: ${event}`);
-          eventHandlers.current[event] = callback;
-          socket.on(event, callback);
-          clearInterval(interval);
-        }
-      }, 100);
-      return;
-    }
+  //   // Avoid duplicate listeners
+  //   if (eventHandlers.current[event]) {
+  //     console.log(`Event ${event} is already bound.`);
+  //     return;
+  //   }
   
-    console.log(`Listening to event: ${event}`);
+  //   console.log(`Listening to event: ${event}`);
+  //   eventHandlers.current[event] = callback;
+  //   socket.on(event, callback);
+  // };
+
+  // const offEvent = (event: string) => {
+  //   if (!socket || !isSocketConnected) {
+  //     return;
+  //   }
+
+  //   // Remove the event listener and clean up the stored handler
+  //   const handler = eventHandlers.current[event];
+  //   if (handler) {
+  //     socket.off(event, handler);
+  //     delete eventHandlers.current[event];
+  //   }
+  // };
+
+  const onEvent = useCallback((event: string, callback: (data: any) => void) => {
+    if (!socket || !isSocketConnected) return;
+  
+    if (eventHandlers.current[event]) return;
+  
     eventHandlers.current[event] = callback;
     socket.on(event, callback);
-    console.log(socket.on(event, callback))
-  };
-
-  const offEvent = (event: string) => {
-    if (!socket || !isSocketConnected) {
-      console.log('Socket is not connected');
-      return;
-    }
-
-    // Remove the event listener and clean up the stored handler
+  }, [socket, isSocketConnected]);
+  
+  const offEvent = useCallback((event: string) => {
+    if (!socket || !isSocketConnected) return;
+  
     const handler = eventHandlers.current[event];
     if (handler) {
       socket.off(event, handler);
       delete eventHandlers.current[event];
     }
-  };
+  }, [socket, isSocketConnected]);
+  
 
   useEffect(() => {
     connectSocket();
-    // return () => {
-    //   if (socket) {
-    //     socket.disconnect();
-    //   }
-    // };
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
   }, []);
 
   return { onEvent, offEvent, socket, isSocketConnected };
