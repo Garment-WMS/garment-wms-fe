@@ -115,7 +115,7 @@ const WarehouseManagerLayout = (props: Props) => {
       <SideBar menu={WarehouseManagerMenu} />
       <div className="flex flex-col gap-4 w-full h-full">
         <TopBar />
-        <div className="flex-1 p-4 min-h-0 overflow-scroll">
+        <div className="flex-1 p-4 min-h-0 overflow-scroll w-[100%]">
           <Outlet />
         </div>
       </div>

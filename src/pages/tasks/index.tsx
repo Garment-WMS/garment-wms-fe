@@ -101,15 +101,15 @@ const localizer = momentLocalizer(moment);
 const getStatusDetails = (status: string) => {
   switch (status.toUpperCase()) {
     case 'OPEN':
-      return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
-    case 'INPROGRESS':
-      return { label: 'Open', color: 'bg-blue-500 text-blue-950', icon: Clock };
+      return { label: 'Open', color: 'bg-yellow-500 text-yellow-950' };
     case 'DONE':
-      return { label: 'Completed', color: 'bg-green-500 text-green-950', icon: CheckCircle };
+      return { label: 'Completed', color: 'bg-green-500 text-green-950' };
     case 'CANCELLED':
-      return { label: 'Cancelled', color: 'bg-red-500 text-red-950', icon: XCircle };
+      return { label: 'Cancelled', color: 'bg-red-500 text-red-950' };
+    case 'IN_PROGRESS':
+      return { label: 'In progress', color: 'bg-blue-500 text-blue-950' };
     default:
-      return { label: status, color: 'bg-gray-500 text-gray-950', icon: Clock };
+      return { label: status, color: 'bg-gray-500 text-gray-950' };
   }
 };
 
@@ -182,9 +182,9 @@ export default function WarehouseTasks() {
     setSelectedDate((prevDate) => {
       const newDate = new Date(prevDate);
       if (action === 'prev') {
-        newDate.setDate(newDate.getDate() - 7);
+        newDate.setDate(newDate.getDate() - 1);
       } else {
-        newDate.setDate(newDate.getDate() + 7);
+        newDate.setDate(newDate.getDate() + 1);
       }
       return newDate;
     });
@@ -197,7 +197,7 @@ export default function WarehouseTasks() {
     const { label, color } = getStatusDetails(event.status);
 
     return (
-      <div className={`flex items-center gap-2 p-2 rounded ${color} justify-center`}>
+      <div className={`flex items-center gap-2 p-2 rounded ${color} justify-center h-full`}>
         <TaskTypeIcon type={event.taskType} className="text-white" />
         <span className="text-white">{event.title}</span>
       </div>
@@ -223,8 +223,8 @@ export default function WarehouseTasks() {
           events={taskEvents}
           startAccessor="start"
           endAccessor="end"
-          defaultView="week"
-          views={['week']}
+          defaultView="day"
+          views={['day']}
           date={selectedDate}
           onNavigate={(newDate) => setSelectedDate(newDate)}
           min={new Date(0, 0, 0, 0, 0, 0)}

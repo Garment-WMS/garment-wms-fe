@@ -210,3 +210,12 @@
 .rbc-timeslot-group {
   @apply border-muted;
 } */
+
+.rbc-event,
+.rbc-day-slot .rbc-background-event {
+  @apply p-0;
+}
+.rbc-day-slot .rbc-event,
+.rbc-day-slot .rbc-background-event {
+  @apply border-none;
+}
