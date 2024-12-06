@@ -21,6 +21,9 @@ import useLogout from '@/hooks/useLogout';
 import ScannerPopup from './ScannerPopup';
 import { useSocket } from '@/hooks/useSocket';
 import { useEffect, useState } from 'react';
+import privateCall from '@/api/PrivateCaller';
+import axios from 'axios';
+import { NotificationList } from './NotificationList';
 type Props = {};
 
 const TopBar = (props: Props) => {
@@ -33,24 +36,39 @@ const TopBar = (props: Props) => {
   useEffect(() => {
     // Listen to `newNotification` event
     const handleNewNotification = (data: any) => {
-      console.log('New notification:', data);
+      console.log('New notificatiodadsadsadasdasn:', data);
       setNotifications((prev) => [...prev, data]);
     };
 
     onEvent('newNotification', handleNewNotification);
 
-    return () => {
-      // Cleanup listener on unmount
-      offEvent('newNotification');
-    };
+    // return () => {
+    //   // Cleanup listener on unmount
+    //   offEvent('newNotification');
+    // };
   }, [onEvent, offEvent]);
-  console.log('Notifications:', notifications);
+
   return (
     <div className="w-full h-20 pl-6 flex bg-white">
       <div className="w-full flex gap-2 justify-end items-center pr-8">
         <ScannerPopup />
-        <IoIosNotificationsOutline color={blue} size={iconSize} />
-        <CiSettings color={blue} size={iconSize} />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost" className="relative rounded-full">
+              <IoIosNotificationsOutline color={blue} size={iconSize} />
+              {notifications.length > 0 && (
+                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                  {notifications.length}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-80" align="end" forceMount>
+            <NotificationList 
+              notifications={notifications}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>     
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger>

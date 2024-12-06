@@ -18,17 +18,18 @@ export const useSocket = (): UseSocket => {
   const eventHandlers = useRef<Record<string, (data: any) => void>>({});
 
   const connectSocket = async () => {
-    const token = Cookies.get('accessToken');
+    let token = Cookies.get('accessToken');
 
     if (!token) {
-      console.error('Access token is missing');
-      return;
+      const newToken = await useRefreshToken();
+      if(!newToken) return;
+      token = Cookies.get('accessToken');
     }
 
     const newSocket = io(SOCKET_SERVER_URL, {
       transports: ['websocket'],
-      auth: {
-        token: `Bearer ${token}`,
+      extraHeaders: {
+        token: `${token}`,
       },
     });
 
@@ -44,29 +45,43 @@ export const useSocket = (): UseSocket => {
         // Refresh token and reconnect
         const newToken = await useRefreshToken();
         if (newToken) {
-          newSocket.auth.token = `Bearer ${newToken}`;
+          newSocket.auth = { token: `Bearer ${newToken}` };
           newSocket.connect(); // Reconnect with new token
         }
       }
     });
 
-    newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
-      setIsSocketConnected(false); // Set connection status to false
-    });
+    // newSocket.on('disconnect', () => {
+    //   console.log('Socket disconnected');
+    //   setIsSocketConnected(false); // Set connection status to false
+    // });
 
     setSocket(newSocket);
   };
 
   const onEvent = (event: string, callback: (data: any) => void) => {
-    if (!socket || !isSocketConnected) {
-      console.log('Socket is not connected');
+    if (!socket) {
+      console.log('Socket instance not ready yet.');
       return;
     }
-
-    // Store the event handler for cleanup later
+  
+    if (!isSocketConnected) {
+      console.log(`Socket not connected. Delaying event listener for: ${event}`);
+      const interval = setInterval(() => {
+        if (isSocketConnected) {
+          console.log(`Listening to event: ${event}`);
+          eventHandlers.current[event] = callback;
+          socket.on(event, callback);
+          clearInterval(interval);
+        }
+      }, 100);
+      return;
+    }
+  
+    console.log(`Listening to event: ${event}`);
     eventHandlers.current[event] = callback;
     socket.on(event, callback);
+    console.log(socket.on(event, callback))
   };
 
   const offEvent = (event: string) => {
@@ -85,11 +100,11 @@ export const useSocket = (): UseSocket => {
 
   useEffect(() => {
     connectSocket();
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
+    // return () => {
+    //   if (socket) {
+    //     socket.disconnect();
+    //   }
+    // };
   }, []);
 
   return { onEvent, offEvent, socket, isSocketConnected };
