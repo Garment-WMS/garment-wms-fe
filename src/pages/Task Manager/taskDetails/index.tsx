@@ -115,9 +115,9 @@ export default function TaskDetailManagingPage() {
     // For now, we'll just update it locally
     setTask({
       ...task,
-      todo: task.todo.map((item) =>
-        item.id === todoId ? { ...item, isChecked: !item.isChecked } : item
-      )
+      // todo: task?.todo?.map((item) =>
+      //   item.id === todoId ? { ...item, isChecked: !item.isChecked } : item
+      // )
     });
   };
 
@@ -138,19 +138,23 @@ export default function TaskDetailManagingPage() {
   }
   const handleGoToTask = () => {
     let url;
-    if (task.inventoryReportId) {
-      url = `/inventory/${task.inventoryReportId}`;
+    if (task.importRequestId) {
+      url = `/import-request/${task.importRequestId}`;
+    }
+    else if (task.inventoryReportId) {
+      url = `/stocktaking/${task.inventoryReportId}`;
     } else if (task.inventoryReportPlanId) {
-      url = `/inventory/${task.inventoryReportPlanId}`;
+      url = `/stocktaking/plan/${task.inventoryReportPlanId}`;
     } else if (task.importReceiptId) {
       url = `/import-receipt/${task.importReceiptId}`;
     } else if (task.materialExportReceiptId) {
       url = `/export-receipt/${task.materialExportReceiptId}`;
     } else {
-      url = ``;
+      console.error("No valid task-related ID found");
+      return; // Avoid calling `navigate` with an empty URL
     }
 
-    navigate(url);
+    navigate(url, { replace: true });
   };
 
   const statusDetails = getStatusDetails(task.status);
@@ -212,9 +216,9 @@ export default function TaskDetailManagingPage() {
               Assigned to: {staff?.account.firstName} {staff?.account.lastName}
             </span>
           </div>
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="text-lg font-medium">Todo List:</h3>
-            {task.todo.map((item) => (
+            {task?.todo?.map((item) => (
               <div key={item.id} className="flex items-center space-x-2">
                 <Checkbox
                   id={item.id}
@@ -228,16 +232,16 @@ export default function TaskDetailManagingPage() {
                 </label>
               </div>
             ))}
-          </div>
+          </div> */}
         </CardContent>
         <CardFooter>
-          <Link
+          {/* <Link
             to={task.taskType == 'IMPORT' ? `import/receipt${task.importReceiptId}` : ''}
-            className="w-full">
+            className="w-full"> */}
             <Button className="w-full" onClick={handleGoToTask}>
               Go to Task
             </Button>
-          </Link>
+          {/* </Link> */}
         </CardFooter>
       </Card>
     </div>

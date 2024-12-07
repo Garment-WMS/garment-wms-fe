@@ -14,7 +14,17 @@ import {
 import { Input } from '@/components/ui/Input';
 
 import { Label } from '@/components/ui/Label';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
 
 import { MoveRight, Plus } from 'lucide-react';
 import DayTimePicker from '@/components/common/DayTimePicker';
@@ -36,6 +46,8 @@ import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard'
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import { useNavigate } from 'react-router-dom';
 import { Textarea } from '@/components/ui/Textarea';
+import { PlanErrorDialog } from './components/PlanErrorDialog';
+import { InventoryReportPlan } from '@/types/InventoryReport';
 
 type Props = {};
 // interface inventoryReportPlanDetais {
@@ -57,7 +69,9 @@ const CreateDynamicPlan = (props: Props) => {
   const [assignments, setAssignments] = useState<Assignment[]>([
     { staffId: '', materialSelectedVariants: [], productSelectedVariants: [] }
   ]);
-
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
+  const [planErrorDialog, setPlanErrorDialog] = useState(false);
   const navigate = useNavigate();
 
   // Function to add a new assignment
@@ -184,13 +198,30 @@ const CreateDynamicPlan = (props: Props) => {
           navigate(`/stocktaking/plan/${id}`);
         }
       } catch (error: any) {
-
+        // console.log('error', error.response);
+        if (error.response?.status === 401) {
+          toast({
+            title: 'Unauthorized',
+            description: 'You are not authorized to perform this action.',
+            variant: 'destructive'
+          });
+        }
+        const errMessage = error.response.data.message;
+        const errorList = error.response.data.errors;
+        if (error.response.status === 409) {
+          setPlanErrorDialog(true);
+        }
+        if (error.response.status === 400 && errorList) {
+          const errorList = error.response.data.errors;
+          setErrorPlanList(errorList);
+          setPlanErrorDialog(true);
+        } else {
           toast({
             title: 'Error',
             description: error.response?.data?.message || error.message,
-            variant: 'destructive',
+            variant: 'destructive'
           });
-        
+        }
       }
       
     }
@@ -474,10 +505,33 @@ const CreateDynamicPlan = (props: Props) => {
               <Plus className="font-bold w-4 h-4 text-green-500" /> Add Assignment
             </Button>
 
-            <Button type="submit">Submit</Button>
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button type="button"> Create</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Create Inventory Plan </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to create inventory plan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => form.handleSubmit(onSubmit)()} type="submit">
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </form>
         </Form>
       </div>
+      <PlanErrorDialog
+        planList={errorPlanList}
+        isOpen={planErrorDialog}
+        onClose={() => setPlanErrorDialog(false)}
+      />
     </div>
   );
 };

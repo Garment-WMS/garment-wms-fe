@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetProductionBatchById } from '@/hooks/useGetProductionBatchById';
 import Loading from '@/components/common/Loading';
@@ -12,16 +12,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import {
-  Package,
-  Truck,
-  CalendarDays,
-  Layers,
-  ArrowUpCircle,
-  ArrowDownCircle,
-  FileInput,
-  FileOutput
-} from 'lucide-react';
+import { Package, Layers, FileInput, FileOutput, XCircle, SquareX } from 'lucide-react';
 import EmptyDatacomponent from '@/components/common/EmptyData';
 import { getIconAttributes } from '@/helpers/getIconAttributes';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
@@ -30,21 +21,21 @@ import { ProductionDepartmentGuardDiv } from '@/components/authentication/create
 import Colors from '@/constants/color';
 import { ExportRequestStatus } from '@/types/exportRequest';
 import { getStatusBadgeVariant } from '@/pages/ImportRequests/management/helper';
-
-interface ProductionBatchDetailProps {
-  productionPlanDetail: any;
-  materialExportRequest: any[];
-  importRequest: any[];
-  code: string;
-  name: string;
-  status: string;
-  quantityToProduce: number;
-  createdAt: string;
-  startDate: string | null;
-  finishedDate: string | null;
-  expectedFinishDate: string | null;
-  productionBatchMaterialVariant: any[];
-}
+import {
+  ProductionBatchStatus,
+  ProductionBatchStatusColors,
+  ProductionBatchStatusLabels
+} from '@/enums/productionBatch';
+import { useToast } from '@/hooks/use-toast';
+import { cancelProductionBatch } from '@/api/services/productionBatch';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
+import { Textarea } from '@/components/ui/Textarea';
 function formatString(input: string): string {
   return input
     .toLowerCase() // Convert the entire string to lowercase first
@@ -57,11 +48,12 @@ const ProductionBatchDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isPending, isError } = useGetProductionBatchById(id!);
   const navigate = useNavigate();
-
+  const { toast } = useToast();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
   const handleRowClick = (id: string) => {
     navigate(`/import-request/${id}`);
   };
-
   if (isPending) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -73,6 +65,31 @@ const ProductionBatchDetail: React.FC = () => {
   if (isError) {
     return <div className="text-center text-red-500">Failed to load production batch details</div>;
   }
+
+  const handleCancelBatch = async () => {
+    try {
+      const response = await cancelProductionBatch(id!, cancelReason.trim());
+      if (response?.statusCode === 200) {
+        toast({
+          variant: 'success',
+          title: 'Batch Cancelled',
+          description: 'The production batch has been successfully cancelled.'
+        });
+        navigate(0);
+      } else {
+        throw new Error(response?.message || 'Cancellation failed');
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'An unexpected error occurred.'
+      });
+    } finally {
+      setIsModalOpen(false);
+      setCancelReason('');
+    }
+  };
 
   const {
     code,
@@ -87,7 +104,8 @@ const ProductionBatchDetail: React.FC = () => {
     importRequest,
     productionPlanDetail,
     productionBatchMaterialVariant,
-    numberOfProducedProduct
+    numberOfProducedProduct,
+    cancelledAt
   } = data?.data || {};
   const handleNavigate = (id: string, type: string) => {
     if (type == 'export-request') {
@@ -96,35 +114,70 @@ const ProductionBatchDetail: React.FC = () => {
       return navigate(`/import-request/create/product/${id}`);
     }
   };
+  const statusPl = status as ProductionBatchStatus;
+  const statusLabel = ProductionBatchStatusLabels[statusPl] || 'bg-gray-200 text-black';
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
         <div className="flex flex-row items-center gap-2">
-          <ProductionDepartmentGuardDiv>
-            <Button
-              className="bg-white ring-1 ring-primaryLight text-primaryLight"
-              onClick={() => handleNavigate(id as string, 'import-request')}>
-              <FileOutput size={18} color={Colors.primaryLightBackgroundColor} className="mr-3" />
-              Create Import
-            </Button>
-          </ProductionDepartmentGuardDiv>
-          <ProductionDepartmentGuardDiv>
-            <Button onClick={() => handleNavigate(id as string, 'export-request')}>
-              <FileInput size={18} color="#ffffff" className="mr-3" />
-              Create Export
-            </Button>
-          </ProductionDepartmentGuardDiv>
+          {status === ProductionBatchStatus.PENDING && (
+            <>
+              <ProductionDepartmentGuardDiv>
+                <Button
+                  className="bg-white ring-1 ring-primaryLight text-primaryLight"
+                  onClick={() => handleNavigate(id as string, 'import-request')}>
+                  <FileOutput
+                    size={18}
+                    color={Colors.primaryLightBackgroundColor}
+                    className="mr-3"
+                  />
+                  Create Import
+                </Button>
+              </ProductionDepartmentGuardDiv>
+              <ProductionDepartmentGuardDiv>
+                <Button onClick={() => handleNavigate(id as string, 'export-request')}>
+                  <FileInput size={18} color="#ffffff" className="mr-3" />
+                  Create Export
+                </Button>
+              </ProductionDepartmentGuardDiv>
+              {status === ProductionBatchStatus.PENDING && (
+                <ProductionDepartmentGuardDiv>
+                  <Button className="bg-red-600" onClick={() => setIsModalOpen(true)}>
+                    <SquareX size={18} color="#ffffff" className="mr-3" />
+                    Cancel Batch
+                  </Button>
+                </ProductionDepartmentGuardDiv>
+              )}
+            </>
+          )}
         </div>
       </div>
 
       {/* Batch Information Card */}
       <Card className="overflow-hidden">
         <CardHeader className="border-b flex flex-row justify-between items-center">
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Batch Information
-            <Badge className="ml-3">{status}</Badge>
+          <CardTitle className="flex flex-row items-center gap-2 ">
+            <div className="flex flex-row items-center gap-2">
+              <Package className="h-5 w-5" />
+              Batch Information
+              <Badge
+                className={`ml-3 ${
+                  ProductionBatchStatusColors[statusPl] || 'bg-gray-200 text-black'
+                }`}>
+                {statusLabel}
+              </Badge>
+            </div>
+            {status === ProductionBatchStatus.CANCELLED && (
+              <div className="flex items-center text-red-600 gap-1 ml-3">
+                <XCircle size={16} />
+                <span className="text-sm">Cancelled At:</span>
+                <span className="font-medium">
+                  {cancelledAt ? convertDateWithTime(cancelledAt || '') : 'Not Yet'}
+                </span>
+              </div>
+            )}
           </CardTitle>
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">No Produced Product:</span>
@@ -278,7 +331,7 @@ const ProductionBatchDetail: React.FC = () => {
                         {matchedStatus ? (
                           <Badge variant={matchedStatus.variant}>{matchedStatus.label}</Badge>
                         ) : (
-                          <Badge variant="neutral">Unknown</Badge>
+                          <Badge variant="dark">Unknown</Badge>
                         )}
                       </TableCell>
 
@@ -362,6 +415,36 @@ const ProductionBatchDetail: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Cancel Production Batch</DialogTitle>
+            <p>
+              Are you sure you want to cancel the production batch{' '}
+              <span className="font-bold text-primaryLight">{code}</span>? This action cannot be
+              undone.
+            </p>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              className="h-40"
+              placeholder="Enter reason for cancellation"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCancelBatch} disabled={!cancelReason.trim()}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

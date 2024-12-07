@@ -78,8 +78,8 @@ export function ErrorDialog({
                 {importRequests.map((request) => (
                   <div
                     className="text-blue-500 cursor-pointer w-fit"
-                    onClick={() => handleClick(`/import-request/${request.id}`)}>
-                    {request.code}
+                    onClick={() => handleClick(`/import-request/${request?.id}`)}>
+                    {request?.code}
                   </div>
                 ))}
               </ul>
@@ -92,8 +92,8 @@ export function ErrorDialog({
                 {exportRequests.map((request) => (
                   <div
                     className="text-blue-500 cursor-pointer w-fit"
-                    onClick={() => handleClick(`/export-request/${request.id}`)}>
-                    {request.code}
+                    onClick={() => handleClick(`/export-request/${request?.id}`)}>
+                    {request?.code}
                   </div>
                 ))}
               </ul>

@@ -14,8 +14,18 @@ import {
 import { Input } from '@/components/ui/Input';
 
 import { Label } from '@/components/ui/Label';
-
-import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/AlertDialog';
+import { Textarea } from '@/components/ui/Textarea';
 
 import { MoveRight, Plus } from 'lucide-react';
 import DayTimePicker from '@/components/common/DayTimePicker';
@@ -27,6 +37,10 @@ import privateCall from '@/api/PrivateCaller';
 import { SelectStaff } from './components/SelectStaff';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
 import { useNavigate } from 'react-router-dom';
+import { ImportRequest } from '@/types/ImportRequestType';
+import { MaterialExportRequest } from '@/types/exportRequest';
+import { InventoryReportPlan } from '@/types/InventoryReport';
+import { PlanErrorDialog } from './components/PlanErrorDialog';
 
 type Props = {};
 
@@ -36,20 +50,18 @@ export interface AssignmentForOverall {
 const CreateOverallPlan = () => {
   const [warehouseStaffList, setWarehouseStaffList] = useState<User[]>([]);
   const [choosenStaff, setChoosenStaff] = useState<User[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
-  const [assignments, setAssignments] = useState<AssignmentForOverall[]>([
-    { staffId: ''}
-  ]);
+  const [assignments, setAssignments] = useState<AssignmentForOverall[]>([{ staffId: '' }]);
+
+  const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
+  const [planErrorDialog, setPlanErrorDialog] = useState(false);
 
   // Function to add a new assignment
   const addAssignment = () => {
-
-    setAssignments([
-      ...assignments,
-      { staffId: '' }
-    ]);
+    setAssignments([...assignments, { staffId: '' }]);
   };
- 
+
   const formSchema = z
     .object({
       title: z.string().min(1).max(255),
@@ -83,14 +95,13 @@ const CreateOverallPlan = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let hasError = false;
-    
+
     // Check for missing staff and items in each assignment
     assignments.forEach((assignment) => {
       if (!assignment.staffId) {
         setStaffError('Each assignment must have a staff member assigned.');
         hasError = true;
       }
-     
     });
 
     // Reset errors if no issues are found
@@ -98,50 +109,57 @@ const CreateOverallPlan = () => {
       setStaffError('');
 
       // Proceed with formatting values
-       const formattedValues = {
+      const formattedValues = {
         ...values,
         from: values.from.toISOString(),
         to: values.to.toISOString(),
         inventoryReportPlanType: 'OVERALL',
-        staffList: (assignments.map((assignment) => 
-        {
+        staffList: assignments.map((assignment) => {
           return {
             warehouseStaffId: assignment.staffId
-          }
-        }
-        )),
+          };
+        })
       };
       try {
-        const res = await privateCall(inventoryReportPlanApi.createOverallInventoryReportPlan(formattedValues));
-        if(res.status=== 201){
+        const res = await privateCall(
+          inventoryReportPlanApi.createOverallInventoryReportPlan(formattedValues)
+        );
+        if (res.status === 201) {
           const { id } = res.data.data;
           toast({
             title: 'Success',
             description: 'Stocktaking plan created successfully.',
-            variant: 'success',
+            variant: 'success'
           });
           navigate(`/stocktaking/plan/${id}`);
         }
       } catch (error: any) {
-        console.log('error',error.response);
+        // console.log('error', error.response);
         if (error.response?.status === 401) {
           toast({
             title: 'Unauthorized',
             description: 'You are not authorized to perform this action.',
-            variant: 'destructive',
+            variant: 'destructive'
           });
+        }
+        const errMessage = error.response.data.message;
+        const errorList = error.response.data.errors;
+        if (error.response.status === 409) {
+          setPlanErrorDialog(true);
+        }
+        if (error.response.status === 400 && errorList) {
+          const errorList = error.response.data.errors;
+          setErrorPlanList(errorList);
+          setPlanErrorDialog(true);
         } else {
           toast({
             title: 'Error',
             description: error.response?.data?.message || error.message,
-            variant: 'destructive',
+            variant: 'destructive'
           });
         }
       }
-      
     }
-
-    
   }
 
   const removeAssignment = (index: number, assignment: AssignmentForOverall) => {
@@ -152,7 +170,6 @@ const CreateOverallPlan = () => {
     setAssignments(updatedAssignments);
 
     setChoosenStaff(updatedStaffList);
-
   };
 
   const fetchWarehouseStaff = async (retries = 5) => {
@@ -250,9 +267,9 @@ const CreateOverallPlan = () => {
               )}
             />
 
-<div>
-    <Label>Select Staff </Label>
-</div>
+            <div>
+              <Label>Select Staff </Label>
+            </div>
             {assignments.map((assignment, index) => (
               <div key={index} className="flex flex-col gap-2">
                 <div className="flex gap-4 items-center">
@@ -344,7 +361,7 @@ const CreateOverallPlan = () => {
               </div>
             ))}
 
-            <Button
+            {/* <Button
               type="button"
               onClick={addAssignment}
               variant="outline"
@@ -352,10 +369,35 @@ const CreateOverallPlan = () => {
               <Plus className="font-bold w-4 h-4 text-green-500" /> Add Assignment
             </Button>
 
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Submit</Button> */}
+
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button type="button"> Create</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Create Inventory Plan </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to create inventory plan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => form.handleSubmit(onSubmit)()} type="submit">
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </form>
         </Form>
       </div>
+      <PlanErrorDialog
+        planList={errorPlanList}
+        isOpen={planErrorDialog}
+        onClose={() => setPlanErrorDialog(false)}
+      />
     </div>
   );
 };

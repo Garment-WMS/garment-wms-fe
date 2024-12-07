@@ -86,7 +86,7 @@ export interface CalendarEvent {
 }
 
 export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] {
-  return tasks.map((task) => ({
+  return tasks?.map((task) => ({
     id: task.id,
     title: `${task.taskType} - ${task.code}`,
     start: new Date(task.startedAt || task.expectedStartedAt),
@@ -160,19 +160,19 @@ export default function TaskManagerOverview() {
 
   const resources =
     activeTab === 'warehouse'
-      ? warehouseStaff.map((staff: Staff) => ({
+      ? warehouseStaff?.map((staff: Staff) => ({
           id: staff.accountId,
           title: `${staff.account.firstName} ${staff.account.lastName}`
         }))
-      : inspectionStaff.map((staff) => ({
+      : inspectionStaff?.map((staff) => ({
           id: staff.accountId,
           title: `${staff.account.firstName} ${staff.account.lastName}`
         }));
 
   const filteredEvents = taskEvents.filter((event) =>
     activeTab === 'warehouse'
-      ? warehouseStaff.some((staff) => staff.accountId === event.resourceId)
-      : inspectionStaff.some((staff) => staff.accountId === event.resourceId)
+      ? warehouseStaff?.some((staff) => staff.accountId === event.resourceId)
+      : inspectionStaff?.some((staff) => staff.accountId === event.resourceId)
   );
 
   if (isLoading) {

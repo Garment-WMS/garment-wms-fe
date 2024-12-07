@@ -24,6 +24,7 @@ import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { ExportRequestStatus } from '@/types/exportRequest';
+import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
@@ -251,11 +252,11 @@ const ExportRequestTable = (props: Props) => {
           searchWidth="w-[200px]"
           searchPlaceholder="Search import receipt by code"
         />
-        <div className="flex items-center flex-row justify-center mb-9">
+        <ProductionDepartmentGuardDiv className="flex items-center flex-row justify-center mb-9">
           <Button className="w-[60%]" onClick={() => navigate('create')}>
             Create new Export Request
           </Button>
-        </div>
+        </ProductionDepartmentGuardDiv>
       </div>
     </div>
   );
