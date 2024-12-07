@@ -21,8 +21,8 @@ export const ProductionBatchStatusLabels: Record<ProductionBatchStatus, string> 
 };
 
 export const ProductionBatchStatusColors: Record<ProductionBatchStatus, string> = {
-  [ProductionBatchStatus.EXECUTING]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.PENDING]: 'bg-yellow-500 text-white',
+  [ProductionBatchStatus.EXECUTING]: 'bg-yellow-700 text-white',
   [ProductionBatchStatus.WAITING_FOR_EXPORTING_MATERIAL]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.MANUFACTURING]: 'bg-yellow-500 text-white',
   [ProductionBatchStatus.IMPORTING]: 'bg-blue-500 text-white',
