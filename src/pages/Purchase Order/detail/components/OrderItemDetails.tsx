@@ -91,46 +91,55 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
   };
 
   const renderRedirectButton = (delivery: PODelivery, poid: string, hasOtherPending: boolean) => {
-    if (delivery.isExtra && hasOtherPending) {
-      return null;
-    }
-
-    let path = '';
-    let color = '';
-    let label = '';
-
-    switch (delivery.status) {
-      case PurchaseOrderDeliveryStatus.PENDING:
-        color = 'bg-primaryLight';
-        label = 'Create Import Request';
-        path = `/import-request/create/material/${delivery.id}`;
-        break;
-      default:
-        return null;
-    }
-
-    return (
-      <TooltipProvider>
-        <Tooltip delayDuration={5}>
-          <TooltipTrigger asChild>
-            <Button
-              className={`w-30 ${color}`}
-              size={'sm'}
-              onClick={() => {
-                if (poId) {
-                  navigate(path, { state: { delivery, poNumber } });
-                }
-              }}>
-              {label}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent className="mb-1" side="top">
-            <TooltipArrow />
-            <p>{label}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    // Check if all other deliveries are finished
+    const allOtherDeliveriesFinished = poDelivery?.every(
+      (otherDelivery) =>
+        otherDelivery.id === delivery.id ||
+        otherDelivery.status === PurchaseOrderDeliveryStatus.FINISHED
     );
+
+    // Render the button only if delivery is extra and all other deliveries are finished
+    if (delivery.isExtra && allOtherDeliveriesFinished) {
+      let path = '';
+      let color = '';
+      let label = '';
+
+      switch (delivery.status) {
+        case PurchaseOrderDeliveryStatus.PENDING:
+          color = 'bg-primaryLight';
+          label = 'Create Import Request';
+          path = `/import-request/create/material/${delivery.id}`;
+          break;
+        default:
+          return null;
+      }
+
+      return (
+        <TooltipProvider>
+          <Tooltip delayDuration={5}>
+            <TooltipTrigger asChild>
+              <Button
+                className={`w-30 ${color}`}
+                size={'sm'}
+                onClick={() => {
+                  if (poId) {
+                    navigate(path, { state: { delivery, poNumber } });
+                  }
+                }}>
+                {label}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="mb-1" side="top">
+              <TooltipArrow />
+              <p>{label}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    // Return null if the conditions are not met
+    return null;
   };
 
   const hasOtherPending =
