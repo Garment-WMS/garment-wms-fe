@@ -178,7 +178,9 @@ export default function WarehouseStaffAssignment({
           {(currentStatus == 'EXPORTING' ||
             currentStatus == 'EXPORTED' ||
             currentStatus == 'PRODUCTION_APPROVED' ||
-            currentStatus == 'PRODUCTION_REJECTED') &&
+            currentStatus == 'PRODUCTION_REJECTED'||
+            currentStatus == 'AWAIT_FOR_EXPORT'
+          ) &&
             exportReceipt && (
               <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
                 <Button variant={'default'} className="ml-4">
