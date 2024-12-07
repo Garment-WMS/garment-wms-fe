@@ -23,12 +23,26 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
 
   const displayImported =
     status === PurchaseOrderDeliveryStatus.FINISHED
-      ? `${actualImportQuantity.toLocaleString()} ${pluralize(materialPackage.packUnit, actualImportQuantity)}`
+      ? `${actualImportQuantity.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
+        })} ${pluralize(materialPackage.packUnit, actualImportQuantity)}`
       : 'Not Yet';
 
   const displayFailed =
     status === PurchaseOrderDeliveryStatus.FINISHED
-      ? `${failedQuantity.toLocaleString()} ${pluralize(materialPackage.packUnit, failedQuantity)}`
+      ? `${failedQuantity.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
+        })} ${pluralize(materialPackage.packUnit, failedQuantity)}`
       : 'Not Yet';
 
   return (
@@ -82,7 +96,16 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
           <div className="flex flex-col items-start gap-2">
             <div className="flex items-center gap-2">
               <Box size={24} className="" />
-              <span className="text-3xl font-bold ">{quantityByPack.toLocaleString()}</span>
+              <span className="text-3xl font-bold ">
+                {quantityByPack.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false // Use 24-hour format
+                })}
+              </span>
               <span className="text-lg font-semibold text-gray-600 lowercase">
                 {pluralize(materialPackage.packUnit, quantityByPack)}
               </span>

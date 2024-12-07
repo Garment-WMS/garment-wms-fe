@@ -373,11 +373,29 @@ export default function AssignStaffPopup({
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Start Time</Label>
-                    <div className="col-span-3">{new Date(newTask.start).toLocaleString()}</div>
+                    <div className="col-span-3">
+                      {new Date(newTask.start).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </div>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">End Time</Label>
-                    <div className="col-span-3">{new Date(newTask.end).toLocaleString()}</div>
+                    <div className="col-span-3">
+                      {new Date(newTask.end).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </div>
                   </div>
                 </div>
                 <DialogFooter>
@@ -403,12 +421,28 @@ export default function AssignStaffPopup({
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label className="text-right">Start Time</Label>
                       <div className="col-span-3">
-                        {new Date(selectedEvent.start).toLocaleString()}
+                        {new Date(selectedEvent.start).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
                       </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label className="text-right">End Time</Label>
-                      <div className="col-span-3">{selectedEvent.end.toLocaleString()}</div>
+                      <div className="col-span-3">
+                        {selectedEvent.end.toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
+                      </div>
                     </div>
                   </div>
                   <DialogFooter>

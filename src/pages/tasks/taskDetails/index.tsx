@@ -185,7 +185,17 @@ export default function TaskDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Created: {new Date(task.createdAt).toLocaleString()}</span>
+              <span>
+                Created:{' '}
+                {new Date(task.createdAt).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false // Use 24-hour format
+                })}
+              </span>
             </div>
             {task.importReceipt && (
               <div className="flex items-center space-x-2 text-muted-foreground">

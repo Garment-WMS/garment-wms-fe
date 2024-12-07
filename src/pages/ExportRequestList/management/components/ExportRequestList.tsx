@@ -115,7 +115,7 @@ const ExportRequestTable = (props: Props) => {
         </div>
       )
     },
-   
+
     {
       header: 'Production Batch',
       accessorKey: 'productionBatch.code',
@@ -125,9 +125,9 @@ const ExportRequestTable = (props: Props) => {
         value: delivery.value
       })),
       cell: ({ row }) => {
-        const id = row.original.productionBatch?.id
+        const id = row.original.productionBatch?.id;
         return (
-          <Link to={`/production-batch/${id}`} className='underline text-bluePrimary'>
+          <Link to={`/production-batch/${id}`} className="underline text-bluePrimary">
             <div>{row.original?.productionBatch?.code}</div>
           </Link>
         );
@@ -166,13 +166,35 @@ const ExportRequestTable = (props: Props) => {
       header: 'Created At',
       enableColumnFilter: false,
       accessorKey: 'createdAt',
-      cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleString() || 'Not yet'}</div>
+      cell: ({ row }) => (
+        <div>
+          {new Date(row.original.createdAt).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false // Use 24-hour format
+          }) || 'Not yet'}
+        </div>
+      )
     },
     {
       header: 'Last updated at',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => <div>{new Date(row.original.updatedAt).toLocaleString() || 'Not yet'}</div>
+      cell: ({ row }) => (
+        <div>
+          {new Date(row.original.updatedAt).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false // Use 24-hour format
+          }) || 'Not yet'}
+        </div>
+      )
     },
     // {
     //   header: 'Description',
@@ -232,7 +254,7 @@ const ExportRequestTable = (props: Props) => {
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}
           searchColumnId="code"
-          searchWidth='w-[200px]'
+          searchWidth="w-[200px]"
           searchPlaceholder="Search export request code"
         />
         <ProductionDepartmentGuardDiv className="flex items-center flex-row justify-center mb-9">

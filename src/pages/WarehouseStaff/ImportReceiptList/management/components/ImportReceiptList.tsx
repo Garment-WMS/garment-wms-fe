@@ -48,11 +48,12 @@ const ImportReceiptTable = (props: Props) => {
     pageSize: 10 //default page size
   });
 
-  const { pageMeta, importReceiptData, isimportRequestLoading, isFetching } = useGetMyImportReceipts({
-    sorting: debouncedSorting,
-    columnFilters: debouncedColumnFilters,
-    pagination
-  });
+  const { pageMeta, importReceiptData, isimportRequestLoading, isFetching } =
+    useGetMyImportReceipts({
+      sorting: debouncedSorting,
+      columnFilters: debouncedColumnFilters,
+      pagination
+    });
 
   const paginatedTableData =
     importReceiptData && pageMeta
@@ -86,7 +87,7 @@ const ImportReceiptTable = (props: Props) => {
       cell: ({ row }) => {
         const id = row.original.id;
         return (
-          <Link to={`/import-receipt/${id}`} className='underline text-bluePrimary'>
+          <Link to={`/import-receipt/${id}`} className="underline text-bluePrimary">
             <div>{row.original.code}</div>
           </Link>
         );
@@ -98,9 +99,9 @@ const ImportReceiptTable = (props: Props) => {
       enableColumnFilter: false,
       enableSorting: false,
       cell: ({ row }) => {
-        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id
+        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id;
         return (
-          <Link to={`/import-request/${id}`} className='underline text-bluePrimary'>
+          <Link to={`/import-request/${id}`} className="underline text-bluePrimary">
             <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
           </Link>
         );
@@ -147,23 +148,22 @@ const ImportReceiptTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <Link className="flex text-blue-500 underline" to="">
-          <div className='flex justify-center items-center'>
+          <div className="flex justify-center items-center">
             <Avatar className="mr-2 flex justify-center items-center">
-            <AvatarImage
-              src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseManager?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseManager?.account?.firstName}
-          </h4>
+              <AvatarImage
+                src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
+                  row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <h4>
+              {row?.original?.warehouseManager?.account?.lastName +
+                ' ' +
+                row?.original?.warehouseManager?.account?.firstName}
+            </h4>
           </div>
-          
         </Link>
       )
     },
@@ -177,7 +177,14 @@ const ImportReceiptTable = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleString();
+        const formattedDate = date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
+        });
         return (
           <div>
             <div>{formattedDate}</div>

@@ -333,7 +333,16 @@ const ProductionBatchDetail: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
-                    <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {new Date(request.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

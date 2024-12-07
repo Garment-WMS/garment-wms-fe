@@ -48,6 +48,8 @@ import Loading from '@/components/common/Loading';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 import { Textarea } from '@/components/ui/Textarea';
 import { IoMdClose } from 'react-icons/io';
+import { useSelector } from 'react-redux';
+import exportRequestSelector from '../../slice/selector';
 
 type ApprovalStatus = any;
 
@@ -163,6 +165,7 @@ export default function WarehouseApproval({
   const [totalExceedPercentage, setTotalExceedPercentage] = useState(0);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [exceedingMaterialsCount, setExceedingMaterialsCount] = useState(0);
+  const exportRequest = useSelector(exportRequestSelector.exportRequest);
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -382,7 +385,23 @@ export default function WarehouseApproval({
                           ' ' +
                           warehouseStaff?.account?.firstName}
                       </div>
-                      <div></div>
+                      {new Date(exportRequest?.importExpectedStartedAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                      {' - '}
+                      {new Date(exportRequest?.importExpectedFinishedAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
                     </Badge>
                   ) : (
                     <h4>Not yet</h4>
@@ -393,7 +412,16 @@ export default function WarehouseApproval({
               <div className="flex items-center text-sm">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
-                <span>{new Date(requestDate).toLocaleString()}</span>
+                <span>
+                  {new Date(requestDate).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // Use 24-hour format
+                  })}
+                </span>
               </div>
               <div className="flex items-start text-sm">
                 <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground mt-1" />

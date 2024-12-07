@@ -20,7 +20,16 @@ const StatisticPart: React.FC<StatisticPartProps> = ({ title, content, isMoneyCu
       <CardContent>
         <div className="text-2xl font-bold">
           {isMoneyCurrency && '$'}
-          {typeof content === 'number' ? content.toLocaleString() : content}
+          {typeof content === 'number'
+            ? content.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false // Use 24-hour format
+              })
+            : content}
         </div>
       </CardContent>
     </Card>

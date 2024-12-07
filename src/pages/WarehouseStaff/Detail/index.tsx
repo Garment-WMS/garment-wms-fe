@@ -136,7 +136,16 @@ const WarehouseStaffDetail = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Account created</p>
                 <p className="font-medium">
-                  {staffData?.createdAt ? new Date(staffData.createdAt).toLocaleString() : 'N/A'}
+                  {staffData?.createdAt
+                    ? new Date(staffData.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })
+                    : 'N/A'}
                 </p>
               </div>
             </div>

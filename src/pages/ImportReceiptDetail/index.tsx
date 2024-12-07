@@ -388,13 +388,27 @@ export default function MaterialReceipt() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground"> Expectation start date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.from).toLocaleString()}
+                              {new Date(plan.from).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
                             </p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">Expectation end date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.to).toLocaleString()}
+                              {new Date(plan.to).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
                             </p>
                           </div>
                         </div>
@@ -475,7 +489,10 @@ export default function MaterialReceipt() {
                     <div className="flex items-center space-x-4 flex-col justify-center">
                       <Avatar className="w-[80px] h-[80px]">
                         <AvatarImage
-                          src={importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment?.account.avatarUrl}
+                          src={
+                            importReceipt?.inspectionReport?.inspectionRequest.inspectionDepartment
+                              ?.account.avatarUrl
+                          }
                           alt="John Doe"
                           className="w-[80px] h-[80px]"
                         />
@@ -586,7 +603,14 @@ export default function MaterialReceipt() {
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(importRequest?.createdAt).toLocaleString()}
+                        {new Date(importRequest?.createdAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
                       </p>
                       <p>
                         <strong>Provider:</strong>{' '}
