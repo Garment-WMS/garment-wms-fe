@@ -65,9 +65,7 @@ export const getAllPurchaseOrders = async ({
     filter,
     order
   });
-
   const fullUrl = `/purchase-order${queryString}`;
-
   try {
     const config = get(fullUrl);
     const response = await axios(config);
