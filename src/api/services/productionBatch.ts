@@ -4,7 +4,7 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import Cookies from 'js-cookie';
-import { get, post } from '../ApiCaller';
+import { get, patch, post } from '../ApiCaller';
 
 interface GetAllProductionBatchInput {
   sorting: SortingState;
@@ -81,12 +81,10 @@ export const getOneProductionBatchById = async (id: string): Promise<ApiResponse
 export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-
   console.log('FormData contents:');
   for (const [key, value] of formData.entries()) {
     console.log(`${key}:`, value);
   }
-
   const accessToken = Cookies.get('accessToken');
 
   // Prepare the API caller configuration
@@ -119,5 +117,38 @@ export const importProductionBatch = async (file: File): Promise<ApiResponse> =>
     }
     // Throw for unexpected errors
     throw new Error('An unexpected error occurred during file upload.');
+  }
+};
+
+export const cancelProductionBatch = async (
+  id: string,
+  cancelledReason: string
+): Promise<ApiResponse> => {
+  try {
+    const endpoint = `/production-batch/${id}/cancel`;
+    const body = { cancelledReason };
+    const accessToken = Cookies.get('accessToken');
+    const config = patch(
+      endpoint,
+      body,
+      {},
+      {
+        'Content-Type': 'application/json',
+        Authorization: accessToken ? `Bearer ${accessToken}` : ''
+      }
+    );
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Failed to cancel purchase order:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'Failed to cancel purchase order.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred while canceling the purchase order.');
   }
 };
