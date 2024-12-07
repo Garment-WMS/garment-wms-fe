@@ -107,7 +107,7 @@ const ProductionPlanManagement = () => {
       </FactoryDirectorGuardDiv>
 
       {/* Production Plan Summary */}
-      {<ProductionPlanSummary productionPlanList={plans} />}
+      {plans && <ProductionPlanSummary productionPlanList={plans} />}
 
       {/* Production Plan List */}
       {plans.map((plan: ProductionPlan) => (
