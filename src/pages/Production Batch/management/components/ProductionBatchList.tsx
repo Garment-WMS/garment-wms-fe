@@ -1,11 +1,11 @@
+import React, { useState } from 'react';
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
 import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { convertDate } from '@/helpers/convertDate';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import {
   ProductionBatchStatus,
   ProductionBatchStatusColors,
@@ -24,10 +24,21 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import UploadExcelProductionBatch from './UploadExcel';
 import { ProductionDepartmentGuardDiv } from '@/components/authentication/createRoleGuard';
-import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/Dialog';
+import { Textarea } from '@/components/ui/Textarea';
+import { cancelProductionBatch } from '@/api/services/productionBatch';
+import { useToast } from '@/hooks/use-toast';
 
 const ProductionBatchList: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
@@ -36,8 +47,52 @@ const ProductionBatchList: React.FC = () => {
     pageIndex: 0,
     pageSize: 6
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [selectedBatch, setSelectedBatch] = useState<{ id: string; batchCode: string } | null>(
+    null
+  );
+
+  const handleCancelClick = (id: string, batchCode: string) => {
+    setSelectedBatch({ id, batchCode });
+    setIsModalOpen(true);
+  };
+
   const handleViewClick = (requestId: string) => {
-    navigate(`/production-batch/${requestId}`);
+    navigate(`/production-plan/${requestId}`);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (selectedBatch) {
+      const validCancelReason = cancelReason.trim() || 'No reason provided';
+      try {
+        const response = await cancelProductionBatch(selectedBatch.id, validCancelReason);
+        if (response?.statusCode === 200) {
+          toast({
+            variant: 'success',
+            title: 'Production Batch Cancelled',
+            description: `Production Batch ${selectedBatch.batchCode} has been successfully cancelled.`
+          });
+          navigate(0); // Refresh the page
+        } else {
+          handleBackendErrors(response);
+        }
+      } catch (error: any) {
+        handleBackendErrors(error.response?.data || error.message);
+      } finally {
+        setIsModalOpen(false);
+        setCancelReason('');
+        setSelectedBatch(null);
+      }
+    }
+  };
+
+  const handleBackendErrors = (error: any) => {
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: error.message || 'An unexpected error occurred while cancelling the batch.'
+    });
   };
 
   const { isFetching, productionBatchList, pageMeta } = useGetAllProductionBatch({
@@ -159,7 +214,7 @@ const ProductionBatchList: React.FC = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const request = row.original;
+        const batch = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -170,7 +225,16 @@ const ProductionBatchList: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`/production-batch/${batch?.id}`)}>
+                View
+              </DropdownMenuItem>
+              {batch.status === ProductionBatchStatus.PENDING && (
+                <DropdownMenuItem
+                  onClick={() => handleCancelClick(batch.id, batch?.code)}
+                  className="text-red-500 hover:text-red-600">
+                  Cancel
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -201,6 +265,37 @@ const ProductionBatchList: React.FC = () => {
           searchColumnId="code"
         />
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Cancel Production Batch</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel Production Batch{' '}
+              <span className="font-semibold text-primaryLight">{selectedBatch?.batchCode}</span>?
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              className="h-40"
+              id="cancelReason"
+              placeholder="Enter reason for cancellation"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmCancel} disabled={!cancelReason.trim()}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
