@@ -86,7 +86,8 @@ export default function WarehouseStaffAssignment({
       currentStatus == 'EXPORTING' ||
       currentStatus == 'EXPORTED' ||
       currentStatus == 'PRODUCTION_APPROVED' ||
-      currentStatus == 'PRODUCTION_REJECTED'
+      currentStatus == 'PRODUCTION_REJECTED'||
+      currentStatus == 'AWAIT_TO_EXPORT'
     ) {
       getExportReceipt();
     }
