@@ -179,7 +179,7 @@ export default function WarehouseStaffAssignment({
             currentStatus == 'EXPORTED' ||
             currentStatus == 'PRODUCTION_APPROVED' ||
             currentStatus == 'PRODUCTION_REJECTED'||
-            currentStatus == 'AWAIT_FOR_EXPORT'
+            currentStatus == 'AWAIT_TO_EXPORT'
           ) &&
             exportReceipt && (
               <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>

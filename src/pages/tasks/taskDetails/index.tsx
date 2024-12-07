@@ -147,10 +147,13 @@ export default function TaskDetailPage() {
   }
   const handleGoToTask = () => {
     let url;
-    if (task.inventoryReportId) {
-      url = `/inventory/${task.inventoryReportId}`;
+    if (task.importRequestId) {
+      url = `/import-request/${task.importRequestId}`;
+    }
+    else if (task.inventoryReportId) {
+      url = `/stocktaking/${task.inventoryReportId}`;
     } else if (task.inventoryReportPlanId) {
-      url = `/inventory/${task.inventoryReportPlanId}`;
+      url = `/stocktaking/plan/${task.inventoryReportPlanId}`;
     } else if (task.importReceiptId) {
       url = `/import-receipt/${task.importReceiptId}`;
     } else if (task.materialExportReceiptId) {
