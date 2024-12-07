@@ -94,7 +94,14 @@ const Discussion = (props: Props) => {
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold">{message.sender.username}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(message.createdAt).toLocaleString()}
+                    {new Date(message.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false // Use 24-hour format
+                    })}
                   </span>
                 </div>
                 <p className="text-sm mt-1"> {renderMessage(message.message)}</p>

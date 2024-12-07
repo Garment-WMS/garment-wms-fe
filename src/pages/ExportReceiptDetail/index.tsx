@@ -285,13 +285,27 @@ export default function ExportReceiptDetail() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground"> Expectation start date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.from).toLocaleString()}
+                              {new Date(plan.from).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
                             </p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">Expectation end date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.to).toLocaleString()}
+                              {new Date(plan.to).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
                             </p>
                           </div>
                         </div>
@@ -369,12 +383,19 @@ export default function ExportReceiptDetail() {
                         <Link
                           to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
                           className="flex text-primary underline underline-offset-2">
-                          {exportReceipt?.materialExportRequest.productionBatch?.code || 'N/A'}
+                          {exportReceipt?.materialExportRequest?.productionBatch?.code || 'N/A'}
                         </Link>
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(exportReceipt?.createdAt ?? '').toLocaleString()}
+                        {new Date(exportReceipt?.createdAt ?? '').toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })}
                       </p>
                     </div>
                   </div>
@@ -386,7 +407,7 @@ export default function ExportReceiptDetail() {
                 <CardTitle>Requested by Production Department</CardTitle>
               </CardHeader>
               <CardContent>
-                {exportReceipt?.materialExportRequest.productionDepartment ? (
+                {exportReceipt?.materialExportRequest?.productionDepartment ? (
                   <div>
                     <div className="flex items-center space-x-4 flex-col justify-center">
                       <Avatar className="w-[80px] h-[80px]">

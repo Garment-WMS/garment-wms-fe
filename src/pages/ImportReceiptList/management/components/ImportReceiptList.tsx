@@ -86,7 +86,7 @@ const ImportReceiptTable = (props: Props) => {
       cell: ({ row }) => {
         const id = row.original.id;
         return (
-          <Link to={`/import-receipt/${id}`} className='underline text-bluePrimary'>
+          <Link to={`/import-receipt/${id}`} className="underline text-bluePrimary">
             <div>{row.original.code}</div>
           </Link>
         );
@@ -98,9 +98,9 @@ const ImportReceiptTable = (props: Props) => {
       enableColumnFilter: false,
       enableSorting: false,
       cell: ({ row }) => {
-        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id
+        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id;
         return (
-          <Link to={`/import-request/${id}`} className='underline text-bluePrimary'>
+          <Link to={`/import-request/${id}`} className="underline text-bluePrimary">
             <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
           </Link>
         );
@@ -176,7 +176,14 @@ const ImportReceiptTable = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleString();
+        const formattedDate = date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
+        });
         return (
           <div>
             <div>{formattedDate}</div>

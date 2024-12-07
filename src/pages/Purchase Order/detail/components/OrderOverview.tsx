@@ -271,17 +271,38 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="space-y-1">
           <KeyValueDisplay
             name="Total Imported Items"
-            value={`${totalImportQuantity.toLocaleString()} items`}
+            value={`${totalImportQuantity.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false // Use 24-hour format
+            })} items`}
             valueColor="text-green-600"
           />
           <KeyValueDisplay
             name="Failed Imports"
-            value={`${(totalFailImportQuantity || 0).toLocaleString()} items`}
+            value={`${(totalFailImportQuantity || 0).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false // Use 24-hour format
+            })} items`}
             valueColor="text-red-600"
           />
           <KeyValueDisplay
             name="Items Remaining to Import"
-            value={`${totalQuantityToImport.toLocaleString()} items`}
+            value={`${totalQuantityToImport.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false // Use 24-hour format
+            })} items`}
           />
         </div>
       </div>

@@ -20,6 +20,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
     const endDate = new Date(plan.expectedEndDate);
     const formattedStartDate = new Date(
       startDate.getFullYear(),
+
       startDate.getMonth(),
       startDate.getDate()
     );
@@ -55,7 +56,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
     barBackgroundSelectedColor: '#b0b0b0', // Selected background color
     barProgressColor: '#4caf50', // Progress bar color
     barProgressSelectedColor: '#388e3c', // Selected progress color
-    todayColor: Colors.green[500], // Highlight today's column
+    todayColor: '#89a3f149', // Highlight today's column
     arrowColor: '#9e9e9e', // Relationship arrow color
     arrowIndent: 15 // Space for arrow alignment
   };

@@ -107,6 +107,13 @@ const ProductionBatchDetail: React.FC = () => {
     numberOfProducedProduct,
     cancelledAt
   } = data?.data || {};
+  const handleNavigate = (id: string, type: string) => {
+    if (type == 'export-request') {
+      return navigate(`/export-request/create/${id}`);
+    } else {
+      return navigate(`/import-request/create/product/${id}`);
+    }
+  };
   const statusPl = status as ProductionBatchStatus;
   const statusLabel = ProductionBatchStatusLabels[statusPl] || 'bg-gray-200 text-black';
 
@@ -118,7 +125,9 @@ const ProductionBatchDetail: React.FC = () => {
           {status === ProductionBatchStatus.PENDING && (
             <>
               <ProductionDepartmentGuardDiv>
-                <Button className="bg-white ring-1 ring-primaryLight text-primaryLight">
+                <Button
+                  className="bg-white ring-1 ring-primaryLight text-primaryLight"
+                  onClick={() => handleNavigate(id as string, 'import-request')}>
                   <FileOutput
                     size={18}
                     color={Colors.primaryLightBackgroundColor}
@@ -128,7 +137,7 @@ const ProductionBatchDetail: React.FC = () => {
                 </Button>
               </ProductionDepartmentGuardDiv>
               <ProductionDepartmentGuardDiv>
-                <Button>
+                <Button onClick={() => handleNavigate(id as string, 'export-request')}>
                   <FileInput size={18} color="#ffffff" className="mr-3" />
                   Create Export
                 </Button>
@@ -385,7 +394,16 @@ const ProductionBatchDetail: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
-                    <TableCell>{new Date(request.createdAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {new Date(request.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

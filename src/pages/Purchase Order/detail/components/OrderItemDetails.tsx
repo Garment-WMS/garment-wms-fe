@@ -226,7 +226,14 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                         <div className="text-slate-600">Total Amount:</div>
                         <div className="text-lg font-bold text-blue-600">
                           {totalMaterialAmount
-                            ? `${totalMaterialAmount.toLocaleString()} VND`
+                            ? `${totalMaterialAmount.toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })} VND`
                             : 'Not available'}
                         </div>
                       </div>
