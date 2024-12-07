@@ -89,20 +89,28 @@ const ProductionBatchDetail: React.FC = () => {
     productionBatchMaterialVariant,
     numberOfProducedProduct
   } = data?.data || {};
-
+  const handleNavigate = (id: string, type: string) => {
+    if (type == 'export-request') {
+      return navigate(`/export-request/create/${id}`);
+    } else {
+      return navigate(`/import-request/create/product/${id}`);
+    }
+  };
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
         <div className="flex flex-row items-center gap-2">
           <ProductionDepartmentGuardDiv>
-            <Button className="bg-white ring-1 ring-primaryLight text-primaryLight">
+            <Button
+              className="bg-white ring-1 ring-primaryLight text-primaryLight"
+              onClick={() => handleNavigate(id as string, 'import-request')}>
               <FileOutput size={18} color={Colors.primaryLightBackgroundColor} className="mr-3" />
               Create Import
             </Button>
           </ProductionDepartmentGuardDiv>
           <ProductionDepartmentGuardDiv>
-            <Button>
+            <Button onClick={() => handleNavigate(id as string, 'export-request')}>
               <FileInput size={18} color="#ffffff" className="mr-3" />
               Create Export
             </Button>
