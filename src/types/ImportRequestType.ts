@@ -5,6 +5,7 @@ import { InspectionDepartment } from './InspectionDepartment';
 
 export interface ImportRequest {
   managerNote: string;
+  code: string;
   id: string;
   warehouseStaffId: string | null;
   status:
