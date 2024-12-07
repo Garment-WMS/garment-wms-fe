@@ -11,9 +11,33 @@ interface Props {
 }
 
 const IRProcessAndAction: React.FC<Props> = ({ onApproval }) => {
-  const [selectedStep, setSelectedStep] = useState<number | null>(0); // State for the selected step
   const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
+  const getStatusIndex = (status: any) => {
+    switch (status) {
+      case 'REJECTED':
+      case 'APPROVED':
+      case 'PENDING':
+        return 1;
+      case 'CANCELLED':
+        return 0;
+      case 'EXPORTED':
+        return 3;
+      case 'EXPORTING':
+        return 2;
+      case 'AWAIT_TO_EXPORT':
+        return 2;
+      case 'PRODUCTION_APPROVED':
+        return 3;
+      case 'PRODUCTION_REJECTED':
+        return 3;
 
+      default:
+        return 0;
+    }
+  };
+  const [selectedStep, setSelectedStep] = useState<number | null>(
+    getStatusIndex(exportRequest?.status)
+  ); // State for the selected step
   return (
     <div className="w-full bg-white rounded-xl shadow-sm border-2 p-4">
       <Process

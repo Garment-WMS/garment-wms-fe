@@ -92,7 +92,7 @@ export default function ExportRequestConfirmation({
   const [textArea, setTextArea] = useState('');
 
   const handleFinishExport = async (status: string, type: string) => {
-    if (textArea == '') {
+    if (textArea == '' && status == 'PRODUCTION_REJECT') {
       toast({
         variant: 'destructive',
         title: 'Missing Reject reason',
