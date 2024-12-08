@@ -855,12 +855,34 @@ export default function MaterialReceipt() {
                   <div className="grid grid-cols-2 gap-4 py-4">
                     {importReceipt?.productReceipt?.map((item: any) => (
                       <div key={item.id} className="border p-4 rounded-md">
-                        <h3 className="font-bold mb-2">{item?.productSize?.name}</h3>
-                        <p>
-                          Quantity: {item?.quantityByUom}{' '}
-                          {item?.productSize?.productVariant?.product?.productUom?.uomCharacter}
-                        </p>
-                        <p>Product size: {item?.productSize?.size}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-row items-center gap-2">
+                            <img
+                              src={item?.productSize?.productVariant?.image}
+                              alt={item?.productSize?.productSize?.name}
+                              width={48}
+                              height={48}
+                              className="rounded-md object-cover"
+                            />
+                            <h3 className="font-bold mb-2">{item?.productSize?.name}</h3>
+                          </div>
+                          <Badge variant={item?.isDefect ? 'destructive' : 'success'}>
+                            {item?.isDefect ? 'Failed' : 'Pass'}
+                          </Badge>
+                        </div>
+                        <div className="flex flex-row items-center justify-between mt-3">
+                          <p className="text-slate-600">
+                            Size:{' '}
+                            <span className="text-primaryLight">{item?.productSize?.size}</span>
+                          </p>
+                          <p className="text-slate-600">
+                            Quantity:{' '}
+                            <span className={item?.isDefect ? 'text-red-600' : 'text-green-600'}>
+                              {item?.quantityByUom}{' '}
+                              {item?.productSize?.productVariant?.product?.productUom?.uomCharacter}
+                            </span>
+                          </p>
+                        </div>
                         <div className="mt-2">
                           <h3 className="font-semibold">Product barcode: </h3>
                           <Barcode value={item?.productSize?.code} width={1.5} height={50} />
