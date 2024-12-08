@@ -58,8 +58,8 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
         const receipt = row.original;
         if (receipt.type === 'IMPORT_RECEIPT' && 'importReceiptId' in receipt){
             url = `/import-receipt/${receipt.importReceiptId}`
-        }else if (receipt.type === 'EXPORT_RECEIPT'  && 'exportReceiptId' in receipt){
-            url = `/export-receipt/${receipt.exportReceiptId}`
+        }else if (receipt.type === 'EXPORT_RECEIPT'  && 'materialExportReceiptId' in receipt){
+            url = `/export-receipt/${receipt.materialExportReceiptId}`
         }else if(receipt.type === 'RECEIPT_ADJUSTMENT' && 'inventoryReportId' in receipt){
             url = `/stocktaking/${receipt.inventoryReportId}`
         }

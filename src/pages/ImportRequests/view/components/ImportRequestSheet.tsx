@@ -17,6 +17,7 @@ const ImportRequestSheet = (props: Props) => {
   let purchaseOrder = importRequest?.poDelivery?.purchaseOrder.poNumber;
   let purchaseOrderId = importRequest?.poDelivery?.purchaseOrder?.id;
   const POcode = importRequest?.poDelivery?.purchaseOrder?.code || 'N/A';
+  const purchaseOrderDelivery = importRequest?.poDelivery?.code;
   let planDeliveryDate = importRequest?.poDelivery?.expectedDeliverDate;
   let actualDeliveryDate = importRequest?.poDelivery?.deliverDate;
   let productionBatch = importRequest?.productionBatch;

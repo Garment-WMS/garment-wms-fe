@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/Chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/Charts';
 import { getImportStatistic } from '@/api/purchase-staff/importRequestApi';
 import { Skeleton } from '@/components/ui/skeleton';
 
