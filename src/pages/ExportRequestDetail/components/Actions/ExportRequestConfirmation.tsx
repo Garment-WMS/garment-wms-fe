@@ -26,6 +26,7 @@ import { MaterialDetailsGrid } from '@/pages/ExportReceiptDetail/components/Mate
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
+import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
@@ -222,9 +223,7 @@ export default function ExportRequestConfirmation({
               <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Last Updated:</span>
               <span>
-                {new Date(lastedUpdate).toLocaleDateString() +
-                  ' ' +
-                  new Date(lastedUpdate).toLocaleTimeString()}
+                {formatDateTimeToDDMMYYYYHHMM(lastedUpdate) || 'N/A'}
               </span>
             </div>
           </div>

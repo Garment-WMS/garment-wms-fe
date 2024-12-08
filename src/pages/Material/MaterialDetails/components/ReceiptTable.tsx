@@ -229,7 +229,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
           />
         </div>
       </div>
-      <ReceiptChart />
+
       {selectedReceiptId && (
   <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened}  />
 )}

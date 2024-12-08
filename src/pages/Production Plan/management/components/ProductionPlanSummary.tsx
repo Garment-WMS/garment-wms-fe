@@ -61,7 +61,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
   };
 
   return (
-    <section className="px-6 pt-6 pb-8 w-auto bg-white rounded-xl shadow-md border">
+    <section className="px-6 pt-6 pb-8 w-[75vw] bg-white rounded-xl shadow-md border">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primaryLight">Production Plan Summary</h1>
       </div>

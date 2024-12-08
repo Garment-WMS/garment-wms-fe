@@ -113,6 +113,37 @@ export interface ProductVariantResponse {
   message: string;
   errors: any | null;
 }
+export interface ProductHistoryResponse {
+  statusCode: number;
+  data: {
+    data: ProductReceiptBase[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface ProductReceiptBase {
+  code: string;
+  type: string;
+  quantityByPack: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportReceiptForHistory extends ProductReceiptBase {
+  productReceiptId: string;
+  importReceiptId: string;
+}
+
+// export interface ExportReceiptForHistory extends ReceiptBase {
+//   materialExportReceiptDetailId: string;
+//   materialExportReceiptId: string;
+// }
+
+export interface AdjustmentReceiptForHistory extends ProductReceiptBase {
+  receiptAdjustmentId: string;
+  inventoryReportId: string;
+}
 export interface ProductReceiptResponse{
   statusCode: number;
   data: {
