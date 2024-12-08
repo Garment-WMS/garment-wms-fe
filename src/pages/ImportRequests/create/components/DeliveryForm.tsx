@@ -21,6 +21,7 @@ import { CalendarIcon } from '@radix-ui/react-icons';
 
 import { Textarea } from '@/components/ui/textarea';
 import DayTimePicker from '@/components/common/DayTimePicker';
+import DayTimePickerForImportRequest from './DayTimePickerForImportReq';
 
 type Props = {};
 
@@ -73,8 +74,9 @@ const DeliveryForm: React.FC<DeliveryFormProps> = ({ form, onSubmit }) => {
                     />
                   </PopoverContent>
                 </Popover> */}
-                <DayTimePicker
+                <DayTimePickerForImportRequest
                 date={field.value} setDate={field.onChange} 
+
                 />
                 <FormMessage />
               </FormItem>

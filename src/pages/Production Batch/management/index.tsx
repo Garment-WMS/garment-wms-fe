@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button';
 import ProductionBatchIntroduction from './components/Introduction';
-import { Plus } from 'lucide-react';
 import ProductionBatchList from './components/ProductionBatchList';
 
 const ProductionBatchManagement = () => {

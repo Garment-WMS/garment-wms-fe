@@ -6,6 +6,8 @@ import ImportRequestDetails from './ImportRequestDetails';
 import SupplierWarehouseInfo from './SupplierWarehouseInfo';
 import importRequestSelector from '../../slice/selector';
 import { getLabelOfImportType } from '../../management/helper';
+import { convertDate } from '@/helpers/convertDate';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 type Props = {};
 
@@ -15,6 +17,7 @@ const ImportRequestSheet = (props: Props) => {
   let purchaseOrder = importRequest?.poDelivery?.purchaseOrder.poNumber;
   let purchaseOrderId = importRequest?.poDelivery?.purchaseOrder?.id;
   const POcode = importRequest?.poDelivery?.purchaseOrder?.code || 'N/A';
+  const purchaseOrderDelivery = importRequest?.poDelivery?.code;
   let planDeliveryDate = importRequest?.poDelivery?.expectedDeliverDate;
   let actualDeliveryDate = importRequest?.poDelivery?.deliverDate;
   let productionBatch = importRequest?.productionBatch;
@@ -50,30 +53,26 @@ const ImportRequestSheet = (props: Props) => {
               </Link>
             </div>
           )}
-          {poDeliveryId && (
-            <div className="font-primary font-semibold text-sm flex gap-1">
-              PO delivery: <div className="text-bluePrimary">{POcode}</div>
+          {planDeliveryDate && (
+            <div className="font-primary font-semibold text-sm text-slate-500">
+              Plan Delivery Date:{' '}
+              <span className="text-black">
+                {planDeliveryDate ? convertDate(planDeliveryDate) : 'Not yet'}
+              </span>
             </div>
           )}
-
-          {/* <div className='font-primary font-semibold text-sm'>
-                    Production plan: <Link to={'/'} className='text-bluePrimary underline underline-offset-2'>PL-201</Link>
-                </div> */}
         </div>
         <div className="flex flex-col gap-2">
-          <div className="font-primary font-semibold text-sm">
-            Good Import Type: {getLabelOfImportType(importType)}
+          <div className="font-primary font-semibold text-sm text-slate-500">
+            Good Import Type:{' '}
+            <span className="text-primaryLight">{getLabelOfImportType(importType)}</span>
           </div>
-          {planDeliveryDate && (
-            <div className="font-primary font-semibold text-sm">
-              Plan Delivery Date:
-              {planDeliveryDate ? new Date(planDeliveryDate).toLocaleDateString() : 'Not yet'}
-            </div>
-          )}
           {actualDeliveryDate && (
-            <div className="font-primary font-semibold text-sm">
+            <div className="font-primary font-semibold text-sm text-slate-500">
               Actual Delivery Date:{' '}
-              {actualDeliveryDate ? new Date(actualDeliveryDate).toLocaleDateString() : 'Not yet'}
+              <span className="text-green-600">
+                {actualDeliveryDate ? convertDateWithTime(actualDeliveryDate) : 'Not yet'}
+              </span>
             </div>
           )}
         </div>

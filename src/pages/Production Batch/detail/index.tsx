@@ -220,20 +220,8 @@ const ProductionBatchDetail: React.FC = () => {
                 <p>{convertDateWithTime(createdAt)}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Batch quantity</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Quantity To Produce</h3>
                 <p className="font-semibold">{quantityToProduce}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Planning quantity</h3>
-                <p className="font-semibold">{productionPlanDetail?.quantityToProduce}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Start Date</h3>
-                <p>{startDate ? convertDateWithTime(startDate) : 'Not yet'}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Finished Date</h3>
-                <p>{finishedDate ? convertDateWithTime(finishedDate) : 'Not yet'}</p>
               </div>
             </div>
           </div>
@@ -272,7 +260,10 @@ const ProductionBatchDetail: React.FC = () => {
                   </div>
                   <div className="flex flex-row justify-end items-center gap-2">
                     <p className="text-xs font-medium text-slate-500">Quantity: </p>{' '}
-                    <span className="font-bold text-xs">{material.quantityByUom} </span>
+                    <span className="font-bold text-xs">
+                      {material.quantityByUom}{' '}
+                      {material.materialVariant.material.materialUom.uomCharacter}
+                    </span>
                   </div>
                   <div>
                     <h4 className="text-xs font-medium text-muted-foreground mb-2">Attributes:</h4>
