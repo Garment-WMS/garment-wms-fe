@@ -67,12 +67,6 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               {InspectionRequestStatusLabels[requestStatus]}
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Reqeuested at
-            <span className="text-slate-600 ml-2 font-semibold">
-              {convertDateWithTime(requestCreatedAt)}
-            </span>
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
