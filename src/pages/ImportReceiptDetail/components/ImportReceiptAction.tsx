@@ -1,37 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Check, X, Printer, Download } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '@/components/ui/AlertDialog';
-import { VscDebugStart } from 'react-icons/vsc';
-import {
-  WarehouseStaffGuardDiv,
-  ProductionDepartmentGuardDiv
-} from '@/components/authentication/createRoleGuard';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { FaRegSave } from 'react-icons/fa';
-import { GiConfirmed } from 'react-icons/gi';
+
+import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
+
 import { ImportReceipt } from '@/types/ImportReceipt';
 import { useSelector } from 'react-redux';
 import importReceiptSelector from '@/pages/ImportReceiptList/slice/selector';
-
-interface Material {
-  id: string;
-  name: string;
-  barcode: string;
-  quantity: number;
-  unit: string;
-  imageUrl: string;
-}
+import { useRef } from 'react';
 
 interface MaterialExportActionsProps {
   isLoading: boolean;
@@ -45,7 +21,33 @@ export function ImportReceiptAction({
   handleFinishImport
 }: MaterialExportActionsProps) {
   const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
-
+  const printContentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow && printContentRef.current) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Material Export Receipt </title>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              .print-content { padding: 20px; }
+              table { width: 100%; border-collapse: collapse; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f2f2f2; }
+            </style>
+          </head>
+          <body>
+            <div class="print-content">
+              ${printContentRef.current.innerHTML}
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
   return (
     <Card className="p-6 mb-6">
       <div className="flex items-center justify-between">
@@ -58,7 +60,7 @@ export function ImportReceiptAction({
         </h1>
 
         <div className="space-x-2 flex justify-center items=center">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handlePrint}>
             <Printer className="mr-2 h-4 w-4" />
             Print
           </Button>

@@ -254,7 +254,10 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
                   <div className="flex justify-between text-sm mb-2">
                     <div className="flex flex-row items-center gap-2">
                       <span>Pack Quantity: </span>
-                      <span className="text-primaryLight text-md">{material.quantityByPack}</span>
+                      <span className="text-primaryLight text-md">
+                        {material.quantityByPack}{' '}
+                        {material.materialVariant.material?.materialUom?.uomCharacter}{' '}
+                      </span>
                     </div>
                     <div className="flex flex-row items-center gap-2"></div>
                     <span>Imported:</span>
