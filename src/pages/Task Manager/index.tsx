@@ -331,22 +331,52 @@ export default function TaskManagerOverview() {
                     <TaskTypeIcon type={selectedTask.taskType} className="ml-4" />
                   </div>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Expected Started At: {new Date(selectedTask.expectedStartedAt).toLocaleString()}
+                    Expected Started At:{' '}
+                    {new Date(selectedTask.expectedStartedAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false // Use 24-hour format
+                    })}
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Expected End date: {new Date(selectedTask.expectedFinishedAt).toLocaleString()}
+                    Expected End date:{' '}
+                    {new Date(selectedTask.expectedFinishedAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false // Use 24-hour format
+                    })}
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual Started At:
                     {selectedTask.startedAt
-                      ? new Date(selectedTask.startedAt).toLocaleString()
+                      ? new Date(selectedTask.startedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })
                       : 'Not yet'}
                   </p>
 
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual End date:{' '}
                     {selectedTask.finishedAt
-                      ? new Date(selectedTask.finishedAt).toLocaleString()
+                      ? new Date(selectedTask.finishedAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false // Use 24-hour format
+                        })
                       : 'Not yet'}
                   </p>
                 </CardContent>

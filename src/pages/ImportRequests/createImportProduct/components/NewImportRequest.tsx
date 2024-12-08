@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { importRequestApi } from '@/api/services/importRequestApi';
 import {
@@ -17,26 +18,14 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/button';
-import DeliveryForm from './DeliveryForm';
-import ImportRequestDetails from './ImportRequestDetails';
 import WarehouseImportDialog from './WarehouseImportDialog';
-import { ProductionPlanDetail, ProductSize } from '@/types/ProductionPlan';
 import { ProductionBatch } from '@/types/ProductionBatch';
-import privateCall from '@/api/PrivateCaller';
 import ProductImportDetail from './ProductImportDetail';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import Loading from '@/components/common/Loading';
-
-type Props = {};
-
-const WarehouseInfo = {
-  name: 'Warehouse 1',
-  address: '123, abc, xyz',
-  phone: '1234567890',
-  email: 'warehouse@gmail.com',
-  fax: '1234567890'
-};
+import { useNavigate } from 'react-router-dom';
+import privateCall from '@/api/PrivateCaller';
 
 const deliveryFormSchema = z.object({
   description: z.string().optional()
@@ -53,27 +42,20 @@ const formSchema = z.object({
     .lte(10000, 'Number must be less than or equal to 10000')
 });
 
-const NewImportRequest = (props: Props) => {
-  const navigate = useNavigate(); // Initialize useNavigate
+const NewImportRequest = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const validateQuantityform = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      number: undefined
-    }
-  });
-
-  const [isEditDetail, setEditDetail] = useState<Boolean>(false);
-  const [dialogOpen, setDialogOpen] = useState(false); // State to control AlertDialog open/close
-  // const [selectedPO, setSelectedPO] = useState<PurchaseOrder>();
-  const [selectedProductionPlanDetails, setSelectedProductionPlanDetails] =
-    useState<ProductionPlanDetail>();
-  const [selectedProductionBatch, setSelectedProductionBatch] = useState<ProductionBatch>();
+  const [selectedProductionBatch, setSelectedProductionBatch] = useState<ProductionBatch | null>(
+    null
+  );
   const [description, setDescription] = useState<string>('');
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
+
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
   };
+
   const onSubmit = async () => {
     try {
       if (!selectedProductionBatch) {
@@ -87,11 +69,11 @@ const NewImportRequest = (props: Props) => {
       setIsLoading(true);
       const response = await privateCall(
         importRequestApi.createImportProduct({
-          productionBatchId: selectedProductionBatch?.id,
+          productionBatchId: selectedProductionBatch.id,
           description: description,
           importRequestDetail: {
-            productSizeId: selectedProductionBatch?.productionPlanDetail?.productSize.id,
-            quantityByPack: selectedProductionBatch?.quantityToProduce
+            productSizeId: selectedProductionBatch.productionPlanDetail?.productSize.id,
+            quantityByPack: selectedProductionBatch.quantityToProduce
           },
           type: 'PRODUCT_BY_BATCH'
         })
@@ -103,7 +85,7 @@ const NewImportRequest = (props: Props) => {
           title: 'Import Request created successfully',
           description: 'Import request for Material has been created successfully in the system'
         });
-        navigate(`/import-request/${responseData.id}`); // Navigate back after successful creation
+        navigate(`/import-request/${responseData.id}`);
       }
     } catch (error: any) {
       toast({
@@ -111,22 +93,24 @@ const NewImportRequest = (props: Props) => {
         title: 'Uh oh! Something went wrong.',
         description: error.message || 'There was a problem with your request.'
       });
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
 
-  // Re-render ImportRequestDetails when poDeliveryDetails changes
-
   const handleFormSubmit = () => {
     onSubmit();
-    setDialogOpen(false); // Close the dialog after submit
+    setDialogOpen(false);
   };
-  if(isLoading) {
-    return <div className="w-full h-screen pt-4 flex flex-col justify-center items-center gap-4">
-      <Loading/>
-    </div>
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen pt-4 flex flex-col justify-center items-center gap-4">
+        <Loading />
+      </div>
+    );
   }
+
   return (
     <div className="w-full pt-4 flex flex-col gap-4">
       <div className="font-extrabold font-primary flex justify-center text-bluePrimary text-md md:text-3xl">
@@ -136,18 +120,15 @@ const NewImportRequest = (props: Props) => {
         <div className="flex flex-col gap-4">
           <div className="font-primary font-bold text-xl mb-4">Product Batch</div>
           <WarehouseImportDialog
-            selectedPlanDetails={selectedProductionPlanDetails}
-            setSelectedPlanDetails={setSelectedProductionPlanDetails}
             selectedProductionBatch={selectedProductionBatch}
             setSelectedProductionBatch={setSelectedProductionBatch}
           />
-          
         </div>
       </div>
-              <div className="w-full px-4">
-          <Label>Notes</Label>
-          <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
-        </div>
+      <div className="w-full px-4">
+        <Label>Notes</Label>
+        <Textarea onChange={handleDescriptionChange} placeholder="Type your message here." />
+      </div>
       {selectedProductionBatch ? (
         <ProductImportDetail selectedProductionBatch={selectedProductionBatch} />
       ) : (

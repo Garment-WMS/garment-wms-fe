@@ -51,7 +51,16 @@ const ExportRequestCreation: React.FC<Props> = (props) => {
             <div className="flex items-center text-sm">
               <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Created:</span>
-              <span>{new Date(productionDepartment?.account.createdAt).toLocaleString()}</span>
+              <span>
+                {new Date(productionDepartment?.account.createdAt).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false // Use 24-hour format
+                })}
+              </span>
             </div>
             <div className="flex items-center text-sm">
               <File className="mr-3 h-5 w-5 text-muted-foreground" />

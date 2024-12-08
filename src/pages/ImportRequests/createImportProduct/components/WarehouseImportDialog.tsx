@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -10,40 +11,34 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
-import { CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Edit, CalendarIcon } from 'lucide-react';
-import { getAllProductionPlanFn } from '@/api/services/productionPlanApi';
-import {  ProductionPlanDetail } from '@/types/ProductionPlan';
-import Loading from '@/components/common/Loading';
-import { PoDeliveryStatus } from '@/types/tempFile';
+import { Edit } from 'lucide-react';
 import { ProductionBatch } from '@/types/ProductionBatch';
-import { ColumnFilter, ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { getAllProductionBatch } from '@/api/services/productionBatch';
 import { useDebounce } from '@/hooks/useDebouce';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { convertDate, formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
-import { ClockIcon } from '@radix-ui/react-icons';
+import Loading from '@/components/common/Loading';
+import { useParams } from 'react-router-dom';
+
 export interface Props {
-  selectedPlanDetails: any;
-  setSelectedPlanDetails: any;
-  selectedProductionBatch: any;
-  setSelectedProductionBatch: any;
+  selectedProductionBatch: ProductionBatch | null;
+  setSelectedProductionBatch: (batch: ProductionBatch | null) => void;
 }
+
 function SelectionSummary({
   selectedProductionBatch,
   onEdit
 }: {
   selectedProductionBatch: ProductionBatch | null;
-  onEdit: (step: number) => void;
+  onEdit: () => void;
 }) {
   return (
     <Card className="mb-4">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <h2>Current Selections</h2>
-          <Button onClick={() => onEdit(1)} className="text-sm">
+          <Button onClick={onEdit} className="text-sm">
             {selectedProductionBatch ? 'Edit' : 'Select'}
           </Button>
         </CardTitle>
@@ -53,8 +48,8 @@ function SelectionSummary({
           <span>Production Batch:</span>
           {selectedProductionBatch ? (
             <Badge variant="outline" className="flex items-center gap-2">
-              {selectedProductionBatch?.name} 
-              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={() => onEdit(3)}>
+              {selectedProductionBatch.name}
+              <Button variant="ghost" size="sm" className="h-4 w-4 p-0" onClick={onEdit}>
                 <Edit className="h-3 w-3" />
                 <span className="sr-only">Edit Production Batch</span>
               </Button>
@@ -70,81 +65,95 @@ function SelectionSummary({
 
 export default function WarehouseImportDialog({
   selectedProductionBatch,
-  setSelectedProductionBatch,
-
+  setSelectedProductionBatch
 }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const params = useParams();
+  const batchId = params.id as string;
 
+  const [isOpen, setIsOpen] = useState(false);
   const [productionBatches, setProductionBatches] = useState<ProductionBatch[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [sorting, setSorting] = useState<SortingState>([]);
-  // column filters state of the table
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: 'status', value: 'MANUFACTURING' }]);
-
-  const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
-
-  const debouncedSorting: SortingState = useDebounce(sorting, 1000);
-  // pagination state of the table
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: 'status', value: 'MANUFACTURING' }
+  ]);
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0, //initial page index
-    pageSize: 500 //default page size
+    pageIndex: 0,
+    pageSize: 500
   });
- 
- 
+
+  const debouncedColumnFilters = useDebounce(columnFilters, 1000);
+  const debouncedSorting = useDebounce(sorting, 1000);
+
   useEffect(() => {
     const fetchAllProductionBatch = async () => {
+      setLoading(true);
       try {
         const res = await getAllProductionBatch({
           pagination,
           sorting: debouncedSorting,
           columnFilters: debouncedColumnFilters
-        })
-        const filteredBatches = res.data.filter(batch => !batch.importRequest?.some((importRequest) => importRequest.status !== 'CANCELLED'));
-
+        });
+        const filteredBatches = res.data.filter(
+          (batch) =>
+            !batch.importRequest?.some((importRequest) => importRequest.status !== 'CANCELLED')
+        );
         setProductionBatches(filteredBatches);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fetchAllProductionBatch();
-  }, []);
 
- const handleChooseStep = () => {
+        if (batchId) {
+          const preSelectedBatch = filteredBatches.find((batch) => batch.id === batchId);
+          if (preSelectedBatch) {
+            setSelectedProductionBatch(preSelectedBatch);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching production batches:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllProductionBatch();
+  }, [batchId, setSelectedProductionBatch, pagination, debouncedSorting, debouncedColumnFilters]);
+
+  const handleChooseStep = () => {
     setIsOpen(true);
   };
-  const handleNext = (selectedBatch: ProductionBatch) => {
+
+  const handleNext = (selectedBatch: ProductionBatch | null) => {
     setIsOpen(false);
     setSelectedProductionBatch(selectedBatch);
-    }
-  
-  const handleSelectProductionBatch = (batch: ProductionBatch) => {
-    setSelectedProductionBatch(batch); // Set a single batch
   };
-  
 
-  const renderStepContent = (isLoading: boolean) => {
+  const handleSelectProductionBatch = (batch: ProductionBatch) => {
+    setSelectedProductionBatch(batch);
+  };
+
+  const renderStepContent = () => {
     const getStatusColor = (status: string) => {
       switch (status) {
-        case "MANUFACTURING":
-          return "bg-blue-500"
-        case "COMPLETED":
-          return "bg-green-500"
-        case "CANCELLED":
-          return "bg-red-500"
+        case 'MANUFACTURING':
+          return 'bg-blue-500';
+        case 'COMPLETED':
+          return 'bg-green-500';
+        case 'CANCELLED':
+          return 'bg-red-500';
         default:
-          return "bg-gray-500"
+          return 'bg-gray-500';
       }
-    }
+    };
+
     if (isLoading) {
       return (
         <div className="flex justify-between items-center h-[300px]">
-          <Loading /> {/* Assuming Loading is a spinner or similar component */}
+          <Loading />
         </div>
       );
     }
+
     return (
       <ScrollArea className="h-[400px] rounded-md border p-2 my-4">
-        {productionBatches?.length > 0 ? (
+        {productionBatches.length > 0 ? (
           productionBatches.map((batch) => (
             <Card
               key={batch.id}
@@ -152,13 +161,12 @@ export default function WarehouseImportDialog({
                 batch.status !== 'MANUFACTURING'
                   ? 'bg-muted cursor-not-allowed'
                   : selectedProductionBatch?.id === batch.id
-                  ? 'bg-primary text-white cursor-pointer'
-                  : 'bg-secondary cursor-pointer'
+                    ? 'bg-primary text-white cursor-pointer'
+                    : 'bg-secondary cursor-pointer'
               }`}
               onClick={() =>
                 batch.status === 'MANUFACTURING' && handleSelectProductionBatch(batch)
-              }
-            >
+              }>
               <CardHeader>
                 <div className="flex justify-between items-center gap-4">
                   <div>
@@ -176,7 +184,10 @@ export default function WarehouseImportDialog({
                     <h3 className="font-semibold">Quantity to Produce</h3>
                     <p>
                       {batch.quantityToProduce}{' '}
-                      {batch.productionPlanDetail?.productSize?.productVariant?.product?.productUom?.uomCharacter}
+                      {
+                        batch.productionPlanDetail?.productSize?.productVariant?.product?.productUom
+                          ?.uomCharacter
+                      }
                     </p>
                   </div>
                   <div>
@@ -184,7 +195,7 @@ export default function WarehouseImportDialog({
                     <p>{batch.productionPlanDetail?.code || 'No code available'}</p>
                   </div>
                 </div>
-    
+
                 <div>
                   <h3 className="font-semibold mb-2">Product Details</h3>
                   <div className="flex items-center space-x-4">
@@ -208,7 +219,7 @@ export default function WarehouseImportDialog({
                     </div>
                   </div>
                 </div>
-    
+
                 {batch.description && (
                   <div>
                     <h3 className="font-semibold">Description</h3>
@@ -225,9 +236,7 @@ export default function WarehouseImportDialog({
         )}
       </ScrollArea>
     );
-    
-    }
-  
+  };
 
   return (
     <div className="space-y-4">
@@ -237,25 +246,16 @@ export default function WarehouseImportDialog({
       />
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className=" w-full">
+        <DialogContent className="w-full">
           <DialogHeader>
-            <DialogTitle>
-              Select Production Batch
-            </DialogTitle>
+            <DialogTitle>Select Production Batch</DialogTitle>
           </DialogHeader>
-          <div className='w-full'>
-            {renderStepContent(isLoading)}
-          </div>
-          
+          <div className="w-full">{renderStepContent()}</div>
+
           <DialogFooter className="flex justify-between">
-            {/* <div className="flex gap-2">
-              <Button variant="outline" onClick={handleBack} disabled={step === 1}>
-                <ChevronLeft className="mr-2 h-4 w-4" /> Back
-              </Button>
-            </div> */}
             <Button
               onClick={() => handleNext(selectedProductionBatch)}
-              >
+              disabled={!selectedProductionBatch}>
               Confirm
             </Button>
           </DialogFooter>

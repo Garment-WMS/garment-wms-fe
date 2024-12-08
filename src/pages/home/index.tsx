@@ -237,10 +237,26 @@ export default function DashboardPage() {
                       {' '}
                       <Badge variant={'outline'}>{receipt.type}</Badge>
                     </TableCell>
-                    <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {new Date(receipt.startedAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString()
+                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false // Use 24-hour format
+                          })
                         : 'Not yet'}
                     </TableCell>
                     <TableCell>
@@ -316,10 +332,26 @@ export default function DashboardPage() {
                     <TableCell>
                       <Badge variant={'outline'}>{receipt.type}</Badge>
                     </TableCell>
-                    <TableCell>{new Date(receipt.startedAt).toLocaleString()}</TableCell>
+                    <TableCell>
+                      {new Date(receipt.startedAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Use 24-hour format
+                      })}
+                    </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString()
+                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false // Use 24-hour format
+                          })
                         : 'Not yet'}
                     </TableCell>
                     <TableCell>
@@ -336,7 +368,14 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString()
+                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false // Use 24-hour format
+                          })
                         : 'Not yet'}
                     </TableCell>
                   </TableRow>

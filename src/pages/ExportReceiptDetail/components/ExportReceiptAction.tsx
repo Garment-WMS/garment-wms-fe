@@ -67,7 +67,7 @@ export function MaterialExportActions({
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button disabled={isLoading}>
-                    <FaRegSave />
+                    <FaRegSave className="mr-2" />
                     Finish
                   </Button>
                 </AlertDialogTrigger>

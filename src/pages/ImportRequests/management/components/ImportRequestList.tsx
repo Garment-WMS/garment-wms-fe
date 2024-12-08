@@ -233,7 +233,14 @@ const ImportRequestList = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleString();
+        const formattedDate = date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
+        });
         return (
           <div>
             <div>{formattedDate}</div>

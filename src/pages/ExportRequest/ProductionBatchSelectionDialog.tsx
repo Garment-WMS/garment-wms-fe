@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,7 @@ import { ProductionBatch } from '@/types/ProductionBatch';
 import Loading from '@/components/common/Loading';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProductionBatchSummary } from './ProductionBatchSummary';
+import { useParams } from 'react-router-dom';
 
 interface Props {
   isOpen: boolean;
@@ -35,6 +36,9 @@ export default function ProductionBatchSelectionDialog({
   onSelectBatch,
   selectedBatch
 }: Props) {
+  const params = useParams();
+  const productionBatchId = params.id as string;
+
   const [productionBatches, setProductionBatches] = useState<ProductionBatch[]>([]);
   const [selectedBatchState, setSelectedBatchState] = useState<ProductionBatch | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +49,16 @@ export default function ProductionBatchSelectionDialog({
         setIsLoading(true);
         const response = await getProductionBatchFn();
         setProductionBatches(response.data);
+        // If a productionBatchId is provided in the URL, pre-select that batch
+        if (productionBatchId) {
+          const preSelectedBatch = response.data.find(
+            (batch: ProductionBatch) => batch.id === productionBatchId
+          );
+          if (preSelectedBatch) {
+            setSelectedBatchState(preSelectedBatch);
+            onSelectBatch(preSelectedBatch);
+          }
+        }
       } catch (error) {
         console.error('Error fetching production batches:', error);
       } finally {
@@ -52,10 +66,8 @@ export default function ProductionBatchSelectionDialog({
       }
     };
 
-    if (isOpen) {
-      fetchProductionBatches();
-    }
-  }, [isOpen]);
+    fetchProductionBatches();
+  }, []);
 
   const handleConfirm = () => {
     if (selectedBatchState) {
@@ -63,20 +75,21 @@ export default function ProductionBatchSelectionDialog({
       onClose();
     }
   };
+
   function getBadgeClasses(status: string): { variant: 'default' | 'secondary'; bgClass: string } {
     switch (status) {
       case 'PENDING':
-        return { variant: 'default', bgClass: 'bg-yellow-500' }; // Yellow for active states
+        return { variant: 'default', bgClass: 'bg-yellow-500' };
       case 'FINISHED':
-        return { variant: 'secondary', bgClass: 'bg-green-500' }; // Green for completed
+        return { variant: 'secondary', bgClass: 'bg-green-500' };
       case 'MANUFACTURING':
       case 'IMPORTING':
       case 'EXECUTING':
-        return { variant: 'secondary', bgClass: 'bg-gray-500' }; // Gray for pending
+        return { variant: 'secondary', bgClass: 'bg-gray-500' };
       case 'CANCELLED':
-        return { variant: 'secondary', bgClass: 'bg-red-500' }; // Red for canceled
+        return { variant: 'secondary', bgClass: 'bg-red-500' };
       default:
-        return { variant: 'secondary', bgClass: 'bg-gray-500' }; // Default gray
+        return { variant: 'secondary', bgClass: 'bg-gray-500' };
     }
   }
 
@@ -95,7 +108,6 @@ export default function ProductionBatchSelectionDialog({
               </DialogHeader>
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  {' '}
                   <Loading size="60" />
                 </div>
               ) : (

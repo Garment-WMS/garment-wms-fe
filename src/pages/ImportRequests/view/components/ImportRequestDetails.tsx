@@ -7,6 +7,16 @@ import { MaterialPackage, UOM } from '@/types/MaterialTypes';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { formatNumber } from '@/helpers/formatNumber';
 
+interface ColumnTypeForPostInspection {
+  id: string;
+  name: string;
+  code: string;
+  packUnit: string;
+  quantityByPack: number;
+  approvedQuantityByPack: number;
+  defectQuantityByPack: number;
+}
+
 type Props = {};
 
 interface ColumnType {
@@ -42,41 +52,74 @@ const ImportRequestDetails = (props: Props) => {
         const materialPackage = detail.materialPackage;
         if (materialPackage) {
           return {
-            id: materialPackage.id ?? "N/A",
-            name: materialPackage.name ?? "N/A",
-            code: materialPackage.code ?? "N/A",
-            packUnit: materialPackage.packUnit ?? "N/A",
-            materialName: materialPackage.materialVariant?.material?.name ?? "N/A",
+            id: materialPackage.id ?? 'N/A',
+            name: materialPackage.name ?? 'N/A',
+            code: materialPackage.code ?? 'N/A',
+            packUnit: materialPackage.packUnit ?? 'N/A',
+            materialName: materialPackage.materialVariant?.material?.name ?? 'N/A',
             uomPerPack: materialPackage.uomPerPack ?? 0,
-            uom: materialPackage.materialVariant?.material?.materialUom ?? "N/A",
+            uom: materialPackage.materialVariant?.material?.materialUom ?? 'N/A',
             quantityByPack: detail.quantityByPack ?? 0,
-            materialCode: materialPackage.materialVariant?.material?.code ?? "N/A",
-            materialType: materialPackage.materialVariant?.material?.name ?? "N/A",
+            materialCode: materialPackage.materialVariant?.material?.code ?? 'N/A',
+            materialType: materialPackage.materialVariant?.material?.name ?? 'N/A'
           };
         }
         return null; // Return null if materialPackage is not defined
       })
       .filter((item): item is ColumnType => item !== null);
-    
-  // Format product details
-  formattedDetailsProduct = details
-  .map((detail) => {
-    const productSize = detail.productSize;
-    if (productSize) {
-      return {
-        id: productSize.id ?? "N/A",
-        name: productSize.name ?? "N/A",
-        code: productSize.code ?? "N/A",
-        size: productSize.size ?? "N/A",
-        productName: productSize.productVariant?.name ?? "N/A",
-        type: productSize.productVariant.product.name ?? "N/A",
-        quantityByPack: detail.quantityByPack ?? 0,
-      };
+
+    // Format product details
+    formattedDetailsProduct = details
+      .map((detail) => {
+        const productSize = detail.productSize;
+        if (productSize) {
+          return {
+            id: productSize.id ?? 'N/A',
+            name: productSize.name ?? 'N/A',
+            code: productSize.code ?? 'N/A',
+            size: productSize.size ?? 'N/A',
+            productName: productSize.productVariant?.name ?? 'N/A',
+            type: productSize.productVariant.product.name ?? 'N/A',
+            quantityByPack: detail.quantityByPack ?? 0
+          };
+        }
+        return null; // Return null if productSize is not defined
+      })
+      .filter((item): item is ColumnTypeForProduct => item !== null);
+  }
+  const DetailsColumnForPostInspection: CustomColumnDef<ColumnTypeForPostInspection>[] = [
+    {
+      header: 'Item Code',
+      accessorKey: 'code',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Item Name',
+      accessorKey: 'name',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Pack Unit',
+      accessorKey: 'packUnit',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Quantity',
+      accessorKey: 'quantityByPack',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Approved Quantity',
+      accessorKey: 'approvedQuantityByPack',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Defect Quantity',
+      accessorKey: 'defectQuantityByPack',
+      enableColumnFilter: false
     }
-    return null; // Return null if productSize is not defined
-  })
-  .filter((item): item is ColumnTypeForProduct => item !== null);
-  };
+  ];
+
   const DetailsColumn: CustomColumnDef<ColumnType>[] = [
     {
       header: 'Material Code',
@@ -111,7 +154,11 @@ const ImportRequestDetails = (props: Props) => {
       accessorKey: 'quantityByPack',
       enableColumnFilter: false,
       cell: ({ row }) => {
-        return <div className="text-left">{row.original.quantityByPack} {convertTitleToTitleCase  (row.original?.packUnit)}</div>;
+        return (
+          <div className="text-left">
+            {row.original.quantityByPack} {convertTitleToTitleCase(row.original?.packUnit)}
+          </div>
+        );
       }
     },
     {
@@ -119,15 +166,24 @@ const ImportRequestDetails = (props: Props) => {
       accessorKey: 'uomPerPack',
       enableColumnFilter: false,
       cell: ({ row }) => {
-        return <div className="text-left">{formatNumber(row.original.uomPerPack * row.original.quantityByPack)}  {row.original?.uom.uomCharacter}</div>;
+        return (
+          <div className="text-left">
+            {formatNumber(row.original.uomPerPack * row.original.quantityByPack)}{' '}
+            {row.original?.uom.uomCharacter}
+          </div>
+        );
       }
-    },
-    
+    }
   ];
   const DetailsColumnForProduct: CustomColumnDef<ColumnTypeForProduct>[] = [
     {
       header: 'Product Code',
       accessorKey: 'code',
+      enableColumnFilter: false
+    },
+    {
+      header: 'Product Type',
+      accessorKey: 'type',
       enableColumnFilter: false
     },
     {
@@ -143,38 +199,63 @@ const ImportRequestDetails = (props: Props) => {
       accessorKey: 'name',
       enableColumnFilter: false
     },
-   
+
     {
       header: 'Size',
       accessorKey: 'size',
       enableColumnFilter: false
     },
-    {
-      header: 'Product Type',
-      accessorKey: 'type',
-      enableColumnFilter: false
-    },
+
     {
       header: 'Quantity',
       accessorKey: 'quantityByPack',
       enableColumnFilter: false
     }
   ];
+  let formattedDetailsPostInspection: ColumnTypeForPostInspection[] = [];
+  if (importRequest?.inspectionRequest && importRequest.inspectionRequest.length > 0) {
+    const inspectionReport = importRequest.inspectionRequest[0].inspectionReport;
+    if (inspectionReport && inspectionReport.inspectionReportDetail) {
+      formattedDetailsPostInspection = inspectionReport.inspectionReportDetail.map((detail) => {
+        const item = detail.materialPackage || detail.productSize;
+        return {
+          id: detail.id,
+          name: item?.name ?? 'N/A',
+          code: item?.code ?? 'N/A',
+          packUnit:
+            detail.materialPackage?.packUnit ??
+            item?.productVariant?.product?.productUom?.uomCharacter ??
+            'N/A',
+          quantityByPack: detail.quantityByPack ?? 0,
+          approvedQuantityByPack: detail.approvedQuantityByPack,
+          defectQuantityByPack: detail.defectQuantityByPack
+        };
+      });
+    }
+  }
   return (
     <div className="flex flex-col gap-4">
       <div className="font-primary text-xl font-bold my-2">Import Request Details</div>
       <div className="pb-4">
         {formattedDetailsMaterial.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-          <DataTable columns={DetailsColumn} data={formattedDetailsMaterial} />
-        </div>
+            <DataTable columns={DetailsColumn} data={formattedDetailsMaterial} />
+          </div>
         )}
         {formattedDetailsProduct.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-          <DataTable columns={DetailsColumnForProduct} data={formattedDetailsProduct} />
-        </div>
+            <DataTable columns={DetailsColumnForProduct} data={formattedDetailsProduct} />
+          </div>
         )}
-        
+        {formattedDetailsPostInspection.length > 0 && (
+          <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
+            <div className="font-primary text-lg font-semibold p-4">Post-Inspection Details</div>
+            <DataTable
+              columns={DetailsColumnForPostInspection}
+              data={formattedDetailsPostInspection}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

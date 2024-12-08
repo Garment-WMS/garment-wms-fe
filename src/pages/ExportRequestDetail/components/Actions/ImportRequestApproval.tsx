@@ -48,6 +48,8 @@ import Loading from '@/components/common/Loading';
 import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 import { Textarea } from '@/components/ui/Textarea';
 import { IoMdClose } from 'react-icons/io';
+import { useSelector } from 'react-redux';
+import exportRequestSelector from '../../slice/selector';
 
 type ApprovalStatus = any;
 
@@ -163,6 +165,7 @@ export default function WarehouseApproval({
   const [totalExceedPercentage, setTotalExceedPercentage] = useState(0);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [exceedingMaterialsCount, setExceedingMaterialsCount] = useState(0);
+  const exportRequest: any = useSelector(exportRequestSelector.exportRequest);
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -370,19 +373,50 @@ export default function WarehouseApproval({
                 <span>
                   {warehouseStaff?.account ? (
                     <Badge variant={'outline'}>
-                      <div className="flex items-center">
-                        <Avatar className="h-8 w-8 mr-2">
-                          <AvatarImage
-                            src={warehouseStaff?.account?.avaUrl}
-                            alt="Profile picture"
-                          />
-                          <AvatarFallback>Staff</AvatarFallback>
-                        </Avatar>
-                        {warehouseStaff?.account?.lastName +
-                          ' ' +
-                          warehouseStaff?.account?.firstName}
+                      <div>
+                        <div className="flex items-center">
+                          <Avatar className="h-8 w-8 mr-2">
+                            <AvatarImage
+                              src={warehouseStaff?.account?.avaUrl}
+                              alt="Profile picture"
+                            />
+                            <AvatarFallback>Staff</AvatarFallback>
+                          </Avatar>
+                          {warehouseStaff?.account?.lastName +
+                            ' ' +
+                            warehouseStaff?.account?.firstName}
+                        </div>
+                        <div>
+                          {(() => {
+                            const startedAt =
+                              exportRequest?.materialExportReceipt?.expectedStartedAt;
+                            const finishedAt =
+                              exportRequest?.materialExportReceipt?.expectedFinishedAt;
+
+                            const isValidDate = (date: any) => !isNaN(new Date(date).getTime());
+
+                            if (isValidDate(startedAt) && isValidDate(finishedAt)) {
+                              return `${new Date(startedAt).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })} - ${new Date(finishedAt).toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}`;
+                            }
+
+                            return 'Invalid date range';
+                          })()}
+                        </div>
                       </div>
-                      <div></div>
                     </Badge>
                   ) : (
                     <h4>Not yet</h4>
@@ -393,7 +427,16 @@ export default function WarehouseApproval({
               <div className="flex items-center text-sm">
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
-                <span>{new Date(requestDate).toLocaleString()}</span>
+                <span>
+                  {new Date(requestDate).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // Use 24-hour format
+                  })}
+                </span>
               </div>
               <div className="flex items-start text-sm">
                 <InfoIcon className="mr-3 h-5 w-5 text-muted-foreground mt-1" />

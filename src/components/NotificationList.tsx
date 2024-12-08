@@ -26,11 +26,11 @@
 // }
 
 // export function NotificationList({ notifications}: NotificationListProps) {
-    
+
 //   const [expandedNotifications, setExpandedNotifications] = useState<string[]>([])
 
 //   const toggleExpand = (id: string) => {
-//     setExpandedNotifications(prev => 
+//     setExpandedNotifications(prev =>
 //       prev.includes(id) ? prev.filter(nId => nId !== id) : [...prev, id]
 //     )
 //   }
@@ -48,7 +48,7 @@
 //             </Button>
 //           </DropdownMenuTrigger>
 //           <DropdownMenuContent className="w-80" align="end" forceMount>
-//             {/* <NotificationList 
+//             {/* <NotificationList
 //               notifications={notifications}
 //             /> */}
 //             <div className="w-full">
@@ -69,7 +69,7 @@
 //                     {notification.message}
 //                   </p>
 //                   {notification.message?.length > 50 && (
-//                     <button 
+//                     <button
 //                       onClick={() => toggleExpand(notification.id)}
 //                       className="text-xs text-blue-500 mt-1"
 //                     >
@@ -86,15 +86,21 @@
 //                   </Button>
 //                 </div> */}
 //               </div>
-//               <p className="text-xs text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString()}</p>
+//               <p className="text-xs text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString('en-US', {
+//   year: 'numeric',
+//   month: 'numeric',
+//   day: 'numeric',
+//   hour: '2-digit',
+//   minute: '2-digit',
+//   hour12: false // Use 24-hour format
+// })}</p>
 //             </div>
 //           ))
 //         )}
 //       </ScrollArea>
 //     </div>
 //           </DropdownMenuContent>
-//         </DropdownMenu>     
-    
+//         </DropdownMenu>
+
 //   )
 // }
-

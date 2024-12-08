@@ -15,13 +15,34 @@ const ImportRequestStatus = (props: Props) => {
   const code = importRequest?.code;
   const status = importRequest?.status;
   const createdDate = importRequest?.createdAt
-    ? new Date(importRequest.createdAt).toLocaleDateString()
+    ? new Date(importRequest.createdAt).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false // Use 24-hour format
+      })
     : 'N/A';
   const lastUpdated = importRequest?.updatedAt
-    ? new Date(importRequest.updatedAt).toLocaleDateString()
+    ? new Date(importRequest.updatedAt).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false // Use 24-hour format
+      })
     : 'N/A';
   const closedAt = importRequest?.finishAt
-    ? new Date(importRequest.finishAt).toLocaleDateString()
+    ? new Date(importRequest.finishAt).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false // Use 24-hour format
+      })
     : 'N/A';
   const cancelledAt = importRequest?.cancelledAt;
   const cancelledReason = importRequest?.cancelReason;

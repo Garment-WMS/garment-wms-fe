@@ -191,6 +191,10 @@ const RouterComponent: React.FC = () => {
           element: <CreateImportRequestProduct />
         },
         {
+          path: '/import-request/create/product/:id',
+          element: <CreateImportRequestProduct />
+        },
+        {
           path: '/export-request',
           element: (
             <RoleBasedRedirect
@@ -322,6 +326,10 @@ const RouterComponent: React.FC = () => {
         },
         {
           path: '/export-request/create',
+          element: <CreateExportRequest />
+        },
+        {
+          path: '/export-request/create/:id',
           element: <CreateExportRequest />
         },
         {

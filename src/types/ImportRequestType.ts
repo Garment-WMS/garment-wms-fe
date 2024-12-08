@@ -4,6 +4,7 @@ import { ProductSize } from './ProductType';
 import { InspectionDepartment } from './InspectionDepartment';
 
 export interface ImportRequest {
+  code: string;
   managerNote: string;
   code: string;
   id: string;
@@ -41,6 +42,7 @@ export interface ImportRequest {
   inspectionDepartment: InspectionDepartment;
   warehouseStaff: WarehouseStaff | null;
   poDelivery: PODelivery;
+  productionDepartment: any;
 }
 
 export type ImportRequestDetail = {

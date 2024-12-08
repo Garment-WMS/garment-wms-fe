@@ -106,7 +106,16 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
 
         return (
           <div className="font-semibold">
-            {value ? `${value.toLocaleString()} VND` : 'Not available'}
+            {value
+              ? `${value.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false // Use 24-hour format
+                })} VND`
+              : 'Not available'}
           </div>
         );
       },
