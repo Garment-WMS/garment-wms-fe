@@ -16,7 +16,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent
-} from '@/components/ui/chart';
+} from '@/components/ui/Chart';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { MaterialReceiptStatisticsResponse, MonthlyData } from '@/types/MaterialTypes';
