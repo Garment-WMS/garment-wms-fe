@@ -3,7 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CalendarMinus, CalendarPlus, CheckCircle, PlayCircle } from 'lucide-react';
+import {
+  AlertCircle,
+  CalendarMinus,
+  CalendarPlus,
+  CheckCircle,
+  PlayCircle,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
@@ -33,6 +41,7 @@ interface KeyValueDisplayProps {
   className?: string;
   valueColor?: string;
   nameColor?: string;
+  size?: 'small' | 'normal';
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
@@ -56,13 +65,16 @@ const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
   value,
   className = '',
   nameColor = 'text-gray-600',
-  valueColor = 'text-gray-900'
+  valueColor = 'text-gray-900',
+  size = 'normal'
 }) => {
+  const sizeClasses = size === 'small' ? 'text-xs py-1' : 'text-[15px] py-3';
+
   return (
     <div
-      className={`flex items-center gap-4 py-3 border-b border-gray-100 last:border-0 ${className}`}>
-      <span className={`text-[15px] ${nameColor} flex-1`}>{name}</span>
-      <span className={`text-[18px] font-medium ${valueColor}`}>{value}</span>
+      className={`flex items-center gap-2 border-b border-gray-100 last:border-0 ${sizeClasses} ${className}`}>
+      <span className={`${nameColor} flex-1`}>{name}</span>
+      <span className={`${valueColor} font-medium`}>{value}</span>
     </div>
   );
 };
@@ -135,6 +147,22 @@ const ProductionPlanDetail = () => {
 
   const plan = data.data;
 
+  // Group production plan details by product variant
+  const groupedDetails = plan.productionPlanDetail.reduce(
+    (acc: any, detail: any) => {
+      const variantId = detail.productSize.productVariant.id;
+      if (!acc[variantId]) {
+        acc[variantId] = {
+          ...detail.productSize.productVariant,
+          sizes: []
+        };
+      }
+      acc[variantId].sizes.push(detail);
+      return acc;
+    },
+    {} as Record<string, { sizes: ProductionPlanDetailType[]; name: string; image: string }>
+  );
+
   return (
     <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 flex flex-col gap-8">
       {/* Header Card */}
@@ -162,19 +190,15 @@ const ProductionPlanDetail = () => {
             </div>
           </div>
           {plan?.startDate && (
-            <div className="flex flex-row items-center justify-between ">
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex flex-row items-center gap-1 text-green-600">
-                  <CalendarPlus size={17} />
-                  <span>Start: </span>{' '}
-                </div>
+            <div className="flex justify-between">
+              <div className="flex items-center gap-2 text-green-600">
+                <CalendarPlus size={17} />
+                <span>Start: </span>{' '}
                 <span className="text-green-700">{convertDateWithTime(plan?.startDate)}</span>
               </div>
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex flex-row items-center gap-1 text-red-600">
-                  <CalendarMinus size={17} />
-                  <span>Finish: </span>{' '}
-                </div>
+              <div className="flex items-center gap-2 text-red-600">
+                <CalendarMinus size={17} />
+                <span>Finish: </span>{' '}
                 <span className="text-red-700">
                   {plan?.finishDate ? convertDateWithTime(plan?.finishDate) : 'Not Yet'}
                 </span>
@@ -186,12 +210,12 @@ const ProductionPlanDetail = () => {
 
       {/* Plan Summary Section */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-4">Production Plan Summary</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Production Plan Summary</h2>
         <div className="space-y-1">
           <KeyValueDisplay
             name="Total Products to Produce"
             value={plan?.totalQuantityToProduce}
-            valueColor="text-slate-600 "
+            valueColor="text-slate-600"
             nameColor="text-green-800"
           />
           {plan?.createdAt && (
@@ -226,57 +250,61 @@ const ProductionPlanDetail = () => {
           </p>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => {
-              return (
-                <Card key={detail.id} className="shadow-lg rounded-lg overflow-hidden">
-                  {/* Product Image */}
-                  <div className="relative h-48 bg-gray-100 flex items-center justify-center">
-                    <img
-                      src={detail.productSize.productVariant.image}
-                      alt={detail.productSize.productVariant.name}
-                      className="object-contain h-full"
+          <div className="grid gap-6 grid-cols-2">
+            {Object.values(groupedDetails).map((variant: any) => (
+              <Card key={variant.name} className="shadow-lg rounded-lg overflow-hidden">
+                {/* Product Image */}
+                <div className="relative h-48 bg-gray-100 flex items-center justify-center">
+                  <img src={variant.image} alt={variant.name} className="object-contain h-full" />
+                </div>
+                {/* Product Details */}
+                <CardContent className="p-4">
+                  <div className="mb-3 flex flex-row items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-800">{variant.name}</h3>
+                  </div>
+                  {/* Specifications */}
+                  <div className="mb-3 grid grid-cols-2 gap-2">
+                    <KeyValueDisplay
+                      name="Width"
+                      value={`${variant.sizes[0]?.productSize.width} m`}
+                      nameColor="text-gray-600"
+                      valueColor="text-gray-800"
+                    />
+                    <KeyValueDisplay
+                      name="Height"
+                      value={`${variant.sizes[0]?.productSize.height} m`}
+                      nameColor="text-gray-600"
+                      valueColor="text-gray-800"
+                    />
+                    <KeyValueDisplay
+                      name="Length"
+                      value={`${variant.sizes[0]?.productSize.length} m`}
+                      nameColor="text-gray-600"
+                      valueColor="text-gray-800"
+                    />
+                    <KeyValueDisplay
+                      name="Weight"
+                      value={`${variant.sizes[0]?.productSize.weight} kg`}
+                      nameColor="text-gray-600"
+                      valueColor="text-gray-800"
                     />
                   </div>
-                  {/* Product Details */}
-                  <CardContent className="p-4">
-                    <div className="mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {detail.productSize.productVariant.name} - {detail.productSize.size}
-                      </h3>
-                      <span className="text-sm font-semibold text-primaryLight">
-                        Code: {detail.productSize.code}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mb-5">
-                      <p className="text-sm font-medium text-gray-700">Quantity to Produce:</p>
-                      <p className="text-lg font-bold text-gray-900">{detail.quantityToProduce}</p>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-2 gap-4">
-                      <SummaryCard
-                        title="Manufacturing Quantity"
-                        value={detail?.productPlanDetailManufacturingQuantity ?? 0}
-                        icon={<PlayCircle className="h-5 w-5" />}
-                        variant="manufacturing"
-                      />
-                      <SummaryCard
-                        title="Produced Quantity"
-                        value={detail?.productPlanDetailProducedQuantity ?? 0}
-                        icon={<CheckCircle className="h-5 w-5" />}
-                        variant="success"
-                      />
-                      <SummaryCard
-                        title="Defect Quantity"
-                        value={detail?.productPlanDetailDefectQuantity ?? 0}
-                        icon={<AlertCircle className="h-5 w-5" />}
-                        variant="error"
+                  {/* Sizes */}
+                  {variant.sizes.map((sizeDetail: any, index: any) => (
+                    <div
+                      key={sizeDetail.id}
+                      className={`mb-4 p-4 bg-gray-50 rounded-lg ${
+                        index !== variant.sizes.length - 1 ? 'border-b border-gray-300' : ''
+                      }`}>
+                      <ExpandableSizeDetail
+                        sizeDetail={sizeDetail}
+                        isLast={index === variant.sizes.length - 1}
                       />
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -319,6 +347,71 @@ const ProductionPlanDetail = () => {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+};
+
+const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
+  sizeDetail,
+  isLast
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className={`pt-4 ${!isLast ? 'border-b border-gray-300 pb-4' : ''}`}>
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col">
+          <h4 className="text-sm font-medium text-gray-700">
+            Size:{' '}
+            <span className="text-lg font-semibold text-primaryLight">
+              {sizeDetail.productSize.size}
+            </span>
+          </h4>
+          <p className="text-sm font-medium text-gray-700">
+            Quantity To Produce:{'  '}
+            <span className="text-lg font-semibold text-primaryLight">
+              {sizeDetail.quantityToProduce}
+            </span>
+          </p>
+        </div>
+        <Badge>{sizeDetail?.code}</Badge>
+      </div>
+      <div className="flex justify-center items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-gray-700">
+          {isExpanded ? 'Hide Details' : 'Show Details'}
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4 ml-2" />
+          ) : (
+            <ChevronDown className="h-4 w-4 ml-2" />
+          )}
+        </Button>
+      </div>
+      {isExpanded && (
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          <SummaryCard
+            title="Manufacturing Quantity"
+            value={sizeDetail?.productPlanDetailManufacturingQuantity ?? 0}
+            icon={<PlayCircle className="h-5 w-5" />}
+            variant="manufacturing"
+          />
+          <SummaryCard
+            title="Produced Quantity"
+            value={sizeDetail?.productPlanDetailProducedQuantity ?? 0}
+            icon={<CheckCircle className="h-5 w-5" />}
+            variant="success"
+          />
+          <SummaryCard
+            title="Defect Quantity"
+            value={sizeDetail?.productPlanDetailDefectQuantity ?? 0}
+            icon={<AlertCircle className="h-5 w-5" />}
+            variant="error"
+          />
+        </div>
+      )}
     </div>
   );
 };
