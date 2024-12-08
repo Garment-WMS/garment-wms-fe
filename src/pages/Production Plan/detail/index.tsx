@@ -25,7 +25,6 @@ import {
   DialogTitle,
   DialogDescription
 } from '@/components/ui/Dialog';
-import { convertDate } from '@/helpers/convertDate';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 interface SummaryCardProps {
@@ -33,15 +32,6 @@ interface SummaryCardProps {
   value: number;
   icon: JSX.Element;
   variant: 'success' | 'error' | 'manufacturing';
-}
-
-interface KeyValueDisplayProps {
-  name: string;
-  value: string | number;
-  className?: string;
-  valueColor?: string;
-  nameColor?: string;
-  size?: 'small' | 'normal';
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
@@ -58,38 +48,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }
       <div className="mt-1 text-lg font-bold">{value}</div>
     </div>
   );
-};
-
-const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
-  name,
-  value,
-  className = '',
-  nameColor = 'text-gray-600',
-  valueColor = 'text-gray-900',
-  size = 'normal'
-}) => {
-  const sizeClasses = size === 'small' ? 'text-xs py-1' : 'text-[15px] py-3';
-
-  return (
-    <div
-      className={`flex items-center gap-2 border-b border-gray-100 last:border-0 ${sizeClasses} ${className}`}>
-      <span className={`${nameColor} flex-1`}>{name}</span>
-      <span className={`${valueColor} font-medium`}>{value}</span>
-    </div>
-  );
-};
-
-const getStatusBadgeStyle = (status: string) => {
-  switch (status) {
-    case ProductionPlanStatus.PLANNING:
-      return 'bg-yellow-500 text-white';
-    case ProductionPlanStatus.IN_PROGRESS:
-      return 'bg-blue-500 text-white';
-    case ProductionPlanStatus.FINISHED:
-      return 'bg-green-500 text-white';
-    default:
-      return 'bg-gray-500 text-white';
-  }
 };
 
 const ProductionPlanDetail = () => {
@@ -174,7 +132,14 @@ const ProductionPlanDetail = () => {
               <Badge className="bg-primaryLight mt-1">{plan.code}</Badge>
             </div>
             <div className="flex flex-row items-center gap-2">
-              <Badge className={`px-3 py-1 rounded text-lg ${getStatusBadgeStyle(plan.status)}`}>
+              <Badge
+                className={`px-3 py-1 rounded text-lg ${
+                  plan.status === ProductionPlanStatus.PLANNING
+                    ? 'bg-yellow-500 text-white'
+                    : plan.status === ProductionPlanStatus.IN_PROGRESS
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-green-500 text-white'
+                }`}>
                 {convertTitleToTitleCase(plan.status)}
               </Badge>
               {plan.status === ProductionPlanStatus.PLANNING && (
@@ -189,118 +154,31 @@ const ProductionPlanDetail = () => {
               )}
             </div>
           </div>
-          {plan?.startDate && (
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2 text-green-600">
-                <CalendarPlus size={17} />
-                <span>Start: </span>{' '}
-                <span className="text-green-700">{convertDateWithTime(plan?.startDate)}</span>
-              </div>
-              <div className="flex items-center gap-2 text-red-600">
-                <CalendarMinus size={17} />
-                <span>Finish: </span>{' '}
-                <span className="text-red-700">
-                  {plan?.finishDate ? convertDateWithTime(plan?.finishDate) : 'Not Yet'}
-                </span>
-              </div>
-            </div>
-          )}
         </CardHeader>
       </Card>
-
-      {/* Plan Summary Section */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Production Plan Summary</h2>
-        <div className="space-y-1">
-          <KeyValueDisplay
-            name="Total Products to Produce"
-            value={plan?.totalQuantityToProduce}
-            valueColor="text-slate-600"
-            nameColor="text-green-800"
-          />
-          {plan?.createdAt && (
-            <KeyValueDisplay
-              name="Create Date"
-              value={convertDateWithTime(plan?.createdAt)}
-              valueColor="text-primaryLight"
-              nameColor="text-blue-800"
-            />
-          )}
-          <KeyValueDisplay
-            name="Expected Start Date"
-            value={convertDate(plan?.expectedStartDate)}
-            valueColor="text-green-600"
-            nameColor="text-green-800"
-          />
-          <KeyValueDisplay
-            name="Expected End Date"
-            value={convertDate(plan?.expectedEndDate)}
-            valueColor="text-red-600"
-            nameColor="text-red-800"
-          />
-        </div>
-      </section>
 
       {/* Product Details Section */}
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-bold text-gray-800">Product Details</CardTitle>
-          <p className="text-sm text-gray-500">
-            Below are the details of the products included in the production plan.
-          </p>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid gap-6 grid-cols-2">
             {Object.values(groupedDetails).map((variant: any) => (
               <Card key={variant.name} className="shadow-lg rounded-lg overflow-hidden">
-                {/* Product Image */}
                 <div className="relative h-48 bg-gray-100 flex items-center justify-center">
                   <img src={variant.image} alt={variant.name} className="object-contain h-full" />
                 </div>
-                {/* Product Details */}
                 <CardContent className="p-4">
                   <div className="mb-3 flex flex-row items-center justify-between">
                     <h3 className="text-lg font-semibold text-gray-800">{variant.name}</h3>
                   </div>
-                  {/* Specifications */}
-                  <div className="mb-3 grid grid-cols-2 gap-2">
-                    <KeyValueDisplay
-                      name="Width"
-                      value={`${variant.sizes[0]?.productSize.width} m`}
-                      nameColor="text-gray-600"
-                      valueColor="text-gray-800"
-                    />
-                    <KeyValueDisplay
-                      name="Height"
-                      value={`${variant.sizes[0]?.productSize.height} m`}
-                      nameColor="text-gray-600"
-                      valueColor="text-gray-800"
-                    />
-                    <KeyValueDisplay
-                      name="Length"
-                      value={`${variant.sizes[0]?.productSize.length} m`}
-                      nameColor="text-gray-600"
-                      valueColor="text-gray-800"
-                    />
-                    <KeyValueDisplay
-                      name="Weight"
-                      value={`${variant.sizes[0]?.productSize.weight} kg`}
-                      nameColor="text-gray-600"
-                      valueColor="text-gray-800"
-                    />
-                  </div>
-                  {/* Sizes */}
                   {variant.sizes.map((sizeDetail: any, index: any) => (
-                    <div
+                    <ExpandableSizeDetail
                       key={sizeDetail.id}
-                      className={`mb-4 p-4 bg-gray-50 rounded-lg ${
-                        index !== variant.sizes.length - 1 ? 'border-b border-gray-300' : ''
-                      }`}>
-                      <ExpandableSizeDetail
-                        sizeDetail={sizeDetail}
-                        isLast={index === variant.sizes.length - 1}
-                      />
-                    </div>
+                      sizeDetail={sizeDetail}
+                      isLast={index === variant.sizes.length - 1}
+                    />
                   ))}
                 </CardContent>
               </Card>
@@ -308,45 +186,6 @@ const ProductionPlanDetail = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={closeModal}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-900">
-              Start Production Plan
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Are you sure you want to start the production plan?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-6 bg-red-50 border-l-4 border-red-400 p-4">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
-              <p className="ml-3 text-sm text-red-700">
-                This action will initiate the production process. Please ensure all prerequisites
-                are met.
-              </p>
-            </div>
-          </div>
-          <div className="mt-6 sm:mt-8 sm:flex sm:flex-row-reverse gap-3">
-            <Button
-              variant="default"
-              className="bg-green-600 text-white hover:bg-green-700"
-              onClick={handleStartPlan}
-              disabled={isStartingPlan}>
-              {isStartingPlan ? 'Starting...' : 'Yes, Start Plan'}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeModal}
-              className="mt-3 sm:mt-0 ring-1 ring-red-500 text-red-500 hover:text-red-300">
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
@@ -368,7 +207,7 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
             </span>
           </h4>
           <p className="text-sm font-medium text-gray-700">
-            Quantity To Produce:{'  '}
+            Quantity To Produce:{' '}
             <span className="text-lg font-semibold text-primaryLight">
               {sizeDetail.quantityToProduce}
             </span>
@@ -391,25 +230,58 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
         </Button>
       </div>
       {isExpanded && (
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          <SummaryCard
-            title="Manufacturing Quantity"
-            value={sizeDetail?.productPlanDetailManufacturingQuantity ?? 0}
-            icon={<PlayCircle className="h-5 w-5" />}
-            variant="manufacturing"
-          />
-          <SummaryCard
-            title="Produced Quantity"
-            value={sizeDetail?.productPlanDetailProducedQuantity ?? 0}
-            icon={<CheckCircle className="h-5 w-5" />}
-            variant="success"
-          />
-          <SummaryCard
-            title="Defect Quantity"
-            value={sizeDetail?.productPlanDetailDefectQuantity ?? 0}
-            icon={<AlertCircle className="h-5 w-5" />}
-            variant="error"
-          />
+        <div className="mt-4 space-y-4">
+          <div className="bg-gray-50  rounded-lg p-4 shadow-inner">
+            <h5 className="text-sm font-semibold text-gray-700  text-center mb-5">
+              Product Specifications
+            </h5>
+            <div className="grid grid-cols-2 items-center ml-[5rem] gap-3">
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Width:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.width} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Height:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.height} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Length:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.length} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Weight:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.weight} kg
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <SummaryCard
+              title="Manufacturing Quantity"
+              value={sizeDetail?.productPlanDetailManufacturingQuantity ?? 0}
+              icon={<PlayCircle className="h-5 w-5" />}
+              variant="manufacturing"
+            />
+            <SummaryCard
+              title="Produced Quantity"
+              value={sizeDetail?.productPlanDetailProducedQuantity ?? 0}
+              icon={<CheckCircle className="h-5 w-5" />}
+              variant="success"
+            />
+            <SummaryCard
+              title="Defect Quantity"
+              value={sizeDetail?.productPlanDetailDefectQuantity ?? 0}
+              icon={<AlertCircle className="h-5 w-5" />}
+              variant="error"
+            />
+          </div>
         </div>
       )}
     </div>
