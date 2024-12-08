@@ -15,6 +15,12 @@ import {
 import PieChartComponent from '@/components/common/PieChart';
 import { PurchaseOrderStatus } from '@/enums/purchaseOrderStatus';
 
+const STATUS_COLORS = {
+  IN_PROGRESS: Colors.blue[500],
+  CANCELLED: Colors.red[500],
+  FINISHED: Colors.green[500]
+};
+
 const getColorClasses = (status: string) => {
   switch (status) {
     case 'IN_PROGRESS':
@@ -29,7 +35,6 @@ const getColorClasses = (status: string) => {
 };
 
 const ProgressChart = () => {
-  const colors = [Colors.blue[500], Colors.green[500], Colors.red[500]];
   const { data: statisticData, isPending, isFetching } = useGetPurchaseOrderStatistic();
   const statistics = statisticData?.data;
   const isLoadingData = isPending || isFetching;
@@ -38,20 +43,22 @@ const ProgressChart = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>('IN_PROGRESS');
   const [selectedValue, setSelectedValue] = useState<number>(0);
-  const [buttonBg, setButtonBg] = useState<string>('bg-blue-500');
 
   const chartData = statistics
     ? [
-        { name: 'In Progress orders', value: statistics.inProgress },
-        { name: 'Finished orders', value: statistics.finished },
-        { name: 'Cancelled orders', value: statistics.cancelled }
+        {
+          name: 'In Progress orders',
+          value: statistics.inProgress,
+          color: STATUS_COLORS.IN_PROGRESS
+        },
+        { name: 'Finished orders', value: statistics.finished, color: STATUS_COLORS.FINISHED },
+        { name: 'Cancelled orders', value: statistics.cancelled, color: STATUS_COLORS.CANCELLED }
       ]
     : [];
 
-  const handleViewDetails = (status: string, value: number, buttonBg: string) => {
+  const handleViewDetails = (status: string, value: number) => {
     setSelectedStatus(status);
     setSelectedValue(value);
-    setButtonBg(buttonBg);
     setDialogOpen(true);
   };
 
@@ -76,7 +83,7 @@ const ProgressChart = () => {
           <div className="grid grid-cols-[1fr_2fr] gap-9">
             <PieChartComponent
               data={chartData}
-              colors={colors}
+              colors={chartData.map((d) => d.color)}
               width={250}
               height={300}
               innerRadius={50}
@@ -108,7 +115,7 @@ const ProgressChart = () => {
               </Select>
             </DialogTitle>
 
-            <div className=" mt-3 overflow-y-auto h-[75vh]">
+            <div className="mt-3 overflow-y-auto h-[75vh]">
               <DialogStatusTable selectedStatus={selectedStatus} />
             </div>
           </DialogContent>
