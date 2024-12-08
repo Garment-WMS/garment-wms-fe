@@ -93,7 +93,7 @@ export default function ExportRequestConfirmation({
   const [textArea, setTextArea] = useState('');
 
   const handleFinishExport = async (status: string, type: string) => {
-    if (textArea == '') {
+    if (textArea == '' && status == 'PRODUCTION_REJECTED') {
       toast({
         variant: 'destructive',
         title: 'Missing Reject reason',
@@ -222,9 +222,7 @@ export default function ExportRequestConfirmation({
             <div className="flex items-center text-sm">
               <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
               <span className="font-medium w-24">Last Updated:</span>
-              <span>
-                {formatDateTimeToDDMMYYYYHHMM(lastedUpdate) || 'N/A'}
-              </span>
+              <span>{formatDateTimeToDDMMYYYYHHMM(lastedUpdate) || 'N/A'}</span>
             </div>
           </div>
         </div>
