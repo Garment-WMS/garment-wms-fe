@@ -248,7 +248,7 @@ export default function WarehouseImportDialog({
         return (
           <ScrollArea className="h-[300px] w-full rounded-md border">
             <div className="p-4 space-y-4">
-              {filteredPurchaseOrders &&
+              {filteredPurchaseOrders.length>0 ? (
                 filteredPurchaseOrders.map((po) => (
                   <Card
                     key={po.id}
@@ -297,7 +297,12 @@ export default function WarehouseImportDialog({
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                ))
+              ) : (
+                <div className='flex justify-center items-center'>
+                  <p>No purchase orders found</p>
+                </div>
+              )}
             </div>
           </ScrollArea>
         );
