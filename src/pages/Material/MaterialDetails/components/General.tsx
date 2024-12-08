@@ -34,17 +34,23 @@ const General: React.FC<Props> = ({ materialVariant }) => {
           Unit of measure: {capitalizeFirstLetter(materialVariant?.material?.materialUom.name)} {`(${materialVariant.material.materialUom.uomCharacter})`}
         </Label>
       </div>
-      <div className="col-span-2">
+      <div className="flex flex-col gap-4">
         {/* <Label htmlFor="track-inventory" className="flex items-center">
     Track Inventory <Info className="w-4 h-4 ml-1 text-gray-400" />
   </Label> */}
         <div className="flex items-center">
           <Label htmlFor="track-inventory" className="flex">
-            Quantity:  {" "}{materialVariant?.onHand} {materialVariant?.materialPackage[0]? capitalizeFirstLetter(materialVariant?.materialPackage[0].packUnit): "units"}
+            Quantity by package:  {" "}{materialVariant?.onHand} {materialVariant?.materialPackage[0]? capitalizeFirstLetter(materialVariant?.materialPackage[0].packUnit): "units"}
           </Label>
+          
           <div className='font-primary'> </div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <div className='flex items-center'>
+        <Label className="flex">
+            Quantity by uom:  {" "}{materialVariant?.onHandUom ? materialVariant?.onHandUom : 'N/A'} {materialVariant?.material ? materialVariant?.material?.materialUom.uomCharacter : "units"}
+          </Label>
+        </div>
+        <p className="text-sm text-gray-500">
           The quantity is based on the import receipt that have the status of Available.
         </p>
       </div>

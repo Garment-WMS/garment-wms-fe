@@ -184,7 +184,12 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
     );
   }
 
-  const [importColumnFilters, setImportColumnFilters] = useState<ColumnFiltersState>([]);
+  const [importColumnFilters, setImportColumnFilters] = useState<ColumnFiltersState>([
+    {
+      'id': 'isDefect',
+      'value': false
+    }
+  ]);
 
   const [importSorting, setImportSorting] = useState<SortingState>([]);
 
@@ -241,7 +246,7 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
           </div>
       
       </div>
-      <ReceiptChart />
+      {/* <ReceiptChart /> */}
       {selectedReceiptId && (
   <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened}  />
 )}
