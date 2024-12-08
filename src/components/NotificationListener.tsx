@@ -25,6 +25,8 @@ const NotificationListener = () => {
   const blue = Colors.blue[500];
   const navigate = useNavigate();
   const [isReadCount, setIsReadCount] = useState(0);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Manage dropdown state
+
   useEffect(() => {
     const handleNewNotification = (data: any) => {
       setNotifications((prev) => [data, ...prev]);
@@ -58,6 +60,7 @@ const NotificationListener = () => {
     );
     setIsReadCount((prev) => prev - 1);
     navigate(`${path}`);
+    setDropdownOpen(false);
   };
   function countUnread(notifications: any[]) {
     return notifications.filter((notification) => !notification.isRead).length;
@@ -91,7 +94,7 @@ const NotificationListener = () => {
   // };
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger>
           <Button variant="ghost" className="relative rounded-full">
             <IoIosNotificationsOutline color={blue} size={iconSize} />
