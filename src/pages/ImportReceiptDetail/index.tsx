@@ -68,7 +68,7 @@ import ProductReceiptLabel from './components/ProductReceiptLabels';
 import { ImportReceiptAction } from './components/ImportReceiptAction';
 import ImportStepper from './components/ImportStepper';
 import { convertDate } from '@/helpers/convertDate';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Chart';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
