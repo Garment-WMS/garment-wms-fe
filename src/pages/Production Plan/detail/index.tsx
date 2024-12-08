@@ -3,7 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Loading from '@/components/common/Loading';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CalendarMinus, CalendarPlus, CheckCircle, PlayCircle } from 'lucide-react';
+import {
+  AlertCircle,
+  CalendarMinus,
+  CalendarPlus,
+  CheckCircle,
+  PlayCircle,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
 import { ProductionPlanStatus } from '@/enums/productionPlan';
@@ -17,7 +25,6 @@ import {
   DialogTitle,
   DialogDescription
 } from '@/components/ui/Dialog';
-import { convertDate } from '@/helpers/convertDate';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 interface SummaryCardProps {
@@ -25,14 +32,6 @@ interface SummaryCardProps {
   value: number;
   icon: JSX.Element;
   variant: 'success' | 'error' | 'manufacturing';
-}
-
-interface KeyValueDisplayProps {
-  name: string;
-  value: string | number;
-  className?: string;
-  valueColor?: string;
-  nameColor?: string;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }) => {
@@ -49,35 +48,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, icon, variant }
       <div className="mt-1 text-lg font-bold">{value}</div>
     </div>
   );
-};
-
-const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
-  name,
-  value,
-  className = '',
-  nameColor = 'text-gray-600',
-  valueColor = 'text-gray-900'
-}) => {
-  return (
-    <div
-      className={`flex items-center gap-4 py-3 border-b border-gray-100 last:border-0 ${className}`}>
-      <span className={`text-[15px] ${nameColor} flex-1`}>{name}</span>
-      <span className={`text-[18px] font-medium ${valueColor}`}>{value}</span>
-    </div>
-  );
-};
-
-const getStatusBadgeStyle = (status: string) => {
-  switch (status) {
-    case ProductionPlanStatus.PLANNING:
-      return 'bg-yellow-500 text-white';
-    case ProductionPlanStatus.IN_PROGRESS:
-      return 'bg-blue-500 text-white';
-    case ProductionPlanStatus.FINISHED:
-      return 'bg-green-500 text-white';
-    default:
-      return 'bg-gray-500 text-white';
-  }
 };
 
 const ProductionPlanDetail = () => {
@@ -135,6 +105,22 @@ const ProductionPlanDetail = () => {
 
   const plan = data.data;
 
+  // Group production plan details by product variant
+  const groupedDetails = plan.productionPlanDetail.reduce(
+    (acc: any, detail: any) => {
+      const variantId = detail.productSize.productVariant.id;
+      if (!acc[variantId]) {
+        acc[variantId] = {
+          ...detail.productSize.productVariant,
+          sizes: []
+        };
+      }
+      acc[variantId].sizes.push(detail);
+      return acc;
+    },
+    {} as Record<string, { sizes: ProductionPlanDetailType[]; name: string; image: string }>
+  );
+
   return (
     <div className="bg-white px-5 py-3 rounded-xl shadow-lg ring-1 flex flex-col gap-8">
       {/* Header Card */}
@@ -146,7 +132,14 @@ const ProductionPlanDetail = () => {
               <Badge className="bg-primaryLight mt-1">{plan.code}</Badge>
             </div>
             <div className="flex flex-row items-center gap-2">
-              <Badge className={`px-3 py-1 rounded text-lg ${getStatusBadgeStyle(plan.status)}`}>
+              <Badge
+                className={`px-3 py-1 rounded text-lg ${
+                  plan.status === ProductionPlanStatus.PLANNING
+                    ? 'bg-yellow-500 text-white'
+                    : plan.status === ProductionPlanStatus.IN_PROGRESS
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-green-500 text-white'
+                }`}>
                 {convertTitleToTitleCase(plan.status)}
               </Badge>
               {plan.status === ProductionPlanStatus.PLANNING && (
@@ -161,164 +154,136 @@ const ProductionPlanDetail = () => {
               )}
             </div>
           </div>
-          {plan?.startDate && (
-            <div className="flex flex-row items-center justify-between ">
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex flex-row items-center gap-1 text-green-600">
-                  <CalendarPlus size={17} />
-                  <span>Start: </span>{' '}
-                </div>
-                <span className="text-green-700">{convertDateWithTime(plan?.startDate)}</span>
-              </div>
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex flex-row items-center gap-1 text-red-600">
-                  <CalendarMinus size={17} />
-                  <span>Finish: </span>{' '}
-                </div>
-                <span className="text-red-700">
-                  {plan?.finishDate ? convertDateWithTime(plan?.finishDate) : 'Not Yet'}
-                </span>
-              </div>
-            </div>
-          )}
         </CardHeader>
       </Card>
-
-      {/* Plan Summary Section */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-4">Production Plan Summary</h2>
-        <div className="space-y-1">
-          <KeyValueDisplay
-            name="Total Products to Produce"
-            value={plan?.totalQuantityToProduce}
-            valueColor="text-slate-600 "
-            nameColor="text-green-800"
-          />
-          {plan?.createdAt && (
-            <KeyValueDisplay
-              name="Create Date"
-              value={convertDateWithTime(plan?.createdAt)}
-              valueColor="text-primaryLight"
-              nameColor="text-blue-800"
-            />
-          )}
-          <KeyValueDisplay
-            name="Expected Start Date"
-            value={convertDate(plan?.expectedStartDate)}
-            valueColor="text-green-600"
-            nameColor="text-green-800"
-          />
-          <KeyValueDisplay
-            name="Expected End Date"
-            value={convertDate(plan?.expectedEndDate)}
-            valueColor="text-red-600"
-            nameColor="text-red-800"
-          />
-        </div>
-      </section>
 
       {/* Product Details Section */}
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-bold text-gray-800">Product Details</CardTitle>
-          <p className="text-sm text-gray-500">
-            Below are the details of the products included in the production plan.
-          </p>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {plan.productionPlanDetail.map((detail: ProductionPlanDetailType) => {
-              return (
-                <Card key={detail.id} className="shadow-lg rounded-lg overflow-hidden">
-                  {/* Product Image */}
-                  <div className="relative h-48 bg-gray-100 flex items-center justify-center">
-                    <img
-                      src={detail.productSize.productVariant.image}
-                      alt={detail.productSize.productVariant.name}
-                      className="object-contain h-full"
-                    />
+          <div className="grid gap-6 grid-cols-2">
+            {Object.values(groupedDetails).map((variant: any) => (
+              <Card key={variant.name} className="shadow-lg rounded-lg overflow-hidden">
+                <div className="relative h-48 bg-gray-100 flex items-center justify-center">
+                  <img src={variant.image} alt={variant.name} className="object-contain h-full" />
+                </div>
+                <CardContent className="p-4">
+                  <div className="mb-3 flex flex-row items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-800">{variant.name}</h3>
                   </div>
-                  {/* Product Details */}
-                  <CardContent className="p-4">
-                    <div className="mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {detail.productSize.productVariant.name} - {detail.productSize.size}
-                      </h3>
-                      <span className="text-sm font-semibold text-primaryLight">
-                        Code: {detail.productSize.code}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mb-5">
-                      <p className="text-sm font-medium text-gray-700">Quantity to Produce:</p>
-                      <p className="text-lg font-bold text-gray-900">{detail.quantityToProduce}</p>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-2 gap-4">
-                      <SummaryCard
-                        title="Manufacturing Quantity"
-                        value={detail?.productPlanDetailManufacturingQuantity ?? 0}
-                        icon={<PlayCircle className="h-5 w-5" />}
-                        variant="manufacturing"
-                      />
-                      <SummaryCard
-                        title="Produced Quantity"
-                        value={detail?.productPlanDetailProducedQuantity ?? 0}
-                        icon={<CheckCircle className="h-5 w-5" />}
-                        variant="success"
-                      />
-                      <SummaryCard
-                        title="Defect Quantity"
-                        value={detail?.productPlanDetailDefectQuantity ?? 0}
-                        icon={<AlertCircle className="h-5 w-5" />}
-                        variant="error"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  {variant.sizes.map((sizeDetail: any, index: any) => (
+                    <ExpandableSizeDetail
+                      key={sizeDetail.id}
+                      sizeDetail={sizeDetail}
+                      isLast={index === variant.sizes.length - 1}
+                    />
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+};
 
-      {/* Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={closeModal}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-900">
-              Start Production Plan
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Are you sure you want to start the production plan?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-6 bg-red-50 border-l-4 border-red-400 p-4">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
-              <p className="ml-3 text-sm text-red-700">
-                This action will initiate the production process. Please ensure all prerequisites
-                are met.
-              </p>
+const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
+  sizeDetail,
+  isLast
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className={`pt-4 ${!isLast ? 'border-b border-gray-300 pb-4' : ''}`}>
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col">
+          <h4 className="text-sm font-medium text-gray-700">
+            Size:{' '}
+            <span className="text-lg font-semibold text-primaryLight">
+              {sizeDetail.productSize.size}
+            </span>
+          </h4>
+          <p className="text-sm font-medium text-gray-700">
+            Quantity To Produce:{' '}
+            <span className="text-lg font-semibold text-primaryLight">
+              {sizeDetail.quantityToProduce}
+            </span>
+          </p>
+        </div>
+        <Badge>{sizeDetail?.code}</Badge>
+      </div>
+      <div className="flex justify-center items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-500 hover:text-gray-700">
+          {isExpanded ? 'Hide Details' : 'Show Details'}
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4 ml-2" />
+          ) : (
+            <ChevronDown className="h-4 w-4 ml-2" />
+          )}
+        </Button>
+      </div>
+      {isExpanded && (
+        <div className="mt-4 space-y-4">
+          <div className="bg-gray-50  rounded-lg p-4 shadow-inner">
+            <h5 className="text-sm font-semibold text-gray-700  text-center mb-5">
+              Product Specifications
+            </h5>
+            <div className="grid grid-cols-2 items-center ml-[5rem] gap-3">
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Width:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.width} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Height:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.height} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Length:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.length} m
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-medium text-gray-500">Weight:</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {sizeDetail.productSize.weight} kg
+                </span>
+              </div>
             </div>
           </div>
-          <div className="mt-6 sm:mt-8 sm:flex sm:flex-row-reverse gap-3">
-            <Button
-              variant="default"
-              className="bg-green-600 text-white hover:bg-green-700"
-              onClick={handleStartPlan}
-              disabled={isStartingPlan}>
-              {isStartingPlan ? 'Starting...' : 'Yes, Start Plan'}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeModal}
-              className="mt-3 sm:mt-0 ring-1 ring-red-500 text-red-500 hover:text-red-300">
-              Cancel
-            </Button>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <SummaryCard
+              title="Manufacturing Quantity"
+              value={sizeDetail?.productPlanDetailManufacturingQuantity ?? 0}
+              icon={<PlayCircle className="h-5 w-5" />}
+              variant="manufacturing"
+            />
+            <SummaryCard
+              title="Produced Quantity"
+              value={sizeDetail?.productPlanDetailProducedQuantity ?? 0}
+              icon={<CheckCircle className="h-5 w-5" />}
+              variant="success"
+            />
+            <SummaryCard
+              title="Defect Quantity"
+              value={sizeDetail?.productPlanDetailDefectQuantity ?? 0}
+              icon={<AlertCircle className="h-5 w-5" />}
+              variant="error"
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 };

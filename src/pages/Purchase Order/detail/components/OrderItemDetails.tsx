@@ -90,29 +90,12 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     }
   };
 
-  const renderRedirectButton = (delivery: PODelivery, poid: string, hasOtherPending: boolean) => {
-    // Check if all other deliveries are finished
-    const allOtherDeliveriesFinished = poDelivery?.every(
-      (otherDelivery) =>
-        otherDelivery.id === delivery.id ||
-        otherDelivery.status === PurchaseOrderDeliveryStatus.FINISHED
-    );
-
-    // Render the button only if delivery is extra and all other deliveries are finished
-    if (delivery.isExtra && allOtherDeliveriesFinished) {
-      let path = '';
-      let color = '';
-      let label = '';
-
-      switch (delivery.status) {
-        case PurchaseOrderDeliveryStatus.PENDING:
-          color = 'bg-primaryLight';
-          label = 'Create Import Request';
-          path = `/import-request/create/material/${delivery.id}`;
-          break;
-        default:
-          return null;
-      }
+  const renderRedirectButton = (delivery: PODelivery, poId: string) => {
+    // Render the button only if the delivery status is PENDING and it is NOT extra
+    if (delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra) {
+      let path = `/import-request/create/material/${delivery.id}`;
+      let label = 'Create Import Request';
+      let color = 'bg-primaryLight';
 
       return (
         <TooltipProvider>

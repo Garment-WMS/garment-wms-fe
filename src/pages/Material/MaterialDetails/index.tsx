@@ -30,6 +30,7 @@ import ReceiptTable from './components/ReceiptTable';
 import Attributes from './components/Attributes';
 import privateCall from '@/api/PrivateCaller';
 import ImageUploadWithDialog from './components/ImageUpload';
+import HistoryTable from './components/HistoryTable';
 
 const MaterialDetails = () => {
   const { id, receiptId } = useParams<{ id: string; receiptId: string }>();
@@ -194,7 +195,7 @@ const MaterialDetails = () => {
             <div className="flex flex-col gap-2">
               <Accordion
                 type="multiple"
-                defaultValue={['item-1', 'item-2', 'item-3', 'item-4']}
+                defaultValue={['item-1', 'item-2', 'item-3', 'item-4', 'item-5']}
                 className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>
@@ -221,6 +222,14 @@ const MaterialDetails = () => {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
+                <AccordionTrigger>
+                    <Label className="text-xl">History</Label>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <HistoryTable id={id} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-5">
                   <AccordionTrigger>
                     <Label className="text-xl">Receipt</Label>
                   </AccordionTrigger>

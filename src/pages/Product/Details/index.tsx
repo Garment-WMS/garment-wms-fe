@@ -18,6 +18,7 @@ import SizeTable from './components/SizeTable';
 import Attributes from './components/Attributes';
 import ReceiptTable from './components/ReceiptTable';
 import ProductSizeAndFormula from './components/ProductSizeAndFormula';
+import HistoryTable from './components/HistoryTable';
 
 type Props = {};
 
@@ -150,6 +151,14 @@ const ProductVariantDetails = (props: Props) => {
                     <Label className="text-xl">Attributes</Label>
                   </AccordionTrigger>
                   <AccordionContent><Attributes/></AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-4">
+                  <AccordionTrigger>
+                    <Label className="text-xl">History</Label>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <HistoryTable  id={productVariant.id}/>
+                  </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
                   <AccordionTrigger>

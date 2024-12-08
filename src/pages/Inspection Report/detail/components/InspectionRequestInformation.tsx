@@ -9,7 +9,7 @@ import {
 } from '@/enums/inspectionRequestStatus';
 import { InspectionRequestType, InspectionRequestTypeLabels } from '@/enums/inspectionRequestType';
 import { ImportRequest } from '@/types/ImportRequestType';
-import { Box, ClipboardCopy, ReceiptText, Shirt, Type } from 'lucide-react';
+import { Box, CalendarCheck, ClipboardCopy, ReceiptText, Shirt, Type } from 'lucide-react';
 import { InspectionReport } from '@/types/InspectionReport';
 import { convertToVietnamesePhoneNumber } from '../../../../helpers/convertPhoneNumber';
 import { Gender } from '@/enums/gender';
@@ -67,12 +67,6 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               {InspectionRequestStatusLabels[requestStatus]}
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Reqeuested at
-            <span className="text-slate-600 ml-2 font-semibold">
-              {convertDateWithTime(requestCreatedAt)}
-            </span>
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -101,7 +95,7 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               </div>
             </div>
 
-            {/* Created At */}
+            {/* Import Request */}
             <div className="flex items-center">
               <ClipboardCopy className="text-gray-500 mr-2" />
               <div>
@@ -116,22 +110,16 @@ const InspectionRequestInformation: FC<InspectionRequestInformationProps> = ({
               </div>
             </div>
 
-            {/* Note */}
-            {importReceiptCode && (
-              <div className="flex items-center">
-                <ReceiptText className="text-gray-500 mr-2" />
-                <div>
-                  <dt className="font-medium text-gray-500">Import Receipt</dt>
-                  <dd className="text-primaryLight underline cursor-pointer">
-                    <Link
-                      to={`/import-receipt/${importRequest?.id}`}
-                      className="text-primaryLight underline cursor-pointer">
-                      {importReceiptCode}
-                    </Link>
-                  </dd>
-                </div>
+            {/* Import Request */}
+            <div className="flex items-center">
+              <CalendarCheck className="text-gray-500 mr-2" />
+              <div>
+                <dt className="font-medium text-gray-500">Inspected At</dt>
+                <span className="text-green-600 font-semibold">
+                  {convertDateWithTime(requestCreatedAt)}
+                </span>
               </div>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>

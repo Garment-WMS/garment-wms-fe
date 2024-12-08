@@ -79,6 +79,65 @@ export interface MaterialExportReceiptResponse {
   message: string;
   errors: any | null;
 }
+export interface MaterialHistoryResponse {
+  statusCode: number;
+  data: {
+    data: ReceiptBase[];
+    pageMeta: PageMetaData;
+  };
+  message: string;
+  errors: any | null;
+}
+export interface ReceiptBase {
+  code: string;
+  type: string;
+  quantityByPack: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportReceiptForHistory extends ReceiptBase {
+  materialReceiptId: string;
+  importReceiptId: string;
+}
+
+export interface ExportReceiptForHistory extends ReceiptBase {
+  materialExportReceiptDetailId: string;
+  materialExportReceiptId: string;
+}
+
+export interface AdjustmentReceiptForHistory extends ReceiptBase {
+  receiptAdjustmentId: string;
+  inventoryReportId: string;
+}
+// export interface ImportReceiptForHistory{
+//   materialReceiptId: string
+//   importReceiptId: string
+//   quantityByPack: number
+//   code: string
+//   type: string
+//   createdAt: string
+//   updatedAt: string
+// }
+// export interface ExportReceiptForHistory{
+//   materialExportReceiptDetailId: string
+//   materialExportReceiptId: string
+//   quantityByPack: number
+//   code: string
+//   type: string
+//   createdAt: string
+//   updatedAt: string
+// }
+// export interface AdjustmentReceiptForHistory{
+//   receiptAdjustmentId: string
+//   inventoryReportId: string
+//   quantityByPack: number
+//   code: string
+//   type: string
+//   createdAt: string
+//   updatedAt: string
+// }
+
 // export interface MaterialReceiptResponse {
 //   statusCode: number;
 //   data: MaterialReceipt;

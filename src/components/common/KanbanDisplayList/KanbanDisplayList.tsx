@@ -5,6 +5,7 @@ import KanbanDisplayCard from './KanbanDisplayCard';
 import { ColumnFiltersState, PaginationState } from '@tanstack/react-table';
 import { KanbanDisplayProps } from '@/types/KanbanDisplayType';
 import KanbanSkeleton from './KanbanSkeleton';
+import { ScrollRestoration } from 'react-router-dom';
 
 
 const KanbanDisplayList = <TData,>({

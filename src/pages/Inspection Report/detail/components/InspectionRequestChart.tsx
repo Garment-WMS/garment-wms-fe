@@ -70,7 +70,6 @@ const InspectionRequestChart: React.FC<{
                       <TableHead className="text-center">Image</TableHead>
                       <TableHead className="text-left">Name</TableHead>
                       <TableHead className="text-center">Code</TableHead>
-                      <TableHead className="text-center">Inspected At</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">No. Pass</TableHead>
                       <TableHead className="text-right">No. Failed</TableHead>
@@ -95,9 +94,6 @@ const InspectionRequestChart: React.FC<{
                             </TableCell>
                             <TableCell className="text-center">
                               <Badge>{detail.materialPackage?.code || 'N/A'}</Badge>
-                            </TableCell>
-                            <TableCell className="text-center text-green-600">
-                              {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
                             <TableCell className="text-right text-slate-700 font-semibold">
                               {detail?.quantityByPack ||
@@ -149,9 +145,6 @@ const InspectionRequestChart: React.FC<{
                             </TableCell>
                             <TableCell className="text-center">
                               <Badge>{detail.productSize?.code || 'N/A'}</Badge>
-                            </TableCell>
-                            <TableCell className="text-center text-green-700">
-                              {convertDateWithTime(inspectionReport.createdAt) || 'N/A'}
                             </TableCell>
                             <TableCell className="text-right text-gray-500 font-bold">
                               {detail.quantityByPack ||

@@ -1,4 +1,5 @@
 import { MaterialPackage } from './MaterialTypes';
+import { ProductSize } from './ProductType';
 
 export interface InspectionReportDetail {
   id: string;
@@ -16,11 +17,4 @@ export interface InspectionReportDetail {
   inspectionReportDetailDefect?: any[] | null;
 }
 
-export interface ProductSize {
-  id: string;
-  sizeName: string;
-  sizeDescription?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string | null;
-}
+

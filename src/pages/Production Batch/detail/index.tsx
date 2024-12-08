@@ -125,18 +125,6 @@ const ProductionBatchDetail: React.FC = () => {
           {status === ProductionBatchStatus.PENDING && (
             <>
               <ProductionDepartmentGuardDiv>
-                <Button
-                  className="bg-white ring-1 ring-primaryLight text-primaryLight"
-                  onClick={() => handleNavigate(id as string, 'import-request')}>
-                  <FileOutput
-                    size={18}
-                    color={Colors.primaryLightBackgroundColor}
-                    className="mr-3"
-                  />
-                  Create Import
-                </Button>
-              </ProductionDepartmentGuardDiv>
-              <ProductionDepartmentGuardDiv>
                 <Button onClick={() => handleNavigate(id as string, 'export-request')}>
                   <FileInput size={18} color="#ffffff" className="mr-3" />
                   Create Export
@@ -150,6 +138,22 @@ const ProductionBatchDetail: React.FC = () => {
                   </Button>
                 </ProductionDepartmentGuardDiv>
               )}
+            </>
+          )}
+          {status === ProductionBatchStatus.MANUFACTURING && (
+            <>
+              <ProductionDepartmentGuardDiv>
+                <Button
+                  className="bg-white ring-1 ring-primaryLight text-primaryLight"
+                  onClick={() => handleNavigate(id as string, 'import-request')}>
+                  <FileOutput
+                    size={18}
+                    color={Colors.primaryLightBackgroundColor}
+                    className="mr-3"
+                  />
+                  Create Import
+                </Button>
+              </ProductionDepartmentGuardDiv>
             </>
           )}
         </div>
@@ -358,7 +362,7 @@ const ProductionBatchDetail: React.FC = () => {
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <FileOutput className="h-5 w-5" />
-            Material Import Requests
+            Product Import Requests
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">

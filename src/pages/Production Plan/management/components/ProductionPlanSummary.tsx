@@ -15,12 +15,11 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
     Math.max(...productionPlanList.map((plan) => new Date(plan.expectedEndDate).getTime()))
   );
   const adjustedMaxDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
-  const tasks: Task[] = productionPlanList.map((plan) => {
-    const startDate = new Date(plan.expectedStartDate);
-    const endDate = new Date(plan.expectedEndDate);
+  const tasks: Task[] = productionPlanList?.map((plan) => {
+    const startDate = new Date(plan?.expectedStartDate);
+    const endDate = new Date(plan?.expectedEndDate);
     const formattedStartDate = new Date(
       startDate.getFullYear(),
-
       startDate.getMonth(),
       startDate.getDate()
     );
@@ -62,7 +61,7 @@ const ProductionPlanSummary: React.FC<ProductionPlanSummaryProps> = ({ productio
   };
 
   return (
-    <section className="px-6 pt-6 pb-8 w-auto bg-white rounded-xl shadow-md border">
+    <section className="px-6 pt-6 pb-8 w-[75vw] bg-white rounded-xl shadow-md border">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primaryLight">Production Plan Summary</h1>
       </div>

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   Package,
   FileText,
@@ -69,6 +68,7 @@ import ProductReceiptLabel from './components/ProductReceiptLabels';
 import { ImportReceiptAction } from './components/ImportReceiptAction';
 import ImportStepper from './components/ImportStepper';
 import { convertDate } from '@/helpers/convertDate';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Chart';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -900,9 +900,9 @@ export default function MaterialReceipt() {
                   </AlertDialog>
                 </DialogFooter>
               </DialogContent>
-              {importReceipt?.discussion && (
+              {/* {importReceipt?.discussion && (
                 <Discussion chat={importReceipt?.discussion} onRender={onRender} />
-              )}
+              )} */}
             </Dialog>
           )}
         </>

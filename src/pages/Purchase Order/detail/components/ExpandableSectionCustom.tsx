@@ -1,5 +1,6 @@
 import { FC, useState, ReactNode } from 'react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 
 interface ExpandableSectionProps {
   title: string | null;
@@ -39,7 +40,9 @@ const ExpandableSectionCustom: FC<ExpandableSectionProps> = ({
               </h1>
               <div className="ml-2">{status}</div>
             </div>
-            <div className="flex gap-x-5">{redirectButton}</div>
+            <PurchasingStaffGuardDiv>
+              <div className="flex gap-x-5">{redirectButton}</div>
+            </PurchasingStaffGuardDiv>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent className="CollapsibleContent px-4 pb-5 ">
