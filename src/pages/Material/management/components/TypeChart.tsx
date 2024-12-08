@@ -14,7 +14,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent
-} from '@/components/ui/Chart';
+} from '@/components/ui/chart';
 import { generateColors } from '@/helpers/generateColors';
 import { Material } from '@/types/MaterialTypes';
 
