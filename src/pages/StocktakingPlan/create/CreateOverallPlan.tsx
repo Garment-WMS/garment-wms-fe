@@ -103,6 +103,13 @@ const CreateOverallPlan = () => {
         hasError = true;
       }
     });
+    if(assignments.length < 2){
+      return  toast({
+        title: 'Error',
+        description: 'Overall Stocktaking plan must have more than 2 staffs participated in.',
+        variant: 'destructive'
+      });
+    }
 
     // Reset errors if no issues are found
     if (!hasError) {
@@ -361,7 +368,7 @@ const CreateOverallPlan = () => {
               </div>
             ))}
 
-            {/* <Button
+            <Button
               type="button"
               onClick={addAssignment}
               variant="outline"
@@ -369,7 +376,7 @@ const CreateOverallPlan = () => {
               <Plus className="font-bold w-4 h-4 text-green-500" /> Add Assignment
             </Button>
 
-            <Button type="submit">Submit</Button> */}
+            {/* <Button type="submit">Submit</Button> */}
 
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <AlertDialogTrigger asChild>
