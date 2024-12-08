@@ -67,14 +67,14 @@ const ImportRequestSheet = (props: Props) => {
             Good Import Type:{' '}
             <span className="text-primaryLight">{getLabelOfImportType(importType)}</span>
           </div>
-          {actualDeliveryDate && (
+          {/* {actualDeliveryDate && (
             <div className="font-primary font-semibold text-sm text-slate-500">
               Actual Delivery Date:{' '}
               <span className="text-green-600">
                 {actualDeliveryDate ? convertDateWithTime(actualDeliveryDate) : 'Not yet'}
               </span>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div>

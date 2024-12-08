@@ -22,11 +22,11 @@ import {
 } from '@/components/ui/AlertDialog';
 import { GiConfirmed } from 'react-icons/gi';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MaterialDetailsGrid } from '@/pages/ExportReceiptDetail/components/MaterialDetailsGrid';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/Textarea';
 import { Label } from '@/components/ui/Label';
 import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import { MaterialDetailsGrid } from './MaterialDetailsGrid';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
