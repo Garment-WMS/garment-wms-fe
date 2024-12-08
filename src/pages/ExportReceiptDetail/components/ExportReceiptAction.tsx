@@ -21,6 +21,7 @@ import { MaterialDetailsGrid } from './MaterialDetailsGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FaRegSave } from 'react-icons/fa';
 import { GiConfirmed } from 'react-icons/gi';
+import { useState } from 'react';
 
 interface Material {
   id: string;
@@ -46,6 +47,12 @@ export function MaterialExportActions({
   handleFinishExport,
   materials
 }: MaterialExportActionsProps) {
+  const [confirmedMaterials, setConfirmedMaterials] = useState<string[]>([]);
+
+  const allMaterialsConfirmed = materials.every((material) =>
+    confirmedMaterials.includes(material.barcode)
+  );
+
   return (
     <Card className="p-6 mb-6">
       <div className="flex items-center justify-between">
@@ -71,7 +78,7 @@ export function MaterialExportActions({
                     Finish
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="max-w-3xl">
+                <AlertDialogContent className="max-w-5xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Confirm Export Completion</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -79,12 +86,18 @@ export function MaterialExportActions({
                       cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <ScrollArea className="h-[400px] rounded-md border p-4">
-                    <MaterialDetailsGrid materials={materials} />
+                  <ScrollArea className="h-[450px] rounded-md border p-4">
+                    <MaterialDetailsGrid
+                      materials={materials}
+                      confirmedMaterials={confirmedMaterials}
+                      setConfirmedMaterials={setConfirmedMaterials}
+                    />
                   </ScrollArea>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleFinishExport('EXPORTED', 'staff')}>
+                    <AlertDialogAction
+                      onClick={() => handleFinishExport('EXPORTED', 'staff')}
+                      disabled={!allMaterialsConfirmed}>
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>

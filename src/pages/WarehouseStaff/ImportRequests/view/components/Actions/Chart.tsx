@@ -16,7 +16,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent
-} from '@/components/ui/Charts';
+} from '@/components/ui/Chartss';
 import { Label, Pie, PieChart, Cell, Legend } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import { statusOrder } from '@/pages/ImportRequests/constants';
