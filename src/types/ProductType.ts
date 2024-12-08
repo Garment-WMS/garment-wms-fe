@@ -25,6 +25,8 @@ export interface ProductVariantResponse {
 
     image: string | null;
     onHand: number;
+    onHandQualified: number;
+    onHandDisqualified: number;
     numberOfMaterialPackage: number;
     product:Product;
     productAttribute: ProductAttribute
@@ -127,6 +129,7 @@ export interface ProductReceiptBase {
   type: string;
   quantityByPack: number;
   createdAt: string;
+  isDefect: boolean;
   updatedAt: string;
 }
 

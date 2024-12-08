@@ -16,7 +16,6 @@ const General: React.FC<Props> = ({ productVariant }) => {
       </p>
     );
   }
-  console.log(productVariant);
   return (
     <div className="flex flex-col gap-4 ring-1 ring-slate-200 rounded-md p-4">
 
@@ -36,14 +35,20 @@ const General: React.FC<Props> = ({ productVariant }) => {
           {/* {`(${productVariant.product.productUom.uomCharacter})`} */}
         </Label>
       </div>
-      <div className="col-span-2">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center">
-          <Label htmlFor="track-inventory" className="flex">
-            Quantity:  {" "}{productVariant?.onHand || 0}  units
+          <Label htmlFor="track-inventory" className="flex gap-1">
+            Qualified Quantity:  {" "}<span className='text-green-500'>{productVariant?.onHandQualified || 0}</span>  units
           </Label>
           <div className='font-primary'> </div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <div className="flex items-center">
+          <Label htmlFor="track-inventory" className="flex gap-1">
+            Disqualified Quantity:  {" "}<span className='text-red-500'>{productVariant?.onHandDisqualified || 0}</span>  units
+          </Label>
+          <div className='font-primary'> </div>
+        </div>
+        <p className="text-sm text-gray-500">
           The quantity is based on the import receipt that have the status of Available.
         </p>
       </div>

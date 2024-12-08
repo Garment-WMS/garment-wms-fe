@@ -88,6 +88,26 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
         );
       }
     },
+    {
+      header: 'Product Type',
+      accessorKey: 'isDefect',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const isDefect = row.original.isDefect;
+        console.log(isDefect)
+        let result 
+        if (isDefect === null || isDefect === undefined) {
+          return <div>N/A</div>;
+        }else {
+          isDefect ? result = 'Disqualified' : result = 'Qualified'
+        }
+        return (
+          <div>
+            <div className={!isDefect? `text-green-500` : `text-red-500`}>{result}</div>
+          </div>
+        );
+      }
+    },
     // {
     //   header: 'Material',
     //   accessorKey: 'material.name',

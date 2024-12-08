@@ -5,7 +5,7 @@ import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 type Props = {
-  product : any
+  product: any;
 };
 
 const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
@@ -23,14 +23,21 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
 
     // Navigate to the new route
     navigate(`${basePath}/product-variant/${requestId}`);
-  }
+  };
 
   return (
-    <Link to="#" key={product.id} onClick={() => (product.id && product.material) ? handleMaterialViewClick(product.id) : handleProductViewClick(product.id)}>
+    <Link
+      to="#"
+      key={product.id}
+      onClick={() =>
+        product.id && product.material
+          ? handleMaterialViewClick(product.id)
+          : handleProductViewClick(product.id)
+      }>
       <Card key={product.id} className="overflow-hidden">
         <CardContent className="p-4">
           <div className="flex justify-between items-start">
-            <div className='w-full max-w-[130px] truncate'>
+            <div className="w-full max-w-[130px] truncate">
               <h3 className="font-semibold text-sm truncate">{product.name}</h3>
               {product.code && <p className="text-xs text-gray-500 truncate">[{product.code}]</p>}
               {product.materialPackage && (
@@ -39,15 +46,28 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
                 </p>
               )}
               {product.productSize && (
-                <p className="text-xs text-gray-500">
-                  {product.productSize.length} Sizes
-                </p>
+                <p className="text-xs text-gray-500">{product.productSize.length} Sizes</p>
               )}
 
-              {product.material && <p className="text-xs text-gray-500 truncate">{product.material.name}</p>}
-              {product.product && <p className="text-xs text-gray-500 truncate">{product.product.name}</p>}
-              {product.onHand !== null && product.onHand !== undefined && (
-                <p className="text-xs text-gray-500">Quantity: {product.onHand}</p>
+              {product.material && (
+                <p className="text-xs text-gray-500 truncate">{product.material.name}</p>
+              )}
+              {product.product && (
+                <p className="text-xs text-gray-500 truncate">{product.product.name}</p>
+              )}
+              {/* {product.onHand !== null && product.onHand !== undefined && (
+                <p className="text-xs text-gray-500">
+                  Quantity: {product.onHand} {product?.materialPackage[0]?.packUnit}
+                </p>
+              )} */}
+              {product.onHand !== null &&
+              product.onHand !== undefined &&
+              product?.materialPackage ? (
+                <p className="text-xs text-gray-500">
+                  Quantity: {product.onHand} {product?.materialPackage[0]?.packUnit}
+                </p>
+              ) : (
+                <p className="text-xs text-gray-500">Quantity: {product.onHandQualified}</p>
               )}
             </div>
             <div className="w-16 h-16">
