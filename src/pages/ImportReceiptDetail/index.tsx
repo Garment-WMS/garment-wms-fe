@@ -900,9 +900,9 @@ export default function MaterialReceipt() {
                   </AlertDialog>
                 </DialogFooter>
               </DialogContent>
-              {importReceipt?.discussion && (
+              {/* {importReceipt?.discussion && (
                 <Discussion chat={importReceipt?.discussion} onRender={onRender} />
-              )}
+              )} */}
             </Dialog>
           )}
         </>
