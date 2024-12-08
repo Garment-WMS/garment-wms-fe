@@ -1,102 +1,110 @@
-import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
-import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ProductionPlanSummary from '../Production Plan/management/components/ProductionPlanSummary';
-import { Button } from '@/components/ui/button';
-import Loading from '@/components/common/Loading';
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProductionChart } from './components/PlanChart';
-import { Label } from '@/components/ui/Label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ProductionProgressChart } from "./components/ProductionProgressChart"
+import { Label } from "@/components/ui/Label"
+import { SelectProductionPlan } from "./components/SelectProductionPlan"
 
-type Props = {};
-
-const ProductionDashboard = (props: Props) => {
-  const navigate = useNavigate();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 5
-  });
-
-  const { productionPlanList, pageMeta, isPending, isError } = useGetAllProductionPlans({
-    sorting,
-    columnFilters,
-    pagination
-  });
-  const plans = productionPlanList?.data || [];
-  if (isPending) {
-    return (
-      <div className="flex justify-center items-center">
-        <Loading />
-      </div>
-    );
+export function ProductionPlanDashboard() {
+  // In a real application, you would fetch this data from an API
+  const productionPlan = {
+    name: "Production Plan For 2024-2025",
+    code: "PRO-PLA-000001",
+    status: "IN_PROGRESS",
+    expectedStartDate: "2024-12-11",
+    expectedEndDate: "2025-12-05",
+    totalQuantityToProduce: 385,
+    totalProducedQuantity: 50,
+    totalDefectQuantity: 0,
+    totalManufacturingQuantity: 0,
   }
 
-  if (isError) {
-    return <p>Failed to load production plans. Please try again later.</p>;
-  }
+  const completionPercentage = (productionPlan.totalProducedQuantity / productionPlan.totalQuantityToProduce) * 100
+
   return (
-    <div className=" w-full gap-4 px-4 py-3 flex flex-col space-y-3 bg-white rounded-md">
-      <Label className='text-2xl font-bold mt-2'>Dashboard</Label>
-       <main className="flex-1 p-4">
-          <div className="grid gap-4 grid-cols-2 ">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Production</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1,234 units</div>
-                <p className="text-xs text-muted-foreground">+15% from last month</p>
-              </CardContent>
-            </Card>
+    <div className="space-y-4 bg-white p-4">
+      <Label className="text-2xl font-bold">Dashboard</Label>
+      <SelectProductionPlan/>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="col-span-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Overall Completion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{completionPercentage.toFixed(2)}%</div>
+            <p className="text-xs text-muted-foreground">
+              {productionPlan.totalProducedQuantity} of {productionPlan.totalQuantityToProduce} items produced
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total to Produce</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{productionPlan.totalQuantityToProduce}</div>
+            <p className="text-xs text-muted-foreground">
+              This is total quantity to produce
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Produced</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{productionPlan.totalProducedQuantity}</div>
+            <p className="text-xs text-muted-foreground">
+              This is actual quantity had produced
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">In Manufacturing</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{productionPlan.totalManufacturingQuantity}</div>
+            <p className="text-xs text-muted-foreground">
+              This is total quantity that are producing
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Defects</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{productionPlan.totalDefectQuantity}</div>
+            <p className="text-xs text-muted-foreground">
+              This is total quantity defects
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Quality Score</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">4.9/5</div>
-                <p className="text-xs text-muted-foreground">+0.2 from last quarter</p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle>Production Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ProductionChart />
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-        {/* <div className='flex justify-center'>
-            <ProductionPlanSummary productionPlanList={plans} />
-        </div>
-      
-      <div className="flex justify-between items-center mt-4">
-        <Button
-          onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 }))}
-          disabled={pagination.pageIndex === 0}>
-          Previous
-        </Button>
-        <p>
-          Page {pagination.pageIndex + 1} of {productionPlanList?.pageMeta?.totalPages || 1}
-        </p>
-        <Button
-          onClick={() => setPagination((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 }))}
-          disabled={
-            !productionPlanList?.pageMeta ||
-            pagination.pageIndex + 1 >= productionPlanList?.pageMeta?.totalPages
-          }>
-          Next
-        </Button>
-      </div> */}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="materials">Materials</TabsTrigger>
+          <TabsTrigger value="orders">Purchase Orders</TabsTrigger>
+          <TabsTrigger value="details">Plan Details</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-4">
+          <ProductionProgressChart />
+        </TabsContent>
+        <TabsContent value="materials">
+          {/* <MaterialSummaryTable /> */}
+        </TabsContent>
+        <TabsContent value="orders">
+          {/* <PurchaseOrderSummary /> */}
+        </TabsContent>
+        <TabsContent value="details">
+          {/* <ProductionPlanDetails /> */}
+        </TabsContent>
+      </Tabs>
     </div>
-  );
-};
+  )
+}
 
-export default ProductionDashboard;
