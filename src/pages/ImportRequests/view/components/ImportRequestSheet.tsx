@@ -15,6 +15,7 @@ const ImportRequestSheet = (props: Props) => {
   let purchaseOrder = importRequest?.poDelivery?.purchaseOrder.poNumber;
   let purchaseOrderId = importRequest?.poDelivery?.purchaseOrder?.id;
   const POcode = importRequest?.poDelivery?.purchaseOrder?.code || 'N/A';
+  const purchaseOrderDelivery = importRequest?.poDelivery?.code;
   let planDeliveryDate = importRequest?.poDelivery?.expectedDeliverDate;
   let actualDeliveryDate = importRequest?.poDelivery?.deliverDate;
   let productionBatch = importRequest?.productionBatch;
@@ -52,7 +53,7 @@ const ImportRequestSheet = (props: Props) => {
           )}
           {poDeliveryId && (
             <div className="font-primary font-semibold text-sm flex gap-1">
-              PO delivery: <div className="text-bluePrimary">{POcode}</div>
+              PO delivery: <div className="text-bluePrimary">{purchaseOrderDelivery}</div>
             </div>
           )}
 
