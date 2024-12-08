@@ -37,6 +37,7 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import { Textarea } from '@/components/ui/Textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 
 const PurchaseOrderList: React.FC = () => {
   const { toast } = useToast();
@@ -300,6 +301,10 @@ const PurchaseOrderList: React.FC = () => {
       enableHiding: false,
       cell: ({ row }) => {
         const request = row.original;
+        const deliveries = request.poDelivery || [];
+        const allPending = deliveries.every(
+          (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING
+        );
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -312,7 +317,7 @@ const PurchaseOrderList: React.FC = () => {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
               <PurchasingStaffGuardDiv>
-                {row.original?.status === PurchaseOrderStatus.IN_PROGRESS && (
+                {row.original?.status === PurchaseOrderStatus.IN_PROGRESS && allPending && (
                   <DropdownMenuItem
                     onClick={() => handleCancelClick(request.id, request.poNumber)}
                     className="text-red-500 hover:text-red-600">

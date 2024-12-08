@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@radix-ui/react-progress';
+import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 
 interface KeyValueDisplayProps {
   name: string;
@@ -47,6 +48,7 @@ interface OrderOverviewProps {
   productionPlanCode: string;
   cancelledAt?: string;
   poMaterialSummary?: any[];
+  poDelivery?: any[];
 }
 
 const KeyValueDisplay: React.FC<KeyValueDisplayProps> = ({
@@ -93,13 +95,17 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
   productionPlanCode,
   finishDate,
   cancelledAt,
-  poMaterialSummary
+  poMaterialSummary,
+  poDelivery
 }) => {
   const { id } = useParams(); // Get purchase order ID from the route params
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const allDeliveriesPending = poDelivery?.every(
+    (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING
+  );
 
   const handleConfirmCancel = async () => {
     if (id) {
@@ -175,7 +181,7 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="flex flex-row items-center gap-3">
           <StatusBadge status={status} />
           <PurchasingStaffGuardDiv>
-            {status === PurchaseOrderStatus.IN_PROGRESS && (
+            {status === PurchaseOrderStatus.IN_PROGRESS && allDeliveriesPending && (
               <Button variant="destructive" onClick={() => setIsModalOpen(true)}>
                 Cancel Order
               </Button>
