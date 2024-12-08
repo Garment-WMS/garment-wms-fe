@@ -5,7 +5,7 @@ import { ArrowUpIcon, Percent } from 'lucide-react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Charts';
 import {
   getDashboardFn,
   getLatestExportReceiptFn,
