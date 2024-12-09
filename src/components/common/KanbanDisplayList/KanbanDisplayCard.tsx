@@ -63,9 +63,15 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
               {product.onHand !== null &&
               product.onHand !== undefined &&
               product?.materialPackage ? (
-                <p className="text-xs text-gray-500">
-                  Quantity: {product.onHand} {product?.materialPackage[0]?.packUnit}
+                <>
+                 <p className="text-xs text-gray-500">
+                  Quantity by package: {product.onHand} {product?.materialPackage[0]?.packUnit}
                 </p>
+                <p className="text-xs text-gray-500">
+                  Quantity by Uom: {product?.onHandUom } {product?.material?.uom?.name}
+                </p>
+                </>
+               
               ) : (
                 <p className="text-xs text-gray-500">Quantity: {product.onHandQualified}</p>
               )}
