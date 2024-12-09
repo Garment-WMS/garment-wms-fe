@@ -68,7 +68,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
                   Quantity by package: {product.onHand} {product?.materialPackage[0]?.packUnit}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Quantity by Uom: {product?.onHandUom } {product?.material?.materialUom.uomCharacter}
+                  Quantity by Uom: {product?.onHandUom } {product?.material?.materialUom?.uomCharacter}
                 </p>
                 </>
                
