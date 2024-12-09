@@ -36,7 +36,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
       }>
       <Card key={product.id} className="overflow-hidden">
         <CardContent className="p-4">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-center">
             <div className="w-full max-w-[170px] truncate">
               <h3 className="font-semibold text-sm truncate">{product.name}</h3>
               {product.code && <p className="text-xs text-gray-500 truncate">[{product.code}]</p>}

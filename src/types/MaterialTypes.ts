@@ -40,6 +40,7 @@ export interface MaterialVariant {
   materialAttribute: MaterialAttribute[];
   image: string | null;
   onHand: number;
+  onHandUom: number;
   numberOfMaterialPackage: number;
 }
 

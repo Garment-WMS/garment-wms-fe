@@ -50,7 +50,7 @@ const MaterialManagementData: React.FC<Props> = ({
   // pagination state of the table
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
+    pageSize: 9 //default page size
   });
 
   const debouncedPagination: PaginationState = useDebounce(pagination, 1000);

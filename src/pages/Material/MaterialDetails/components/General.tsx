@@ -47,7 +47,7 @@ const General: React.FC<Props> = ({ materialVariant }) => {
         </div>
         <div className='flex items-center'>
         <Label className="flex">
-            Quantity by uom:  {" "}{materialVariant?.onHandUom ? materialVariant?.onHandUom : 'N/A'} {materialVariant?.material ? materialVariant?.material?.materialUom.uomCharacter : "units"}
+            Quantity by uom:  {" "}{materialVariant?.onHandUom ? materialVariant?.onHandUom : 0} {materialVariant?.material ? materialVariant?.material?.materialUom.uomCharacter : "units"}
           </Label>
         </div>
         <p className="text-sm text-gray-500">
