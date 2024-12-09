@@ -37,7 +37,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
       <Card key={product.id} className="overflow-hidden">
         <CardContent className="p-4">
           <div className="flex justify-between items-start">
-            <div className="w-full max-w-[130px] truncate">
+            <div className="w-full max-w-[170px] truncate">
               <h3 className="font-semibold text-sm truncate">{product.name}</h3>
               {product.code && <p className="text-xs text-gray-500 truncate">[{product.code}]</p>}
               {product.materialPackage && (
@@ -68,7 +68,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
                   Quantity by package: {product.onHand} {product?.materialPackage[0]?.packUnit}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Quantity by Uom: {product?.onHandUom } {product?.material?.uom?.name}
+                  Quantity by Uom: {product?.onHandUom } {product?.material?.materialUom.uomCharacter}
                 </p>
                 </>
                
