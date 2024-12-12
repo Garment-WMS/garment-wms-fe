@@ -68,7 +68,7 @@ import CreateProductVariant from '@/pages/Product/Create';
 import WarehouseStaffExportReceiptList from '@/pages/WarehouseStaff/ExportReceiptList/management';
 import CreateReturnImportRequest from '@/pages/ImportRequests/createReturnMaterial';
 import PurchaseDashboard from '@/pages/PurchaseDashboard';
-import { ProductionPlanDashboard } from '@/pages/ProductionDashboard';
+import ProductionDashboard from '@/pages/ProductionDashboard';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -102,7 +102,7 @@ const RouterComponent: React.FC = () => {
             <RoleBasedRedirect
               managerComponent={<Home />}
               warehouseStaffComponent={<Home />}
-              productionDepartmentComponent={<ProductionPlanDashboard/>}
+              productionDepartmentComponent={<ProductionDashboard/>}
               inspectingDepartmentComponent={<Home />}
               factoryDirectorComponent={<Home />}
               purchasingStaffComponent={<PurchaseDashboard />}

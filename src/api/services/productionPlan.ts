@@ -5,6 +5,7 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
 import { get, patch, post } from '../ApiCaller';
 import Cookies from 'js-cookie';
+import privateCall from '../PrivateCaller';
 
 interface StartProductionPlanInput {
   id: string;
@@ -96,6 +97,18 @@ export const getProductionPlanById = async ({
   try {
     const config = get(fullUrl);
     const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error) {
+    console.error(`Error fetching production plan with ID ${id}:`, error);
+    throw new Error('Failed to fetch production plan');
+  }
+};
+
+export const getProductionPlanDetailsById = async (id: string): Promise<ApiResponse> => {
+  const fullUrl = `/production-plan/${id}`;
+  try {
+    const config = get(fullUrl);
+    const response = await privateCall(config);
     return response.data as ApiResponse;
   } catch (error) {
     console.error(`Error fetching production plan with ID ${id}:`, error);

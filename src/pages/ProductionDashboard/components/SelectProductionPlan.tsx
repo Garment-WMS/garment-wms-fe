@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react';
 
 import {
   Select,
@@ -7,25 +7,55 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/Select"
+  SelectValue
+} from '@/components/ui/Select';
+import { ProductionPlan } from '@/types/ProductionPlan';
 
-export function SelectProductionPlan() {
+interface SelectProductionPlanProps {
+  productionPlanList: ProductionPlan[];
+  isLoading?: boolean;
+  onPlanSelect: (planId: string) => void; // Callback for selecting a plan
+
+}
+export function SelectProductionPlan({ productionPlanList, onPlanSelect, isLoading  }: SelectProductionPlanProps) {
+  const formattedProductionPlanList = Array.isArray(productionPlanList)
+  ? productionPlanList.map((productionPlan) => ({
+      label: productionPlan.name,
+      value: productionPlan.id,
+    }))
+  : [];
+  const [selectedPlanId, setSelectedPlanId] = React.useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
+  React.useEffect(() => {
+    if (productionPlanList.length > 0 && !isInitialized) {
+      const initialPlanId = productionPlanList[0].id;
+      setSelectedPlanId(initialPlanId); // Set the initial selected plan
+      onPlanSelect(initialPlanId); // Notify parent about the initial selection
+      setIsInitialized(true); // Mark as initialized
+    }
+  }, [productionPlanList]);
   return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+    <Select
+      disabled={isLoading || formattedProductionPlanList.length === 0}
+      value={selectedPlanId ?? undefined}
+      onValueChange={(value) => (
+        onPlanSelect(value)
+      )} // Handle plan selection
+    >
+      <SelectTrigger className="max-w-[1000px] w-auto">
+        <SelectValue placeholder={isLoading ? "Loading plans..." : "Select a production plan"} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
+          <SelectLabel>Production Plans</SelectLabel>
+          {formattedProductionPlanList.map((plan) => (
+            <SelectItem key={plan.value} value={plan.value}>
+              {plan.label}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
-  )
+  );
 }

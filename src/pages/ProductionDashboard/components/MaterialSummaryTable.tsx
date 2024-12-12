@@ -15,25 +15,31 @@ import {
     { name: "Metal Collar Stays", code: "MAT-VAR-000011", ordered: 20, received: 10 },
     { name: "White Polyester Hem Tape", code: "MAT-VAR-000012", ordered: 6, received: 3 },
   ]
-  
-  export function MaterialSummaryTable() {
+  interface MaterialVariantSummary{
+    materialVariantSummary: Array<any>
+  }
+  export function MaterialSummaryTable({ materialVariantSummary }: MaterialVariantSummary) {
     return (
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Material</TableHead>
             <TableHead>Code</TableHead>
-            <TableHead>Ordered</TableHead>
             <TableHead>Received</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {materials.map((material) => (
+          {materialVariantSummary?.map((material) => (
             <TableRow key={material.code}>
-              <TableCell>{material.name}</TableCell>
-              <TableCell>{material.code}</TableCell>
-              <TableCell>{material.ordered}</TableCell>
-              <TableCell>{material.received}</TableCell>
+              <TableCell>
+                
+                <div className="flex items-center gap-2">
+                  <img className="h-8 w-8" src={material?.image} alt={material?.name} />
+                  {material?.name}
+                </div>
+                </TableCell>
+              <TableCell>{material?.code}</TableCell>
+              <TableCell>{material?.actualImportQuantity}</TableCell>
             </TableRow>
           ))}
         </TableBody>
