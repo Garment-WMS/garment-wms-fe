@@ -107,7 +107,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
         return (
           <div className="font-semibold">
             {value
-              ? `${value.toLocaleString('en-US', {
+              ? `${value.toLocaleString('en-GB', {
                   year: 'numeric',
                   month: 'numeric',
                   day: 'numeric',

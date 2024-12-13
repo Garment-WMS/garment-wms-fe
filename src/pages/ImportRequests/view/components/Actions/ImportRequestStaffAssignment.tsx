@@ -10,9 +10,13 @@ import { useEffect, useState } from 'react';
 import { getImportReceiptFn } from '@/api/purchase-staff/importRequestApi';
 import { TiDocument } from 'react-icons/ti';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import AssignStaffPopup from './StaffAssignment';
+import ReassingStaffPopup from './StaffReassignment';
 type AssignmentStatus = 'AWAIT_TO_IMPORT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
+  onApproval: () => void;
+  importRequest: any;
   currentStatus: string;
   requestId: string;
   warehouseManager?: any;
@@ -54,6 +58,8 @@ const getInitials = (name: string | undefined): string => {
 };
 
 export default function WarehouseStaffAssignment({
+  onApproval,
+  importRequest,
   currentStatus,
   requestId,
   warehouseManager,
@@ -63,6 +69,7 @@ export default function WarehouseStaffAssignment({
   const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as AssignmentStatus);
   const { id } = useParams();
   const [importReceipt, setImportReceipt] = useState<any>();
+
   useEffect(() => {
     const getImportReceipt = async () => {
       const response = await getImportReceiptFn(id as string);
@@ -77,6 +84,10 @@ export default function WarehouseStaffAssignment({
       getImportReceipt();
     }
   }, []);
+  const inspectionTime = {
+    expectedStartedAt: importRequest?.inspectExpectedStartedAt,
+    expectedFinishedAt: importRequest?.inspectExpectedFinishedAt
+  };
 
   return (
     <Card className="flex flex-col w-full max-w-5xl h-full justify-center">
@@ -145,11 +156,20 @@ export default function WarehouseStaffAssignment({
             currentStatus == 'AWAIT_TO_IMPORT') &&
             importReceipt && (
               <Link to={`/import-receipt/${importReceipt[0]?.id}`}>
-                <Button variant={'default'} className="ml-4">
+                <Button variant={'default'} className="ml-4 mr-4">
                   Go to Receipt
                 </Button>
               </Link>
             )}
+          {currentStatus == 'AWAIT_TO_IMPORT' && (
+            <ReassingStaffPopup
+              onApproval={onApproval}
+              importRequest={importRequest}
+              type={'warehouseStaffId'}
+              role="warehouse-staff"
+              selectedInspectionTimeFrame={inspectionTime}
+            />
+          )}
         </div>
       </CardFooter>
     </Card>

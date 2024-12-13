@@ -47,7 +47,64 @@ export const importRequestApi = {
   },
   getImportReceipt: (id: string) => get(`/import-receipt/by-import-request/${id}`),
   getStatistic: () => get(`/import-request/statistic`),
-  postChat: (id: string, message: string) => post(`/chat`, { discussionId: id, message })
+  postChat: (id: string, message: string) => post(`/chat`, { discussionId: id, message }),
+  reassignWarehouseStaff: (
+    importRequestId: string,
+    warehouseStaffId: string,
+    importExpectedStartedAt: string,
+    importExpectedFinishedAt: string
+  ) =>
+    post(`/import-request/reassign`, {
+      importRequestId,
+      warehouseStaffId,
+      importExpectedStartedAt,
+      importExpectedFinishedAt
+    }),
+  reassignInspectionStaff: (
+    importRequestId: string,
+    inspectionStaffId: string,
+    inspectExpectedStartedAt: string,
+    inspectExpectedFinishedAt: string
+  ) =>
+    post(`/import-request/reassign`, {
+      importRequestId,
+      inspectionStaffId,
+      inspectExpectedStartedAt,
+      inspectExpectedFinishedAt
+    })
+};
+
+export const reassignStaffFn = async (
+  type: string,
+  importRequestId: string,
+  warehouseStaffId?: string,
+  importExpectedStartedAt?: string,
+  importExpectedFinishedAt?: string,
+  inspectionStaffId?: string,
+  inspectExpectedStartedAt?: string,
+  inspectExpectedFinishedAt?: string
+) => {
+  if (type == 'warehouse-staff') {
+    const res = await privateCall(
+      importRequestApi.reassignWarehouseStaff(
+        importRequestId,
+        warehouseStaffId as string,
+        importExpectedStartedAt as string,
+        importExpectedFinishedAt as string
+      )
+    );
+    return res.data;
+  } else {
+    const res = await privateCall(
+      importRequestApi.reassignInspectionStaff(
+        importRequestId,
+        inspectionStaffId as string,
+        inspectExpectedStartedAt as string,
+        inspectExpectedFinishedAt as string
+      )
+    );
+    return res.data;
+  }
 };
 export const returnMaterialFn = async (id: string) => {
   const res = await privateCall(importRequestApi.returnMaterial(id));

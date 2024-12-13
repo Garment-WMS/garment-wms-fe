@@ -60,7 +60,7 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -82,7 +82,7 @@ export const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'

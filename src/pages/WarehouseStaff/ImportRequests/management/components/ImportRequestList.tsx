@@ -32,7 +32,7 @@ const ImportRequestList = (props: Props) => {
       const res = await getProductionBatchFn();
       const data = res.data;
       const uniqueCodes = new Set();
-      const mappedArray = data.reduce((acc:any, item:any) => {
+      const mappedArray = data.reduce((acc: any, item: any) => {
         if (item.code && !uniqueCodes.has(item.code)) {
           uniqueCodes.add(item.code);
           acc.push({ label: item.code, value: item.code });
@@ -48,13 +48,13 @@ const ImportRequestList = (props: Props) => {
     try {
       const res = await getAllPurchaseOrdersNoPage();
       const uniqueCodes = new Set();
-const mappedArray = res.reduce((acc: any, item: any) => {
-  if (item.code && !uniqueCodes.has(item.code)) {
-    uniqueCodes.add(item.code);
-    acc.push({ label: item.code, value: item.code });
-  }
-  return acc;
-}, []);
+      const mappedArray = res.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
       setPurchaseOrderFilter(mappedArray);
     } catch (error) {
       console.error('Failed to fetch purchase order data', error);
@@ -85,11 +85,12 @@ const mappedArray = res.reduce((acc: any, item: any) => {
     pageSize: 10 //default page size
   });
 
-  const { pageMeta, importRequestData, isimportRequestLoading, isFetching } = useGetMyImportRequests({
-    sorting: debouncedSorting,
-    columnFilters: debouncedColumnFilters,
-    pagination
-  });
+  const { pageMeta, importRequestData, isimportRequestLoading, isFetching } =
+    useGetMyImportRequests({
+      sorting: debouncedSorting,
+      columnFilters: debouncedColumnFilters,
+      pagination
+    });
 
   const paginatedTableData =
     importRequestData && pageMeta
@@ -169,7 +170,7 @@ const mappedArray = res.reduce((acc: any, item: any) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        const formattedDate = date.toLocaleDateString('en-GB', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit'

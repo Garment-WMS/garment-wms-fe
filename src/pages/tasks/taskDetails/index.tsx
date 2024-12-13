@@ -149,8 +149,7 @@ export default function TaskDetailPage() {
     let url;
     if (task.importRequestId) {
       url = `/import-request/${task.importRequestId}`;
-    }
-    else if (task.inventoryReportId) {
+    } else if (task.inventoryReportId) {
       url = `/stocktaking/${task.inventoryReportId}`;
     } else if (task.inventoryReportPlanId) {
       url = `/stocktaking/plan/${task.inventoryReportPlanId}`;
@@ -159,7 +158,7 @@ export default function TaskDetailPage() {
     } else if (task.materialExportReceiptId) {
       url = `/export-receipt/${task.materialExportReceiptId}`;
     } else {
-      console.error("No valid task-related ID found");
+      console.error('No valid task-related ID found');
       return; // Avoid calling `navigate` with an empty URL
     }
 
@@ -191,7 +190,7 @@ export default function TaskDetailPage() {
               <Calendar className="h-4 w-4" />
               <span>
                 Created:{' '}
-                {new Date(task.createdAt).toLocaleString('en-US', {
+                {new Date(task.createdAt).toLocaleString('en-GB', {
                   year: 'numeric',
                   month: 'numeric',
                   day: 'numeric',
@@ -245,9 +244,9 @@ export default function TaskDetailPage() {
           {/* <Link
             to={task.taskType == 'IMPORT' ? `import/receipt${task.importReceiptId}` : ''}
             className="w-full"> */}
-            <Button className="w-full" onClick={handleGoToTask}>
-              Go to Task
-            </Button>
+          <Button className="w-full" onClick={handleGoToTask}>
+            Go to Task
+          </Button>
           {/* </Link> */}
         </CardFooter>
       </Card>

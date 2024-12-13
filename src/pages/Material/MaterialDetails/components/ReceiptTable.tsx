@@ -5,17 +5,23 @@ import { useDebounce } from '@/hooks/useDebouce';
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Label } from '@/components/ui/Label';
 import { useGetMaterialReceipt } from '@/hooks/useGetMaterial';
-import {  MaterialReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
+import { MaterialReceipt, ReceiptStatusLabel } from '@/types/MaterialTypes';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { badgeVariants } from '@/components/ui/Badge';
 import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 type Props = {
   id: string;
-  receiptId: string| null;
+  receiptId: string | null;
 };
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
@@ -25,8 +31,8 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
   };
   const openDialog = (id: string) => {
-    setSelectedReceiptId(id); 
-    setIsOpened(true); 
+    setSelectedReceiptId(id);
+    setIsOpened(true);
   };
 
   useEffect(() => {
@@ -85,7 +91,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        const formattedDate = date.toLocaleDateString('en-GB', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit'
@@ -231,8 +237,8 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       </div>
 
       {selectedReceiptId && (
-  <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened}  />
-)}
+        <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened} />
+      )}
     </div>
   );
 };

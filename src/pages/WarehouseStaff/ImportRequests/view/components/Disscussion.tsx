@@ -94,7 +94,7 @@ const Discussion = (props: Props) => {
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold">{message.sender.username}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(message.createdAt).toLocaleString('en-US', {
+                    {new Date(message.createdAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',

@@ -258,7 +258,6 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
                         {material.quantityByPack}{' '}
                         {/* {material.materialVariant.material?.materialUom?.uomCharacter}{' '} */}
                         {material?.packUnit}{' '}
-
                       </span>
                     </div>
                     <div className="flex flex-row items-center gap-2"></div>
@@ -282,7 +281,7 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
         <div className="space-y-1">
           <KeyValueDisplay
             name="Total Imported Items"
-            value={`${totalImportQuantity.toLocaleString('en-US', {
+            value={`${totalImportQuantity.toLocaleString('en-GB', {
               year: 'numeric',
               month: 'numeric',
               day: 'numeric',
@@ -294,7 +293,7 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
           />
           <KeyValueDisplay
             name="Failed Imports"
-            value={`${(totalFailImportQuantity || 0).toLocaleString('en-US', {
+            value={`${(totalFailImportQuantity || 0).toLocaleString('en-GB', {
               year: 'numeric',
               month: 'numeric',
               day: 'numeric',
@@ -306,7 +305,7 @@ const OrderOverview: React.FC<OrderOverviewProps> = ({
           />
           <KeyValueDisplay
             name="Items Remaining to Import"
-            value={`${totalQuantityToImport.toLocaleString('en-US', {
+            value={`${totalQuantityToImport.toLocaleString('en-GB', {
               year: 'numeric',
               month: 'numeric',
               day: 'numeric',

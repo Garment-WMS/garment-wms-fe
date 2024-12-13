@@ -23,7 +23,7 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
 
   const displayImported =
     status === PurchaseOrderDeliveryStatus.FINISHED
-      ? `${actualImportQuantity.toLocaleString('en-US', {
+      ? `${actualImportQuantity.toLocaleString('en-GB', {
           year: 'numeric',
           month: 'numeric',
           day: 'numeric',
@@ -35,7 +35,7 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
 
   const displayFailed =
     status === PurchaseOrderDeliveryStatus.FINISHED
-      ? `${failedQuantity.toLocaleString('en-US', {
+      ? `${failedQuantity.toLocaleString('en-GB', {
           year: 'numeric',
           month: 'numeric',
           day: 'numeric',
@@ -97,7 +97,7 @@ const MaterialList: React.FC<MaterialListProps> = ({ detail, status }) => {
             <div className="flex items-center gap-2">
               <Box size={24} className="" />
               <span className="text-3xl font-bold ">
-                {quantityByPack.toLocaleString('en-US', {
+                {quantityByPack.toLocaleString('en-GB', {
                   year: 'numeric',
                   month: 'numeric',
                   day: 'numeric',

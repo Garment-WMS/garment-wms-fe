@@ -238,7 +238,7 @@ export default function DashboardPage() {
                       <Badge variant={'outline'}>{receipt.type}</Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(receipt.startedAt).toLocaleString('en-US', {
+                      {new Date(receipt.startedAt).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                        ? new Date(receipt.finishedAt).toLocaleString('en-GB', {
                             year: 'numeric',
                             month: 'numeric',
                             day: 'numeric',
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                       <Badge variant={'outline'}>{receipt.type}</Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(receipt.startedAt).toLocaleString('en-US', {
+                      {new Date(receipt.startedAt).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',
@@ -344,7 +344,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                        ? new Date(receipt.finishedAt).toLocaleString('en-GB', {
                             year: 'numeric',
                             month: 'numeric',
                             day: 'numeric',
@@ -368,7 +368,7 @@ export default function DashboardPage() {
                     </TableCell>
                     <TableCell>
                       {receipt.finishedAt
-                        ? new Date(receipt.finishedAt).toLocaleString('en-US', {
+                        ? new Date(receipt.finishedAt).toLocaleString('en-GB', {
                             year: 'numeric',
                             month: 'numeric',
                             day: 'numeric',

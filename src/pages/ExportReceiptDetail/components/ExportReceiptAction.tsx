@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Check, X, Printer, Download } from 'lucide-react';
+import { Check, X, Printer } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,9 +20,8 @@ import {
 import { MaterialDetailsGrid } from './MaterialDetailsGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FaRegSave } from 'react-icons/fa';
-import { GiConfirmed } from 'react-icons/gi';
-import { useState } from 'react';
-
+import { useRef, useState } from 'react';
+import { useReactToPrint } from 'react-to-print';
 interface Material {
   id: string;
   name: string;
@@ -53,22 +52,23 @@ export function MaterialExportActions({
     confirmedMaterials.includes(material.barcode)
   );
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
   return (
     <Card className="p-6 mb-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" ref={contentRef}>
         <h1 className="text-3xl font-bold text-bluePrimary">
           <div>Material Export Receipt {code}</div>
         </h1>
         <div className="space-x-2"></div>
         <div className="space-x-2 flex justify-center items=center">
-          <Button variant="outline">
+          {/* Print button */}
+          <Button variant="outline" onClick={reactToPrintFn}>
             <Printer className="mr-2 h-4 w-4" />
             Print
           </Button>
-          {/* <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button> */}
+          {/* Conditional rendering for export actions */}
           {status === 'EXPORTING' && (
             <WarehouseStaffGuardDiv>
               <AlertDialog>
@@ -117,7 +117,7 @@ export function MaterialExportActions({
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-3xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Start Emporting</AlertDialogTitle>
+                    <AlertDialogTitle>Start Exporting</AlertDialogTitle>
                     <AlertDialogDescription>
                       Starting this task will initiate the export process immediately.
                       <br />

@@ -15,7 +15,7 @@ const ImportRequestStatus = (props: Props) => {
   const code = importRequest?.code;
   const status = importRequest?.status;
   const createdDate = importRequest?.createdAt
-    ? new Date(importRequest.createdAt).toLocaleString('en-US', {
+    ? new Date(importRequest.createdAt).toLocaleString('en-GB', {
         year: 'numeric',
         month: 'numeric',
         day: 'numeric',
@@ -25,7 +25,7 @@ const ImportRequestStatus = (props: Props) => {
       })
     : 'N/A';
   const lastUpdated = importRequest?.updatedAt
-    ? new Date(importRequest.updatedAt).toLocaleString('en-US', {
+    ? new Date(importRequest.updatedAt).toLocaleString('en-GB', {
         year: 'numeric',
         month: 'numeric',
         day: 'numeric',
@@ -35,7 +35,7 @@ const ImportRequestStatus = (props: Props) => {
       })
     : 'N/A';
   const closedAt = importRequest?.finishAt
-    ? new Date(importRequest.finishAt).toLocaleString('en-US', {
+    ? new Date(importRequest.finishAt).toLocaleString('en-GB', {
         year: 'numeric',
         month: 'numeric',
         day: 'numeric',

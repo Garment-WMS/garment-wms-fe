@@ -114,7 +114,7 @@ export default function TaskDetailManagingPage() {
     // Here you would typically update the todo status on the server
     // For now, we'll just update it locally
     setTask({
-      ...task,
+      ...task
       // todo: task?.todo?.map((item) =>
       //   item.id === todoId ? { ...item, isChecked: !item.isChecked } : item
       // )
@@ -140,8 +140,7 @@ export default function TaskDetailManagingPage() {
     let url;
     if (task.importRequestId) {
       url = `/import-request/${task.importRequestId}`;
-    }
-    else if (task.inventoryReportId) {
+    } else if (task.inventoryReportId) {
       url = `/stocktaking/${task.inventoryReportId}`;
     } else if (task.inventoryReportPlanId) {
       url = `/stocktaking/plan/${task.inventoryReportPlanId}`;
@@ -150,7 +149,7 @@ export default function TaskDetailManagingPage() {
     } else if (task.materialExportReceiptId) {
       url = `/export-receipt/${task.materialExportReceiptId}`;
     } else {
-      console.error("No valid task-related ID found");
+      console.error('No valid task-related ID found');
       return; // Avoid calling `navigate` with an empty URL
     }
 
@@ -184,7 +183,7 @@ export default function TaskDetailManagingPage() {
               <Calendar className="h-4 w-4" />
               <span>
                 Created:{' '}
-                {new Date(task.createdAt).toLocaleString('en-US', {
+                {new Date(task.createdAt).toLocaleString('en-GB', {
                   year: 'numeric',
                   month: 'numeric',
                   day: 'numeric',
@@ -238,9 +237,9 @@ export default function TaskDetailManagingPage() {
           {/* <Link
             to={task.taskType == 'IMPORT' ? `import/receipt${task.importReceiptId}` : ''}
             className="w-full"> */}
-            <Button className="w-full" onClick={handleGoToTask}>
-              Go to Task
-            </Button>
+          <Button className="w-full" onClick={handleGoToTask}>
+            Go to Task
+          </Button>
           {/* </Link> */}
         </CardFooter>
       </Card>

@@ -202,7 +202,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                         <div className="text-slate-600">Total Amount:</div>
                         <div className="text-lg font-bold text-blue-600">
                           {totalMaterialAmount
-                            ? `${totalMaterialAmount.toLocaleString('en-US', {
+                            ? `${totalMaterialAmount.toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
