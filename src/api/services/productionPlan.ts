@@ -3,6 +3,7 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
 import { get, patch, post } from '../ApiCaller';
+import Cookies from 'js-cookie';
 import privateCall from '../PrivateCaller';
 
 export const productionPlanApi = {
@@ -87,6 +88,18 @@ export const getProductionPlanById = async ({
 
   const response = await privateCall(config);
   return response.data as ApiResponse;
+};
+
+export const getProductionPlanDetailsById = async (id: string): Promise<ApiResponse> => {
+  const fullUrl = `/production-plan/${id}`;
+  try {
+    const config = get(fullUrl);
+    const response = await privateCall(config);
+    return response.data as ApiResponse;
+  } catch (error) {
+    console.error(`Error fetching production plan with ID ${id}:`, error);
+    throw new Error('Failed to fetch production plan');
+  }
 };
 
 export const importProductionPlan = async (file: File): Promise<ApiResponse> => {
