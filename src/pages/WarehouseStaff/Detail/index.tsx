@@ -137,7 +137,7 @@ const WarehouseStaffDetail = () => {
                 <p className="text-sm text-muted-foreground">Account created</p>
                 <p className="font-medium">
                   {staffData?.createdAt
-                    ? new Date(staffData.createdAt).toLocaleString('en-US', {
+                    ? new Date(staffData.createdAt).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',

@@ -396,14 +396,14 @@ export default function WarehouseApproval({
                             const isValidDate = (date: any) => !isNaN(new Date(date).getTime());
 
                             if (isValidDate(startedAt) && isValidDate(finishedAt)) {
-                              return `${new Date(startedAt).toLocaleString('en-US', {
+                              return `${new Date(startedAt).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: false // Use 24-hour format
-                              })} - ${new Date(finishedAt).toLocaleString('en-US', {
+                              })} - ${new Date(finishedAt).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
@@ -428,7 +428,7 @@ export default function WarehouseApproval({
                 <Clock className="mr-3 h-5 w-5 text-muted-foreground" />
                 <span className="font-medium w-24">Last Updated:</span>
                 <span>
-                  {new Date(requestDate).toLocaleString('en-US', {
+                  {new Date(requestDate).toLocaleString('en-GB', {
                     year: 'numeric',
                     month: 'numeric',
                     day: 'numeric',

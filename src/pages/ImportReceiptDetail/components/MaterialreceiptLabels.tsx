@@ -69,6 +69,7 @@ export default function MaterialReceiptLabels({
             Array.from({ length: item.quantityByPack }).map((_, index) => (
               <div key={`${item.id}-${index}`} className="label">
                 <h3>{item.materialPackage.name}</h3>
+                <p>Material Code: {item.code}</p>
                 <p>Code: {item.materialPackage.code}</p>
                 <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
                 <Barcode value={item.code} width={1.5} height={50} />

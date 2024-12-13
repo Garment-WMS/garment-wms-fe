@@ -363,7 +363,7 @@ export default function AssignStaffPopup({
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Start Time</Label>
                     <div className="col-span-3">
-                      {new Date(newTask.start).toLocaleString('en-US', {
+                      {new Date(newTask.start).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',
@@ -376,7 +376,7 @@ export default function AssignStaffPopup({
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">End Time</Label>
                     <div className="col-span-3">
-                      {new Date(newTask.end).toLocaleString('en-US', {
+                      {new Date(newTask.end).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',
@@ -410,7 +410,7 @@ export default function AssignStaffPopup({
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label className="text-right">Start Time</Label>
                       <div className="col-span-3">
-                        {new Date(selectedEvent.start).toLocaleString('en-US', {
+                        {new Date(selectedEvent.start).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -423,7 +423,7 @@ export default function AssignStaffPopup({
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label className="text-right">End Time</Label>
                       <div className="col-span-3">
-                        {selectedEvent.end.toLocaleString('en-US', {
+                        {selectedEvent.end.toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',

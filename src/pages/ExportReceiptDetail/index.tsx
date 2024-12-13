@@ -285,7 +285,7 @@ export default function ExportReceiptDetail() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground"> Expectation start date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.from).toLocaleString('en-US', {
+                              {new Date(plan.from).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
@@ -298,7 +298,7 @@ export default function ExportReceiptDetail() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">Expectation end date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.to).toLocaleString('en-US', {
+                              {new Date(plan.to).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
@@ -388,7 +388,7 @@ export default function ExportReceiptDetail() {
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(exportReceipt?.createdAt ?? '').toLocaleString('en-US', {
+                        {new Date(exportReceipt?.createdAt ?? '').toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -478,20 +478,70 @@ export default function ExportReceiptDetail() {
                       </p>
                       <p className="text-md text-muted-foreground">Export Staff</p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.warehouseManager?.account?.email}
+                        {exportReceipt?.warehouseStaff?.account?.email}
                       </p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.warehouseManager?.account?.phoneNumber}
+                        {exportReceipt?.warehouseStaff?.account?.phoneNumber}
                       </p>
-                      <p className="text-md text-muted-foreground">Assigned by Manager</p>
+                      {/* <p className="text-md text-muted-foreground">
+                        {exportReceipt?.task[0]?.expectedStartedAt &&
+                          exportReceipt?.task[0]?.expectedFinishedAt &&
+                          !exportReceipt?.task[0]?.startedAt && (
+                            <div>
+                              <span className="font-bold">Expect work time : </span>
+                              {new Date(
+                                exportReceipt?.task[0]?.expectedStartedAt
+                              ).toLocaleDateString('en-GB', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}{' '}
+                              -{' '}
+                              {new Date(
+                                exportReceipt?.task[0]?.expectedFinishedAt
+                              ).toLocaleDateString('en-GB', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
+                            </div>
+                          )}
+                      </p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.materialExportRequest?.warehouseManager?.account?.email ||
-                          'N/A'}
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {exportReceipt?.materialExportRequest?.warehouseManager?.account
-                          ?.phoneNumber || 'N/A'}
-                      </p>
+                        {exportReceipt?.task[0]?.startedAt && (
+                          <div>
+                            <span className="font-bold">Actual work time : </span>
+                            {new Date(exportReceipt?.task[0]?.startedAt).toLocaleString('en-GB', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false // 24-hour format
+                            })}{' '}
+                            -{' '}
+                            {exportReceipt?.task[0]?.finishedAt
+                              ? new Date(exportReceipt?.task[0]?.finishedAt).toLocaleString(
+                                  'en-GB',
+                                  {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false // Use 24-hour format
+                                  }
+                                )
+                              : 'Not yet'}
+                          </div>
+                        )}
+                      </p> */}
                     </div>
                   </div>
                 </div>

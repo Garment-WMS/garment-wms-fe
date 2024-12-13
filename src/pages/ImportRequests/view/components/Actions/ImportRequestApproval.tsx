@@ -296,7 +296,7 @@ export default function WarehouseApproval({
                           warehouseStaff?.account?.firstName}
                       </div>
                       <div>
-                        {new Date(importRequest.importExpectedStartedAt).toLocaleString('en-US', {
+                        {new Date(importRequest.importExpectedStartedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -305,7 +305,7 @@ export default function WarehouseApproval({
                           hour12: false // Use 24-hour format
                         })}
                         {' - '}
-                        {new Date(importRequest.importExpectedFinishedAt).toLocaleString('en-US', {
+                        {new Date(importRequest.importExpectedFinishedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -339,7 +339,7 @@ export default function WarehouseApproval({
                           inspectionDepartment?.account?.firstName}
                       </div>
                       <div>
-                        {new Date(importRequest.inspectExpectedStartedAt).toLocaleString('en-US', {
+                        {new Date(importRequest.inspectExpectedStartedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -348,7 +348,7 @@ export default function WarehouseApproval({
                           hour12: false // Use 24-hour format
                         })}
                         {' - '}
-                        {new Date(importRequest.inspectExpectedFinishedAt).toLocaleString('en-US', {
+                        {new Date(importRequest.inspectExpectedFinishedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',

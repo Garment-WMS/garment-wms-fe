@@ -86,7 +86,7 @@
 //                   </Button>
 //                 </div> */}
 //               </div>
-//               <p className="text-xs text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString('en-US', {
+//               <p className="text-xs text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString('en-GB', {
 //   year: 'numeric',
 //   month: 'numeric',
 //   day: 'numeric',

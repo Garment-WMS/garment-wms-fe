@@ -390,7 +390,7 @@ const ProductionBatchDetail: React.FC = () => {
                     </TableCell>
                     <TableCell>{request.type}</TableCell>
                     <TableCell>
-                      {new Date(request.createdAt).toLocaleString('en-US', {
+                      {new Date(request.createdAt).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',

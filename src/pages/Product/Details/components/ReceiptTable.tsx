@@ -14,25 +14,31 @@ import { ProductReceipt, ReceiptStatusLabel } from '@/types/ProductType';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { badgeVariants } from '@/components/ui/Badge';
 import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/DropdownMenu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 
 type Props = {
   id: string;
-  receiptId: string| undefined;
+  receiptId: string | undefined;
 };
-const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
+const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
- const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeVariant = (status: string) => {
     const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
     return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
   };
   const openDialog = (id: string) => {
-    setSelectedReceiptId(id); 
-    setIsOpened(true); 
+    setSelectedReceiptId(id);
+    setIsOpened(true);
   };
 
   useEffect(() => {
@@ -40,7 +46,7 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       openDialog(receiptId);
     }
   }, [receiptId]);
- const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
+  const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
     {
       header: 'Receipt code',
       accessorKey: 'code',
@@ -48,7 +54,7 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       cell: ({ row }) => {
         return (
           <div>
-            <div >{row.original.code || 'N/A'}</div>
+            <div>{row.original.code || 'N/A'}</div>
           </div>
         );
       }
@@ -60,7 +66,7 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       cell: ({ row }) => {
         return (
           <div>
-            <div >{row.original.productSize.name}</div>
+            <div>{row.original.productSize.name}</div>
           </div>
         );
       }
@@ -75,7 +81,7 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        const formattedDate = date.toLocaleDateString('en-GB', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit'
@@ -93,16 +99,16 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         const isDefect = row.original.isDefect;
-        console.log(isDefect)
-        let result 
+        console.log(isDefect);
+        let result;
         if (isDefect === null || isDefect === undefined) {
           return <div>N/A</div>;
-        }else {
-          isDefect ? result = 'Disqualified' : result = 'Qualified'
+        } else {
+          isDefect ? (result = 'Disqualified') : (result = 'Qualified');
         }
         return (
           <div>
-            <div className={!isDefect? `text-green-500` : `text-red-500`}>{result}</div>
+            <div className={!isDefect ? `text-green-500` : `text-red-500`}>{result}</div>
           </div>
         );
       }
@@ -123,8 +129,8 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         return (
-          <div className='flex'>
-            <div className=''>{row.original.quantityByUom}</div>
+          <div className="flex">
+            <div className="">{row.original.quantityByUom}</div>
           </div>
         );
       }
@@ -135,8 +141,8 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         return (
-          <div className='flex'>
-            <div className=''>{row.original.remainQuantityByUom}</div>
+          <div className="flex">
+            <div className="">{row.original.remainQuantityByUom}</div>
           </div>
         );
       }
@@ -151,7 +157,10 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
           {capitalizeFirstLetter(row.original.status ?? 'N/A')}
         </div>
       ),
-      filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
+      filterOptions: ReceiptStatusLabel.map((status) => ({
+        label: status.label,
+        value: status.value
+      }))
     },
     {
       id: 'actions',
@@ -186,8 +195,8 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
 
   const [importColumnFilters, setImportColumnFilters] = useState<ColumnFiltersState>([
     {
-      'id': 'isDefect',
-      'value': false
+      id: 'isDefect',
+      value: false
     }
   ]);
 
@@ -221,35 +230,30 @@ const ReceiptTable: React.FC<Props> = ({ id,receiptId }) => {
       totalFiltered: importPageMeta?.total || 0
     };
 
-  
-
   return (
     <div className=" flex flex-col gap-4 ">
       <div className="h-full">
-
-
-          <div className="">
-            <Label>Product Receipt</Label>
-            <TanStackBasicTable
-              isTableDataLoading={isImportLoading}
-              paginatedTableData={importData}
-              columns={productImportReceiptColumn}
-              pagination={importPagination}
-              sorting={importSorting}
-              setSorting={setImportSorting}
-              setPagination={setImportPagination}
-              columnFilters={importColumnFilters}
-              setColumnFilters={setImportColumnFilters}
-              searchColumnId="code"
-              searchPlaceholder="Search by code"
-            />
-          </div>
-      
+        <div className="">
+          <Label>Product Receipt</Label>
+          <TanStackBasicTable
+            isTableDataLoading={isImportLoading}
+            paginatedTableData={importData}
+            columns={productImportReceiptColumn}
+            pagination={importPagination}
+            sorting={importSorting}
+            setSorting={setImportSorting}
+            setPagination={setImportPagination}
+            columnFilters={importColumnFilters}
+            setColumnFilters={setImportColumnFilters}
+            searchColumnId="code"
+            searchPlaceholder="Search by code"
+          />
+        </div>
       </div>
       {/* <ReceiptChart /> */}
       {selectedReceiptId && (
-  <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened}  />
-)}
+        <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened} />
+      )}
     </div>
   );
 };
