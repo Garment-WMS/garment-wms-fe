@@ -118,7 +118,7 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   return (
     <Card className="flex flex-col w-full max-w-5xl">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-2xl">Material Inspection Report</CardTitle>
+        <CardTitle className="text-2xl">Inspection Report</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-6">
         {currentStatus === 'INSPECTING' && (
