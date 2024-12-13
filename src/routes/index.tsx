@@ -102,10 +102,10 @@ const RouterComponent: React.FC = () => {
             <RoleBasedRedirect
               managerComponent={<Home />}
               warehouseStaffComponent={<Home />}
-              productionDepartmentComponent={<Home/>}
+              productionDepartmentComponent={<ProductionDashboard/>}
               inspectingDepartmentComponent={<Home />}
               factoryDirectorComponent={<Home />}
-              purchasingStaffComponent={<Home />}
+              purchasingStaffComponent={<PurchaseDashboard />}
             />
           )
         },
