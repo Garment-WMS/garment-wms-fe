@@ -91,7 +91,7 @@ export const getAllPurchaseOrderNoQuerry = async (): Promise<PurchaseOrderListRe
 export const getPurchaseOrderById = async (id: string): Promise<ApiResponse> => {
   try {
     const config = get(`/purchase-order/${id}`);
-    const response = await axios(config);
+    const response = await privateCall(config);
     return response.data as ApiResponse;
   } catch (error: any) {
     console.error('Failed to fetch purchase order by ID:', error);
