@@ -6,6 +6,8 @@ import importRequestSelector from '../../slice/selector';
 import { MaterialPackage, UOM } from '@/types/MaterialTypes';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { formatNumber } from '@/helpers/formatNumber';
+import { pluralize } from '@/helpers/pluralize';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ColumnTypeForPostInspection {
   id: string;
@@ -93,34 +95,89 @@ const ImportRequestDetails = (props: Props) => {
   }
   const DetailsColumnForPostInspection: CustomColumnDef<ColumnTypeForPostInspection>[] = [
     {
+      header: 'Item',
+      accessorKey: 'name',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const imageUrl = row.original.image; // Image for both material and product
+        const itemName = row.original.name;
+        return (
+          <div className="flex items-center gap-4" style={{ maxWidth: '200px' }}>
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Item"
+                className="w-12 h-12 object-cover rounded border border-gray-300"
+                style={{ flexShrink: 0 }}
+              />
+            ) : (
+              <div
+                className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-sm font-medium"
+                style={{ flexShrink: 0 }}>
+                No Image
+              </div>
+            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-left font-medium text-gray-800 truncate cursor-pointer"
+                    style={{
+                      flexGrow: 1,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                    {itemName}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-gray-800 text-white p-2 rounded shadow">
+                  {itemName}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        );
+      }
+    },
+    {
       header: 'Item Code',
       accessorKey: 'code',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Item Name',
-      accessorKey: 'name',
-      enableColumnFilter: false
-    },
-    {
-      header: 'Pack Unit',
-      accessorKey: 'packUnit',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => <div className="text-left">{row.original.code}</div>
     },
     {
       header: 'Quantity',
       accessorKey: 'quantityByPack',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <div className=" font-medium text-primaryLight lowercase ml-2">
+          {row.original.quantityByPack}{' '}
+          {pluralize(row.original.packUnit, row.original.quantityByPack)}
+        </div>
+      )
     },
     {
       header: 'Approved Quantity',
       accessorKey: 'approvedQuantityByPack',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <div className=" font-medium text-green-500 ml-9 lowercase">
+          {row.original.approvedQuantityByPack}{' '}
+          {pluralize(row.original.packUnit, row.original.approvedQuantityByPack)}
+        </div>
+      )
     },
     {
       header: 'Defect Quantity',
       accessorKey: 'defectQuantityByPack',
-      enableColumnFilter: false
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <div className=" font-medium text-red-500 ml-5 lowercase">
+          {row.original.defectQuantityByPack}{' '}
+          {pluralize(row.original.packUnit, row.original.defectQuantityByPack)}
+        </div>
+      )
     }
   ];
 
@@ -133,19 +190,40 @@ const ImportRequestDetails = (props: Props) => {
         const imageUrl = row.original.image;
         const variantName = row.original.name;
         return (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" style={{ maxWidth: '200px' }}>
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt="Material"
                 className="w-12 h-12 object-cover rounded border border-gray-300"
+                style={{ flexShrink: 0 }}
               />
             ) : (
-              <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-sm font-medium">
+              <div
+                className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-sm font-medium"
+                style={{ flexShrink: 0 }}>
                 No Image
               </div>
             )}
-            <span className="text-left font-medium text-gray-800">{variantName}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-left font-medium text-gray-800 truncate cursor-pointer"
+                    style={{
+                      flexGrow: 1,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                    {variantName}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-gray-800 text-white p-2 rounded shadow">
+                  {variantName}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       }
@@ -169,8 +247,9 @@ const ImportRequestDetails = (props: Props) => {
       accessorKey: 'quantityByPack',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <div className=" ml-5">
-          {row.original.quantityByPack} {convertTitleToTitleCase(row.original?.packUnit)}
+        <div className="ml-9 text-primaryDark font-semibold lowercase">
+          {row.original.quantityByPack}{' '}
+          {pluralize(row.original.packUnit, row.original.quantityByPack)}
         </div>
       )
     },
@@ -179,7 +258,7 @@ const ImportRequestDetails = (props: Props) => {
       accessorKey: 'uomPerPack',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <div className=" ml-5">
+        <div className="ml-9 text-primaryLight font-semibold">
           {formatNumber(row.original.uomPerPack * row.original.quantityByPack)}{' '}
           {row.original?.uom.uomCharacter}
         </div>
@@ -196,15 +275,40 @@ const ImportRequestDetails = (props: Props) => {
         const imageUrl = row.original.image;
         const productName = row.original.productName;
         return (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" style={{ maxWidth: '200px' }}>
             {imageUrl ? (
-              <img src={imageUrl} alt="Product" className="w-12 h-12 object-cover rounded" />
+              <img
+                src={imageUrl}
+                alt="Product"
+                className="w-12 h-12 object-cover rounded"
+                style={{ flexShrink: 0 }}
+              />
             ) : (
-              <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+              <div
+                className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center"
+                style={{ flexShrink: 0 }}>
                 No Image
               </div>
             )}
-            <span className="text-left font-medium">{productName}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-left font-medium truncate cursor-pointer"
+                    style={{
+                      flexGrow: 1,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                    {productName}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-gray-800 text-white p-2 rounded shadow">
+                  {productName}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       }
@@ -233,7 +337,9 @@ const ImportRequestDetails = (props: Props) => {
       header: 'Quantity By Pack',
       accessorKey: 'quantityByPack',
       enableColumnFilter: false,
-      cell: ({ row }) => <div className="text-center text-lg">{row.original.quantityByPack}</div>
+      cell: ({ row }) => (
+        <div className="text-center text-lg font-medium">{row.original.quantityByPack} </div>
+      )
     }
   ];
 
@@ -243,21 +349,28 @@ const ImportRequestDetails = (props: Props) => {
     if (inspectionReport && inspectionReport.inspectionReportDetail) {
       formattedDetailsPostInspection = inspectionReport.inspectionReportDetail.map((detail) => {
         const item = detail.materialPackage || detail.productSize;
+        const imageUrl =
+          detail.materialPackage?.materialVariant?.image ||
+          detail.productSize?.productVariant?.image;
+        const packUnit =
+          (detail.materialPackage?.packUnit ||
+            item?.productVariant?.product?.productUom?.uomCharacter) ??
+          'N/A';
+
         return {
           id: detail.id,
           name: item?.name ?? 'N/A',
           code: item?.code ?? 'N/A',
-          packUnit:
-            detail.materialPackage?.packUnit ??
-            item?.productVariant?.product?.productUom?.uomCharacter ??
-            'N/A',
+          image: imageUrl ?? null, // Image for both material and product
+          packUnit, // Include pack unit for later use
           quantityByPack: detail.quantityByPack ?? 0,
-          approvedQuantityByPack: detail.approvedQuantityByPack,
-          defectQuantityByPack: detail.defectQuantityByPack
+          approvedQuantityByPack: detail.approvedQuantityByPack ?? 0,
+          defectQuantityByPack: detail.defectQuantityByPack ?? 0
         };
       });
     }
   }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="font-primary text-xl font-bold my-2">Import Request Details</div>
