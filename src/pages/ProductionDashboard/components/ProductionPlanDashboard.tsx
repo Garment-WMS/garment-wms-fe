@@ -16,20 +16,23 @@ import Loading from '@/components/common/Loading';
 import { MaterialSummaryTable } from './MaterialSummaryTable';
 import { PurchaseOrderSummary } from './PurchaseOrderSummary';
 import { ProductionPlanDetails } from './ProductionPlanDetails';
-import { ChartNoAxesColumnIncreasing, Factory, Package } from 'lucide-react';
+import { ChartNoAxesColumnIncreasing, Factory, LucideCirclePercent, Package } from 'lucide-react';
 import { TbPackages, TbShirt } from 'react-icons/tb';
 import { BiErrorCircle } from 'react-icons/bi';
+import { IoIosInformationCircleOutline } from 'react-icons/io';
+import { MdOutlinePercent } from 'react-icons/md';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 
-export function renderUi(planDetails: ProductionPlan) {
+function renderUi(planDetails: ProductionPlan) {
   const completionPercentage =
     (planDetails?.totalProducedQuantity / planDetails?.totalQuantityToProduce) * 100;
 
   return (
     <div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="col-span-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <Card className="col-span-5">
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-          <ChartNoAxesColumnIncreasing className='w-4 h-4'/>
+            <MdOutlinePercent   className="w-4 h-4" />
             <CardTitle className="text-sm font-medium">Overall Completion</CardTitle>
           </CardHeader>
           <CardContent>
@@ -40,9 +43,10 @@ export function renderUi(planDetails: ProductionPlan) {
             </p>
           </CardContent>
         </Card>
+       
         <Card>
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-<Package className='w-4 h-4'/>
+            <Package className="w-4 h-4" />
             <CardTitle className="text-sm font-medium">Total to Produce</CardTitle>
           </CardHeader>
           <CardContent>
@@ -52,7 +56,7 @@ export function renderUi(planDetails: ProductionPlan) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-          <TbShirt className='h-4 w-4' />
+            <TbShirt className="h-4 w-4" />
 
             <CardTitle className="text-sm font-medium">Produced</CardTitle>
           </CardHeader>
@@ -63,7 +67,7 @@ export function renderUi(planDetails: ProductionPlan) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-          <Factory className='w-4 h-4'/>
+            <Factory className="w-4 h-4" />
             <CardTitle className="text-sm font-medium">In Manufacturing</CardTitle>
           </CardHeader>
           <CardContent>
@@ -75,13 +79,25 @@ export function renderUi(planDetails: ProductionPlan) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-          <BiErrorCircle className='w-4 h-4' />
+            <BiErrorCircle className="w-4 h-4" />
 
             <CardTitle className="text-sm font-medium">Defects</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{planDetails.totalDefectQuantity}</div>
             <p className="text-xs text-muted-foreground">This is total quantity defects</p>
+          </CardContent>
+        </Card>
+        <Card className="">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+            <IoIosInformationCircleOutline className="w-4 h-4" />
+            <CardTitle className="text-sm font-medium">Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{convertTitleToTitleCase(planDetails?.status)}</div>
+            <p className="text-xs text-muted-foreground">
+              This is the status of the production plan
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -94,32 +110,23 @@ export function renderUi(planDetails: ProductionPlan) {
           <TabsTrigger value="details">Plan Details</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <ProductionProgressChart productionPlanDetails={planDetails.productionPlanDetail}/>
+          <ProductionProgressChart productionPlanDetails={planDetails.productionPlanDetail} />
         </TabsContent>
-        <TabsContent value="materials"><MaterialSummaryTable materialVariantSummary={planDetails?.materialVariantSummary} /></TabsContent>
-        <TabsContent value="orders"><PurchaseOrderSummary purchaseOrder={planDetails?.purchaseOrder}/></TabsContent>
-        <TabsContent value="details"><ProductionPlanDetails planDetails={planDetails?.productionPlanDetail}/></TabsContent>
+        <TabsContent value="materials">
+          <MaterialSummaryTable materialVariantSummary={planDetails?.materialVariantSummary} />
+        </TabsContent>
+        <TabsContent value="orders">
+          <PurchaseOrderSummary purchaseOrder={planDetails?.purchaseOrder} />
+        </TabsContent>
+        <TabsContent value="details">
+          <ProductionPlanDetails planDetails={planDetails?.productionPlanDetail} />
+        </TabsContent>
       </Tabs>
     </div>
   );
 }
 
 export function ProductionPlanDashboard() {
-  // In a real application, you would fetch this data from an API
-  const productionPlan = {
-    name: 'Production Plan For 2024-2025',
-    code: 'PRO-PLA-000001',
-    status: 'IN_PROGRESS',
-    expectedStartDate: '2024-12-11',
-    expectedEndDate: '2025-12-05',
-    totalQuantityToProduce: 385,
-    totalProducedQuantity: 50,
-    totalDefectQuantity: 0,
-    totalManufacturingQuantity: 0
-  };
-
-  // fake data above
-
   // const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<ProductionPlan>();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -176,9 +183,8 @@ export function ProductionPlanDashboard() {
             renderUi(planDetails)
           ) : (
             <div className="flex justify-center items-center h-[80vh]">
-               <p>Select a production plan to see the details.</p>
+              <p>Select a production plan to see the details.</p>
             </div>
-           
           )}
         </div>
       )}

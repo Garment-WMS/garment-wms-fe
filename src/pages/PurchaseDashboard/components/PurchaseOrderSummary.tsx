@@ -7,32 +7,27 @@ import {
     TableRow,
   } from "@/components/ui/Table"
 import { formatDateTimeToDDMMYYYYHHMM } from "@/helpers/convertDate"
+import { convertTitleToTitleCase } from "@/helpers/convertTitleToCaseTitle"
+import { PurchaseOrder } from "@/types/PurchaseOrder"
+import { Link } from "react-router-dom"
   
   interface PurchaseOrderSummaryProps {
-    purchaseOrder: {
-      poNumber: string
-      status: string
-      orderDate: string
-      expectedFinishDate: string
-      totalQuantityToImport: number
-      totalImportQuantity: number
-      totalFailImportQuantity: number
-      totalAmount: number
-      currency: string
-    }
+    purchaseOrder: PurchaseOrder
   }
   
-  export function PurchaseOrderSummary({ purchaseOrder }: PurchaseOrderSummaryProps) {
+  export function PurchaseOrderSummary( {purchaseOrder} : PurchaseOrderSummaryProps) {
     return (
       <Table>
         <TableBody>
           <TableRow>
-            <TableCell className="font-medium">PO Number</TableCell>
-            <TableCell>{purchaseOrder.poNumber}</TableCell>
+            <TableCell className="font-medium">PO Code</TableCell>
+            <TableCell>
+              <Link to={`/purchase-order/${purchaseOrder.id}`} className="text-bluePrimary hover:underline">{purchaseOrder.poNumber}</Link>
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Status</TableCell>
-            <TableCell>{purchaseOrder.status}</TableCell>
+            <TableCell>{convertTitleToTitleCase(purchaseOrder.status)}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Order Date</TableCell>
@@ -56,7 +51,7 @@ import { formatDateTimeToDDMMYYYYHHMM } from "@/helpers/convertDate"
           </TableRow>
           <TableRow>
             <TableCell className="font-medium">Total Amount</TableCell>
-            <TableCell>{purchaseOrder.totalAmount.toLocaleString()} {purchaseOrder.currency}</TableCell>
+            <TableCell>{purchaseOrder.subTotalAmount.toLocaleString()} {purchaseOrder.currency}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

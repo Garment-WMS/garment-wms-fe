@@ -10,7 +10,7 @@ type Props = {};
 const PurchaseDashboard = (props: Props) => {
   return (
     <div className=" w-full gap-4 px-4 py-3 flex flex-col space-y-3 bg-white rounded-md">
-      <Label className="text-2xl font-bold mt-2 text-bluePrimary">Dashboard</Label>
+      {/* <Label className="text-2xl font-bold mt-2 text-bluePrimary">Dashboard</Label> */}
       <ProgressChart/>
       <PurchaseOrderDashboard/>
     </div>

@@ -10,6 +10,7 @@ import {
   SelectValue
 } from '@/components/ui/Select';
 import { ProductionPlan } from '@/types/ProductionPlan';
+import { ScrollArea } from '@/components/ui/ScrollArea';
 
 interface SelectProductionPlanProps {
   productionPlanList: ProductionPlan[];
@@ -39,9 +40,10 @@ export function SelectProductionPlan({ productionPlanList, onPlanSelect, isLoadi
     <Select
       disabled={isLoading || formattedProductionPlanList.length === 0}
       value={selectedPlanId ?? undefined}
-      onValueChange={(value) => (
+      onValueChange={(value) => {
         onPlanSelect(value)
-      )} // Handle plan selection
+        setSelectedPlanId(value);
+      }} // Handle plan selection
     >
       <SelectTrigger className="max-w-[1000px] w-auto">
         <SelectValue placeholder={isLoading ? "Loading plans..." : "Select a production plan"} />
@@ -49,11 +51,14 @@ export function SelectProductionPlan({ productionPlanList, onPlanSelect, isLoadi
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Production Plans</SelectLabel>
-          {formattedProductionPlanList.map((plan) => (
+          <ScrollArea className='h-32 rounded-md '>
+            {formattedProductionPlanList.map((plan) => (
             <SelectItem key={plan.value} value={plan.value}>
               {plan.label}
             </SelectItem>
           ))}
+          </ScrollArea>
+          
         </SelectGroup>
       </SelectContent>
     </Select>
