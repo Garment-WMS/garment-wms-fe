@@ -16,6 +16,9 @@ import Loading from '@/components/common/Loading';
 import { MaterialSummaryTable } from './MaterialSummaryTable';
 import { PurchaseOrderSummary } from './PurchaseOrderSummary';
 import { ProductionPlanDetails } from './ProductionPlanDetails';
+import { ChartNoAxesColumnIncreasing, Factory, Package } from 'lucide-react';
+import { TbPackages, TbShirt } from 'react-icons/tb';
+import { BiErrorCircle } from 'react-icons/bi';
 
 export function renderUi(planDetails: ProductionPlan) {
   const completionPercentage =
@@ -25,7 +28,8 @@ export function renderUi(planDetails: ProductionPlan) {
     <div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="col-span-4">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+          <ChartNoAxesColumnIncreasing className='w-4 h-4'/>
             <CardTitle className="text-sm font-medium">Overall Completion</CardTitle>
           </CardHeader>
           <CardContent>
@@ -37,7 +41,8 @@ export function renderUi(planDetails: ProductionPlan) {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+<Package className='w-4 h-4'/>
             <CardTitle className="text-sm font-medium">Total to Produce</CardTitle>
           </CardHeader>
           <CardContent>
@@ -46,7 +51,9 @@ export function renderUi(planDetails: ProductionPlan) {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+          <TbShirt className='h-4 w-4' />
+
             <CardTitle className="text-sm font-medium">Produced</CardTitle>
           </CardHeader>
           <CardContent>
@@ -55,7 +62,8 @@ export function renderUi(planDetails: ProductionPlan) {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+          <Factory className='w-4 h-4'/>
             <CardTitle className="text-sm font-medium">In Manufacturing</CardTitle>
           </CardHeader>
           <CardContent>
@@ -66,7 +74,9 @@ export function renderUi(planDetails: ProductionPlan) {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
+          <BiErrorCircle className='w-4 h-4' />
+
             <CardTitle className="text-sm font-medium">Defects</CardTitle>
           </CardHeader>
           <CardContent>
