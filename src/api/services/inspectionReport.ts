@@ -2,8 +2,13 @@ import { InspectionReportListResponse } from '@/types/InspectionReportListRespon
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { get } from '../ApiCaller';
-import axios from 'axios';
+import privateCall from '../PrivateCaller';
 import { ApiResponse } from '@/types/ApiResponse';
+
+export const inspectionReportApi = {
+  getAll: () => get('/inspection-report'),
+  getDefects: () => get('/defect')
+};
 
 interface GetAllInspectionReportsInput {
   sorting: SortingState;
@@ -19,34 +24,29 @@ export const getAllInspectionReports = async ({
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
-  // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
 
-  // Build filter array from columnFilters
   columnFilters.forEach((filterItem) => {
     const { id, value } = filterItem;
 
-    // Determine operation type based on the filter value
     let type: FilterOperationType;
     if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings; // Example for array values
+      type = FilterOperationType.InStrings;
     } else if (value === null) {
-      type = FilterOperationType.NeNull; // Example for null values
+      type = FilterOperationType.NeNull;
     } else {
-      type = FilterOperationType.Eq; // Default to equality for single values
+      type = FilterOperationType.Eq;
     }
 
     filter.push({ field: id, type, value });
   });
 
-  // Build order array from sorting
   sorting.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
     order.push({ field: sort.id, dir: direction });
   });
 
-  // Construct the query string using FilterBuilder
   const queryString = FilterBuilder.buildFilterQueryString({
     limit,
     offset,
@@ -54,25 +54,16 @@ export const getAllInspectionReports = async ({
     order
   });
 
-  const fullUrl = `/inspection-report${queryString}`;
+  const config = inspectionReportApi.getAll();
+  config.url += queryString;
 
-  try {
-    const config = get(fullUrl);
-    const response = await axios(config);
-    return response.data.data as InspectionReportListResponse;
-  } catch (error) {
-    console.error('Error fetching inspection reports:', error);
-    throw new Error('Failed to fetch inspection reports');
-  }
+  const response = await privateCall(config);
+  return response.data.data as InspectionReportListResponse;
 };
 
 export const getInspectionReportDefects = async (): Promise<ApiResponse> => {
-  try {
-    const config = get(`/defect`);
-    const response = await axios(config);
-    return response.data as ApiResponse;
-  } catch (error: any) {
-    console.error('Failed to fetch purchase order by ID:', error);
-    throw new Error('Failed to fetch purchase order');
-  }
+  const config = inspectionReportApi.getDefects();
+  const response = await privateCall(config);
+
+  return response.data as ApiResponse;
 };
