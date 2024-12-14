@@ -7,6 +7,11 @@ import { UOM } from '@/types/MaterialTypes';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { formatNumber } from '@/helpers/formatNumber';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useEffect, useState } from 'react';
+import { checkExportRequestDetailQuantityFn } from '@/api/services/exportRequestDetailApi';
+import { MdOutlineWarningAmber } from 'react-icons/md';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import Colors from '@/constants/color';
 
 interface ColumnType {
   id: string;
@@ -20,6 +25,9 @@ interface ColumnType {
   materialCode: any;
   materialType: any;
   image: any;
+  isFulfilled: boolean | null;
+  requiredQuantity: number;
+  remainQuantityByPack: number;
 }
 
 interface ReceiptDetailColumnType {
@@ -36,8 +44,71 @@ interface ReceiptDetailColumnType {
 
 const ExportRequestDetail = () => {
   const exportRequest: MaterialExportRequest = useSelector(exportRequestSelector.exportRequest);
-  let details = exportRequest?.materialExportRequestDetail ?? [];
+  const exportRequestStatus = exportRequest?.status;
+  const [fulfillmentStatuses, setFulfillmentStatuses] = useState<
+    Record<
+      string,
+      { isFulfilled: boolean | null; requiredQuantity: number; remainQuantityByPack: number } | null
+    >
+  >({});
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const details = exportRequest?.materialExportRequestDetail ?? [];
   let formattedDetails: ColumnType[] = [];
+
+  const fetchFulfillmentStatuses = async (details: any[]) => {
+    setLoading(true);
+    const statuses: Record<
+      string,
+      {
+        isFulfilled: boolean | null;
+        requiredQuantity: number;
+        remainQuantityByPack: number;
+      }
+    > = {};
+
+    details.forEach((detail) => {
+      statuses[detail.id] = {
+        isFulfilled: null,
+        requiredQuantity: 0,
+        remainQuantityByPack: 0
+      };
+    });
+
+    try {
+      await Promise.all(
+        details.map(async (detail) => {
+          try {
+            const response = await checkExportRequestDetailQuantityFn(detail.id);
+            console.log(response?.data);
+            statuses[detail.id] = {
+              isFulfilled: response?.data?.isFullFilled ?? null,
+              requiredQuantity: response?.data?.requiredQuantity ?? 0,
+              remainQuantityByPack: response?.data?.availableQuantity ?? 0
+            };
+          } catch (error) {
+            console.error(`Failed to fetch status for detail ${detail.id}:`, error);
+            statuses[detail.id] = {
+              isFulfilled: false,
+              requiredQuantity: 0,
+              remainQuantityByPack: 0
+            };
+          }
+        })
+      );
+      setFulfillmentStatuses((prev) => ({ ...prev, ...statuses }));
+    } catch (error) {
+      console.error('Failed to fetch fulfillment statuses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (details.length > 0) {
+      fetchFulfillmentStatuses(details);
+    }
+  }, [details]);
 
   if (details) {
     formattedDetails = details.map((detail) => ({
@@ -50,9 +121,13 @@ const ExportRequestDetail = () => {
       quantityByUOM: detail.quantityByUom ?? 0,
       materialCode: detail.materialVariant?.material?.code ?? 'N/A',
       materialType: detail.materialVariant?.material?.name ?? 'N/A',
-      image: detail.materialVariant?.image || null
+      image: detail.materialVariant?.image || null,
+      isFulfilled: fulfillmentStatuses[detail.id]?.isFulfilled ?? null,
+      requiredQuantity: fulfillmentStatuses[detail.id]?.requiredQuantity ?? 0,
+      remainQuantityByPack: fulfillmentStatuses[detail.id]?.remainQuantityByPack ?? 0
     }));
   }
+  // console.log(formattedDetails);
 
   const DetailsColumn: CustomColumnDef<ColumnType>[] = [
     {
@@ -140,6 +215,64 @@ const ExportRequestDetail = () => {
           {convertTitleToTitleCase(row.original.uom.uomCharacter)}
         </div>
       )
+    },
+    {
+      header: 'Required',
+      accessorKey: 'requiredQuantity',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        if (exportRequestStatus !== 'PENDING') {
+          return <div className="text-center text-xl mr-14">-</div>;
+        }
+        return (
+          <div className="text-red-600 ml-5 text-lg font-semibold">
+            {formatNumber(row.original.requiredQuantity)}
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Remaining',
+      accessorKey: 'remainQuantityByPack',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        // Hide the column if the export request status is PENDING
+        if (exportRequestStatus !== 'PENDING') {
+          return <div className="text-center text-xl mr-14">-</div>;
+        }
+
+        return (
+          <div className="text-primaryLight text-lg ml-6 font-semibold">
+            {formatNumber(row.original.remainQuantityByPack)}
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Is Fulfilled',
+      accessorKey: 'isFulfilled',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const isFulfilled = row.original.isFulfilled;
+        // Hide the column if the export request status is PENDING
+        if (exportRequestStatus !== 'PENDING') {
+          return <div className="text-center text-xl mr-14">-</div>;
+        }
+
+        if (isFulfilled === null || loading) {
+          return <span>Loading...</span>;
+        }
+
+        return (
+          <div className={`font-bold ml-6 ${isFulfilled ? 'text-green-700' : 'text-yellow-700'}`}>
+            {isFulfilled ? (
+              <AiOutlineCheckCircle className="w-7 h-7" color={Colors.green[700]} />
+            ) : (
+              <MdOutlineWarningAmber className="w-7 h-7" color={Colors.yellow[700]} />
+            )}
+          </div>
+        );
+      }
     }
   ];
 

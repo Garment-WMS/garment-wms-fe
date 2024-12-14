@@ -1,6 +1,5 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
-import { badgeVariants } from '@/components/ui/Badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,13 +21,23 @@ import { ProductionDepartmentGuardDiv } from '@/components/authentication/create
 import { ExportRequestStatus } from '@/types/exportRequest';
 import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
-import exp from 'constants';
+import { checkExportRequestQuantityFn } from '@/api/services/exportRequestApi';
+import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
+import { MdOutlineWarningAmber } from 'react-icons/md';
+import Colors from '@/constants/color';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
+  const [fulfillmentStatuses, setFulfillmentStatuses] = useState<Record<string, boolean | null>>(
+    {}
+  );
+  const [loadingStatuses, setLoadingStatuses] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [productionBatchFilter, setProductionBatchFilter] = useState<Filter[]>([]);
+
   const fetchProductionBatch = async () => {
     try {
       const res = await getProductionBatchFn();
@@ -46,28 +55,52 @@ const ExportRequestTable = (props: Props) => {
       console.error('Failed to fetch production batch data', error);
     }
   };
+
+  const fetchFulfillmentStatuses = async (exportRequests: any[]) => {
+    setLoading(true);
+    const statuses: Record<string, boolean | null> = {};
+
+    exportRequests.forEach((request) => {
+      statuses[request.id] = null;
+    });
+
+    try {
+      await Promise.all(
+        exportRequests.map(async (request) => {
+          try {
+            const response = await checkExportRequestQuantityFn(request.id);
+            statuses[request.id] = response.isFullFilled;
+          } catch (error) {
+            console.error(`Failed to fetch status for request ${request.id}:`, error);
+            statuses[request.id] = false;
+          }
+        })
+      );
+      setFulfillmentStatuses((prev) => ({ ...prev, ...statuses }));
+    } catch (error) {
+      console.error('Failed to fetch fulfillment statuses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchProductionBatch();
   }, []);
+
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/')[0];
-
-    // Navigate to the new route
     navigate(`${basePath}/export-request/${requestId}`);
   };
 
-  // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  // column filters state of the table
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
-
   const debouncedSorting: SortingState = useDebounce(sorting, 1000);
 
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0, //initial page index
-    pageSize: 10 //default page size
+    pageIndex: 0,
+    pageSize: 10
   });
 
   const { pageMeta, exportRequestData, isFetching } = useGetMaterialExportRequest({
@@ -75,6 +108,12 @@ const ExportRequestTable = (props: Props) => {
     columnFilters: debouncedColumnFilters,
     pagination
   });
+
+  useEffect(() => {
+    if (exportRequestData) {
+      fetchFulfillmentStatuses(exportRequestData);
+    }
+  }, [exportRequestData]);
 
   const paginatedTableData =
     exportRequestData && pageMeta
@@ -102,6 +141,7 @@ const ExportRequestTable = (props: Props) => {
         return 'bg-blue-500';
     }
   };
+
   const exportRequestColumns: CustomColumnDef<any>[] = [
     {
       header: 'Code',
@@ -133,14 +173,6 @@ const ExportRequestTable = (props: Props) => {
         );
       }
     },
-    // {
-    //   header: 'Production Batch',
-    //   accessorKey: 'productionBatch.name',
-    //   enableColumnFilter: false,
-    //   cell: ({ row }) => (
-    //     <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
-    //   )
-    // },
     {
       header: 'Created By',
       enableColumnFilter: false,
@@ -174,7 +206,7 @@ const ExportRequestTable = (props: Props) => {
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false // Use 24-hour format
+            hour12: false
           }) || 'Not yet'}
         </div>
       )
@@ -191,17 +223,11 @@ const ExportRequestTable = (props: Props) => {
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false // Use 24-hour format
+            hour12: false
           }) || 'Not yet'}
         </div>
       )
     },
-    // {
-    //   header: 'Description',
-    //   enableColumnFilter: false,
-    //   accessorKey: 'description',
-    //   cell: ({ row }) => <div className='truncate'>{row.original.description || 'N/A'}</div>
-    // },
     {
       header: 'Status',
       accessorKey: 'status',
@@ -218,6 +244,36 @@ const ExportRequestTable = (props: Props) => {
           {convertTitleToTitleCase(row.original.status)}
         </Badge>
       )
+    },
+    {
+      header: 'Is Fulfilled',
+      accessorKey: 'id',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const requestId = row.original.id;
+        const status = row.original.status; // Extract the status from the row data
+        const isFulfilled = fulfillmentStatuses[requestId];
+
+        if (isFulfilled === null || isFetching) {
+          return <span>Loading...</span>;
+        }
+
+        if (status === 'PENDING') {
+          return (
+            <div
+              className={`mr-3 flex items-center justify-center pr-0 pl-0 font-bold ${
+                isFulfilled ? 'text-green-700' : 'text-yellow-700'
+              }`}>
+              {isFulfilled ? (
+                <AiOutlineCheckCircle className="w-7 h-7" color={Colors.green[700]} />
+              ) : (
+                <MdOutlineWarningAmber className="w-7 h-7" color={Colors.yellow[700]} />
+              )}
+            </div>
+          );
+        }
+        return <div className="text-center text-xl mr-2">-</div>;
+      }
     },
     {
       id: 'actions',
@@ -244,7 +300,7 @@ const ExportRequestTable = (props: Props) => {
     <div className="pb-4">
       <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
         <TanStackBasicTable
-          isTableDataLoading={isFetching} // Use the persistent loading state
+          isTableDataLoading={isFetching || loading} // Use the persistent loading state
           paginatedTableData={paginatedTableData ?? undefined}
           columns={exportRequestColumns}
           pagination={pagination}

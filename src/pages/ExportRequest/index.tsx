@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { createMaterialExportRequest } from '@/api/services/exportRequestApi';
+import {
+  createMaterialExportRequest,
+  checkQuantityByVariantFn
+} from '@/api/services/exportRequestApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/Input';
@@ -29,7 +32,10 @@ import {
 } from '@/components/ui/Dialog';
 import ProductionBatchSelectionDialog from './ProductionBatchSelectionDialog';
 import { ProductionBatchSummary } from './ProductionBatchSummary';
-import { ProductionBatch } from '@/types';
+import { ProductionBatch } from '@/types/ProductionBatch';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import { MdOutlineWarningAmber } from 'react-icons/md';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface Material {
   id: number;
@@ -57,17 +63,52 @@ export default function ExportMaterialPage() {
   const [isCreatingExportRequest, setIsCreatingExportRequest] = useState(false);
   const [isProductionBatchDialogOpen, setIsProductionBatchDialogOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [materialStatuses, setMaterialStatuses] = useState<Record<string, any>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     if (selectedBatch) {
       setProductQuantity(selectedBatch.quantityToProduce);
+      fetchMaterialStatuses(selectedBatch.productionBatchMaterialVariant);
     }
   }, [selectedBatch]);
 
   const handleQuantityChange = (quantity: number) => {
     setProductQuantity(Math.max(0, quantity));
+  };
+
+  const fetchMaterialStatuses = async (materials: Material[]) => {
+    const statuses: Record<string, any> = {};
+    setIsLoading(true);
+
+    try {
+      await Promise.all(
+        materials.map(async (material) => {
+          try {
+            const response = await checkQuantityByVariantFn(
+              material.materialVariant.id,
+              material.quantityByUom
+            );
+            statuses[material.materialVariant.id] = response;
+          } catch (error) {
+            statuses[material.materialVariant.id] = { error: true };
+          }
+        })
+      );
+      setMaterialStatuses(statuses);
+    } catch (error) {
+      console.error('Error fetching material statuses:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const hasInsufficientMaterials = () => {
+    return Object.values(materialStatuses).some(
+      (status) => status?.data && !status.data.isFullFilled
+    );
   };
 
   const getTotalMaterials = () => {
@@ -99,15 +140,21 @@ export default function ExportMaterialPage() {
   };
 
   const handleConfirmExport = () => {
-    setShowConfirmDialog(true);
+    if (hasInsufficientMaterials()) {
+      setShowWarningDialog(true);
+    } else {
+      setShowConfirmDialog(true);
+    }
   };
 
   const handleCancelExport = () => {
     setShowConfirmDialog(false);
+    setShowWarningDialog(false);
   };
 
   const handleConfirmedExport = () => {
     setShowConfirmDialog(false);
+    setShowWarningDialog(false);
     handleCreateExportRequest();
   };
 
@@ -165,9 +212,7 @@ export default function ExportMaterialPage() {
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Export Materials</h1>
-
       <ProductionBatchSummary selectedBatch={selectedBatch} onEdit={openProductionBatchDialog} />
-
       <ProductionBatchSelectionDialog
         isOpen={isProductionBatchDialogOpen}
         onOpen={openProductionBatchDialog}
@@ -175,44 +220,6 @@ export default function ExportMaterialPage() {
         onSelectBatch={handleSelectBatch}
         selectedBatch={selectedBatch}
       />
-
-      {selectedBatch && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Product Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="product-name">Product Name</Label>
-                <Input
-                  id="product-name"
-                  value={selectedBatch.productionPlanDetail.productSize.productVariant.name}
-                  readOnly
-                />
-              </div>
-              <div>
-                <Label htmlFor="product-size">Size</Label>
-                <Input
-                  id="product-size"
-                  value={selectedBatch.productionPlanDetail.productSize.name}
-                  readOnly
-                />
-              </div>
-              <div>
-                <Label htmlFor="product-quantity">Quantity</Label>
-                <Input
-                  id="product-quantity"
-                  type="number"
-                  readOnly
-                  value={productQuantity}
-                  onChange={(e) => handleQuantityChange(parseInt(e.target.value, 10))}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {selectedBatch && (
         <Card className="mb-6">
@@ -228,58 +235,58 @@ export default function ExportMaterialPage() {
                   <TableHead>Variant Code</TableHead>
                   <TableHead>Quantity</TableHead>
                   <TableHead>Unit</TableHead>
+                  <TableHead>Condition</TableHead>
+                  <TableHead>Required</TableHead>
+                  <TableHead>Remain</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {selectedBatch.productionBatchMaterialVariant.map((material: Material) => (
-                  <TableRow key={material.id}>
-                    <TableCell className="flex items-center space-x-2">
-                      <img
-                        src={material.materialVariant.image || '/placeholder.svg'}
-                        alt={material.materialVariant.name}
-                        className="rounded-full w-10 h-10"
-                      />
-                      <span>{material.materialVariant.name}</span>
-                    </TableCell>
-                    <TableCell>{material.materialVariant.material.code}</TableCell>
-                    <TableCell>{material.materialVariant.code}</TableCell>
-                    <TableCell>{material.quantityByUom}</TableCell>
-                    <TableCell>
-                      {material.materialVariant.material.materialUom.uomCharacter}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {selectedBatch.productionBatchMaterialVariant.map((material: Material) => {
+                  const status = materialStatuses[material.materialVariant.id];
+                  const isFullFilled = status?.data?.isFullFilled;
+
+                  return (
+                    <TableRow key={material.id}>
+                      <TableCell className="flex items-center space-x-2">
+                        <img
+                          src={material.materialVariant.image || '/placeholder.svg'}
+                          alt={material.materialVariant.name}
+                          className="rounded-full w-10 h-10"
+                        />
+                        <span>{material.materialVariant.name}</span>
+                      </TableCell>
+                      <TableCell>{material.materialVariant.material.code}</TableCell>
+                      <TableCell>{material.materialVariant.code}</TableCell>
+                      <TableCell className="text-lg text-slate-700">
+                        {material.quantityByUom}
+                      </TableCell>
+                      <TableCell>
+                        {material.materialVariant.material.materialUom.uomCharacter}
+                      </TableCell>
+                      <TableCell>
+                        {status ? (
+                          isFullFilled ? (
+                            <AiOutlineCheckCircle className="w-7 h-7 text-green-500" />
+                          ) : (
+                            <MdOutlineWarningAmber className="w-7 h-7 text-yellow-500" />
+                          )
+                        ) : (
+                          <span>Loading...</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-red-600 text-lg">
+                        {status?.data?.requiredQuantity || 0}
+                        <span className="ml-1">*</span>
+                      </TableCell>
+                      <TableCell className="text-primaryLight text-lg">
+                        {status?.data?.remainQuantityByPack || 0}
+                        <span className="ml-1">*</span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      )}
-
-      {selectedBatch && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Export request summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {Object.entries(getTotalMaterials()).map(([name, { amount, unit }]) => (
-                <Badge key={name} variant="secondary" className="p-2 text-sm">
-                  {name}: {amount.toFixed(2)} {unit}
-                </Badge>
-              ))}
-            </div>
-
-            <div className="space-y-4 mt-4">
-              <div>
-                <Label htmlFor="export-description">Description</Label>
-                <Textarea
-                  id="export-description"
-                  placeholder="Enter a description for this export request"
-                  value={exportDescription}
-                  onChange={(e) => setExportDescription(e.target.value)}
-                />
-              </div>
-            </div>
           </CardContent>
         </Card>
       )}
@@ -304,19 +311,59 @@ export default function ExportMaterialPage() {
         </Alert>
       )}
 
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+      <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
           <DialogHeader>
-            <DialogTitle>Confirm Export Request</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-red-600 font-bold text-lg">
+              <AlertTriangle className="h-9 w-9 text-red-600" />
+              Warning
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 text-sm">
+              Some materials do not have enough stock for export. Would you like to proceed with the
+              request anyway?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-between mt-4">
+            <Button
+              variant="outline"
+              className="text-gray-700 border-gray-300 hover:bg-gray-100"
+              onClick={handleCancelExport}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleConfirmedExport}
+              disabled={isCreatingExportRequest}>
+              Proceed Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-gray-800 font-bold text-lg">
+              <CheckCircle className="h-9 w-9 text-green-600" />
+              Confirm Export Request
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 text-sm">
               Are you sure you want to create this material export request?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCancelExport}>
+          <DialogFooter className="flex justify-between mt-4">
+            <Button
+              variant="outline"
+              className="text-gray-700 border-gray-300 hover:bg-gray-100"
+              onClick={handleCancelExport}>
               Cancel
             </Button>
-            <Button onClick={handleConfirmedExport} disabled={isCreatingExportRequest}>
+            <Button
+              onClick={handleConfirmedExport}
+              disabled={isCreatingExportRequest}
+              variant="default"
+              className="bg-green-600 hover:bg-green-700 text-white">
               {isCreatingExportRequest ? 'Creating...' : 'Confirm'}
             </Button>
           </DialogFooter>

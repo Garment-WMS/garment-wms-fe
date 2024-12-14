@@ -65,17 +65,6 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
       </CardHeader>
       <CardContent>
         <div className={`text-2xl font-bold ${color}`}>{value}</div>
-        {/*  {trend && (
-          <p
-            className={`text-xs ${trend === 'up' ? 'text-green-500' : 'text-red-500'} flex items-center mt-1`}>
-            {trend === 'up' ? (
-              <ArrowUpIcon className="w-3 h-3 mr-1" />
-            ) : (
-              <ArrowDownIcon className="w-3 h-3 mr-1" />
-            )}
-            {trend === 'up' ? '4.5%' : '2.5%'} from last month
-          </p>
-        )} */}
       </CardContent>
     </Card>
   );
