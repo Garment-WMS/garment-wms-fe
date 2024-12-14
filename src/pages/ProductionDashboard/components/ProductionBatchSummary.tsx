@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from '@/components/ui/table';
+} from '@/components/ui/Table';
 import { ArrowUpIcon, ArrowDownIcon, BarChart2Icon, PackageIcon } from 'lucide-react';
 
 interface ProductVariant {
