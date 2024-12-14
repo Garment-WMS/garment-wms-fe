@@ -17,6 +17,7 @@ import { MdOutlineReceiptLong } from "react-icons/md"
 import { Package } from "lucide-react"
 import { BiErrorCircle } from "react-icons/bi"
 import { IoIosInformationCircleOutline } from "react-icons/io"
+import { PurchaseOrderDeliveryTable } from "./PurchaseOrderDeliveryTable"
 
  const renderUi=(purchaseOrder: PurchaseOrder)=> {
   const deliveryProgress = {
@@ -86,9 +87,10 @@ import { IoIosInformationCircleOutline } from "react-icons/io"
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <DeliveryProgressChart deliveryProgress={deliveryProgress} />
+          <PurchaseOrderDeliveryTable poDeliveries={purchaseOrder?.poDelivery ?? []} />
         </TabsContent>
         <TabsContent value="materials">
-          <MaterialSummaryTable />
+          <MaterialSummaryTable materials={purchaseOrder?.poMaterialSummary}/>
         </TabsContent>
         <TabsContent value="details">
           <PurchaseOrderSummary purchaseOrder={purchaseOrder} />
