@@ -41,7 +41,7 @@ switch (status) {
         return 'default'
     case 'FINISHED':
         return 'success'
-    case 'IN_PROGRESS':
+    case 'IMPORTING':
         return 'warning'
     case 'CANCELLED':
         return 'danger'

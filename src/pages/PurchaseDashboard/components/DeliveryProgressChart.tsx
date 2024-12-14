@@ -11,12 +11,13 @@ interface DeliveryProgressProps {
   }
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+const COLORS = ['#00C49F', '#FFBB28', '#0088FE', '#e62922']
 
 export function DeliveryProgressChart({ deliveryProgress }: DeliveryProgressProps) {
   const data = [
     { name: 'Finished', value: deliveryProgress.finished },
-    { name: 'In Progress', value: deliveryProgress.inProgress },
+    { name: 'Importing', value: deliveryProgress.inProgress },
     { name: 'Pending', value: deliveryProgress.pending },
     { name: 'Cancelled', value: deliveryProgress.cancelled },
   ]
