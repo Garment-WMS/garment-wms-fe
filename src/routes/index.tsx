@@ -90,10 +90,19 @@ const RouterComponent: React.FC = () => {
       ),
       children: [
         // Manager-specific routes (e.g., warehouse manager)
-        // {
-        //   path: '/',
-        //   element: <Home />,
-        // },
+        {
+          path: '/',
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<Home />}
+              warehouseStaffComponent={<Home />}
+              productionDepartmentComponent={<ProductionDashboard/>}
+              inspectingDepartmentComponent={<Home />}
+              factoryDirectorComponent={<Home />}
+              purchasingStaffComponent={<PurchaseDashboard />}
+            />
+          )
+        },
 
         {
           path: '/dashboard',
