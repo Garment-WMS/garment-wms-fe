@@ -11,7 +11,8 @@ export const productionBatchApi = {
   getAll: () => get('/production-batch'),
   getById: (id: string) => get(`/production-batch/${id}`),
   import: () => post('/production-batch'),
-  cancel: (id: string) => patch(`/production-batch/${id}/cancel`)
+  cancel: (id: string) => patch(`/production-batch/${id}/cancel`),
+  getChart: (productionPlanId: string) => get('/production-batch/chart', { productionPlanId })
 };
 
 interface GetAllProductionBatchInput {
@@ -134,4 +135,24 @@ export const cancelProductionBatch = async (
 
   const response = await privateCall(config);
   return response.data as ApiResponse;
+};
+
+export const getProductionBatchChart = async (productionPlanId: string): Promise<ApiResponse> => {
+  try {
+    const config = productionBatchApi.getChart(productionPlanId);
+    const response = await privateCall(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error fetching production batch chart data:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data);
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred while fetching chart data.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred while fetching chart data.');
+  }
 };

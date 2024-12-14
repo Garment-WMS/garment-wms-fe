@@ -87,9 +87,10 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; value: number; percentage: number }[] = [];
       const staticDefects = Array.isArray(defectsData.data) ? defectsData.data : [];
+      const requestType = inspectionRequest?.[0]?.type;
       let totalDefectCount = 0;
-
-      staticDefects.forEach((defect: { id: string; description: string }) => {
+      const filteredDefects = staticDefects.filter((defect: any) => defect.type === requestType);
+      filteredDefects.forEach((defect: { id: string; description: string }) => {
         let totalDefectQuantity = 0;
         inspectionRequest.forEach((request) => {
           request?.inspectionReport?.inspectionReportDetail?.forEach((detail: any) => {
