@@ -19,31 +19,49 @@ import {
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
+import DisposeDialog from './DisposeDialog';
+
 type Props = {
   id: string;
   receiptId: string | null;
 };
+
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
+  const [isDisposeDialogOpen, setIsDisposeDialogOpen] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<MaterialReceipt | null>(null);
+  const [render, setRender] = useState(0);
+
   const getStatusBadgeVariant = (status: string) => {
     const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
-    return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
+    return statusObj ? statusObj.variant : 'default';
   };
+
   const openDialog = (id: string) => {
     setSelectedReceiptId(id);
     setIsOpened(true);
+  };
+
+  const openDisposeDialog = (receipt: MaterialReceipt) => {
+    setSelectedReceipt(receipt);
+    setIsDisposeDialogOpen(true);
+  };
+  const reRender = () => {
+    setRender((render) => render + 1);
+  };
+
+  const handleDisposeSuccess = () => {
+    // Refresh the table data
+    reRender();
   };
 
   useEffect(() => {
     if (receiptId) {
       openDialog(receiptId);
     }
-  }, [receiptId]);
-  // // Function to close the dialog
-  // const closeDialog = () => {
-  //   setSelectedReceiptId(null); // Reset the ID
-  // };
+  }, [receiptId, render]);
+
   const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     {
       header: 'Receipt code',
@@ -103,16 +121,6 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
         );
       }
     },
-    // {
-    //   header: 'Material',
-    //   accessorKey: 'material.name',
-    //   enableColumnFilter: true,
-    //   filterOptions: materialTypes.map((type) => ({
-    //     label: type.label, // Correctly access the label
-    //     value: type.value // Correctly access the value
-    //   })),
-    //   cell: ({ row }) => <div>{row.original.material.name}</div>
-    // },
     {
       header: 'Import Quantity',
       accessorKey: 'quantityByPack',
@@ -156,7 +164,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const request = row.original;
+        const receipt = row.original;
 
         return (
           <DropdownMenu>
@@ -168,29 +176,21 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => openDialog(request.id)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openDialog(receipt.id)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
+                Dispose
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
       }
     }
   ];
-  if (!id) {
-    return (
-      <div>
-        <h1>No Material Receipt </h1>
-      </div>
-    );
-  }
 
   const [importColumnFilters, setImportColumnFilters] = useState<ColumnFiltersState>([]);
-
   const [importSorting, setImportSorting] = useState<SortingState>([]);
-
   const importDebouncedColumnFilters: ColumnFiltersState = useDebounce(importColumnFilters, 1000);
-
   const importDebouncedSorting: SortingState = useDebounce(importSorting, 1000);
-
   const [importPagination, setImportPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5
@@ -215,8 +215,16 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       totalFiltered: importPageMeta?.total || 0
     };
 
+  if (!id) {
+    return (
+      <div>
+        <h1>No Material Receipt</h1>
+      </div>
+    );
+  }
+
   return (
-    <div className=" flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4">
       <div className="h-full">
         <div className="">
           <Label>Material Receipt</Label>
@@ -238,6 +246,15 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
 
       {selectedReceiptId && (
         <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened} />
+      )}
+
+      {selectedReceipt && (
+        <DisposeDialog
+          receipt={selectedReceipt}
+          isOpen={isDisposeDialogOpen}
+          setIsOpen={setIsDisposeDialogOpen}
+          onDisposeSuccess={handleDisposeSuccess}
+        />
       )}
     </div>
   );
