@@ -1,7 +1,4 @@
-'use client';
-
-import { useState } from 'react';
-import { format } from 'date-fns';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,14 +8,10 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/Badge';
-import { Progress } from '@/components/ui/progress';
-import { ClipboardList, Package, AlertTriangle, Check } from 'lucide-react';
+import { CheckCircle, XCircle, ExternalLink, Package, Ruler } from 'lucide-react';
 import { InspectionReport } from '@/types/InspectionReport';
-import { Separator } from '@/components/ui/Seperator';
-import { CgClose } from 'react-icons/cg';
 
 export default function InspectionReportDialog({
   inspectionReqId,
@@ -28,26 +21,28 @@ export default function InspectionReportDialog({
   inspectionReport: InspectionReport;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
   const handleClick = () => {
     const url = `/report/${inspectionReqId}`;
-    window.open(url, '_blank'); // Opens in a new tab
+    window.open(url, '_blank');
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">View Inspection Report</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0">
-        <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="text-2xl font-bold">Inspection Report Details</DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="h-full px-6 pb-6">
-          <div className="space-y-4">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+        <ScrollArea className="h-[90vh]">
+          <DialogHeader className="p-6 pb-0 sticky top-0 bg-white z-10">
+            <DialogTitle className="text-2xl font-bold">Inspection Report Details</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 p-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl">General Information</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-3 gap-4">
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <p className="font-semibold">Report Code</p>
                   <p>{inspectionReport.code}</p>
@@ -56,8 +51,11 @@ export default function InspectionReportDialog({
                   <p className="font-semibold">Type</p>
                   <Badge>{inspectionReport.type}</Badge>
                 </div>
-                <div className="mt-4">
-                  <Button onClick={handleClick}>Go to inspection report</Button>
+                <div className="flex items-center justify-start md:justify-end">
+                  <Button onClick={handleClick} className="flex items-center gap-2">
+                    <span>Go to inspection report</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -66,105 +64,104 @@ export default function InspectionReportDialog({
                 <CardTitle className="text-xl">Inspection Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {inspectionReport.inspectionReportDetail.map((detail, index) => (
-                    <Card key={index}>
+                    <Card key={index} className="shadow-md">
                       <CardHeader>
-                        <CardTitle className="text-lg">
-                          {detail?.materialPackage
-                            ? detail.materialPackage.name
-                            : detail?.productSize
-                              ? detail.productSize.name
-                              : 'N/A'}
-                        </CardTitle>
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={
+                              detail.materialPackage
+                                ? detail.materialPackage.materialVariant.image
+                                : detail.productSize?.productVariant.image
+                            }
+                            alt={
+                              detail.materialPackage
+                                ? detail.materialPackage.materialVariant.name
+                                : detail.productSize?.name
+                            }
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                          <div>
+                            <CardTitle className="text-lg mb-2">
+                              {detail?.materialPackage
+                                ? detail.materialPackage.name
+                                : detail?.productSize
+                                  ? detail.productSize.name
+                                  : 'N/A'}
+                            </CardTitle>
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              {detail?.materialPackage ? (
+                                <>
+                                  <Package className="w-4 h-4" />
+                                  <span>Material</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Ruler className="w-4 h-4" />
+                                  <span>Product</span>
+                                </>
+                              )}
+                            </Badge>
+                          </div>
+                        </div>
                       </CardHeader>
                       <CardContent>
-                        {detail?.materialPackage ? (
-                          <div className="space-y-2">
-                          <p>
-                            <strong>Package Code:</strong> {detail?.materialPackage?.code ?? 'N/A'}
-                          </p>
-                          <p>
-                            <strong>Total Quantity:</strong> {detail.quantityByPack}{' '}
-                            {detail?.materialPackage?.packUnit ?? 'Units'}
-                          </p>
-                          <div className="flex items-center space-x-2">
-                            <Progress
-                              value={
-                                (detail?.approvedQuantityByPack /
-                                  (detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
-                                    0)) *
-                                100
-                              }
-                              className="w-1/2"
-                            />
-                            <div className="flex justify-center items-center gap-2">
-                              <span>{detail.approvedQuantityByPack} </span>
-                              Approved
-                              <Check />
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="font-semibold">
+                                {detail?.materialPackage ? 'Package Code:' : 'Size Code:'}
+                              </p>
+                              <p>
+                                {detail?.materialPackage?.code ??
+                                  detail?.productSize?.code ??
+                                  'N/A'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-semibold">Total Quantity:</p>
+                              <p>
+                                {detail.quantityByPack}{' '}
+                                {detail?.materialPackage?.packUnit ??
+                                  detail?.productSize?.uom?.name ??
+                                  'Units'}
+                              </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Progress
-                              value={
-                                (detail.defectQuantityByPack /
-                                  (detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
-                                    0)) *
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                <span className="font-semibold">Approved</span>
+                              </div>
+                              <span>{detail.approvedQuantityByPack}</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {(
+                                (detail.approvedQuantityByPack / detail.quantityByPack) *
                                 100
-                              }
-                              className="w-1/2"
-                            />
-                            <div className="flex justify-center items-center gap-2">
-                              <span>{detail.defectQuantityByPack} </span>
-                              Defect
-                              <CgClose />
+                              ).toFixed(2)}
+                              % of total
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <XCircle className="w-5 h-5 text-red-500" />
+                                <span className="font-semibold">Defect</span>
+                              </div>
+                              <span>{detail.defectQuantityByPack}</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {(
+                                (detail.defectQuantityByPack / detail.quantityByPack) *
+                                100
+                              ).toFixed(2)}
+                              % of total
                             </div>
                           </div>
                         </div>
-                        ):(
-                          <div className="space-y-2">
-                          <p>
-                            <strong>Size Code:</strong> {detail?.productSize?.code ?? 'N/A'}
-                          </p>
-                          <p>
-                            <strong>Total Quantity:</strong> {detail.quantityByPack}{' '}
-                            {detail?.productSize?.uom?.name ?? 'Units'}
-                          </p>
-                          <div className="flex items-center space-x-2">
-                            <Progress
-                              value={
-                                (detail?.approvedQuantityByPack /
-                                  (detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
-                                    0)) *
-                                100
-                              }
-                              className="w-1/2"
-                            />
-                            <div className="flex justify-center items-center gap-2">
-                              <span>{detail.approvedQuantityByPack} </span>
-                              Approved
-                              <Check />
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Progress
-                              value={
-                                (detail.defectQuantityByPack /
-                                  (detail?.approvedQuantityByPack + detail?.defectQuantityByPack ||
-                                    0)) *
-                                100
-                              }
-                              className="w-1/2"
-                            />
-                            <div className="flex justify-center items-center gap-2">
-                              <span>{detail.defectQuantityByPack} </span>
-                              Defect
-                              <CgClose />
-                            </div>
-                          </div>
-                        </div>
-                        )}
-                        
                       </CardContent>
                     </Card>
                   ))}

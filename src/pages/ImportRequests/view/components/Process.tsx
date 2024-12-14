@@ -51,7 +51,9 @@ const Process = ({ currentStatus, selectedStep, setSelectedStep }: Props) => {
             displayStatus={getDisplayStatus(item.state)}
             isDone={
               statusOrder.indexOf(currentStatus) >=
-              statusOrder.indexOf(item.state[item.state.length - 1])
+                statusOrder.indexOf(item.state[item.state.length - 1]) ||
+              (currentStatus == 'REJECTED' &&
+                3 >= statusOrder.indexOf(item.state[item.state.length - 1]))
             }
             totalSteps={importRequestStatusList.length}
             onSelect={handleSelectStep} // Pass the selection handler

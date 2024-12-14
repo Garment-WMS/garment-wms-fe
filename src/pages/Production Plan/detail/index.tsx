@@ -10,7 +10,8 @@ import {
   CheckCircle,
   PlayCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  AlertTriangle
 } from 'lucide-react';
 import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
 import { useStartProductionPlan } from '@/hooks/useStartProductionPlan';
@@ -186,6 +187,49 @@ const ProductionPlanDetail = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Start Plan Modal */}
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              Start Production Plan
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Are you sure you want to start the production plan?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 bg-red-50 border-l-4 border-red-400 p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-red-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">
+                  This action will initiate the production process. Please ensure all prerequisites
+                  are met.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 sm:mt-8 sm:flex sm:flex-row-reverse gap-3">
+            <Button
+              variant="default"
+              className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+              onClick={handleStartPlan}
+              disabled={isStartingPlan}>
+              {isStartingPlan ? 'Starting...' : 'Yes, Start Plan'}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeModal}
+              className="mt-3 sm:mt-0 ring-1 ring-red-500 text-red-500 hover:text-red-300">
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

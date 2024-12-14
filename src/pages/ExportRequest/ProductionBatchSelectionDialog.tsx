@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
@@ -20,6 +18,8 @@ import Loading from '@/components/common/Loading';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'react-router-dom';
+import { ProductionBatchStatus } from '@/enums/productionBatch';
+import EmptyDatacomponent from '@/components/common/EmptyData';
 
 interface Props {
   isOpen: boolean;
@@ -48,10 +48,13 @@ export default function ProductionBatchSelectionDialog({
       try {
         setIsLoading(true);
         const response = await getProductionBatchFn();
-        setProductionBatches(response.data);
+        const filteredBatches = response.data.filter(
+          (batch: ProductionBatch) => batch.status === ProductionBatchStatus.PENDING
+        );
+        setProductionBatches(filteredBatches);
         // If a productionBatchId is provided in the URL, pre-select that batch
         if (productionBatchId) {
-          const preSelectedBatch = response.data.find(
+          const preSelectedBatch = filteredBatches.find(
             (batch: ProductionBatch) => batch.id === productionBatchId
           );
           if (preSelectedBatch) {
@@ -110,6 +113,8 @@ export default function ProductionBatchSelectionDialog({
                 <div className="flex items-center justify-center">
                   <Loading size="60" />
                 </div>
+              ) : productionBatches.length === 0 ? (
+                <EmptyDatacomponent />
               ) : (
                 <ScrollArea className="h-[400px] p-6 pt-0">
                   {productionBatches.map((batch) => (

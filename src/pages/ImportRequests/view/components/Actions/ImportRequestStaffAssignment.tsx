@@ -12,6 +12,7 @@ import { TiDocument } from 'react-icons/ti';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AssignStaffPopup from './StaffAssignment';
 import ReassingStaffPopup from './StaffReassignment';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 type AssignmentStatus = 'AWAIT_TO_IMPORT' | 'IMPORTING' | 'IMPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
@@ -162,13 +163,15 @@ export default function WarehouseStaffAssignment({
               </Link>
             )}
           {currentStatus == 'AWAIT_TO_IMPORT' && (
-            <ReassingStaffPopup
-              onApproval={onApproval}
-              importRequest={importRequest}
-              type={'warehouseStaffId'}
-              role="warehouse-staff"
-              selectedInspectionTimeFrame={inspectionTime}
-            />
+            <WarehouseManagerGuardDiv>
+              <ReassingStaffPopup
+                onApproval={onApproval}
+                importRequest={importRequest}
+                type={'warehouseStaffId'}
+                role="warehouse-staff"
+                selectedInspectionTimeFrame={inspectionTime}
+              />
+            </WarehouseManagerGuardDiv>
           )}
         </div>
       </CardFooter>

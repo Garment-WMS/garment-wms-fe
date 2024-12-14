@@ -51,12 +51,15 @@ const ImportRequestSheet = (props: Props) => {
               </Link>
             </div>
           )}
-          {planDeliveryDate && (
-            <div className="font-primary font-semibold text-sm text-slate-500">
-              Plan Delivery Date:{' '}
-              <span className="text-black">
-                {planDeliveryDate ? convertDate(planDeliveryDate) : 'Not yet'}
-              </span>
+
+          {purchaseOrderDelivery && (
+            <div className="font-primary font-semibold text-sm">
+              Actual Delivery Date:{' '}
+              <Link
+                to={`/purchase-order/${purchaseOrderId}`}
+                className="text-bluePrimary underline">
+                {purchaseOrderDelivery}
+              </Link>
             </div>
           )}
         </div>
@@ -65,14 +68,14 @@ const ImportRequestSheet = (props: Props) => {
             Good Import Type:{' '}
             <span className="text-primaryLight">{getLabelOfImportType(importType)}</span>
           </div>
-          {/* {actualDeliveryDate && (
+          {planDeliveryDate && (
             <div className="font-primary font-semibold text-sm text-slate-500">
-              Actual Delivery Date:{' '}
-              <span className="text-green-600">
-                {actualDeliveryDate ? convertDateWithTime(actualDeliveryDate) : 'Not yet'}
+              Plan Delivery Date:{' '}
+              <span className="text-black">
+                {planDeliveryDate ? convertDate(planDeliveryDate) : 'Not yet'}
               </span>
             </div>
-          )} */}
+          )}
         </div>
       </div>
       <div>

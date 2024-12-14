@@ -20,6 +20,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import Colors from '@/constants/color';
 import InspectionReportDialog from './InspectionReportDialog';
 import ReassingStaffPopup from './StaffReassignment';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 
 const COLORS = {
   passed: 'hsl(var(--chart-1))',
@@ -87,9 +88,10 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
     if (defectsData?.data && inspectionRequest?.length) {
       const defects: { type: string; value: number; percentage: number }[] = [];
       const staticDefects = Array.isArray(defectsData.data) ? defectsData.data : [];
+      const requestType = inspectionRequest?.[0]?.type;
       let totalDefectCount = 0;
-
-      staticDefects.forEach((defect: { id: string; description: string }) => {
+      const filteredDefects = staticDefects.filter((defect: any) => defect.type === requestType);
+      filteredDefects.forEach((defect: { id: string; description: string }) => {
         let totalDefectQuantity = 0;
         inspectionRequest.forEach((request) => {
           request?.inspectionReport?.inspectionReportDetail?.forEach((detail: any) => {
@@ -128,21 +130,23 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
           <div className="col-span-3 flex flex-col items-center justify-center">
             <img src={Waiting} alt="Waiting for Inspection" className="w-[300px] h-[300px]" />
             <h2 className="font-bold text-xl text-gray-700">Waiting for Inspection</h2>
-            <ReassingStaffPopup
-              onApproval={onApproval}
-              importRequest={importRequest}
-              type={'inspectionDepartmentId'}
-              role="inspection-department"
-            />
+            <WarehouseManagerGuardDiv>
+              <ReassingStaffPopup
+                onApproval={onApproval}
+                importRequest={importRequest}
+                type={'inspectionDepartmentId'}
+                role="inspection-department"
+              />
+            </WarehouseManagerGuardDiv>
           </div>
         )}
-        {statusOrder.indexOf(currentStatus) < 4 && (
+        {!importRequest?.inspectionRequest[0]?.inspectionReport && (
           <div className="col-span-3 flex flex-col items-center justify-center">
             <img src={empty} alt="No Inspection Report" className="w-[250px] h-[250px]" />
             <h2 className="font-bold text-xl text-gray-700">Not Yet</h2>
           </div>
         )}
-        {statusOrder.indexOf(currentStatus) > 4 && (
+        {importRequest?.inspectionRequest[0]?.inspectionReport && (
           <>
             <div className="col-span-3 sm:col-span-1">
               <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">

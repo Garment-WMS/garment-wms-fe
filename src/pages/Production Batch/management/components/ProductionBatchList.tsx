@@ -194,18 +194,8 @@ const ProductionBatchList: React.FC = () => {
       header: 'Batch Quantity',
       accessorKey: 'quantityToProduce',
       cell: ({ row }) => (
-        <div className="text-center mr-5 font-semibold">
+        <div className="text-center mr-9 font-semibold">
           {row.original?.quantityToProduce || '0'}
-        </div>
-      ),
-      enableColumnFilter: false
-    },
-    {
-      header: 'Planning Quantity',
-      accessorKey: 'quantityToProduce',
-      cell: ({ row }) => (
-        <div className="text-center font-semibold mr-5">
-          {row.original.productionPlanDetail?.quantityToProduce || '0'}
         </div>
       ),
       enableColumnFilter: false

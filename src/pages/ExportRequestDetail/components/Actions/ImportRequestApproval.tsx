@@ -14,6 +14,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +38,7 @@ import {
 } from '@/components/ui/Select';
 import {
   approveExportRequestFn,
+  getMaterialVariantFn,
   getRecommendedMaterialReceiptFn
 } from '@/api/services/exportRequestApi';
 import AssignStaffPopup from './StaffAssignment';
@@ -50,6 +52,8 @@ import { Textarea } from '@/components/ui/Textarea';
 import { IoMdClose } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import exportRequestSelector from '../../slice/selector';
+import { Input } from '@/components/ui/Input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 
 type ApprovalStatus = any;
 
@@ -137,6 +141,13 @@ const getInitials = (name: string | undefined): string => {
   );
 };
 
+const algorithmLabels = {
+  FIFO: 'First In, First Out (FIFO)',
+  LIFO: 'Last In, First Out (LIFO)',
+  FEFO: 'First Expired, First Out (FEFO)',
+  CUS: 'Manual Choosen'
+};
+
 export default function WarehouseApproval({
   warehouseStaff,
   code,
@@ -154,7 +165,7 @@ export default function WarehouseApproval({
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('');
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>('');
   const [recommendedMaterials, setRecommendedMaterials] = useState<any[]>([]);
   const [selectedAssignee, setSelectedAssignee] = useState<any>(null);
   const [fullFilledMaterialExportRequestDetails, setFullFilledMaterialExportRequestDetails] =
@@ -162,10 +173,317 @@ export default function WarehouseApproval({
   const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
   const [notFullFilledMaterialExportRequestDetails, setNotFullFilledMaterialExportRequestDetails] =
     useState([]);
-  const [totalExceedPercentage, setTotalExceedPercentage] = useState(0);
+  // const [totalExceedPercentage, setTotalExceedPercentage] = useState(0);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [exceedingMaterialsCount, setExceedingMaterialsCount] = useState(0);
   const exportRequest: any = useSelector(exportRequestSelector.exportRequest);
+  const materialVariants = exportRequest?.materialExportRequestDetail;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedReceipts, setSelectedReceipts] = useState<any[]>([]);
+  const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false);
+  const [materialReceipts, setMaterialReceipts] = useState<any[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const fetchMaterialReceipts = async (materialVariantId: string) => {
+    setLoading(true);
+    try {
+      const data = await getMaterialVariantFn(materialVariantId);
+      setMaterialReceipts(data.data);
+    } catch (error) {
+      console.error('Error fetching material receipts:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch material receipts',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (materialVariants?.length > 0) {
+      fetchMaterialReceipts(materialVariants[currentStep].materialVariant.id);
+    }
+  }, [currentStep]);
+
+  const calculateExceedStats = () => {
+    console.log('Recommended Materials:', recommendedMaterials.length);
+    console.log('Selected Receipts:', selectedReceipts.length);
+
+    if (recommendedMaterials.length > 0) {
+      // For algorithm-recommended materials
+      const exceedingMaterials = recommendedMaterials.filter(
+        (material) => material.exceedQuantityUom > 0
+      );
+      const exceedingCount = exceedingMaterials.length;
+
+      const totalExceedPercentage = recommendedMaterials.reduce((sum, material) => {
+        return sum + (material.exceedPercentage || 0);
+      }, 0);
+
+      return {
+        exceedingCount,
+        totalExceedPercentage: (totalExceedPercentage / recommendedMaterials.length).toFixed(2)
+      };
+    } else if (selectedReceipts.length > 0) {
+      // For custom selection
+      let exceedingCount = 0;
+      let totalExceedPercentage = 0;
+
+      materialVariants.forEach((variant: any, index: any) => {
+        const targetQuantity = variant.quantityByUom || 0;
+        const selectedQuantity = selectedReceipts[index]?.totalQuantity || 0;
+
+        if (selectedQuantity > targetQuantity) {
+          exceedingCount++;
+          const exceedPercentage = ((selectedQuantity - targetQuantity) / targetQuantity) * 100;
+          totalExceedPercentage += exceedPercentage;
+        }
+      });
+      console.log(totalExceedPercentage / materialVariants.length);
+      return {
+        exceedingCount,
+        totalExceedPercentage: (totalExceedPercentage / materialVariants.length).toFixed(2)
+      };
+    }
+
+    return { exceedingCount: 0, totalExceedPercentage: 0 };
+  };
+
+  const { exceedingCount, totalExceedPercentage } = calculateExceedStats();
+  const handleReceiptSelection = (receipt: any, index: number) => {
+    if (receipt.rollCount < 0) {
+      receipt.rollCount = 0;
+    }
+    if (receipt.remainQuantityByPack < receipt.rollCount) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid input',
+        description: 'Quantity must be less then availabe'
+      });
+      receipt.rollCount = receipt.remainQuantityByPack;
+    }
+    setSelectedReceipts((prevReceipts) => {
+      const updatedReceipts = [...prevReceipts];
+      if (!updatedReceipts[currentStep]) {
+        updatedReceipts[currentStep] = { materialReceipts: [] };
+      }
+      if (!updatedReceipts[currentStep].materialReceipts) {
+        updatedReceipts[currentStep].materialReceipts = [];
+      }
+      updatedReceipts[currentStep].materialReceipts[index] = receipt;
+      // Calculate total quantity
+      const totalQuantity = updatedReceipts[currentStep].materialReceipts.reduce(
+        (sum: any, r: any) => {
+          return sum + (r.rollCount || 0) * (r.materialPackage.uomPerPack || 0);
+        },
+        0
+      );
+      updatedReceipts[currentStep].totalQuantity = totalQuantity;
+      return updatedReceipts;
+    });
+  };
+  const formatSelectedReceipts = () => {
+    return selectedReceipts.flatMap((receipt, index) => {
+      if (!receipt || !receipt.materialReceipts) return [];
+      return receipt.materialReceipts
+        .filter((r: any) => r.rollCount && r.rollCount > 0)
+        .map((r: any) => ({
+          materialReceiptId: r.id,
+          materialReceipt: r,
+          quantityByPack: r.rollCount,
+          targetQuantityUom: materialVariants[index].quantityByUom,
+          missingQuantityUom: Math.max(
+            0,
+            materialVariants[index].quantityByUom - r.rollCount * r.uomPerPack
+          ),
+          exceedQuantityUom: Math.max(
+            0,
+            r.rollCount * r.uomPerPack - materialVariants[index].quantityByUom
+          ),
+          exceedPercentage:
+            ((r.rollCount * r.uomPerPack) / materialVariants[index].quantityByUom - 1) * 100
+        }));
+    });
+  };
+
+  const handleNext = () => {
+    if (currentStep < materialVariants?.length - 1) {
+      setCurrentStep(currentStep + 1);
+      fetchMaterialReceipts(materialVariants[currentStep + 1]?.materialVariant.id);
+    } else {
+      setIsReceiptDialogOpen(false);
+      const formattedReceipts = formatSelectedReceipts();
+      setRecommendedMaterials(formattedReceipts);
+      console.log('Formatted Selected Receipts:', formattedReceipts);
+    }
+  };
+  const handleClose = () => {
+    setIsReceiptDialogOpen(false);
+    setRecommendedMaterials([]);
+    setSelectedAlgorithm(null);
+  };
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      fetchMaterialReceipts(materialVariants[currentStep - 1]?.materialVariant.id);
+    }
+  };
+  const renderReceiptSelectionDialog = () => {
+    let currentMaterial =
+      materialVariants && materialVariants[currentStep] ? materialVariants[currentStep] : null;
+    const handleChangeTab = (index: number) => {
+      setCurrentStep(index);
+    };
+    return (
+      <AlertDialog open={isReceiptDialogOpen} onOpenChange={setIsReceiptDialogOpen}>
+        <AlertDialogContent className="max-w-5xl ">
+          <ScrollArea className="max-h-[600px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Select Receipt for{' '}
+                {currentMaterial?.materialReceipt?.materialPackage.materialVariant.name}
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+            <div className="space-y-4">
+              <Tabs defaultValue={currentMaterial?.materialVariant?.id} className="w-full">
+                <TabsList className="w-full">
+                  {materialVariants?.map((variant: any, index: number) => (
+                    <TabsTrigger
+                      key={variant.materialVariant.id}
+                      value={variant.materialVariant.id}
+                      className="flex-1"
+                      onClick={() => handleChangeTab(index)}>
+                      {variant.materialVariant.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+
+              <ScrollArea className="h-[300px] p-4">
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <Loading size={40} />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {materialReceipts.length > 0 ? (
+                      materialReceipts.map((receipt, index) => (
+                        <Card
+                          key={index}
+                          className={`overflow-hidden ${selectedReceipts[currentStep]?.id === receipt.id ? 'border-2 border-blue-500' : ''}`}>
+                          <CardContent className="p-4 space-y-3">
+                            <div>
+                              <h3 className="font-semibold truncate">
+                                {receipt.materialPackage.name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">Code: {receipt.code}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Available Package: {Number(receipt.remainQuantityByPack)} {'Roll'}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                Quantity : {Number(receipt.remainQuantityByUom)}{' '}
+                                {
+                                  receipt?.materialPackage?.materialVariant?.material.materialUom
+                                    .uomCharacter
+                                }
+                              </p>
+                            </div>
+                            <div className="pt-2 border-t flex">
+                              <Barcode
+                                value={receipt.code}
+                                width={1}
+                                height={40}
+                                fontSize={10}
+                                format="CODE128"
+                                displayValue={true}
+                              />
+                            </div>
+                            <Input
+                              type="number"
+                              placeholder="Enter number of rolls"
+                              onChange={(e) => {
+                                const updatedReceipt = {
+                                  ...receipt,
+                                  rollCount: parseInt(e.target.value, 10)
+                                };
+                                handleReceiptSelection(updatedReceipt, index);
+                              }}
+                              value={
+                                selectedReceipts[currentStep]?.materialReceipts[index]?.rollCount ||
+                                ''
+                              }
+                            />
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div>No available Material</div>
+                    )}
+                  </div>
+                )}
+              </ScrollArea>
+
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {materialVariants &&
+                      materialVariants.map((variant: any, index: any) => {
+                        const targetQuantity = variant.quantityByUom || 0;
+                        const selectedQuantity = selectedReceipts[index]?.totalQuantity || 0;
+                        const isQuantityMet = selectedQuantity >= targetQuantity;
+                        const exceedQuantity = Math.max(0, selectedQuantity - targetQuantity);
+                        const exceedPercentage =
+                          targetQuantity > 0 ? (exceedQuantity / targetQuantity) * 100 : 0;
+
+                        return (
+                          <div key={index} className="flex items-center space-x-4 py-2">
+                            <img
+                              src={variant.materialVariant.image || '/placeholder.svg'}
+                              alt={variant.materialVariant.name}
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                            <div className="flex-grow">
+                              <span className="font-medium">{variant.materialVariant.name}:</span>
+                              <div className="flex justify-between items-center mt-1">
+                                <span className={isQuantityMet ? 'text-green-500' : 'text-red-500'}>
+                                  {selectedQuantity} / {targetQuantity}{' '}
+                                  {variant.materialVariant.material.materialUom.uomCharacter}
+                                  {isQuantityMet ? ' ✓' : ' ✗'}
+                                </span>
+                                {exceedQuantity > 0 && (
+                                  <span className="text-yellow-500 text-sm">
+                                    Exceeds by: {exceedQuantity.toFixed(2)} (
+                                    {exceedPercentage.toFixed(2)}%)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <AlertDialogFooter>
+              <Button onClick={() => handleClose()} variant={'outline'} className="mr-2">
+                Close
+              </Button>
+              <Button onClick={handleBack} disabled={currentStep === 0}>
+                Back
+              </Button>
+              <Button onClick={handleNext}>
+                {currentStep === materialVariants?.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </AlertDialogFooter>
+          </ScrollArea>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
   const { toast } = useToast();
   const navigate = useNavigate();
   const handleApprove = async () => {
@@ -293,7 +611,6 @@ export default function WarehouseApproval({
         0
       );
       const avgExceedPercentage = (totalExceed / data.data.length).toFixed(2);
-      setTotalExceedPercentage(parseFloat(avgExceedPercentage));
       setExceedingMaterialsCount(exceedingCount);
       toast({
         variant: 'success',
@@ -324,7 +641,11 @@ export default function WarehouseApproval({
 
   useEffect(() => {
     if (selectedAlgorithm) {
-      handleExportAlgorithmSelect();
+      if (selectedAlgorithm != 'CUS') {
+        handleExportAlgorithmSelect();
+      } else if (selectedAlgorithm == 'CUS') {
+        setIsReceiptDialogOpen(true);
+      }
     }
   }, [selectedAlgorithm]);
 
@@ -477,16 +798,28 @@ export default function WarehouseApproval({
                         The Algirithom will find the most suitable Package of material that suit the
                         need.
                       </h5>
-                      <Select onValueChange={setSelectedAlgorithm} value={selectedAlgorithm}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select an algorithm" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="FIFO">First In, First Out (FIFO)</SelectItem>
-                          <SelectItem value="LIFO">Last In, First Out (LIFO)</SelectItem>
-                          <SelectItem value="FEFO">First Expired, First Out (FEFO)</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-between">
+                            {selectedAlgorithm
+                              ? algorithmLabels[selectedAlgorithm]
+                              : 'Select an algorithm'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-160">
+                          <div className="grid grid-cols-2 gap-2">
+                            {Object.entries(algorithmLabels).map(([value, label]) => (
+                              <Button
+                                key={value}
+                                variant={selectedAlgorithm === value ? 'default' : 'outline'}
+                                className="justify-start"
+                                onClick={() => setSelectedAlgorithm(value)}>
+                                {label}
+                              </Button>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     {isLoading && (
                       <div className="flex items-center justify-center m-10">
@@ -506,19 +839,21 @@ export default function WarehouseApproval({
                     {recommendedMaterials.length > 0 && (
                       <div className="space-y-2">
                         <Label>Recommended Materials</Label>
-                        <Alert variant="default" className="mb-4">
-                          <InfoIcon className="h-4 w-4 mr-2" />
-                          <AlertTitle>Exceeding Materials</AlertTitle>
-                          <AlertDescription>
-                            {exceedingMaterialsCount} out of {recommendedMaterials.length} materials
-                            exceed the requested amount.
-                            <br />
-                            Total exceed percentage:{' '}
-                            <span className="text-yellow-300 text-bold">
-                              {totalExceedPercentage}%
-                            </span>
-                          </AlertDescription>
-                        </Alert>
+                        {totalExceedPercentage != 0 && (
+                          <Alert variant="default" className="mb-4">
+                            <InfoIcon className="h-4 w-4 mr-2" />
+                            <AlertTitle>Exceeding Materials</AlertTitle>
+                            <AlertDescription>
+                              {exceedingMaterialsCount} out of {recommendedMaterials.length}{' '}
+                              materials exceed the requested amount.
+                              <br />
+                              Total exceed percentage:{' '}
+                              <span className="text-yellow-300 text-bold">
+                                {totalExceedPercentage}%
+                              </span>
+                            </AlertDescription>
+                          </Alert>
+                        )}
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {recommendedMaterials.map((material, index) => (
                             <Card key={index} className="overflow-hidden">
@@ -638,21 +973,23 @@ export default function WarehouseApproval({
                       )}
                     <div className="space-y-2 mt-4 mb-4">
                       <Label className="mr-4">Assign Staff</Label>
-                      <AssignStaffPopup
-                        setStaff={setSelectedAssignee}
-                        staff={selectedAssignee}
-                        type={'warehouseStaffId'}
-                        setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
-                        role="warehouse-staff"
-                      />
-                      {selectedAssignee && (
-                        <Button
-                          variant={'ghost'}
-                          className="hover:bg-red-400 ml-2"
-                          onClick={() => handleRemoveStaff('warehouse-staff')}>
-                          <IoMdClose />
-                        </Button>
-                      )}
+                      <div className="flex">
+                        <AssignStaffPopup
+                          setStaff={setSelectedAssignee}
+                          staff={selectedAssignee}
+                          type={'warehouseStaffId'}
+                          setSelectedTimeFrame={setSelectedWareHouseTimeFrame}
+                          role="warehouse-staff"
+                        />
+                        {selectedAssignee && (
+                          <Button
+                            variant={'ghost'}
+                            className="hover:bg-red-400 ml-2"
+                            onClick={() => handleRemoveStaff('warehouse-staff')}>
+                            <IoMdClose />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="approveNote">Approval Note</Label>
@@ -725,7 +1062,7 @@ export default function WarehouseApproval({
           )}
         </CardFooter>
       </Card>
-
+      {renderReceiptSelectionDialog()}
       <AlertDialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

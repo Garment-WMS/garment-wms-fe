@@ -22,8 +22,12 @@ import { BiErrorCircle } from 'react-icons/bi';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { MdOutlinePercent } from 'react-icons/md';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { ProductionBatchListResponse } from '@/types/ProductionBatchListResponse';
+import { ProductionBatch } from '@/types/ProductionBatch';
+import { getProductionBatchChart } from '@/api/services/productionBatch';
+import ProductionBatchSummary from './ProductionBatchSummary';
 
-function renderUi(planDetails: ProductionPlan) {
+function renderUi(planDetails: ProductionPlan, productionBatches: any[] | null) {
   const completionPercentage =
     (planDetails?.totalProducedQuantity / planDetails?.totalQuantityToProduce) * 100;
 
@@ -32,7 +36,7 @@ function renderUi(planDetails: ProductionPlan) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card className="col-span-5">
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
-            <MdOutlinePercent   className="w-4 h-4" />
+            <MdOutlinePercent className="w-4 h-4" />
             <CardTitle className="text-sm font-medium">Overall Completion</CardTitle>
           </CardHeader>
           <CardContent>
@@ -43,7 +47,7 @@ function renderUi(planDetails: ProductionPlan) {
             </p>
           </CardContent>
         </Card>
-       
+
         <Card>
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
             <Package className="w-4 h-4" />
@@ -108,6 +112,7 @@ function renderUi(planDetails: ProductionPlan) {
           <TabsTrigger value="materials">Materials</TabsTrigger>
           <TabsTrigger value="orders">Purchase Orders</TabsTrigger>
           <TabsTrigger value="details">Plan Details</TabsTrigger>
+          <TabsTrigger value="batch">Production Batch</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <ProductionProgressChart productionPlanDetails={planDetails.productionPlanDetail} />
@@ -121,6 +126,13 @@ function renderUi(planDetails: ProductionPlan) {
         <TabsContent value="details">
           <ProductionPlanDetails planDetails={planDetails?.productionPlanDetail} />
         </TabsContent>
+        <TabsContent value="batch">
+          {productionBatches ? (
+            <ProductionBatchSummary productionBatchSummary={productionBatches} />
+          ) : (
+            <p>No production batches available for this plan.</p>
+          )}
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -129,6 +141,7 @@ function renderUi(planDetails: ProductionPlan) {
 export function ProductionPlanDashboard() {
   // const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<ProductionPlan>();
+  const [productionBatches, setProductionBatches] = useState<any[] | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -152,9 +165,13 @@ export function ProductionPlanDashboard() {
     try {
       setContainerLoading(true);
       const data = await getProductionPlanDetailsById(planId); // Fetch details
+      const chartData = await getProductionBatchChart(planId);
       // setPlanDetails(data); // Store fetched details
       if (data.statusCode === 200) {
         setPlanDetails(data.data);
+      }
+      if (chartData.statusCode === 200) {
+        setProductionBatches(chartData.data);
       }
     } catch (error) {
       console.error('Failed to fetch plan details:', error);
@@ -180,7 +197,7 @@ export function ProductionPlanDashboard() {
       ) : (
         <div>
           {planDetails ? (
-            renderUi(planDetails)
+            renderUi(planDetails, productionBatches)
           ) : (
             <div className="flex justify-center items-center h-[80vh]">
               <p>Select a production plan to see the details.</p>

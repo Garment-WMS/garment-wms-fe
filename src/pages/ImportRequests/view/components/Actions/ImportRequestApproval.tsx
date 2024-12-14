@@ -59,24 +59,24 @@ interface StaffMember {
   efficiency: number;
 }
 
-const getStatusDetails = (status: ApprovalStatus) => {
+const getStatusDetails = (status: ApprovalStatus, importRequest: any) => {
   if (status == 'ARRIVED') {
     return {
       label: 'Waiting for Approval',
       color: 'bg-blue-500 text-blue-950',
       icon: InfoIcon
     };
+  } else if (importRequest?.inspectionRequest[0]?.inspectionReport) {
+    return {
+      label: 'Approved',
+      color: 'bg-green-500 text-green-950',
+      icon: ClipboardCheck
+    };
   } else if (status == 'REJECTED') {
     return {
       label: 'Rejected',
       color: 'bg-red-500 text-red-950',
       icon: AlertCircle
-    };
-  } else if (statusOrder.indexOf(status) >= 3) {
-    return {
-      label: 'Approved',
-      color: 'bg-green-500 text-green-950',
-      icon: ClipboardCheck
     };
   } else
     return {
@@ -107,7 +107,6 @@ export default function WarehouseApproval({
   inspectionDepartment,
   onApproval
 }: WarehouseApprovalProps) {
-  const { label, color, icon: StatusIcon } = getStatusDetails(currentStatus as ApprovalStatus);
   const [approveNote, setApproveNote] = useState('');
   const [declineReason, setDeclineReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,6 +121,11 @@ export default function WarehouseApproval({
   const { id } = useParams();
   const [selectedInspectionTimeFrame, setSelectedInspectionTimeFrame] = useState<any>();
   const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
+  const {
+    label,
+    color,
+    icon: StatusIcon
+  } = getStatusDetails(currentStatus as ApprovalStatus, importRequest);
   const handleApprove = async () => {
     if (!selectedInspector || !selectedAssignee) {
       toast({

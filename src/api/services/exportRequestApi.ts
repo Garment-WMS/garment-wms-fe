@@ -19,6 +19,8 @@ export const exportRequestApi = {
   getOne: (id: string) => get(`${url}/${id}`),
   getRecommend: (id: string, type: string) =>
     post(`/material-export-receipt/recommend`, { materialExportRequestId: id, algorithm: type }),
+  getMaterialReceipt: (materialVariantId: string) =>
+    get(`/material-receipt/by-material-variant?materialVariantId=${materialVariantId}`),
   approveRequest: (
     id: string,
     action: string,
@@ -43,7 +45,14 @@ export const exportRequestApi = {
         exportExpectedFinishedAt
       });
     }
-  }
+  },
+  checkQuantity: (id: string) => get(`${url}/check-quantity/${id}`),
+  checkQuantityByVariant: (materialVariantId: string, quantityByUom: number) =>
+    post(`${url}/check-quantity-variant`, { materialVariantId, quantityByUom })
+};
+export const getMaterialVariantFn = async (materialVariantId: string) => {
+  const res = await privateCall(exportRequestApi.getMaterialReceipt(materialVariantId));
+  return res.data;
 };
 export const approveExportRequestFn = async (
   id: string,
@@ -93,6 +102,19 @@ export const createMaterialExportRequest = async (
     );
     return res.data;
   }
+};
+export const checkExportRequestQuantityFn = async (id: string) => {
+  const res = await privateCall(exportRequestApi.checkQuantity(id));
+  return res.data;
+};
+export const checkQuantityByVariantFn = async (
+  materialVariantId: string,
+  quantityByUom: number
+) => {
+  const res = await privateCall(
+    exportRequestApi.checkQuantityByVariant(materialVariantId, quantityByUom)
+  );
+  return res.data;
 };
 export const getAllExportRequestFn = async ({
   sorting,
