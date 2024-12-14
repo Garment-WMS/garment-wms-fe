@@ -87,7 +87,7 @@ import { PurchaseOrderDeliveryTable } from "./PurchaseOrderDeliveryTable"
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <DeliveryProgressChart deliveryProgress={deliveryProgress} />
-          <PurchaseOrderDeliveryTable poDeliveries={purchaseOrder?.poDelivery ?? []} />
+          <PurchaseOrderDeliveryTable poId={purchaseOrder.id} poDeliveries={purchaseOrder?.poDelivery ?? []} />
         </TabsContent>
         <TabsContent value="materials">
           <MaterialSummaryTable materials={purchaseOrder?.poMaterialSummary}/>
