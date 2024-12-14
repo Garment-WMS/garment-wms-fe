@@ -8,7 +8,7 @@ const PurchaseOrderManagement = () => {
       {/* Introduction */}
       <Introduction />
       {/* Pie Chart */}
-      <ProgressChart />
+      {/* <ProgressChart /> */}
       {/* Table */}
       <PurchaseOrderList />
     </div>

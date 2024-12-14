@@ -30,6 +30,9 @@ export const inventoryReportPlanApi = {
   },
   awaitInventoryReportPlan : (id:string) => {
     return patch(`${inventoryReportPlanApiPath}/${id}/await`);
+  },
+  cancelInventoryReportPlan : (id:string) => {
+    return patch(`${inventoryReportPlanApiPath}/${id}/cancel`);
   }
 };
 export const getAllInventoryReportPlanFn = async ({

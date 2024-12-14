@@ -40,7 +40,7 @@ import SelectTasks from './components/SelectTasks';
 import { useGetMaterialWithReceipt } from '@/hooks/useGetMaterial';
 import { SelectStaff } from './components/SelectStaff';
 import { ProductVariant } from '@/types/ProductType';
-import {  useGetProductVariantsWithReceipt } from '@/hooks/useGetProductVariants';
+import { useGetProductVariantsWithReceipt } from '@/hooks/useGetProductVariants';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import KanbanDisplayCard from './components/KanbanDisplayList/KanbanDisplayCard';
 import { inventoryReportPlanApi } from '@/api/services/inventoryReportPlanApi';
@@ -48,6 +48,7 @@ import { useNavigate } from 'react-router-dom';
 import { Textarea } from '@/components/ui/Textarea';
 import { PlanErrorDialog } from './components/PlanErrorDialog';
 import { InventoryReportPlan } from '@/types/InventoryReport';
+import { DateTimePickerForCreate } from './components/DateTimePickerForCreate';
 
 type Props = {};
 // interface inventoryReportPlanDetais {
@@ -72,6 +73,8 @@ const CreateDynamicPlan = (props: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
   const [planErrorDialog, setPlanErrorDialog] = useState(false);
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
   const navigate = useNavigate();
 
   // Function to add a new assignment
@@ -105,32 +108,31 @@ const CreateDynamicPlan = (props: Props) => {
     setAssignments(updatedAssignments);
   };
 
-  const formSchema = z
-    .object({
-      title: z.string().min(1).max(255),
-      note: z.string().optional(),
-      from: z
-        .date({
-          required_error: 'Date is required'
-        })
-        .refine((date) => date > new Date(), {
-          message: 'Start date must be after today'
-        }),
-      to: z.date({
-        required_error: 'Date is required'
-      })
-    })
-    .refine((data) => data.to >= data.from, {
-      message: 'End date must be after or equal to the start date',
-      path: ['to'] // Specifies the error path to be associated with the "to" field
-    });
+  const formSchema = z.object({
+    title: z.string().min(1).max(255),
+    note: z.string().optional()
+    // from: z
+    //   .date({
+    //     required_error: 'Date is required'
+    //   })
+    //   .refine((date) => date > new Date(), {
+    //     message: 'Start date must be after today'
+    //   }),
+    // to: z.date({
+    //   required_error: 'Date is required'
+    // })
+  });
+  // .refine((data) => data.to >= data.from, {
+  //   message: 'End date must be after or equal to the start date',
+  //   path: ['to'] // Specifies the error path to be associated with the "to" field
+  // });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      note: '',
-      from: undefined,
-      to: undefined
+      note: ''
+      // from: undefined,
+      // to: undefined
     }
   });
 
@@ -139,7 +141,7 @@ const CreateDynamicPlan = (props: Props) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let hasError = false;
-    
+
     // Check for missing staff and items in each assignment
     assignments.forEach((assignment) => {
       if (!assignment.staffId) {
@@ -155,45 +157,54 @@ const CreateDynamicPlan = (props: Props) => {
       }
     });
 
+    if(!fromDate || !toDate){
+      return  toast({
+        title: 'Error',
+        description: 'Please select date and time for the stocktaking plan.',
+        variant: 'destructive'
+      });
+    }
     // Reset errors if no issues are found
     if (!hasError) {
       setStaffError('');
       setItemsError('');
 
       // Proceed with formatting values
-       const formattedValues = {
+      const formattedValues = {
         ...values,
-        inventoryReportPlanType:"PARTIAL",
+        inventoryReportPlanType: 'PARTIAL',
         note: values.note || '',
-        from: values.from.toISOString(),
-        to: values.to.toISOString(),
+        // from: values.from.toISOString(),
+        // to: values.to.toISOString(),
+        from: fromDate?.toISOString(),
+        to: toDate?.toISOString(),
         inventoryReportPlanDetails: [
           ...assignments.flatMap((assignment) =>
             assignment.materialSelectedVariants.map((variant) => ({
               warehouseStaffId: assignment.staffId,
-              materialVariantId: variant.id,
+              materialVariantId: variant.id
             }))
           ),
-        
+
           ...assignments.flatMap((assignment) =>
-            assignment.productSelectedVariants.flatMap((variant) =>({
+            assignment.productSelectedVariants.flatMap((variant) => ({
               warehouseStaffId: assignment.staffId,
-              productVariantId: variant.id,
-            })
-              
-            )
+              productVariantId: variant.id
+            }))
           )
         ]
       };
 
       try {
-        const res = await privateCall(inventoryReportPlanApi.createInventoryReportPlan(formattedValues));
-        if(res.status=== 201){
+        const res = await privateCall(
+          inventoryReportPlanApi.createInventoryReportPlan(formattedValues)
+        );
+        if (res.status === 201) {
           const { id } = res.data.data;
           toast({
             title: 'Success',
             description: 'Stocktaking plan created successfully.',
-            variant: 'success',
+            variant: 'success'
           });
           navigate(`/stocktaking/plan/${id}`);
         }
@@ -206,12 +217,10 @@ const CreateDynamicPlan = (props: Props) => {
             variant: 'destructive'
           });
         }
-        const errMessage = error.response.data.message;
+        const errMessage = error?.response?.data?.message;
         const errorList = error.response.data.errors;
-        if (error.response.status === 409) {
-          setPlanErrorDialog(true);
-        }
-        if (error.response.status === 400 && errorList) {
+        console.log('error', errorList);
+        if (error.response.status === 409 && errorList) {
           const errorList = error.response.data.errors;
           setErrorPlanList(errorList);
           setPlanErrorDialog(true);
@@ -223,17 +232,14 @@ const CreateDynamicPlan = (props: Props) => {
           });
         }
       }
-      
     }
-
-    
   }
 
   const removeAssignment = (index: number, assignment: Assignment) => {
     const staffIdToRemove = assignment.staffId;
     const materialsToRemove = assignment.materialSelectedVariants.map((variant) => variant.id);
     const productsToRemove = assignment.productSelectedVariants.map((variant) => variant.id);
-    
+
     const updatedMaterialVariants = materialSelectedVariants.filter(
       (variant) => !materialsToRemove.includes(variant.id)
     );
@@ -330,6 +336,10 @@ const CreateDynamicPlan = (props: Props) => {
   useEffect(() => {
     fetchWarehouseStaff();
   }, []);
+  const onDateTimeChange = (from: Date | null, to: Date | null) => {
+    if (from) setFromDate(from);
+    if (to) setToDate(to);
+  };
   return (
     <div className="mx-auto p-4 bg-white shadow-sm border rounded-md">
       <Label className="text-xl font-primary font-bold">Planning partial stocktaking plan</Label>
@@ -354,8 +364,8 @@ const CreateDynamicPlan = (props: Props) => {
                 </FormItem>
               )}
             />
-
-            <div className="flex gap-6 items-center ">
+            <DateTimePickerForCreate onDateTimeChange={onDateTimeChange} />
+            {/* <div className="flex gap-6 items-center ">
               <FormField
                 control={form.control}
                 name="from"
@@ -387,7 +397,7 @@ const CreateDynamicPlan = (props: Props) => {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
             <FormField
               control={form.control}
               name="note"

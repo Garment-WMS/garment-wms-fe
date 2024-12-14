@@ -37,12 +37,12 @@ export function PlanErrorDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
-            Unable to Start Plan
+            Unable to Create Plan
           </DialogTitle>
         </DialogHeader>
         <DialogDescription>
           <p className="mb-4">
-              There are different plans that are in progress. The plan cannot be started until these plans are completed.
+              There are different plans that are planned in this date. The plan cannot be created until these plans are completed.
           </p>
           {planList.length > 0 && (
             <div className="bg-muted p-4 rounded-md">

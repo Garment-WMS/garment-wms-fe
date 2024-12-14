@@ -67,8 +67,8 @@ import CreateMaterialVariant from '@/pages/Material/create';
 import CreateProductVariant from '@/pages/Product/Create';
 import WarehouseStaffExportReceiptList from '@/pages/WarehouseStaff/ExportReceiptList/management';
 import CreateReturnImportRequest from '@/pages/ImportRequests/createReturnMaterial';
-import ProductionDashboard from '@/pages/ProductionDashboard';
 import PurchaseDashboard from '@/pages/PurchaseDashboard';
+import ProductionDashboard from '@/pages/ProductionDashboard';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -90,10 +90,19 @@ const RouterComponent: React.FC = () => {
       ),
       children: [
         // Manager-specific routes (e.g., warehouse manager)
-        // {
-        //   path: '/',
-        //   element: <Home />,
-        // },
+        {
+          path: '/',
+          element: (
+            <RoleBasedRedirect
+              managerComponent={<Home />}
+              warehouseStaffComponent={<Home />}
+              productionDepartmentComponent={<ProductionDashboard/>}
+              inspectingDepartmentComponent={<Home />}
+              factoryDirectorComponent={<Home />}
+              purchasingStaffComponent={<PurchaseDashboard />}
+            />
+          )
+        },
 
         {
           path: '/dashboard',
@@ -102,10 +111,10 @@ const RouterComponent: React.FC = () => {
             <RoleBasedRedirect
               managerComponent={<Home />}
               warehouseStaffComponent={<Home />}
-              productionDepartmentComponent={<Home/>}
+              productionDepartmentComponent={<ProductionDashboard/>}
               inspectingDepartmentComponent={<Home />}
               factoryDirectorComponent={<Home />}
-              purchasingStaffComponent={<Home />}
+              purchasingStaffComponent={<PurchaseDashboard />}
             />
           )
         },

@@ -27,7 +27,7 @@ import { PiShirtFoldedBold } from 'react-icons/pi';
 import { GiCardboardBoxClosed } from 'react-icons/gi';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-export default function DashboardPage() {
+export default function ImpExpDashboard() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [importReceipts, setImportReceipts] = useState<any[]>([]);
   const [exportReceipts, setExportReceipts] = useState<any[]>([]);
@@ -123,7 +123,7 @@ export default function DashboardPage() {
       <div className="border-b"></div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-bluePrimary">Latest Import/Export</h1>
           <div className="flex items-center gap-4">
             <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
             <Button onClick={fetchData}>Confirm</Button>

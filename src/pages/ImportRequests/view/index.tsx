@@ -21,8 +21,8 @@ const ViewImportRequest = (props: Props) => {
   const { toast } = useToast();
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const breadcrumbItems = [
-    { href: '/purchase-staff/import-request', label: 'Import Request' },
-    { href: `/purchase-staff/import-request/${id}`, label: `Details of Request` }
+    { href: '/import-request', label: 'Import Request' },
+    { href: `/import-request/${id}`, label: `Details of Request` }
   ];
   useEffect(() => {
     const fetchData = async () => {

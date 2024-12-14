@@ -96,7 +96,7 @@ const ExportReceiptTable = (props: Props) => {
         const code = row.original.code || 'N/A';
         return (
           <div>
-            <Link to={`/export-receipt/${row.original.id}`} className="text-blue-500 underline">
+            <Link to={`/export-receipt/${row.original.id}`} className="text-blue-500 hover:underline">
               {code}
             </Link>
           </div>
@@ -113,7 +113,7 @@ const ExportReceiptTable = (props: Props) => {
         const id = row.original?.materialExportRequest?.id;
         return (
           <div>
-            <Link to={`/export-request/${id}`} className="text-blue-500 underline">
+            <Link to={`/export-request/${id}`} className="text-blue-500 hover:underline">
               {row.original?.materialExportRequest?.code}
             </Link>
           </div>
@@ -125,7 +125,7 @@ const ExportReceiptTable = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex gap-2 items-center text-blue-500 underline" to="">
+        <div className="flex gap-2 items-center " >
           <Avatar className="">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
@@ -140,7 +140,7 @@ const ExportReceiptTable = (props: Props) => {
               ' ' +
               row?.original?.warehouseStaff?.account?.firstName}
           </h4>
-        </Link>
+        </div>
       )
     },
     // {

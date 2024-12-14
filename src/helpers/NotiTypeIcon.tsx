@@ -1,4 +1,4 @@
-import { FileDown, FileCheck, FileSearch, FileUp, ClipboardList, Files, type LucideIcon } from 'lucide-react'
+import { FileDown, FileCheck, FileSearch, FileUp, ClipboardList, Files, type LucideIcon, ArrowDown10 } from 'lucide-react'
 
 export type DocumentType = 
   | 'IMPORT_REQUEST'
@@ -7,6 +7,7 @@ export type DocumentType =
   | 'MATERIAL_EXPORT_REQUEST'
   | 'MATERIAL_EXPORT_RECEIPT'
   | 'INVENTORY_REPORT'
+  | 'REORDER_LEVEL'
   | 'ANY'
 
 interface DocumentTypeIconProps {
@@ -21,6 +22,7 @@ const iconMap: Record<DocumentType, LucideIcon> = {
   MATERIAL_EXPORT_REQUEST: FileUp,
   MATERIAL_EXPORT_RECEIPT: FileCheck,
   INVENTORY_REPORT: ClipboardList,
+  REORDER_LEVEL: ArrowDown10 ,
   ANY: Files
 }
 

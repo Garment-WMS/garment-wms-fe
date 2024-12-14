@@ -1,10 +1,18 @@
 import { ProductionBatchListResponse } from '@/types/ProductionBatchListResponse';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import axios from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
-import Cookies from 'js-cookie';
+import privateCall from '../PrivateCaller';
 import { get, patch, post } from '../ApiCaller';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+export const productionBatchApi = {
+  getAll: () => get('/production-batch'),
+  getById: (id: string) => get(`/production-batch/${id}`),
+  import: () => post('/production-batch'),
+  cancel: (id: string) => patch(`/production-batch/${id}/cancel`)
+};
 
 interface GetAllProductionBatchInput {
   sorting: SortingState;
@@ -20,34 +28,29 @@ export const getAllProductionBatch = async ({
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
-  // Initialize filter and order arrays
   const filter: any[] = [];
   const order: any[] = [];
 
-  // Build filter array from columnFilters
   columnFilters.forEach((filterItem) => {
     const { id, value } = filterItem;
 
-    // Determine operation type based on the filter value
     let type: FilterOperationType;
     if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings; // Example for array values
+      type = FilterOperationType.InStrings;
     } else if (value === null) {
-      type = FilterOperationType.NeNull; // Example for null values
+      type = FilterOperationType.NeNull;
     } else {
-      type = FilterOperationType.Eq; // Default to equality for single values
+      type = FilterOperationType.Eq;
     }
 
     filter.push({ field: id, type, value });
   });
 
-  // Build order array from sorting
   sorting.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
     order.push({ field: sort.id, dir: direction });
   });
 
-  // Construct the query string using FilterBuilder
   const queryString = FilterBuilder.buildFilterQueryString({
     limit,
     offset,
@@ -55,29 +58,33 @@ export const getAllProductionBatch = async ({
     order
   });
 
-  const fullUrl = `/production-batch${queryString}`;
+  const config = productionBatchApi.getAll();
+  config.url += queryString;
 
-  try {
-    const config = get(fullUrl);
-    const response = await axios(config);
-    return response.data.data as ProductionBatchListResponse;
-  } catch (error) {
-    console.error('Error fetching production batches:', error);
-    throw new Error('Failed to fetch production batches');
-  }
+  const response = await privateCall(config);
+  return response.data.data as ProductionBatchListResponse;
 };
 
 export const getOneProductionBatchById = async (id: string): Promise<ApiResponse> => {
-  try {
-    const config = get(`/production-batch/${id}`);
-    const response = await axios(config);
-    return response.data as ApiResponse;
-  } catch (error: any) {
-    console.error('Failed to fetch production batch by ID:', error);
-    throw new Error('Failed to fetch production batch');
-  }
+  const config = productionBatchApi.getById(id);
+  const response = await privateCall(config);
+
+  return response.data as ApiResponse;
 };
 
+// export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+
+//   const config = productionBatchApi.import();
+//   config.data = formData;
+//   config.headers = {
+//     'Content-Type': 'multipart/form-data'
+//   };
+
+//   const response = await privateCall(config);
+//   return response.data as ApiResponse;
+// };
 export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
@@ -86,7 +93,6 @@ export const importProductionBatch = async (file: File): Promise<ApiResponse> =>
     console.log(`${key}:`, value);
   }
   const accessToken = Cookies.get('accessToken');
-
   // Prepare the API caller configuration
   const config = post(
     '/production-batch',
@@ -99,15 +105,12 @@ export const importProductionBatch = async (file: File): Promise<ApiResponse> =>
   );
 
   try {
-    // Make the API call
     const response = await axios(config);
-    // Return the successful response data
     return response.data as ApiResponse;
   } catch (error: any) {
     console.error('Error uploading production batch:', error);
     if (axios.isAxiosError(error) && error.response) {
       console.error('Error response data:', error.response.data);
-      // Return an error response in the expected format
       return {
         statusCode: error.response.status,
         data: null,
@@ -115,7 +118,6 @@ export const importProductionBatch = async (file: File): Promise<ApiResponse> =>
         errors: error.response.data.errors || null
       } as ApiResponse;
     }
-    // Throw for unexpected errors
     throw new Error('An unexpected error occurred during file upload.');
   }
 };
@@ -124,31 +126,12 @@ export const cancelProductionBatch = async (
   id: string,
   cancelledReason: string
 ): Promise<ApiResponse> => {
-  try {
-    const endpoint = `/production-batch/${id}/cancel`;
-    const body = { cancelledReason };
-    const accessToken = Cookies.get('accessToken');
-    const config = patch(
-      endpoint,
-      body,
-      {},
-      {
-        'Content-Type': 'application/json',
-        Authorization: accessToken ? `Bearer ${accessToken}` : ''
-      }
-    );
-    const response = await axios(config);
-    return response.data as ApiResponse;
-  } catch (error: any) {
-    console.error('Failed to cancel purchase order:', error);
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        statusCode: error.response.status,
-        data: null,
-        message: error.response.data.message || 'Failed to cancel purchase order.',
-        errors: error.response.data.errors || null
-      } as ApiResponse;
-    }
-    throw new Error('An unexpected error occurred while canceling the purchase order.');
-  }
+  const config = productionBatchApi.cancel(id);
+  config.data = { cancelledReason };
+  config.headers = {
+    'Content-Type': 'application/json'
+  };
+
+  const response = await privateCall(config);
+  return response.data as ApiResponse;
 };

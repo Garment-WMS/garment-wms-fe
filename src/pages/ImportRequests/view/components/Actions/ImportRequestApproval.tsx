@@ -269,10 +269,10 @@ export default function WarehouseApproval({
             </div>
           </div>
           <div className="col-span-1 md:col-span-2 flex flex-col justify-center">
-            <h3 className="text-lg font-semibold mb-4">Approval Status</h3>
             <div className="space-y-4">
-              <div className="flex items-center">
-                <Badge className={`${color} text-sm py-1 px-2`}>
+              <div className="flex flex-row  items-center gap-5 my-3">
+                <h3 className="text-lg font-semibold ">Approval Status</h3>
+                <Badge className={`${color} text-slate-100 text-sm py-1 px-2 mt-2`}>
                   <StatusIcon className="w-4 h-4 mr-2" />
                   {label}
                 </Badge>

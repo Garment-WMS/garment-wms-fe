@@ -21,6 +21,7 @@ import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt, ImportReceiptType } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 type Props = {};
 
 const ImportReceiptTable = (props: Props) => {
@@ -86,7 +87,7 @@ const ImportReceiptTable = (props: Props) => {
       cell: ({ row }) => {
         const id = row.original.id;
         return (
-          <Link to={`/import-receipt/${id}`} className="underline text-bluePrimary">
+          <Link to={`/import-receipt/${id}`} className="hover:underline text-bluePrimary">
             <div>{row.original.code}</div>
           </Link>
         );
@@ -100,7 +101,7 @@ const ImportReceiptTable = (props: Props) => {
       cell: ({ row }) => {
         const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id;
         return (
-          <Link to={`/import-request/${id}`} className="underline text-bluePrimary">
+          <Link to={`/import-request/${id}`} className="hover:underline text-bluePrimary">
             <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
           </Link>
         );
@@ -114,14 +115,14 @@ const ImportReceiptTable = (props: Props) => {
         label: delivery.label,
         value: delivery.value
       })),
-      cell: ({ row }) => <div>{row.original.type}</div>
+      cell: ({ row }) => <div>{convertTitleToTitleCase(row.original.type)}</div>
     },
     {
       header: 'Assigned to',
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline items-center justify-start" to="">
+        <div className="flex items-center justify-start" >
           <div className="flex items-center">
             <Avatar className="mr-2 flex  items-center justify-start">
               <AvatarImage
@@ -138,7 +139,7 @@ const ImportReceiptTable = (props: Props) => {
                 row?.original?.warehouseStaff?.account?.firstName}
             </div>
           </div>
-        </Link>
+        </div>
       )
     },
     {
@@ -146,7 +147,7 @@ const ImportReceiptTable = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
+        <div className="flex">
           <div className="flex justify-center items-center">
             <Avatar className="mr-2 flex justify-center items-center">
               <AvatarImage
@@ -163,7 +164,7 @@ const ImportReceiptTable = (props: Props) => {
                 row?.original?.warehouseManager?.account?.firstName}
             </h4>
           </div>
-        </Link>
+        </div>
       )
     },
     {
@@ -201,7 +202,7 @@ const ImportReceiptTable = (props: Props) => {
           <div>
             <Link
               to={`/report/${row?.original?.inspectionReport?.inspectionRequest?.id}`}
-              className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
+              className={row.original?.inspectionReport?.code ? 'text-blue-500 hover:underline' : ''}>
               {row.original?.inspectionReport?.code || 'None'}
             </Link>
           </div>

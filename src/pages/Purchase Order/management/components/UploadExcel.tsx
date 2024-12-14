@@ -35,9 +35,16 @@ const errorMessages = {
     clientMessage: 'The uploaded file contains an invalid Production Plan.'
   },
   errorInFile: {
+    statusCode: 400,
     message: 'There is error Purchase Order sheet. Please fix before upload again !!!',
     clientMessage:
       'We found issues in the uploaded file. You can <a href="{errors}" target="_blank" class="underline text-blue-600">download the error file</a> and correct them.'
+  },
+  duplicateMaterial: {
+    statusCode: 400,
+    message: 'Duplicate material in the list',
+    clientMessage:
+      'The uploaded file contains duplicate materials in the list. Please fix before upload again !'
   }
 };
 
@@ -113,8 +120,9 @@ const UploadExcel: React.FC = () => {
 
   const handleUploadErrors = (response: any) => {
     if (response.message === errorMessages.errorInFile.message && response.errors) {
-      setErrorFileLink(response.errors);
-      setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', response.errors));
+      const errorLink = response.errors || '#';
+      setErrorFileLink(errorLink);
+      setUploadError(errorMessages.errorInFile.clientMessage.replace('{errors}', errorLink));
     } else if (
       response.statusCode === errorMessages.invalidFileType.statusCode &&
       response.message === errorMessages.invalidFileType.message

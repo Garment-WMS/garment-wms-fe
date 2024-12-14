@@ -49,7 +49,23 @@ export function BreadcrumbResponsive({
   return (
     <Breadcrumb className="w-full py-2">
       <BreadcrumbList>
-        {breadcrumbItems.length > 0 && (
+        {/* Render all items if itemsToDisplay is larger or equal to breadcrumbItems length */}
+        {breadcrumbItems.length <= itemsToDisplay ? (
+          breadcrumbItems.map((item, index) => (
+            <React.Fragment key={index}>
+              <BreadcrumbItem>
+                {item.disabled ? (
+                  <BreadcrumbPage className="max-w-20 truncate md:max-w-none text-gray-500 cursor-default">
+                    {item.label}
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href={item.href ?? '#'}>{item.label}</BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+              {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
+            </React.Fragment>
+          ))
+        ) : (
           <>
             {/* Render first item */}
             <BreadcrumbItem>
@@ -58,11 +74,8 @@ export function BreadcrumbResponsive({
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </>
-        )}
 
-        {breadcrumbItems.length > itemsToDisplay ? (
-          <>
+            {/* Render ellipsis and intermediate items in dropdown/drawer */}
             <BreadcrumbItem>
               {isDesktop ? (
                 <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -70,7 +83,7 @@ export function BreadcrumbResponsive({
                     <BreadcrumbEllipsis className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                    {breadcrumbItems.slice(1, -itemsToDisplay + 1).map((item, index) => (
+                    {breadcrumbItems.slice(1, -1).map((item, index) => (
                       <DropdownMenuItem key={index}>
                         <Link to={item.href ? item.href : '#'}>{item.label}</Link>
                       </DropdownMenuItem>
@@ -88,7 +101,7 @@ export function BreadcrumbResponsive({
                       <DrawerDescription>Select a page to navigate to.</DrawerDescription>
                     </DrawerHeader>
                     <div className="grid gap-1 px-4">
-                      {breadcrumbItems.slice(1, -itemsToDisplay + 1).map((item, index) => (
+                      {breadcrumbItems.slice(1, -1).map((item, index) => (
                         <Link key={index} to={item.href ? item.href : '#'} className="py-1 text-sm">
                           {item.label}
                         </Link>
@@ -104,26 +117,15 @@ export function BreadcrumbResponsive({
               )}
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </>
-        ) : null}
 
-        {/* Render the last few items */}
-        {/* {breadcrumbItems.slice(-itemsToDisplay + 1).map((item, index) => (
-          <BreadcrumbItem key={index}>
-            {item.disabled ? (
-              <BreadcrumbPage className="max-w-20 truncate md:max-w-none text-gray-500 cursor-default">
-                {item.label}
-              </BreadcrumbPage>
-            ) : (
-              <>
-                <BreadcrumbLink asChild className="max-w-20 truncate md:max-w-none">
-                  <Link to={item.href ?? '#'}>{item.label}</Link>
-                </BreadcrumbLink>
-                {index < breadcrumbItems.length - 1 && <BreadcrumbSeparator />}
-              </>
-            )}
-          </BreadcrumbItem>
-        ))} */}
+            {/* Render last item */}
+            <BreadcrumbItem>
+              <BreadcrumbLink href={breadcrumbItems[breadcrumbItems.length - 1].href}>
+                {breadcrumbItems[breadcrumbItems.length - 1].label}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );

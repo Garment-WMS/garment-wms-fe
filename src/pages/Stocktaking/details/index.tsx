@@ -345,7 +345,8 @@ export default function StocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            <div>
+                            {(inventoryReport.status !== 'IN_PROGRESS') && (
+                              <div>
                               <h4 className="font-semibold text-muted-foreground">
                                 Expected Quantity: {detail.totalExpectedQuantity}{' '}
                               </h4>
@@ -357,6 +358,7 @@ export default function StocktakingDetails() {
                                 {detail.totalActualQuantity - detail.totalExpectedQuantity}
                               </h4>
                             </div>
+                            )}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="w-full">
@@ -496,7 +498,8 @@ export default function StocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            <div>
+                            {(inventoryReport.status !== 'IN_PROGRESS') && (
+                              <div>
                               <h4 className="font-semibold text-muted-foreground">
                                 Expected Quantity: {detail.totalExpectedQuantity}{' '}
                               </h4>
@@ -508,6 +511,7 @@ export default function StocktakingDetails() {
                                 {detail.totalActualQuantity - detail.totalExpectedQuantity}
                               </h4>
                             </div>
+                            )}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="w-full">
@@ -622,7 +626,7 @@ export default function StocktakingDetails() {
 
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>General Information</CardTitle>
+            <CardTitle className='text-xl font-bold'>General Information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-2 font-semibold">

@@ -9,8 +9,8 @@ type Props = {}
 const StocktakingManagement = (props: Props) => {
   return (
     <div className='flex flex-col gap-4'>
-        {/* <StocktakingCalendar/> */}
-        <StocktakingPlanList/>
+        <StocktakingCalendar/>
+        {/* <StocktakingPlanList/> */}
         <StocktakingReport/>
     </div>
   )
