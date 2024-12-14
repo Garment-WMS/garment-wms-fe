@@ -35,6 +35,7 @@ export interface MaterialVariant {
   createdAt: string | null;
   updatedAt: string | null;
   deletedAt: string | null;
+  reorderLevel: number;
   material: Material;
   materialPackage: MaterialPackage[];
   materialAttribute: MaterialAttribute[];
