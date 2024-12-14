@@ -39,6 +39,7 @@ import InventoryReportDialog from './components/InventoryReportDialog';
 import Loading from '@/components/common/Loading';
 import { useGetProfile } from '@/hooks/useGetProfile';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
+import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 
 type Props = {};
 
@@ -53,7 +54,7 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
       label: 'Stocktaking Plans',
       href: '/stocktaking'
     }
-  ]
+  ];
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -78,11 +79,11 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
     }
   };
 
-  async function createReport(id:string) {
+  async function createReport(id: string) {
     try {
       setIsLoading(true);
       const res = await privateCall(inventoryReportPlanApi.receiveInventoryReport(id));
-      if(res && res.data.statusCode === 200){
+      if (res && res.data.statusCode === 200) {
         toast({
           title: 'Report created successfully',
           variant: 'success',
@@ -90,15 +91,14 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
         });
 
         navigate(`/stocktaking/${res.data.data.id}`);
-    }
-  }catch (error: any) {
-     toast({
-      title: 'Error creating report',
-      variant: 'destructive',
-      description: error.message
-    });
-    }
-    finally {
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error creating report',
+        variant: 'destructive',
+        description: error.message
+      });
+    } finally {
       setIsLoading(false);
     }
   }
@@ -123,12 +123,11 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
     <Card className="w-full  mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl">
-          
           <div>
-          <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1}/>
-
+            <BreadcrumbResponsive breadcrumbItems={breadcrumbItems} itemsToDisplay={1} />
             Inventory Report Plan
-            </div></CardTitle>
+          </div>
+        </CardTitle>
         <CardDescription>Details of the inventory report plan and its items</CardDescription>
       </CardHeader>
       <CardContent>
@@ -169,11 +168,22 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
                 {convertTitleToTitleCase(planData.type)} Plan
               </p>
             </div>
+            <div>
+              <h3 className="text-md font-medium">Started At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.startedAt ? formatDateTimeToDDMMYYYYHHMM(planData?.startedAt) : 'N/A'}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-md font-medium">Finished At</h3>
+              <p className="text-md text-muted-foreground">
+                {planData?.finishedAt ? formatDateTimeToDDMMYYYYHHMM(planData?.finishedAt) : 'N/A'}
+              </p>
+            </div>
           </div>
           <div>
             <h3 className="text-md font-medium">Note</h3>
             <p className="text-md text-muted-foreground">{planData?.note ? <div></div> : 'N/A'}</p>
-
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">Inventory Items</h3>
@@ -258,8 +268,8 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
                                 className="underline text-bluePrimary cursor-pointer">
                                 {detail.inventoryReport.code}
                               </Label>
-                            // ) : (
-                            //   <Button onClick={() => createReport(planData.id)}>Create your report</Button>
+                              // ) : (
+                              //   <Button onClick={() => createReport(planData.id)}>Create your report</Button>
                             )}
                           </div>
                         )}
