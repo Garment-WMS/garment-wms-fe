@@ -39,9 +39,12 @@ const InspectionRequestChart: React.FC<{
   }
 
   const defectsList = defectData?.data || [];
+  const filteredDefects = defectsList.filter(
+    (defect: any) => defect.type === inspectionRequestType
+  );
 
   const handleViewDefects = (detailDefects: any[], inspectionDetail: any) => {
-    const mappedDefects = defectsList.map((defect: any) => {
+    const mappedDefects = filteredDefects.map((defect: any) => {
       const matchingDefect = detailDefects.find((d) => d.defectId === defect.id);
       return {
         id: defect.id,
