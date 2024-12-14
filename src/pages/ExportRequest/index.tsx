@@ -35,7 +35,7 @@ import { ProductionBatchSummary } from './ProductionBatchSummary';
 import { ProductionBatch } from '@/types/ProductionBatch';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { MdOutlineWarningAmber } from 'react-icons/md';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Check, CheckCircle } from 'lucide-react';
 
 interface Material {
   id: number;
@@ -266,7 +266,7 @@ export default function ExportMaterialPage() {
                       <TableCell>
                         {status ? (
                           isFullFilled ? (
-                            <AiOutlineCheckCircle className="w-7 h-7 text-green-500" />
+                            <Check className="w-7 h-7 text-green-500" />
                           ) : (
                             <MdOutlineWarningAmber className="w-7 h-7 text-yellow-500" />
                           )
@@ -314,11 +314,11 @@ export default function ExportMaterialPage() {
       <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
         <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600 font-bold text-lg">
-              <AlertTriangle className="h-9 w-9 text-red-600" />
-              Warning
+            <DialogTitle className="flex items-center gap-2 text-yellow-600  text-lg">
+              <AlertTriangle className="h-9 w-9 text-yellow-600" />
+              <span className="text-lg">Warning</span>
             </DialogTitle>
-            <DialogDescription className="text-gray-700 text-sm">
+            <DialogDescription className="text-gray-700 text-md">
               Some materials do not have enough stock for export. Would you like to proceed with the
               request anyway?
             </DialogDescription>
@@ -332,7 +332,7 @@ export default function ExportMaterialPage() {
             </Button>
             <Button
               variant="destructive"
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-green-600 hover:bg-green-700 text-white"
               onClick={handleConfirmedExport}
               disabled={isCreatingExportRequest}>
               Proceed Anyway
@@ -344,11 +344,11 @@ export default function ExportMaterialPage() {
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-gray-800 font-bold text-lg">
+            <DialogTitle className="flex items-center gap-2 text-gray-800  text-lg">
               <CheckCircle className="h-9 w-9 text-green-600" />
-              Confirm Export Request
+              <span className="text-lg"> Confirm Export Request</span>
             </DialogTitle>
-            <DialogDescription className="text-gray-700 text-sm">
+            <DialogDescription className="text-gray-700 text-md">
               Are you sure you want to create this material export request?
             </DialogDescription>
           </DialogHeader>

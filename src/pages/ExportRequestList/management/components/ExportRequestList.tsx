@@ -25,6 +25,7 @@ import { checkExportRequestQuantityFn } from '@/api/services/exportRequestApi';
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 import { MdOutlineWarningAmber } from 'react-icons/md';
 import Colors from '@/constants/color';
+import { Check } from 'lucide-react';
 type Props = {};
 
 const ExportRequestTable = (props: Props) => {
@@ -265,7 +266,7 @@ const ExportRequestTable = (props: Props) => {
                 isFulfilled ? 'text-green-700' : 'text-yellow-700'
               }`}>
               {isFulfilled ? (
-                <AiOutlineCheckCircle className="w-7 h-7" color={Colors.green[700]} />
+                <Check className="w-7 h-7" color={Colors.green[700]} />
               ) : (
                 <MdOutlineWarningAmber className="w-7 h-7" color={Colors.yellow[700]} />
               )}

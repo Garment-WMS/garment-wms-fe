@@ -12,6 +12,7 @@ import { checkExportRequestDetailQuantityFn } from '@/api/services/exportRequest
 import { MdOutlineWarningAmber } from 'react-icons/md';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import Colors from '@/constants/color';
+import { Check } from 'lucide-react';
 
 interface ColumnType {
   id: string;
@@ -266,7 +267,7 @@ const ExportRequestDetail = () => {
         return (
           <div className={`font-bold ml-6 ${isFulfilled ? 'text-green-700' : 'text-yellow-700'}`}>
             {isFulfilled ? (
-              <AiOutlineCheckCircle className="w-7 h-7" color={Colors.green[700]} />
+              <Check className="w-7 h-7" color={Colors.green[700]} />
             ) : (
               <MdOutlineWarningAmber className="w-7 h-7" color={Colors.yellow[700]} />
             )}
