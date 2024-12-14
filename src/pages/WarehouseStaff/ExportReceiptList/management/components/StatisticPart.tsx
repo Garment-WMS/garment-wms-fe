@@ -13,14 +13,14 @@ const StatisticPart: React.FC<Props> = (props) => {
     <Card className="w-full border shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-xl font-primary">{props.title}</CardTitle>
-        <Link to={'/'}  className={badgeVariants({ variant: 'primary' })}>
+        <Link to={'/'} className={badgeVariants({ variant: 'primary' })}>
           View
         </Link>
       </CardHeader>
       <CardContent className="mt-6">
         {props.isMoneyCurrency ? (
           <div className="text-4xl font-primary">
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(199999)}
+            {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'VND' }).format(199999)}
           </div>
         ) : (
           <div className="text-4xl font-primary">{props.content}</div>

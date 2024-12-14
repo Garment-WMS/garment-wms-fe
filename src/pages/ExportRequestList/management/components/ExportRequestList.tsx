@@ -168,7 +168,7 @@ const ExportRequestTable = (props: Props) => {
       accessorKey: 'createdAt',
       cell: ({ row }) => (
         <div>
-          {new Date(row.original.createdAt).toLocaleString('en-US', {
+          {new Date(row.original.createdAt).toLocaleString('en-GB', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
@@ -185,7 +185,7 @@ const ExportRequestTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div>
-          {new Date(row.original.updatedAt).toLocaleString('en-US', {
+          {new Date(row.original.updatedAt).toLocaleString('en-GB', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',

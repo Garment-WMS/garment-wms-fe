@@ -3,11 +3,9 @@ import { ImportRequest } from '@/types/ImportRequestType';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ImportRequestDetails from './ImportRequestDetails';
-import SupplierWarehouseInfo from './SupplierWarehouseInfo';
 import importRequestSelector from '../../slice/selector';
 import { getLabelOfImportType } from '../../management/helper';
 import { convertDate } from '@/helpers/convertDate';
-import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 type Props = {};
 

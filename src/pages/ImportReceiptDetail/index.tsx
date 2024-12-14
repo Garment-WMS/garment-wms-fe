@@ -69,6 +69,7 @@ import { ImportReceiptAction } from './components/ImportReceiptAction';
 import ImportStepper from './components/ImportStepper';
 import { convertDate } from '@/helpers/convertDate';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/Charts';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const chartData = [
   { name: 'Red Button Box', quantity: 1500 },
@@ -91,7 +92,7 @@ export default function MaterialReceipt() {
   const [importRequest, setImportRequest] = useState<any>(null);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const importReceipt: ImportReceipt = useSelector(importReceiptSelector.importReceipt);
+  const importReceipt: any = useSelector(importReceiptSelector.importReceipt);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isBlockedDialogOpen, setIsBlockedDialogOpen] = useState(false);
@@ -388,7 +389,7 @@ export default function MaterialReceipt() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground"> Expectation start date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.from).toLocaleString('en-US', {
+                              {new Date(plan.from).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
@@ -401,7 +402,7 @@ export default function MaterialReceipt() {
                           <div className="space-y-1">
                             <p className="text-sm text-muted-foreground">Expectation end date</p>
                             <p className="text-sm font-medium">
-                              {new Date(plan.to).toLocaleString('en-US', {
+                              {new Date(plan.to).toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
@@ -566,6 +567,65 @@ export default function MaterialReceipt() {
                       <p className="text-md text-muted-foreground">
                         {importReceipt?.warehouseStaff?.account?.phoneNumber}
                       </p>
+                      <p className="text-md text-muted-foreground">
+                        {importReceipt?.task[0]?.expectedStartedAt &&
+                          importReceipt?.task[0]?.expectedFinishedAt &&
+                          !importReceipt?.task[0]?.startedAt && (
+                            <div>
+                              <span className="font-bold">Expect work time : </span>
+                              {new Date(
+                                importReceipt?.task[0]?.expectedStartedAt
+                              ).toLocaleDateString('en-GB', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}{' '}
+                              -{' '}
+                              {new Date(
+                                importReceipt?.task[0]?.expectedFinishedAt
+                              ).toLocaleDateString('en-GB', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // Use 24-hour format
+                              })}
+                            </div>
+                          )}
+                      </p>
+                      <p className="text-md text-muted-foreground">
+                        {importReceipt?.task[0]?.startedAt && (
+                          <div>
+                            <span className="font-bold">Actual work time : </span>
+                            {new Date(importReceipt?.task[0]?.startedAt).toLocaleString('en-GB', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false // 24-hour format
+                            })}{' '}
+                            -{' '}
+                            {importReceipt?.task[0]?.finishedAt
+                              ? new Date(importReceipt?.task[0]?.finishedAt).toLocaleString(
+                                  'en-GB',
+                                  {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false // Use 24-hour format
+                                  }
+                                )
+                              : 'Not yet'}
+                          </div>
+                        )}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -603,7 +663,7 @@ export default function MaterialReceipt() {
                       </p>
                       <p>
                         <strong>Receipt Date:</strong>{' '}
-                        {new Date(importRequest?.createdAt).toLocaleString('en-US', {
+                        {new Date(importRequest?.createdAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -819,9 +879,40 @@ export default function MaterialReceipt() {
                     <DialogTitle>Start Importing Process</DialogTitle>
                   </DialogHeader>
                   <div className="py-4">
-                    <p>
-                      Are you sure you want to start the importing process? This action cannot be
-                      undone.
+                    {new Date(importReceipt?.task[0]?.expectedStartedAt) > new Date() && (
+                      <Alert variant={'destructive'}>
+                        <AlertTitle>Heads up!</AlertTitle>
+                        <AlertDescription>
+                          Warning: You are starting this work earlier than the expected time :
+                          {new Date(importReceipt?.task[0]?.expectedStartedAt).toLocaleString(
+                            'en-GB',
+                            {
+                              year: 'numeric',
+                              month: 'numeric',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true // Use 24-hour format
+                            }
+                          )}
+                          {' to '}
+                          {new Date(importReceipt?.task[0]?.expectedFinishedAt).toLocaleString(
+                            'en-GB',
+                            {
+                              year: 'numeric',
+                              month: 'numeric',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true // Use 24-hour format
+                            }
+                          )}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    <p className="m-4 ">
+                      Are you sure you want to start the importing process? Please make sure that
+                      you are fully ready to start the task
                     </p>
                   </div>
                   <DialogFooter>

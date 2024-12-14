@@ -65,13 +65,20 @@ const InspectionStep: React.FC<Props> = ({
     {
       title: 'Chart Report',
       content: (
-        <Chart currentStatus={currentStatus} inspectionRequest={importRequest?.inspectionRequest} />
+        <Chart
+          currentStatus={currentStatus}
+          inspectionRequest={importRequest?.inspectionRequest}
+          onApproval={onApproval}
+          importRequest={importRequest}
+        />
       )
     },
     {
       title: 'Pending Approval',
       content: (
         <WarehouseStaffAssignment
+          onApproval={onApproval}
+          importRequest={importRequest}
           currentStatus={currentStatus}
           requestId={importRequest?.code}
           warehouseManager={importRequest?.warehouseManager}

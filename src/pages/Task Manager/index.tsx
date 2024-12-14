@@ -332,7 +332,7 @@ export default function TaskManagerOverview() {
                   </div>
                   <p className="text-xs text-muted-foreground mb-4">
                     Expected Started At:{' '}
-                    {new Date(selectedTask.expectedStartedAt).toLocaleString('en-US', {
+                    {new Date(selectedTask.expectedStartedAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',
@@ -343,7 +343,7 @@ export default function TaskManagerOverview() {
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
                     Expected End date:{' '}
-                    {new Date(selectedTask.expectedFinishedAt).toLocaleString('en-US', {
+                    {new Date(selectedTask.expectedFinishedAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',
@@ -355,7 +355,7 @@ export default function TaskManagerOverview() {
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual Started At:
                     {selectedTask.startedAt
-                      ? new Date(selectedTask.startedAt).toLocaleString('en-US', {
+                      ? new Date(selectedTask.startedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',
@@ -369,7 +369,7 @@ export default function TaskManagerOverview() {
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual End date:{' '}
                     {selectedTask.finishedAt
-                      ? new Date(selectedTask.finishedAt).toLocaleString('en-US', {
+                      ? new Date(selectedTask.finishedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',

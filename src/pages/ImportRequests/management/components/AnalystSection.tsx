@@ -21,7 +21,7 @@ const StatisticPart: React.FC<StatisticPartProps> = ({ title, content, isMoneyCu
         <div className="text-2xl font-bold">
           {isMoneyCurrency && '$'}
           {typeof content === 'number'
-            ? content.toLocaleString('en-US', {
+            ? content.toLocaleString('en-GB', {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric',

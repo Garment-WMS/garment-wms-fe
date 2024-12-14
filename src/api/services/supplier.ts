@@ -1,15 +1,13 @@
-import axios from 'axios';
+import privateCall from '../PrivateCaller';
 import { get } from './ApiCaller';
 import { ApiResponse } from '@/types/ApiResponse';
 
+export const supplierApi = {
+  getAll: () => get('/supplier')
+};
+
 export const getAllSuppliers = async (): Promise<ApiResponse> => {
-  try {
-    const config = get('/supplier');
-    const response = await axios(config);
-    console.log(response);
-    return response.data as ApiResponse;
-  } catch (error) {
-    console.error('Error fetching suppliers:', error);
-    throw new Error('Failed to fetch suppliers');
-  }
+  const config = supplierApi.getAll();
+  const response = await privateCall(config);
+  return response.data as ApiResponse;
 };

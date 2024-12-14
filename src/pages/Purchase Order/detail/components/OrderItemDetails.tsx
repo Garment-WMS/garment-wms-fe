@@ -94,17 +94,8 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     const label = 'Create Import Request';
     const color = 'bg-primaryLight';
 
-    // Check if there are other pending deliveries
-    const hasOtherPendingDeliveries = poDelivery.some(
-      (otherDelivery) =>
-        otherDelivery.status === PurchaseOrderDeliveryStatus.PENDING && !otherDelivery.isExtra
-    );
-
-    // Render button if the delivery is PENDING and not extra, or if it is extra and no other deliveries are pending
-    if (
-      (delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra) ||
-      (delivery.isExtra && !hasOtherPendingDeliveries)
-    ) {
+    // Render button only if the delivery status is PENDING
+    if (delivery.status === PurchaseOrderDeliveryStatus.PENDING) {
       return (
         <TooltipProvider>
           <Tooltip delayDuration={5}>
@@ -129,50 +120,9 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
       );
     }
 
-    // Return null if the conditions are not met
+    // Return null if the delivery status is not PENDING
     return null;
   };
-
-  // const renderRedirectButton = (delivery: PODelivery, poId: string) => {
-  //   // Render the button only if the delivery status is PENDING and it is NOT extra
-  //   if (delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra) {
-  //     let path = `/import-request/create/material/${delivery.id}`;
-  //     let label = 'Create Import Request';
-  //     let color = 'bg-primaryLight';
-
-  //     return (
-  //       <TooltipProvider>
-  //         <Tooltip delayDuration={5}>
-  //           <TooltipTrigger asChild>
-  //             <Button
-  //               className={`w-30 ${color}`}
-  //               size={'sm'}
-  //               onClick={() => {
-  //                 if (poId) {
-  //                   navigate(path, { state: { delivery, poNumber } });
-  //                 }
-  //               }}>
-  //               {label}
-  //             </Button>
-  //           </TooltipTrigger>
-  //           <TooltipContent className="mb-1" side="top">
-  //             <TooltipArrow />
-  //             <p>{label}</p>
-  //           </TooltipContent>
-  //         </Tooltip>
-  //       </TooltipProvider>
-  //     );
-  //   }
-
-  //   // Return null if the conditions are not met
-  //   return null;
-  // };
-
-  const hasOtherPending =
-    poDelivery &&
-    poDelivery?.some(
-      (delivery) => delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra
-    );
 
   return (
     <div className="mt-8">
@@ -252,7 +202,7 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                         <div className="text-slate-600">Total Amount:</div>
                         <div className="text-lg font-bold text-blue-600">
                           {totalMaterialAmount
-                            ? `${totalMaterialAmount.toLocaleString('en-US', {
+                            ? `${totalMaterialAmount.toLocaleString('en-GB', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',

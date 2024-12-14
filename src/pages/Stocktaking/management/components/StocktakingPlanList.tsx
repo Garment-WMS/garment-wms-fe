@@ -43,7 +43,14 @@ const StocktakingPlanList = (props: Props) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 0, 0, 0);
-  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59);
+  const lastDayOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0,
+    23,
+    59,
+    59
+  );
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dayFormatOptions: Intl.DateTimeFormatOptions = {
@@ -53,7 +60,6 @@ const StocktakingPlanList = (props: Props) => {
     hour: '2-digit',
     minute: '2-digit'
   };
-
 
   // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -111,7 +117,14 @@ const StocktakingPlanList = (props: Props) => {
 
     // Calculate the first and last day of the new month
     const firstDayOfNewMonth = new Date(newDate.getFullYear(), newDate.getMonth(), 1, 0, 0, 0);
-    const lastDayOfNewMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0, 23, 59, 59);
+    const lastDayOfNewMonth = new Date(
+      newDate.getFullYear(),
+      newDate.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
 
     // Update column filters with the new date range
     setColumnFilters([
@@ -127,8 +140,8 @@ const StocktakingPlanList = (props: Props) => {
       day: 'numeric'
     };
 
-    const start = startDate.toLocaleDateString('en-US', options);
-    const end = endDate.toLocaleDateString('en-US', options);
+    const start = startDate.toLocaleDateString('en-GB', options);
+    const end = endDate.toLocaleDateString('en-GB', options);
 
     return start === end ? start : `${start} - ${end}`;
   };
@@ -194,19 +207,19 @@ const StocktakingPlanList = (props: Props) => {
                 };
                 // Format the from and to dates
                 const formattedTimeFrom = new Date(eventRange.events.from).toLocaleString(
-                  'en-US',
+                  'en-GB',
                   timeFormatOptions
                 );
                 const formattedTimeTo = new Date(eventRange.events.to).toLocaleString(
-                  'en-US',
+                  'en-GB',
                   timeFormatOptions
                 );
                 const formattedDateFrom = new Date(eventRange.events.from).toLocaleString(
-                  'en-US',
+                  'en-GB',
                   dayFormatOptions
                 );
                 const formattedDateTo = new Date(eventRange.events.to).toLocaleString(
-                  'en-US',
+                  'en-GB',
                   dayFormatOptions
                 );
 
@@ -225,15 +238,19 @@ const StocktakingPlanList = (props: Props) => {
                             <div className="flex items-center gap-2">
                               <Captions size={20} />
                               <h3 className="font-semibold">
-                                {eventRange.events.title} - {eventRange.events.code} - {convertTitleToTitleCase(eventRange.events.type)} plan
+                                {eventRange.events.title} - {eventRange.events.code} -{' '}
+                                {convertTitleToTitleCase(eventRange.events.type)} plan
                               </h3>
                               <Badge
-                                className={cn(`ml-2`, badgeVariants({
-                                  variant: getStatusBadgeVariant(
-                                    eventRange.events.status ?? '',
-                                    InventoryReportPlanStatus
-                                  )
-                                }))}>
+                                className={cn(
+                                  `ml-2`,
+                                  badgeVariants({
+                                    variant: getStatusBadgeVariant(
+                                      eventRange.events.status ?? '',
+                                      InventoryReportPlanStatus
+                                    )
+                                  })
+                                )}>
                                 {convertTitleToTitleCase(eventRange.events.status)}
                               </Badge>
                             </div>

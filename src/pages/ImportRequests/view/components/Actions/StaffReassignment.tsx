@@ -30,26 +30,31 @@ import { Label } from '@/components/ui/Label';
 import { Input } from '@/components/ui/Input';
 import Loading from '@/components/common/Loading';
 import { useToast } from '@/hooks/use-toast';
-import { IoMdClose } from 'react-icons/io';
+
+import { FaArrowRightLong } from 'react-icons/fa6';
+import { Card } from '@/components/ui/card';
+import { reassignStaffFn } from '@/api/purchase-staff/importRequestApi';
+import { useParams } from 'react-router-dom';
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
 export interface Props {
-  staff: any;
-  setStaff: (staff: any) => void;
+  onApproval: () => void;
+  importRequest: any;
+  staff?: any;
+  setStaff?: (staff: any) => void;
   type: string;
-  setSelectedTimeFrame: (expectFinishedAtexpectFinishedAt: any) => void;
   role: string;
   selectedInspectionTimeFrame?: any;
 }
 
-export default function AssignStaffPopup({
-  staff,
-  setStaff,
+export default function ReassingStaffPopup({
+  onApproval,
+  importRequest,
   type,
-  setSelectedTimeFrame,
   role,
   selectedInspectionTimeFrame
 }: Props) {
+  const [staff, setStaff] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
   const [tasks, setTasks] = useState<any>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -59,12 +64,16 @@ export default function AssignStaffPopup({
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isLoading, setLoading] = useState(false);
   const [duration, setDuration] = useState<number>();
+  const [selectedWareHouseTimeFrame, setSelectedWareHouseTimeFrame] = useState<any>();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false); // Added state for confirmation dialog
+  const { id } = useParams();
   const { toast } = useToast();
   const handleSelectEvent = (event: any) => {
     setSelectedEvent(event);
   };
   const filteredTasks = (tasks: any) => {
-    return tasks.map((task: any) => ({
+    const resetTasks = tasks.filter((task: any) => task.isNew != true);
+    return resetTasks.map((task: any) => ({
       ...task,
       resourceId:
         task?.inspectionDepartment?.account?.id ||
@@ -75,7 +84,7 @@ export default function AssignStaffPopup({
       title: task?.code
     }));
   };
-  console.log(filteredTasks(tasks));
+
   const resources = useMemo(
     () =>
       participants.map((participant: any) => ({
@@ -149,9 +158,12 @@ export default function AssignStaffPopup({
         }
       ]);
 
-      setSelectedTimeFrame({ expectedStartedAt: newTask.start, expectedFinishedAt: newTask.end });
+      setSelectedWareHouseTimeFrame({
+        expectedStartedAt: newTask.start,
+        expectedFinishedAt: newTask.end
+      });
       handleAssignTask(newTask.resourceId);
-      setIsDialogOpen(false);
+      // setIsDialogOpen(false);
       //setNewTask({});
     }
   };
@@ -171,7 +183,7 @@ export default function AssignStaffPopup({
 
   const handleAssignTask = (staffId: string) => {
     setStaff(participants.find((staff: any) => staff.accountId == staffId));
-    setIsOpen(false);
+    setIsDialogOpen(false);
   };
   const handleDateChange = (direction: 'prev' | 'next') => {
     setSelectedDate((prevDate) =>
@@ -200,6 +212,43 @@ export default function AssignStaffPopup({
 
     fetchTasks();
   }, []);
+
+  const handleSubmit = async () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const confirmSubmit = async () => {
+    try {
+      setLoading(true);
+      const res = await reassignStaffFn(
+        role,
+        id as string,
+        importRequest?.warehouseStaff.id,
+        selectedWareHouseTimeFrame.expectedStartedAt,
+        selectedWareHouseTimeFrame.expectedFinishedAt,
+        importRequest?.inspectionRequest[0]?.inspectionDepartment?.id,
+        selectedWareHouseTimeFrame.expectedStartedAt,
+        selectedWareHouseTimeFrame.expectedFinishedAt
+      );
+
+      if (res.statusCode == 200) {
+        toast({ variant: 'success', title: 'Re-assign Successfully !' });
+        setIsOpen(false);
+        onApproval();
+      }
+    } catch (err: any) {
+      console.log(err);
+      toast({
+        variant: 'destructive',
+        title: 're-assign unsuccessfully',
+        description: err.response.data.message
+      });
+    } finally {
+      setLoading(false);
+      setIsConfirmDialogOpen(false);
+    }
+  };
+
   const slotPropGetter = (date: Date) => {
     const now = new Date();
 
@@ -225,6 +274,11 @@ export default function AssignStaffPopup({
       setIsOpen(true); // Open the dialog if conditions are met
     }
   };
+  const handleOpenReassign = () => {
+    setStaff(null);
+    setSelectedWareHouseTimeFrame(null);
+    setIsOpen(true);
+  };
 
   return (
     <Dialog
@@ -237,51 +291,12 @@ export default function AssignStaffPopup({
         }
       }}>
       <DialogTrigger asChild>
-        {staff ? (
-          <Badge variant="outline">
-            <div>
-              <div className="flex items-center">
-                <Avatar className="w-6 h-6 mr-2">
-                  <AvatarImage src={staff.account.avatarUrl} />
-                  <AvatarFallback>
-                    {staff.account.firstName.slice(0, 1) + staff.account.lastName.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
-                {staff.account.firstName + ' ' + staff.account.lastName}
-              </div>
-              <div>
-                <div>
-                  {newTask.start && newTask.end
-                    ? `${new Date(newTask.start).toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      })} - ${new Date(newTask.end).toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      })}`
-                    : 'No date available'}
-                </div>
-              </div>
-            </div>
-          </Badge>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => setIsOpen(true)} // Allow manual override
-            disabled={
-              !selectedInspectionTimeFrame?.expectedFinishedAt && role == 'warehouse-staff'
-            }>
-            Assign Employee
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          onClick={handleOpenReassign} // Allow manual override
+        >
+          Reassign Employee
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[825px]">
@@ -380,7 +395,7 @@ export default function AssignStaffPopup({
                         day: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit',
-                        hour12: false // Use 24-hour format
+                        hour12: true // Use 24-hour format
                       })}
                     </div>
                   </div>
@@ -393,7 +408,7 @@ export default function AssignStaffPopup({
                         day: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit',
-                        hour12: false // Use 24-hour format
+                        hour12: true // Use 24-hour format
                       })}
                     </div>
                   </div>
@@ -440,7 +455,7 @@ export default function AssignStaffPopup({
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit',
-                          hour12: false // Use 24-hour format
+                          hour12: true // Use 24-hour format
                         })}
                       </div>
                     </div>
@@ -457,6 +472,168 @@ export default function AssignStaffPopup({
             <Loading size={'100'} />
           </div>
         )}
+        <div className="flex items-center">
+          {role == 'inspection-department' && (
+            <Card className="rounded p-2  w-[40%]">
+              <div className="flex items-center">
+                <Avatar className="mr-4">
+                  <AvatarImage
+                    src={
+                      importRequest?.inspectionRequest[0]?.inspectionDepartment?.account.avatarUrl
+                    }
+                  />
+                  <AvatarFallback>
+                    {importRequest?.inspectionRequest[0]?.inspectionDepartment?.account.firstName.slice(
+                      0,
+                      1
+                    ) +
+                      importRequest?.inspectionRequest[0]?.inspectionDepartment?.account.lastName.slice(
+                        0,
+                        1
+                      )}
+                  </AvatarFallback>
+                </Avatar>
+                <h3 className={staff ? 'line-through' : ''}>
+                  {' '}
+                  {importRequest?.inspectionRequest[0]?.inspectionDepartment?.account.firstName +
+                    ' ' +
+                    importRequest?.inspectionRequest[0]?.inspectionDepartment?.account.lastName}
+                </h3>
+              </div>
+              <div className={staff ? 'line-through' : ''}>
+                {new Date(importRequest?.importExpectedStartedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+                {' - '}
+                {new Date(importRequest?.importExpectedFinishedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+              </div>
+            </Card>
+          )}
+          {role == 'warehouse-staff' && (
+            <Card className="rounded p-2  w-[40%]">
+              <div className="flex items-center">
+                <Avatar className="mr-4">
+                  <AvatarImage src={importRequest?.warehouseStaff.account.avatarUrl} />
+                  <AvatarFallback>
+                    {importRequest?.warehouseStaff.account.firstName.slice(0, 1) +
+                      importRequest?.warehouseStaff.account.lastName.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+                <h3 className="line-through">
+                  {' '}
+                  {importRequest?.warehouseStaff.account.firstName +
+                    ' ' +
+                    importRequest?.warehouseStaff.account.lastName}
+                </h3>
+              </div>
+              <div className={staff ? 'line-through' : ''}>
+                {new Date(importRequest?.importExpectedStartedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+                {' - '}
+                {new Date(importRequest?.importExpectedFinishedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+              </div>
+            </Card>
+          )}
+          {staff && (
+            <div>
+              <FaArrowRightLong size={90} className="mr-10 ml-10 " color="#e1e1e1" />
+            </div>
+          )}
+          {staff && (
+            <Card className="rounded p-2 bg-green-500 text-white  w-[40%]">
+              <div className="flex items-center">
+                <Avatar className="mr-4">
+                  <AvatarImage src={staff.account.avatarUrl} />
+                  <AvatarFallback>
+                    {staff.account.firstName.slice(0, 1) + staff.account.lastName.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+                <h3 className="font-semibold">
+                  {' '}
+                  {staff.account.firstName + ' ' + staff.account.lastName}
+                </h3>
+              </div>
+              <div>
+                {new Date(selectedWareHouseTimeFrame?.expectedStartedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+                {' - '}
+                {new Date(selectedWareHouseTimeFrame?.expectedFinishedAt)
+                  .toLocaleString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true // 24-hour format
+                  })
+                  .replace(/\b(am|pm)\b/g, (match) => match.toUpperCase())}
+              </div>
+            </Card>
+          )}
+        </div>
+        <div className="flex justify-end">
+          <Button className="m-2" variant={'outline'} onClick={() => setIsOpen(false)}>
+            Cancel
+          </Button>
+          <Button className="m-2" onClick={handleSubmit} disabled={!staff}>
+            Confirm
+          </Button>
+        </div>
+        <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Re-assignment</DialogTitle>
+            </DialogHeader>
+            <p>Are you sure you want to re-assign this staff member?</p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={confirmSubmit}>Confirm</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );

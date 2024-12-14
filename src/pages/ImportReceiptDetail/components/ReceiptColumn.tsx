@@ -302,7 +302,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'

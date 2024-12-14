@@ -1,11 +1,16 @@
-import { badgeVariants } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/button";
-import capitalizeFirstLetter from "@/helpers/capitalizeFirstLetter";
-import { CustomColumnDef } from "@/types/CompositeTable";
-import { MaterialExportReceipt, MaterialImportReceipt, MaterialReceipt, ReceiptStatusLabel } from "@/types/MaterialTypes";
-import { ProductExportReceipt, ProductImportReceipt } from "@/types/ProductType";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { ColumnDef } from "@tanstack/react-table";
+import { badgeVariants } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/button';
+import capitalizeFirstLetter from '@/helpers/capitalizeFirstLetter';
+import { CustomColumnDef } from '@/types/CompositeTable';
+import {
+  MaterialExportReceipt,
+  MaterialImportReceipt,
+  MaterialReceipt,
+  ReceiptStatusLabel
+} from '@/types/MaterialTypes';
+import { ProductExportReceipt, ProductImportReceipt } from '@/types/ProductType';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { ColumnDef } from '@tanstack/react-table';
 
 export const getStatusBadgeVariant = (status: string) => {
   const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
@@ -19,7 +24,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     cell: ({ row }) => {
       return (
         <div>
-          <div >{row.original.code || 'N/A'}</div>
+          <div>{row.original.code || 'N/A'}</div>
         </div>
       );
     }
@@ -31,7 +36,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     cell: ({ row }) => {
       return (
         <div>
-          <div >{row.original.productSize.code || 'N/A'}</div>
+          <div>{row.original.productSize.code || 'N/A'}</div>
         </div>
       );
     }
@@ -43,7 +48,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     cell: ({ row }) => {
       return (
         <div>
-          <div >{row.original.productSize.name}</div>
+          <div>{row.original.productSize.name}</div>
         </div>
       );
     }
@@ -58,7 +63,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -80,7 +85,7 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -108,8 +113,8 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original.quantityByUom}</div>
+        <div className="flex">
+          <div className="">{row.original.quantityByUom}</div>
         </div>
       );
     }
@@ -120,8 +125,8 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original.remainQuantityByUom}</div>
+        <div className="flex">
+          <div className="">{row.original.remainQuantityByUom}</div>
         </div>
       );
     }
@@ -131,13 +136,15 @@ export const productImportReceiptColumn: CustomColumnDef<ProductImportReceipt>[]
     accessorKey: 'status',
     enableColumnFilter: true,
     cell: ({ row }) => (
-      <div
-        className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+      <div className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
         {capitalizeFirstLetter(row.original.status ?? 'N/A')}
       </div>
     ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
+    filterOptions: ReceiptStatusLabel.map((status) => ({
+      label: status.label,
+      value: status.value
+    }))
+  }
 ];
 
 export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[] = [
@@ -187,7 +194,7 @@ export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[]
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -209,7 +216,7 @@ export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[]
         return <div>N/A</div>;
       }
       const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
+      const formattedDate = date.toLocaleDateString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -237,8 +244,8 @@ export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[]
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original.quantityByUom}</div>
+        <div className="flex">
+          <div className="">{row.original.quantityByUom}</div>
         </div>
       );
     }
@@ -249,8 +256,8 @@ export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[]
     enableColumnFilter: false,
     cell: ({ row }) => {
       return (
-        <div className='flex'>
-          <div className=''>{row.original.remainQuantityByUom}</div>
+        <div className="flex">
+          <div className="">{row.original.remainQuantityByUom}</div>
         </div>
       );
     }
@@ -260,11 +267,13 @@ export const productExportReceiptColumn: CustomColumnDef<ProductExportReceipt>[]
     accessorKey: 'status',
     enableColumnFilter: true,
     cell: ({ row }) => (
-      <div
-        className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+      <div className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
         {capitalizeFirstLetter(row.original.status ?? 'N/A')}
       </div>
     ),
-    filterOptions: ReceiptStatusLabel.map((status) => ({ label: status.label, value: status.value }))
-  },
+    filterOptions: ReceiptStatusLabel.map((status) => ({
+      label: status.label,
+      value: status.value
+    }))
+  }
 ];

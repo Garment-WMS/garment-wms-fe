@@ -119,11 +119,13 @@ const NotificationListener = () => {
                 <p className="text-center text-sm text-gray-500 py-4">No notifications</p>
               ) : (
                 notifications.map((notification) => (
-                  <div key={notification.id} className="mb-2 p-2 hover:bg-gray-100 rounded-md w-fit">
+                  <div
+                    key={notification.id}
+                    className="mb-2 p-2 hover:bg-gray-100 rounded-md w-fit">
                     <div className="">
                       <div className=" w-fit ">
                         <h4 className="font-medium text-sm flex gap-2 items-center">
-                          {<NotiTypeIcon type={notification.type} className=''/>}
+                          {<NotiTypeIcon type={notification.type} className="" />}
                           {notification.title}{' '}
                           {notification?.isRead === false && (
                             <div className={` rounded-full bg-bluePrimary w-3 h-3`} />
@@ -146,7 +148,7 @@ const NotificationListener = () => {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(notification.createdAt).toLocaleString('en-US', {
+                      {new Date(notification.createdAt).toLocaleString('en-GB', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',

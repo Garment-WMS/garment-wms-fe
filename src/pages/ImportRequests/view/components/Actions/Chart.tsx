@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import Colors from '@/constants/color';
 import InspectionReportDialog from './InspectionReportDialog';
+import ReassingStaffPopup from './StaffReassignment';
 
 const COLORS = {
   passed: 'hsl(var(--chart-1))',
@@ -43,9 +44,11 @@ const chartConfig = {
 export interface ChartProps {
   currentStatus: string;
   inspectionRequest?: any[];
+  onApproval: () => void;
+  importRequest: any;
 }
 
-export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
+export function Chart({ currentStatus, inspectionRequest, onApproval, importRequest }: ChartProps) {
   const [defectTypes, setDefectTypes] = useState<
     { type: string; value: number; percentage: number }[]
   >([]);
@@ -116,15 +119,21 @@ export function Chart({ currentStatus, inspectionRequest }: ChartProps) {
   }, [defectsData, inspectionRequest]);
 
   return (
-    <Card className="flex flex-col w-full max-w-5xl">
+    <Card className="flex flex-col w-full max-w-5xl max-h-[500px]">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-2xl">Material Inspection Report</CardTitle>
+        <CardTitle className="text-2xl">Inspection Report</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-6">
         {currentStatus === 'INSPECTING' && (
           <div className="col-span-3 flex flex-col items-center justify-center">
-            <img src={Waiting} alt="Waiting for Inspection" className="w-[400px] h-[400px]" />
+            <img src={Waiting} alt="Waiting for Inspection" className="w-[300px] h-[300px]" />
             <h2 className="font-bold text-xl text-gray-700">Waiting for Inspection</h2>
+            <ReassingStaffPopup
+              onApproval={onApproval}
+              importRequest={importRequest}
+              type={'inspectionDepartmentId'}
+              role="inspection-department"
+            />
           </div>
         )}
         {statusOrder.indexOf(currentStatus) < 4 && (

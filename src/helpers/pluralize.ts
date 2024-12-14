@@ -6,6 +6,10 @@
  * @returns The correctly pluralized word.
  */
 export function pluralize(word: string, quantity: number): string {
+  if (quantity === 0) {
+    return word; // Singular form for quantity 0
+  }
+
   if (quantity === 1) {
     return word; // Singular form for quantity 1
   }

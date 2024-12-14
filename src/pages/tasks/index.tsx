@@ -273,7 +273,7 @@ export default function WarehouseTasks() {
               </Badge>
             </TableCell>
             <TableCell>
-              {new Date(task.createdAt).toLocaleString('en-US', {
+              {new Date(task.createdAt).toLocaleString('en-GB', {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric',
@@ -377,7 +377,7 @@ export default function WarehouseTasks() {
                   </div>
                   <p className="text-xs text-muted-foreground mb-4">
                     Expected Started At:{' '}
-                    {new Date(selectedTask.expectedStartedAt).toLocaleString('en-US', {
+                    {new Date(selectedTask.expectedStartedAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',
@@ -388,7 +388,7 @@ export default function WarehouseTasks() {
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
                     Expected End date:{' '}
-                    {new Date(selectedTask.expectedFinishedAt).toLocaleString('en-US', {
+                    {new Date(selectedTask.expectedFinishedAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',
@@ -399,7 +399,7 @@ export default function WarehouseTasks() {
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual Started At:{' '}
-                    {new Date(selectedTask.startedAt).toLocaleString('en-US', {
+                    {new Date(selectedTask.startedAt).toLocaleString('en-GB', {
                       year: 'numeric',
                       month: 'numeric',
                       day: 'numeric',
@@ -411,7 +411,7 @@ export default function WarehouseTasks() {
                   <p className="text-xs text-muted-foreground mb-4">
                     Actual End date:{' '}
                     {selectedTask.finishedAt
-                      ? new Date(selectedTask.finishedAt).toLocaleString('en-US', {
+                      ? new Date(selectedTask.finishedAt).toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
                           day: 'numeric',

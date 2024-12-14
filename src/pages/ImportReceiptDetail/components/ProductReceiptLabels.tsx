@@ -5,26 +5,61 @@ import Barcode from 'react-barcode';
 import { Button } from '@/components/ui/button';
 import { Printer } from 'lucide-react';
 
-
-interface ProductReceiptLabelsProps {
-  productReceipts: any[];
+interface ProductReceipt {
+  id: string;
+  code: string;
+  quantityByUom: number;
+  productSize: {
+    name: string;
+    code: string;
+    size: string;
+  };
+  productVariant: {
+    product: {
+      productUom: {
+        uomCharacter: string;
+      };
+    };
+  };
 }
 
-export default function ProductReceiptLabel({
-    productReceipts = []
-}: ProductReceiptLabelsProps ) {
+interface ProductReceiptLabelProps {
+  productReceipts: ProductReceipt[];
+}
+
+export default function ProductReceiptLabel({ productReceipts = [] }: ProductReceiptLabelProps) {
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrintLabels = () => {
     const printContent = printRef.current;
     if (!printContent) return;
 
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContent.innerHTML;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow pop-ups to print labels.');
+      return;
+    }
 
-    window.print();
+    printWindow.document.write('<html><head><title>Print Product Labels</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+      body { font-family: Arial, sans-serif; }
+      .label { margin-bottom: 2rem; text-align: center; page-break-inside: avoid; }
+      h3 { font-weight: bold; margin-bottom: 0.5rem; }
+      p { margin: 0.25rem 0; }
+    `);
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(printContent.innerHTML);
+    printWindow.document.write('</body></html>');
 
-    document.body.innerHTML = originalContents;
+    printWindow.document.close();
+    printWindow.focus();
+
+    // Use a short delay to ensure the content is fully loaded before printing
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
   };
 
   return (
@@ -37,10 +72,12 @@ export default function ProductReceiptLabel({
         <div className="flex flex-col items-center">
           {productReceipts.map((item) =>
             Array.from({ length: item.quantityByUom }).map((_, index) => (
-              <div key={`${item.id}-${index}`} className="mb-8 text-center">
-                <h3 className="font-bold mb-2">{item.productSize.name}</h3>
-                <p>Code: {item.productSize.code}</p>
-                <p>Expire Date: {new Date(item.expireDate).toLocaleDateString()}</p>
+              <div key={`${item.id}-${index}`} className="label">
+                <h3>{item.productSize.name}</h3>
+                <p>Size: {item.productSize.size}</p>
+                <p>Product Code: {item.productSize.code}</p>
+                <Barcode value={item.productSize.code} width={1.5} height={50} />
+                <p>Receipt Code: {item.code}</p>
                 <Barcode value={item.code} width={1.5} height={50} />
               </div>
             ))

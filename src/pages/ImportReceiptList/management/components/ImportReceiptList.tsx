@@ -177,7 +177,7 @@ const ImportReceiptTable = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleString('en-US', {
+        const formattedDate = date.toLocaleString('en-GB', {
           year: 'numeric',
           month: 'numeric',
           day: 'numeric',
