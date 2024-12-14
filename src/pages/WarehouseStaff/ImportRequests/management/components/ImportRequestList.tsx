@@ -15,11 +15,12 @@ import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
 import { getProductionBatchFn } from '@/api/services/productionBatchApi';
 import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
+import { PurchasingStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 type Props = {};
 
 const ImportRequestList = (props: Props) => {
@@ -118,16 +119,16 @@ const ImportRequestList = (props: Props) => {
 
   const importRequestColumn: CustomColumnDef<ImportRequest>[] = [
     {
-      header: 'Import request code',
+      header: 'Code',
       accessorKey: 'code',
       enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <div>{row.original.code}</div>
-          </div>
-        );
-      }
+      cell: ({ row }) => (
+        <div>
+          <Link to={`/import-request/${row.original.id}`} className="text-blue-500 hover:underline">
+            {row.original.code || 'N/A'}
+          </Link>
+        </div>
+      )
     },
 
     {
@@ -141,7 +142,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{getLabelOfImportType(row.original.type)}</div>
     },
     {
-      header: 'Purchase order',
+      header: 'Purchase Order',
       accessorKey: 'poDelivery.purchaseOrder.code',
       enableColumnFilter: true,
       filterOptions: purchaseOrderFilter.map((delivery) => ({
@@ -151,7 +152,7 @@ const ImportRequestList = (props: Props) => {
       cell: ({ row }) => <div>{row.original?.poDelivery?.purchaseOrder?.code || 'N/A'}</div>
     },
     {
-      header: 'Production batch',
+      header: 'Production Batch',
       accessorKey: 'productionBatch.code',
       enableColumnFilter: true,
       filterOptions: productionBatchFilter.map((delivery) => ({
@@ -170,10 +171,13 @@ const ImportRequestList = (props: Props) => {
           return <div>N/A</div>;
         }
         const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-GB', {
+        const formattedDate = date.toLocaleString('en-GB', {
           year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // Use 24-hour format
         });
         return (
           <div>
@@ -188,7 +192,7 @@ const ImportRequestList = (props: Props) => {
       enableColumnFilter: true,
       cell: ({ row }) => (
         <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+          className={`${badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })} w-[110px] flex justify-center`}>
           {formatString(row.original.status ?? 'N/A')}
         </div>
       ),
@@ -211,6 +215,7 @@ const ImportRequestList = (props: Props) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+
             </DropdownMenuContent>
           </DropdownMenu>
         );

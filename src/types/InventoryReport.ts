@@ -4,7 +4,9 @@ import { PageMetaData } from "./Shared";
 import { User } from "./User";
 
 export const InventoryReportPlanStatus = [
-    {value: 'NOT_YET', label: 'Not yet', variant: 'destructive'},
+    {value: 'NOT_YET', label: 'Not yet', variant: 'slate'},
+    {value: 'CANCELLED', label: 'Cancelled', variant: 'destructive'},
+    {value: 'AWAIT', label: 'Await', variant: 'default'},
     {value: 'IN_PROGRESS', label: 'In Progress', variant: 'warning'},
     {value: 'FINISHED', label: 'Finished', variant: 'success'},
 ]

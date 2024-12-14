@@ -122,7 +122,7 @@ const ExportReceiptTable = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => (
-        <Link className="flex gap-2 items-center text-blue-500 hover:underline" to="">
+        <div className="flex gap-2 items-center " >
           <Avatar className="">
             <AvatarImage
               src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
@@ -137,7 +137,7 @@ const ExportReceiptTable = (props: Props) => {
               ' ' +
               row?.original?.warehouseStaff?.account?.firstName}
           </h4>
-        </Link>
+        </div>
       )
     },
     // {

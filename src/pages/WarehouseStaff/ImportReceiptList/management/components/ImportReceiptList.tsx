@@ -21,6 +21,7 @@ import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts, useGetMyImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt, ImportReceiptStatus, ImportReceiptType } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 type Props = {};
 
 const ImportReceiptTable = (props: Props) => {
@@ -80,170 +81,170 @@ const ImportReceiptTable = (props: Props) => {
   };
 
   const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
-    {
-      header: 'Import receipt code',
-      accessorKey: 'code',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const id = row.original.id;
-        return (
-          <Link to={`/import-receipt/${id}`} className="underline text-bluePrimary">
-            <div>{row.original.code}</div>
-          </Link>
-        );
-      }
-    },
-    {
-      header: 'Import request code',
-      accessorKey: 'code',
-      enableColumnFilter: false,
-      enableSorting: false,
-      cell: ({ row }) => {
-        const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id;
-        return (
-          <Link to={`/import-request/${id}`} className="underline text-bluePrimary">
-            <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
-          </Link>
-        );
-      }
-    },
-    {
-      header: 'Type',
-      accessorKey: 'type',
-      enableColumnFilter: true,
-      filterOptions: ImportReceiptType.map((delivery) => ({
-        label: delivery.label,
-        value: delivery.value
-      })),
-      cell: ({ row }) => <div>{row.original.type}</div>
-    },
-    {
-      header: 'Assigned to',
-      accessorKey: 'creator',
-      enableColumnFilter: false,
-      cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline items-center" to="">
-          <div className="flex items-center">
-            <Avatar className="mr-2 flex justify-center items-center">
-              <AvatarImage
-                src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
-              />
-              <AvatarFallback className="w-full h-full text-center">
-                {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
-                  row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center align-middle">
-              {row?.original?.warehouseStaff?.account?.lastName +
-                ' ' +
-                row?.original?.warehouseStaff?.account?.firstName}
+      {
+        header: 'Import receipt code',
+        accessorKey: 'code',
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+          const id = row.original.id;
+          return (
+            <Link to={`/import-receipt/${id}`} className="hover:underline text-bluePrimary">
+              <div>{row.original.code}</div>
+            </Link>
+          );
+        }
+      },
+      {
+        header: 'Import request code',
+        accessorKey: 'code',
+        enableColumnFilter: false,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const id = row.original.inspectionReport?.inspectionRequest.importRequest?.id;
+          return (
+            <Link to={`/import-request/${id}`} className="hover:underline text-bluePrimary">
+              <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
+            </Link>
+          );
+        }
+      },
+      {
+        header: 'Type',
+        accessorKey: 'type',
+        enableColumnFilter: true,
+        filterOptions: ImportReceiptType.map((delivery) => ({
+          label: delivery.label,
+          value: delivery.value
+        })),
+        cell: ({ row }) => <div>{convertTitleToTitleCase(row.original.type)}</div>
+      },
+      {
+        header: 'Assigned to',
+        accessorKey: 'creator',
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+          <div className="flex items-center justify-start" >
+            <div className="flex items-center">
+              <Avatar className="mr-2 flex  items-center justify-start">
+                <AvatarImage
+                  src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
+                />
+                <AvatarFallback className="w-full h-full text-center">
+                  {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
+                    row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-center align-middle">
+                {row?.original?.warehouseStaff?.account?.lastName +
+                  ' ' +
+                  row?.original?.warehouseStaff?.account?.firstName}
+              </div>
             </div>
           </div>
-        </Link>
-      )
-    },
-    {
-      header: 'Approved by',
-      accessorKey: 'creator',
-      enableColumnFilter: false,
-      cell: ({ row }) => (
-        <Link className="flex text-blue-500 underline" to="">
-          <div className="flex justify-center items-center">
-            <Avatar className="mr-2 flex justify-center items-center">
-              <AvatarImage
-                src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
-              />
-              <AvatarFallback className="w-full h-full text-center">
-                {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
-                  row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
-            <h4>
-              {row?.original?.warehouseManager?.account?.lastName +
-                ' ' +
-                row?.original?.warehouseManager?.account?.firstName}
-            </h4>
+        )
+      },
+      {
+        header: 'Approved by',
+        accessorKey: 'creator',
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+          <div className="flex">
+            <div className="flex justify-center items-center">
+              <Avatar className="mr-2 flex justify-center items-center">
+                <AvatarImage
+                  src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
+                />
+                <AvatarFallback className="w-full h-full text-center">
+                  {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
+                    row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
+              <h4>
+                {row?.original?.warehouseManager?.account?.lastName +
+                  ' ' +
+                  row?.original?.warehouseManager?.account?.firstName}
+              </h4>
+            </div>
           </div>
-        </Link>
-      )
-    },
-    {
-      header: 'Create date',
-      accessorKey: 'createdAt',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const dateString = row.original.createdAt;
-        if (!dateString) {
-          return <div>N/A</div>;
+        )
+      },
+      {
+        header: 'Create date',
+        accessorKey: 'createdAt',
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+          const dateString = row.original.createdAt;
+          if (!dateString) {
+            return <div>N/A</div>;
+          }
+          const date = new Date(dateString);
+          const formattedDate = date.toLocaleString('en-GB', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false // Use 24-hour format
+          });
+          return (
+            <div>
+              <div>{formattedDate}</div>
+            </div>
+          );
         }
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleString('en-GB', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false // Use 24-hour format
-        });
-        return (
-          <div>
-            <div>{formattedDate}</div>
+      },
+      {
+        header: 'Inspection report',
+        accessorKey: 'inspectionReport',
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+          console.log(row?.original);
+          return (
+            <div>
+              <Link
+                to={`/report/${row?.original?.inspectionReport?.inspectionRequest?.id}`}
+                className={row.original?.inspectionReport?.code ? 'text-blue-500 hover:underline' : ''}>
+                {row.original?.inspectionReport?.code || 'None'}
+              </Link>
+            </div>
+          );
+        }
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        enableColumnFilter: true,
+        cell: ({ row }) => (
+          <div
+            className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
+            {formatString(row.original.status ?? 'N/A')}
           </div>
-        );
+        ),
+        filterOptions: Status.map((status) => ({ label: status.label, value: status.value }))
+      },
+      {
+        id: 'actions',
+        enableHiding: false,
+        cell: ({ row }) => {
+          const request = row.original;
+  
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <DotsHorizontalIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        }
       }
-    },
-    {
-      header: 'Inspection report',
-      accessorKey: 'inspectionReport',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        console.log(row?.original);
-        return (
-          <div>
-            <Link
-              to={`/report/${row?.original?.inspectionReport?.inspectionRequest?.id}`}
-              className={row.original?.inspectionReport?.code ? 'text-blue-500 underline' : ''}>
-              {row.original?.inspectionReport?.code || 'None'}
-            </Link>
-          </div>
-        );
-      }
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status',
-      enableColumnFilter: true,
-      cell: ({ row }) => (
-        <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original.status ?? '') })}>
-          {formatString(row.original.status ?? 'N/A')}
-        </div>
-      ),
-      filterOptions: Status.map((status) => ({ label: status.label, value: status.value }))
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const request = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleViewClick(request.id)}>View</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      }
-    }
-  ];
+    ];
 
   return (
     <div className="pb-4">
