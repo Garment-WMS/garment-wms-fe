@@ -53,6 +53,7 @@ import { IoMdClose } from 'react-icons/io';
 import { useSelector } from 'react-redux';
 import exportRequestSelector from '../../slice/selector';
 import { Input } from '@/components/ui/Input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 
 type ApprovalStatus = any;
 
@@ -140,6 +141,13 @@ const getInitials = (name: string | undefined): string => {
   );
 };
 
+const algorithmLabels = {
+  FIFO: 'First In, First Out (FIFO)',
+  LIFO: 'Last In, First Out (LIFO)',
+  FEFO: 'First Expired, First Out (FEFO)',
+  CUS: 'Manual Choosen'
+};
+
 export default function WarehouseApproval({
   warehouseStaff,
   code,
@@ -157,7 +165,7 @@ export default function WarehouseApproval({
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('');
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string | null>('');
   const [recommendedMaterials, setRecommendedMaterials] = useState<any[]>([]);
   const [selectedAssignee, setSelectedAssignee] = useState<any>(null);
   const [fullFilledMaterialExportRequestDetails, setFullFilledMaterialExportRequestDetails] =
@@ -221,7 +229,7 @@ export default function WarehouseApproval({
       let exceedingCount = 0;
       let totalExceedPercentage = 0;
 
-      materialVariants.forEach((variant, index) => {
+      materialVariants.forEach((variant: any, index: any) => {
         const targetQuantity = variant.quantityByUom || 0;
         const selectedQuantity = selectedReceipts[index]?.totalQuantity || 0;
 
@@ -278,8 +286,8 @@ export default function WarehouseApproval({
     return selectedReceipts.flatMap((receipt, index) => {
       if (!receipt || !receipt.materialReceipts) return [];
       return receipt.materialReceipts
-        .filter((r) => r.rollCount && r.rollCount > 0)
-        .map((r) => ({
+        .filter((r: any) => r.rollCount && r.rollCount > 0)
+        .map((r: any) => ({
           materialReceiptId: r.id,
           materialReceipt: r,
           quantityByPack: r.rollCount,
@@ -309,7 +317,11 @@ export default function WarehouseApproval({
       console.log('Formatted Selected Receipts:', formattedReceipts);
     }
   };
-
+  const handleClose = () => {
+    setIsReceiptDialogOpen(false);
+    setRecommendedMaterials([]);
+    setSelectedAlgorithm(null);
+  };
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
@@ -354,7 +366,7 @@ export default function WarehouseApproval({
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {materialReceipts.length > 0 &&
+                    {materialReceipts.length > 0 ? (
                       materialReceipts.map((receipt, index) => (
                         <Card
                           key={index}
@@ -403,7 +415,10 @@ export default function WarehouseApproval({
                             />
                           </CardContent>
                         </Card>
-                      ))}
+                      ))
+                    ) : (
+                      <div>No available Material</div>
+                    )}
                   </div>
                 )}
               </ScrollArea>
@@ -415,7 +430,7 @@ export default function WarehouseApproval({
                 <CardContent>
                   <div className="space-y-2">
                     {materialVariants &&
-                      materialVariants.map((variant, index) => {
+                      materialVariants.map((variant: any, index: any) => {
                         const targetQuantity = variant.quantityByUom || 0;
                         const selectedQuantity = selectedReceipts[index]?.totalQuantity || 0;
                         const isQuantityMet = selectedQuantity >= targetQuantity;
@@ -454,10 +469,7 @@ export default function WarehouseApproval({
               </Card>
             </div>
             <AlertDialogFooter>
-              <Button
-                onClick={() => setIsReceiptDialogOpen(false)}
-                variant={'outline'}
-                className="mr-2">
+              <Button onClick={() => handleClose()} variant={'outline'} className="mr-2">
                 Close
               </Button>
               <Button onClick={handleBack} disabled={currentStep === 0}>
@@ -599,7 +611,6 @@ export default function WarehouseApproval({
         0
       );
       const avgExceedPercentage = (totalExceed / data.data.length).toFixed(2);
-      setTotalExceedPercentage(parseFloat(avgExceedPercentage));
       setExceedingMaterialsCount(exceedingCount);
       toast({
         variant: 'success',
@@ -787,17 +798,28 @@ export default function WarehouseApproval({
                         The Algirithom will find the most suitable Package of material that suit the
                         need.
                       </h5>
-                      <Select onValueChange={setSelectedAlgorithm} value={selectedAlgorithm}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select an algorithm" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="FIFO">First In, First Out (FIFO)</SelectItem>
-                          <SelectItem value="LIFO">Last In, First Out (LIFO)</SelectItem>
-                          <SelectItem value="FEFO">First Expired, First Out (FEFO)</SelectItem>
-                          <SelectItem value="CUS">Custom</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-between">
+                            {selectedAlgorithm
+                              ? algorithmLabels[selectedAlgorithm]
+                              : 'Select an algorithm'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-160">
+                          <div className="grid grid-cols-2 gap-2">
+                            {Object.entries(algorithmLabels).map(([value, label]) => (
+                              <Button
+                                key={value}
+                                variant={selectedAlgorithm === value ? 'default' : 'outline'}
+                                className="justify-start"
+                                onClick={() => setSelectedAlgorithm(value)}>
+                                {label}
+                              </Button>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     {isLoading && (
                       <div className="flex items-center justify-center m-10">
