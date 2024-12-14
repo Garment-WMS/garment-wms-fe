@@ -77,6 +77,11 @@ const PurchaseStaffMenu: MenuProps[] = [
     ]
   },
   {
+    title: 'Dispose',
+    renderIcon: <BiTask size={iconSize} />,
+    link: '/dispose'
+  },
+  {
     title: 'Task',
     renderIcon: <BiTask size={iconSize} />,
     link: '/tasks'

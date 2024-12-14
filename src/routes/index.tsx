@@ -69,6 +69,7 @@ import WarehouseStaffExportReceiptList from '@/pages/WarehouseStaff/ExportReceip
 import CreateReturnImportRequest from '@/pages/ImportRequests/createReturnMaterial';
 import PurchaseDashboard from '@/pages/PurchaseDashboard';
 import ProductionDashboard from '@/pages/ProductionDashboard';
+import DisposeManagement from '@/pages/Dispose';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -370,7 +371,11 @@ const RouterComponent: React.FC = () => {
         {
           path: '/warehouse-staff/:id',
           element: <WarehouseStaffDetail />
-        }
+        },
+        {
+          path: '/dispose',
+          element: <DisposeManagement />
+        },
       ]
     },
     {

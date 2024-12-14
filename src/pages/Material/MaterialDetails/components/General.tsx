@@ -34,6 +34,16 @@ const General: React.FC<Props> = ({ materialVariant }) => {
           {`(${materialVariant.material.materialUom.uomCharacter})`}
         </Label>
       </div>
+      <div>
+        <Label htmlFor="invoicing-policy" className="flex items-center">
+          Reorder level: {materialVariant?.reorderLevel}{' '}{}
+          {`(${materialVariant.material.materialUom.uomCharacter})`}
+          
+        </Label>
+        <p className="text-sm text-gray-500">
+          When the quantity is below this level it will be considered as low quantity.
+        </p>
+      </div>
       <div className="flex flex-col gap-4">
         {/* <Label htmlFor="track-inventory" className="flex items-center">
     Track Inventory <Info className="w-4 h-4 ml-1 text-gray-400" />
@@ -57,11 +67,11 @@ const General: React.FC<Props> = ({ materialVariant }) => {
           </Label>
         </div>
        {materialVariant?.onHandUom < materialVariant?.reorderLevel && (
-         <Alert variant={'warning'} className=" border-none p-0 m-0 flex justify-center items-center w-fit">
+         <Alert variant={'warning'} className="  ">
+          <AlertCircle size={22} className='text-yellow-500'/>
+          <AlertTitle className='font-bold'>Low Quantity</AlertTitle>
          <AlertDescription className='flex items-center gap-1'>
-         
            The quantity is low. Contact purchasing staff for considering refill more.
-           <AlertCircle className="h-4 w-4" />
          </AlertDescription>
        </Alert>
        )}

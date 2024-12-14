@@ -104,6 +104,11 @@ const WarehouseManagerMenu: MenuProps[] = [
     link: '/tasks-management'
   },
   {
+    title: 'Dispose',
+    renderIcon: <BiTask size={iconSize} />,
+    link: '/dispose'
+  },
+  {
     title: 'Staff Management',
     renderIcon: <GrUserWorker size={iconSize} />,
     link: '/warehouse-staff'

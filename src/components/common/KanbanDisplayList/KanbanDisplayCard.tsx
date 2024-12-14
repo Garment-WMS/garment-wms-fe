@@ -4,7 +4,8 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
-
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 type Props = {
   product: any;
 };
@@ -37,7 +38,20 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
       }>
       <Card key={product.id} className="overflow-hidden relative">
         {product?.onHandUom < product?.reorderLevel && (
-          <AlertCircle className="absolute top-1 right-1 p-1  text-yellow-500 rounded-full" />
+          <HoverCard>
+            <HoverCardTrigger>
+              <AlertCircle className="absolute top-1 right-1 p-1  text-yellow-500 rounded-full" />
+            </HoverCardTrigger>
+            <HoverCardContent side="bottom" align="start" className="mt-2 ml-8">
+              <Alert variant={'warning'} className=" ">
+                <AlertCircle size={22} className="text-yellow-500" />
+                <AlertTitle className="font-bold">Low Quantity</AlertTitle>
+                <AlertDescription className="flex items-center gap-1">
+                  The quantity is low.
+                </AlertDescription>
+              </Alert>{' '}
+            </HoverCardContent>
+          </HoverCard>
         )}
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
