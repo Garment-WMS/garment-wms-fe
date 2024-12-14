@@ -260,28 +260,36 @@ export default function DashboardPage() {
                         : 'Not yet'}
                     </TableCell>
                     <TableCell>
-                      <div className="flex">
-                        <Avatar className="mr-2 w-10 h-10 rounded-full">
-                          <AvatarImage src={receipt.warehouseStaff.account.avatarUrl} />
-                          <AvatarFallback>
-                            {' '}
-                            {`${receipt.warehouseStaff.account.firstName.slice(0, 1)} ${receipt.warehouseStaff.account.lastName.slice(0, 1)}`}
-                          </AvatarFallback>
-                        </Avatar>
-                        {`${receipt.warehouseStaff.account.firstName} ${receipt.warehouseStaff.account.lastName}`}
-                      </div>
+                      {receipt.warehouseStaff ? (
+                        <div className="flex">
+                          <Avatar className="mr-2">
+                            <AvatarImage src={receipt?.warehouseStaff?.account?.avatarUrl} />
+                            <AvatarFallback>
+                              {' '}
+                              {`${receipt?.warehouseStaff?.account?.firstName.slice(0, 1)} ${receipt?.warehouseStaff?.account?.lastName.slice(0, 1)}`}
+                            </AvatarFallback>
+                          </Avatar>
+                          {`${receipt?.warehouseStaff?.account?.firstName} ${receipt?.warehouseStaff?.account?.lastName}`}
+                        </div>
+                      ) : (
+                        'N/A'
+                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex">
-                        <Avatar className="mr-2 w-10 h-10 rounded-full">
-                          <AvatarImage src={receipt.warehouseManager.account.avatarUrl} />
-                          <AvatarFallback>
-                            {' '}
-                            {`${receipt.warehouseManager.account.firstName.slice(0, 1)} ${receipt.warehouseManager.account.lastName.slice(0, 1)}`}
-                          </AvatarFallback>
-                        </Avatar>
-                        {`${receipt.warehouseManager.account.firstName} ${receipt.warehouseManager.account.lastName}`}
-                      </div>
+                      {receipt.warehouseManager ? (
+                        <div className="flex">
+                          <Avatar className="mr-2 w-10 h-10 rounded-full">
+                            <AvatarImage src={receipt?.warehouseManager?.account?.avatarUrl} />
+                            <AvatarFallback>
+                              {' '}
+                              {`${receipt?.warehouseManager?.account?.firstName.slice(0, 1)} ${receipt?.warehouseManager?.account?.lastName.slice(0, 1)}`}
+                            </AvatarFallback>
+                          </Avatar>
+                          {`${receipt?.warehouseManager?.account?.firstName} ${receipt?.warehouseManager?.account?.lastName}`}
+                        </div>
+                      ) : (
+                        'N/A'
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -355,16 +363,20 @@ export default function DashboardPage() {
                         : 'Not yet'}
                     </TableCell>
                     <TableCell>
-                      <div className="flex">
-                        <Avatar className="mr-2">
-                          <AvatarImage src={receipt.warehouseStaff.account.avatarUrl} />
-                          <AvatarFallback>
-                            {' '}
-                            {`${receipt.warehouseStaff.account.firstName.slice(0, 1)} ${receipt.warehouseStaff.account.lastName.slice(0, 1)}`}
-                          </AvatarFallback>
-                        </Avatar>
-                        {`${receipt.warehouseStaff.account.firstName} ${receipt.warehouseStaff.account.lastName}`}
-                      </div>
+                      {receipt.warehouseStaff ? (
+                        <div className="flex">
+                          <Avatar className="mr-2">
+                            <AvatarImage src={receipt?.warehouseStaff?.account?.avatarUrl} />
+                            <AvatarFallback>
+                              {' '}
+                              {`${receipt?.warehouseStaff?.account?.firstName.slice(0, 1)} ${receipt?.warehouseStaff?.account?.lastName.slice(0, 1)}`}
+                            </AvatarFallback>
+                          </Avatar>
+                          {`${receipt?.warehouseStaff?.account?.firstName} ${receipt?.warehouseStaff?.account?.lastName}`}
+                        </div>
+                      ) : (
+                        'N/A'
+                      )}
                     </TableCell>
                     <TableCell>
                       {receipt.finishedAt
@@ -385,7 +397,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
     </div>
   );
 }
