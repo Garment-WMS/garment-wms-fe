@@ -21,8 +21,9 @@ export const materialApi = {
   getAll: (queryString: string) => get(`${materialVariant}${queryString}`),
   getAllWithReceipt: (queryString: string) => get(`${materialVariant}/has-receipt${queryString}`),
   getAllWithoutFilter: () => get(`${materialVariant}/all`),
-  getOneDetailMaterialReceipt : (id: string) => get(`${materialReceipt}/${id}`),
-  getOneReceipt: (id: string, queryString: string) => get(`${materialVariant}/${id}/material-receipt${queryString}`),
+  getOneDetailMaterialReceipt: (id: string) => get(`${materialReceipt}/${id}`),
+  getOneReceipt: (id: string, queryString: string) =>
+    get(`${materialVariant}/${id}/material-receipt${queryString}`),
   getOneImportReceipt: (id: string, queryString: string) =>
     get(`${materialVariant}/${id}/import-receipt/${queryString}`),
   getOneExportReceipt: (id: string, queryString: string) =>
@@ -31,13 +32,32 @@ export const materialApi = {
   getReceiptStatistics: (data: any) => post(`${materialVariant}/chart`, data),
   addImage: (id: string, data: FormData, config: any) =>
     post(`${materialVariant}/${id}/image`, data, undefined, config),
-  getAllUom(){
-    return get(`/uom`)
+  getAllUom() {
+    return get(`/uom`);
   },
-  createMaterialVariant(data: FormData, config: any){
-    return post(`${materialVariant}/form-data`, data, undefined, config)
+  createMaterialVariant(data: FormData, config: any) {
+    return post(`${materialVariant}/form-data`, data, undefined, config);
   },
-  getOneHistory: (id: string, queryString: string) => get(`${materialVariant}/${id}/history${queryString}`),
+  getOneHistory: (id: string, queryString: string) =>
+    get(`${materialVariant}/${id}/history${queryString}`),
+  disposeMaterialReceipt: (type: string, note: string, materialReceiptId: any, quantity: any) => {
+    return post(`/material-export-receipt`, {
+      type,
+      note,
+      materialExportReceiptDetail: [{ materialReceiptId, quantityByPack: quantity }]
+    });
+  }
+};
+export const disposeMaterialReceipt = async (
+  type: string,
+  note: string,
+  materialReceiptId: any,
+  quantity: any
+) => {
+  const res = await privateCall(
+    materialApi.disposeMaterialReceipt(type, note, materialReceiptId, quantity)
+  );
+  return res.data;
 };
 export const materialTypeApi = {
   getAll: () => get(`${materialType}`)
@@ -252,7 +272,6 @@ export const getOneMaterialReceiptFn = async (
   const res = await privateCall(materialApi.getOneReceipt(id, queryString));
   return res.data;
 };
-
 
 export const getOneMaterialImportReceiptFn = async (
   id: string,

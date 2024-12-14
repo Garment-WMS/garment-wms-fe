@@ -23,7 +23,7 @@ export const productVariantApi = {
   getOneProductVariant(id: string) {
     return get(`${productVariantPath}/${id}`);
   },
-  getOneProductReceipt(id: string,queryString: string) {
+  getOneProductReceipt(id: string, queryString: string) {
     return get(`${productVariantPath}/${id}/product-receipt${queryString}`);
   },
   getOneProductReceiptDetails(id: string) {
@@ -50,10 +50,17 @@ export const productVariantApi = {
       quantityRangeEnd,
       productFormulaMaterials
     }),
-    createProductVariant(data: FormData, config: any){
-      return post(`${productVariantPath}/form-data`, data, undefined, config)
-    },
-    getOneHistory: (id: string,queryString: string) => get(`${productVariantPath}/${id}/history${queryString}`),
+  createProductVariant(data: FormData, config: any) {
+    return post(`${productVariantPath}/form-data`, data, undefined, config);
+  },
+  getOneHistory: (id: string, queryString: string) =>
+    get(`${productVariantPath}/${id}/history${queryString}`),
+  disposeProduct: (productReceiptId: string, quantityByPack: number) =>
+    post('/product-receipt/dispose', { productReceipts: [{ productReceiptId, quantityByPack }] })
+};
+export const disposeProductFn = async (productReceiptId: string, quantityByPack: number) => {
+  const res = await privateCall(productVariantApi.disposeProduct(productReceiptId, quantityByPack));
+  return res.data;
 };
 
 export const productApi = {
@@ -426,11 +433,10 @@ export const createProductFormula: {
 
   return res.data;
 };
-export const getOneProductHistory = async (id: string,{
-  sorting,
-  columnFilters,
-  pagination
-}: InputType): Promise<ProductHistoryResponse> => {
+export const getOneProductHistory = async (
+  id: string,
+  { sorting, columnFilters, pagination }: InputType
+): Promise<ProductHistoryResponse> => {
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
@@ -490,6 +496,6 @@ export const getOneProductHistory = async (id: string,{
     order
   });
   // Make the API request
-  const res = await privateCall(productVariantApi.getOneHistory(id,queryString));
+  const res = await privateCall(productVariantApi.getOneHistory(id, queryString));
   return res.data;
 };

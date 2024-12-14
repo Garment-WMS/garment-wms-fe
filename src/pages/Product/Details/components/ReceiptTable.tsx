@@ -24,6 +24,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
+import DisposeProductDialog from './DisposeProductDialog';
 
 type Props = {
   id: string;
@@ -32,6 +33,9 @@ type Props = {
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
+  const [isDisposeDialogOpen, setIsDisposeDialogOpen] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<ProductReceipt | null>(null);
+  const [render, setRender] = useState(0);
   const getStatusBadgeVariant = (status: string) => {
     const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
     return statusObj ? statusObj.variant : 'default'; // Default variant if no match is found
@@ -40,12 +44,23 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     setSelectedReceiptId(id);
     setIsOpened(true);
   };
+  const openDisposeDialog = (receipt: ProductReceipt) => {
+    setSelectedReceipt(receipt);
+    setIsDisposeDialogOpen(true);
+  };
+  const reRender = () => {
+    setRender((render) => render + 1);
+  };
+  const handleDisposeSuccess = () => {
+    // Refresh the table data
+    reRender();
+  };
 
   useEffect(() => {
     if (receiptId) {
       openDialog(receiptId);
     }
-  }, [receiptId]);
+  }, [receiptId, render]);
   const productImportReceiptColumn: CustomColumnDef<ProductReceipt>[] = [
     {
       header: 'Receipt code',
@@ -166,7 +181,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const request = row.original;
+        const receipt = row.original;
 
         return (
           <DropdownMenu>
@@ -178,7 +193,10 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => openDialog(request.id)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openDialog(receipt.id)}>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
+                Dispose
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -253,6 +271,14 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       {/* <ReceiptChart /> */}
       {selectedReceiptId && (
         <ReceiptDetailsDialog id={selectedReceiptId} isOpen={isOpened} setIsOpen={setIsOpened} />
+      )}
+      {selectedReceipt && (
+        <DisposeProductDialog
+          receipt={selectedReceipt}
+          isOpen={isDisposeDialogOpen}
+          setIsOpen={setIsDisposeDialogOpen}
+          onDisposeSuccess={handleDisposeSuccess}
+        />
       )}
     </div>
   );
