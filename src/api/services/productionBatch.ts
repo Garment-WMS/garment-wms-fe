@@ -4,6 +4,8 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { ApiResponse } from '@/types/ApiResponse';
 import privateCall from '../PrivateCaller';
 import { get, patch, post } from '../ApiCaller';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const productionBatchApi = {
   getAll: () => get('/production-batch'),
@@ -70,18 +72,54 @@ export const getOneProductionBatchById = async (id: string): Promise<ApiResponse
   return response.data as ApiResponse;
 };
 
+// export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+
+//   const config = productionBatchApi.import();
+//   config.data = formData;
+//   config.headers = {
+//     'Content-Type': 'multipart/form-data'
+//   };
+
+//   const response = await privateCall(config);
+//   return response.data as ApiResponse;
+// };
 export const importProductionBatch = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+  const accessToken = Cookies.get('accessToken');
+  // Prepare the API caller configuration
+  const config = post(
+    '/production-batch',
+    formData,
+    {}, // No additional params needed
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
 
-  const config = productionBatchApi.import();
-  config.data = formData;
-  config.headers = {
-    'Content-Type': 'multipart/form-data'
-  };
-
-  const response = await privateCall(config);
-  return response.data as ApiResponse;
+  try {
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error uploading production batch:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data);
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred during file upload.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred during file upload.');
+  }
 };
 
 export const cancelProductionBatch = async (

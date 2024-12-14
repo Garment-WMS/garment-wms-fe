@@ -4,6 +4,8 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { PurchaseOrderListResponse } from '@/types/PurchaseOrderListResponse';
 import privateCall from '../PrivateCaller';
 import { get, patch, post } from '../ApiCaller';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 interface GetAllPurchaseOrdersInput {
   sorting: SortingState;
@@ -85,16 +87,56 @@ export const getPurchaseOrderById = async (id: string): Promise<ApiResponse> => 
 export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+  const accessToken = Cookies.get('accessToken');
+  // Prepare the API caller configuration
+  const config = post(
+    '/purchase-order',
+    formData,
+    {}, // No additional params needed
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
 
-  const config = purchaseOrderApi.import();
-  config.data = formData;
-  config.headers = {
-    'Content-Type': 'multipart/form-data'
-  };
-
-  const response = await privateCall(config);
-  return response.data as ApiResponse;
+  try {
+    // Make the API call
+    const response = await axios(config);
+    // Return the successful response data
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error uploading purchase order:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data); // Return an error response in the expected format
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred during file upload.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    // Throw for unexpected errors
+    throw new Error('An unexpected error occurred during file upload.');
+  }
 };
+
+// export const importPurchaseOrder = async (file: File): Promise<ApiResponse> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+//   const config = purchaseOrderApi.import();
+//   config.data = formData;
+//   config.headers = {
+//     'Content-Type': 'multipart/form-data'
+//   };
+
+//   const response = await privateCall(config);
+//   console.log(response);
+//   return response.data as ApiResponse;
+// };
 
 export const getPurchaseOrderStatistic = async (): Promise<ApiResponse> => {
   const config = purchaseOrderApi.getStatistic();

@@ -1,4 +1,5 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
+import { DataTable } from '@/components/ui/DataTable';
 import { CustomColumnDef, UseGetTableResponseType } from '@/types/CompositeTable';
 import { PODeliveryDetail } from '@/types/PurchaseOrder';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
@@ -125,7 +126,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
 
   return (
     <div>
-      <TanStackBasicTable
+      {/*   <TanStackBasicTable
         isTableDataLoading={false}
         paginatedTableData={poDeliveryDetailList}
         columns={purchaseOrderDeliveryDetailsColumns}
@@ -136,7 +137,8 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
         showToolbar={false}
-      />
+      /> */}
+      <DataTable columns={purchaseOrderDeliveryDetailsColumns} data={poDeliveryDetail} />
     </div>
   );
 };
