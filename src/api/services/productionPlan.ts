@@ -5,6 +5,7 @@ import { ProductionPlanListResponse } from '@/types/ProductionPlanListResponse';
 import { get, patch, post } from '../ApiCaller';
 import Cookies from 'js-cookie';
 import privateCall from '../PrivateCaller';
+import axios from 'axios';
 
 export const productionPlanApi = {
   getAll: () => get('/production-plan'),
@@ -102,16 +103,52 @@ export const getProductionPlanDetailsById = async (id: string): Promise<ApiRespo
   }
 };
 
+// export const importProductionPlan = async (file: File): Promise<ApiResponse> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+
+//   const config = productionPlanApi.import();
+//   config.data = formData;
+//   config.headers = {
+//     'Content-Type': 'multipart/form-data'
+//   };
+
+//   const response = await privateCall(config);
+//   return response.data as ApiResponse;
+// };
+
 export const importProductionPlan = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  console.log('FormData contents:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+  const accessToken = Cookies.get('accessToken');
+  const config = post(
+    '/production-plan',
+    formData,
+    {},
+    {
+      'Content-Type': 'multipart/form-data',
+      Authorization: accessToken ? `Bearer ${accessToken}` : ''
+    }
+  );
 
-  const config = productionPlanApi.import();
-  config.data = formData;
-  config.headers = {
-    'Content-Type': 'multipart/form-data'
-  };
-
-  const response = await privateCall(config);
-  return response.data as ApiResponse;
+  try {
+    const response = await axios(config);
+    return response.data as ApiResponse;
+  } catch (error: any) {
+    console.error('Error uploading production plan:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Error response data:', error.response.data);
+      return {
+        statusCode: error.response.status,
+        data: null,
+        message: error.response.data.message || 'An error occurred during file upload.',
+        errors: error.response.data.errors || null
+      } as ApiResponse;
+    }
+    throw new Error('An unexpected error occurred during file upload.');
+  }
 };
