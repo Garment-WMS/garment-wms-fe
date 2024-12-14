@@ -14,7 +14,7 @@ import {
   ProductDetailsToRender,
   ProductSizeOfInventoryReport
 } from '@/types/InventoryReport';
-import {  formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import axios from 'axios';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/Label';
@@ -83,35 +83,35 @@ export default function WarehousestaffStocktakingDetails() {
   ];
 
   const validateQuantity = (value: number | null): string | null => {
-    if (value === null || value=== undefined || value < 0 || value > 99999) {
+    if (value === null || value === undefined || value < 0 || value > 99999) {
       return 'Quantity must be between 0 and 99999.';
     }
     return null;
   };
   async function onSubmitInventoryReport() {
     try {
-    // Validate all fields when submitting
-    const newFieldErrors: { [key: string]: string | null } = {};
-    let hasErrors = false;
+      // Validate all fields when submitting
+      const newFieldErrors: { [key: string]: string | null } = {};
+      let hasErrors = false;
 
-    approvedDetails.details.forEach((detail) => {
-      const error = validateQuantity(detail.actualQuantity);
-      if (error) {
-        newFieldErrors[detail.inventoryReportDetailId] = error;
-        hasErrors = true; // Mark that there are validation errors
-      }
-    });
-
-    setFieldErrors(newFieldErrors); // Update field errors state
-
-    if (hasErrors) {
-      toast({
-        variant: 'destructive',
-        title: 'Validation Error',
-        description: 'Please ensure all quantities are valid (between 0 and 99999).',
+      approvedDetails.details.forEach((detail) => {
+        const error = validateQuantity(detail.actualQuantity);
+        if (error) {
+          newFieldErrors[detail.inventoryReportDetailId] = error;
+          hasErrors = true; // Mark that there are validation errors
+        }
       });
-      return; 
-    }
+
+      setFieldErrors(newFieldErrors); // Update field errors state
+
+      if (hasErrors) {
+        toast({
+          variant: 'destructive',
+          title: 'Validation Error',
+          description: 'Please ensure all quantities are valid (between 0 and 99999).'
+        });
+        return;
+      }
 
       setIsLoading(true);
 
@@ -144,7 +144,6 @@ export default function WarehousestaffStocktakingDetails() {
   }
 
   const handleApproveChange = (id: string, value: number | null) => {
-
     // Validate the new value
     const errorMessage = validateQuantity(value);
     // Update field errors
@@ -206,7 +205,7 @@ export default function WarehousestaffStocktakingDetails() {
             : [])
         ]);
 
-        // Initialize fieldErrors for invalid quantities
+      // Initialize fieldErrors for invalid quantities
 
       setApprovedDetails({ details: initialApprovedDetails });
 
@@ -268,15 +267,14 @@ export default function WarehousestaffStocktakingDetails() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="col-span-2">
           <CardContent>
-          <SearchFunction
-                materialDetails={materialDetails}
-                productDetails={productDetails}
-                approvedDetails={approvedDetails}
-                setApprovedDetails={setApprovedDetails}
-                />
+            <SearchFunction
+              materialDetails={materialDetails}
+              productDetails={productDetails}
+              approvedDetails={approvedDetails}
+              setApprovedDetails={setApprovedDetails}
+            />
             {materialDetails.length > 0 && (
               <div className="pt-4">
-                
                 <Label className="text-xl font-bold ">Material Variant</Label>
                 {materialDetails.map((detail, idx) => (
                   <div className="w-full">
@@ -304,18 +302,20 @@ export default function WarehousestaffStocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            <div>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Expected Quantity: {detail.totalExpectedQuantity}{' '}
-                              </h4>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Actual Quantity: {detail.totalActualQuantity}{' '}
-                              </h4>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Quantity of difference:{' '}
-                                {detail.totalActualQuantity - detail.totalExpectedQuantity}
-                              </h4>
-                            </div>
+                            {inventoryReport.status !== 'IN_PROGRESS' && (
+                              <div>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Expected Quantity: {detail.totalExpectedQuantity}{' '}
+                                </h4>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Actual Quantity: {detail.totalActualQuantity}{' '}
+                                </h4>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Quantity of difference:{' '}
+                                  {detail.totalActualQuantity - detail.totalExpectedQuantity}
+                                </h4>
+                              </div>
+                            )}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="w-full">
@@ -457,18 +457,20 @@ export default function WarehousestaffStocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            <div>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Expected Quantity: {detail.totalExpectedQuantity}{' '}
-                              </h4>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Actual Quantity: {detail.totalActualQuantity}{' '}
-                              </h4>
-                              <h4 className="font-semibold text-muted-foreground">
-                                Quantity of difference:{' '}
-                                {detail.totalActualQuantity - detail.totalExpectedQuantity}
-                              </h4>
-                            </div>
+                            {inventoryReport.status !== 'IN_PROGRESS' && (
+                              <div>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Expected Quantity: {detail.totalExpectedQuantity}{' '}
+                                </h4>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Actual Quantity: {detail.totalActualQuantity}{' '}
+                                </h4>
+                                <h4 className="font-semibold text-muted-foreground">
+                                  Quantity of difference:{' '}
+                                  {detail.totalActualQuantity - detail.totalExpectedQuantity}
+                                </h4>
+                              </div>
+                            )}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="w-full">
@@ -584,7 +586,7 @@ export default function WarehousestaffStocktakingDetails() {
 
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>General Information</CardTitle>
+            <CardTitle className="text-xl font-bold">General Information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-2 font-semibold">
@@ -647,28 +649,28 @@ export default function WarehousestaffStocktakingDetails() {
               </Button>
             )} */}
             {inventoryReport.status === 'IN_PROGRESS' && (
-              
               <div className="flex justify-center items-center mt-4 w-full">
-              <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogTrigger asChild>
-                  <Button type="button"> Confirm Report</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Submit report </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to submit? Your report will be notified to the manager.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={onSubmitInventoryReport} type="submit">
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+                <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button"> Confirm Report</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Submit report </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to submit? Your report will be notified to the
+                        manager.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={onSubmitInventoryReport} type="submit">
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             )}
           </CardContent>
         </Card>

@@ -79,6 +79,7 @@ const StocktakingPlanDetails = () => {
   const [errorExportRequests, setErrorExportRequests] = useState<MaterialExportRequest[]>([]);
   const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
   const [planErrorDialog, setPlanErrorDialog] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -146,6 +147,38 @@ const StocktakingPlanDetails = () => {
   finally{
     setIsLoading(false);
   }
+}
+const handleCancelPlan =async()=>{
+  try {
+    if (id) {
+      setIsLoading(true);
+      const res = await privateCall(inventoryReportPlanApi.cancelInventoryReportPlan(id));
+      if (res.status === 204) {
+        toast({
+          title: 'success',
+          variant: 'success',
+          description: 'Plan has been canceled successfully'
+        });
+        fetchData();
+      }
+      
+    } else {
+      throw new Error('ID is undefined');
+    }
+  } catch (error: any) {
+    const errMessage = error.response.data.message;
+    const errorList = error.response.data.errors;
+
+    toast({
+      title: 'error',
+      variant: 'destructive',
+      description: errMessage
+    });
+  
+}
+finally{
+  setIsLoading(false);
+}
 }
   useEffect(() => {
     fetchData();
@@ -399,7 +432,30 @@ const StocktakingPlanDetails = () => {
                 );
               })}
             </div>
-
+            <div className='flex justify-center items-center gap-4'>
+              {(planData.status === 'NOT_YET' ) && (
+              <div className="flex justify-center items-center py-4">
+              <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" type="button">Cancel plan</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Cancelling the Plan </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to Cancel this Plan? It will automatically change the status to CANCELLED and all the staff will be annouced to stop their work.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className='bg-red-500' onClick={handleCancelPlan} type="submit">
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            )}
             {(planData.status === 'NOT_YET' ) && (
               <div className="flex justify-center items-center py-4">
               <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -424,19 +480,11 @@ const StocktakingPlanDetails = () => {
               </AlertDialog>
             </div>
             )}
+            </div>
+            
           </div>
         </div>
       </CardContent>
-      {/* <CardFooter className="flex justify-between">
-        <Button variant="outline">
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          Schedule
-        </Button>
-        <Button>
-          <ClipboardIcon className="mr-2 h-4 w-4" />
-          Generate Report
-        </Button>
-      </CardFooter> */}
       <ErrorDialog
         id={id}
         fetchData={fetchData}

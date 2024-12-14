@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 
 type Props = {
   product: any;
@@ -34,7 +35,10 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
           ? handleMaterialViewClick(product.id)
           : handleProductViewClick(product.id)
       }>
-      <Card key={product.id} className="overflow-hidden">
+      <Card key={product.id} className="overflow-hidden relative">
+        {product?.onHandUom < product?.reorderLevel && (
+          <AlertCircle className="absolute top-1 right-1 p-1  text-yellow-500 rounded-full" />
+        )}
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="w-full max-w-[170px] truncate">
@@ -64,14 +68,14 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
               product.onHand !== undefined &&
               product?.materialPackage ? (
                 <>
-                 <p className="text-xs text-gray-500">
-                  Quantity by package: {product.onHand} {product?.materialPackage[0]?.packUnit}
-                </p>
-                <p className="text-xs text-gray-500">
-                  Quantity by Uom: {product?.onHandUom } {product?.material?.materialUom?.uomCharacter}
-                </p>
+                  <p className="text-xs text-gray-500">
+                    Quantity by package: {product.onHand} {product?.materialPackage[0]?.packUnit}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Quantity by Uom: {product?.onHandUom}{' '}
+                    {product?.material?.materialUom?.uomCharacter}
+                  </p>
                 </>
-               
               ) : (
                 <p className="text-xs text-gray-500">Quantity: {product.onHandQualified}</p>
               )}

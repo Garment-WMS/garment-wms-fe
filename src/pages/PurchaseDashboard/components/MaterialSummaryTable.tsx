@@ -16,8 +16,18 @@ import {
     { name: "Metal Collar Stays Box (100 Pieces/Box)", code: "MAT-PAC-000018", ordered: 5, received: 5 },
     { name: "Pellon SF101 Fusible Interfacing Roll (10 meters/Roll)", code: "MAT-PAC-000014", ordered: 5, received: 5 },
   ]
+
+  interface MaterialSummary {
+    name: string
+    code: string
+    ordered: number
+    received: number
+  }
   
-  export function MaterialSummaryTable() {
+  interface MaterialSummaryProps {
+    materials: MaterialSummary[]
+  }
+  export function MaterialSummaryTable({ materials }: MaterialSummaryProps) {
     return (
       <Table>
         <TableHeader>
@@ -33,8 +43,8 @@ import {
             <TableRow key={material.code}>
               <TableCell>{material.name}</TableCell>
               <TableCell>{material.code}</TableCell>
-              <TableCell>{material.ordered}</TableCell>
-              <TableCell>{material.received}</TableCell>
+              <TableCell>{material.quantityByPack}</TableCell>
+              <TableCell>{material.actualImportQuantity}</TableCell>
             </TableRow>
           ))}
         </TableBody>

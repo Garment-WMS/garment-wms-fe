@@ -41,6 +41,7 @@ import { ImportRequest } from '@/types/ImportRequestType';
 import { MaterialExportRequest } from '@/types/exportRequest';
 import { InventoryReportPlan } from '@/types/InventoryReport';
 import { PlanErrorDialog } from './components/PlanErrorDialog';
+import { DateTimePickerForCreate } from './components/DateTimePickerForCreate';
 
 type Props = {};
 
@@ -57,6 +58,8 @@ const CreateOverallPlan = () => {
   const [errorPlanList, setErrorPlanList] = useState<InventoryReportPlan[]>([]);
   const [planErrorDialog, setPlanErrorDialog] = useState(false);
 
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
   // Function to add a new assignment
   const addAssignment = () => {
     setAssignments([...assignments, { staffId: '' }]);
@@ -66,28 +69,28 @@ const CreateOverallPlan = () => {
     .object({
       title: z.string().min(1).max(255),
       note: z.string().optional(),
-      from: z
-        .date({
-          required_error: 'Date is required'
-        })
-        .refine((date) => date > new Date(), {
-          message: 'Start date must be after today'
-        }),
-      to: z.date({
-        required_error: 'Date is required'
-      })
+      // from: z
+      //   .date({
+      //     required_error: 'Date is required'
+      //   })
+      //   .refine((date) => date > new Date(), {
+      //     message: 'Start date must be after today'
+      //   }),
+      // to: z.date({
+      //   required_error: 'Date is required'
+      // })
     })
-    .refine((data) => data.to >= data.from, {
-      message: 'End date must be after or equal to the start date',
-      path: ['to'] // Specifies the error path to be associated with the "to" field
-    });
+    // .refine((data) => data.to >= data.from, {
+    //   message: 'End date must be after or equal to the start date',
+    //   path: ['to']
+    // });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
       note: '',
-      from: undefined,
-      to: undefined
+      // from: undefined,
+      // to: undefined
     }
   });
 
@@ -110,6 +113,13 @@ const CreateOverallPlan = () => {
         variant: 'destructive'
       });
     }
+    if(!fromDate || !toDate){
+      return  toast({
+        title: 'Error',
+        description: 'Please select date and time for the stocktaking plan.',
+        variant: 'destructive'
+      });
+    }
 
     // Reset errors if no issues are found
     if (!hasError) {
@@ -118,8 +128,10 @@ const CreateOverallPlan = () => {
       // Proceed with formatting values
       const formattedValues = {
         ...values,
-        from: values.from.toISOString(),
-        to: values.to.toISOString(),
+        // from: values.from.toISOString(),
+        // to: values.to.toISOString(),
+        from: fromDate?.toISOString(),
+        to: toDate?.toISOString(),
         inventoryReportPlanType: 'OVERALL',
         staffList: assignments.map((assignment) => {
           return {
@@ -149,19 +161,17 @@ const CreateOverallPlan = () => {
             variant: 'destructive'
           });
         }
-        const errMessage = error.response.data.message;
+        const errMessage = error?.response?.data?.message;
         const errorList = error.response.data.errors;
-        if (error.response.status === 409) {
-          setPlanErrorDialog(true);
-        }
-        if (error.response.status === 400 && errorList) {
+        console.log('error', errorList);
+        if (error.response.status === 409 && errorList) {
           const errorList = error.response.data.errors;
           setErrorPlanList(errorList);
           setPlanErrorDialog(true);
         } else {
           toast({
             title: 'Error',
-            description: error.response?.data?.message || error.message,
+            description: errMessage || error.message,
             variant: 'destructive'
           });
         }
@@ -198,6 +208,13 @@ const CreateOverallPlan = () => {
   useEffect(() => {
     fetchWarehouseStaff();
   }, []);
+
+  const onDateTimeChange=( from: Date | null , to: Date | null)=> {
+    if(from)
+    setFromDate(from);
+    if(to)
+    setToDate(to);
+  }
   return (
     <div className="mx-auto p-4 bg-white shadow-sm border rounded-md">
       <Label className="text-xl font-primary font-bold">Planning overall stocktaking plan</Label>
@@ -222,8 +239,10 @@ const CreateOverallPlan = () => {
                 </FormItem>
               )}
             />
-
-            <div className="flex gap-6 items-center ">
+            <DateTimePickerForCreate
+            onDateTimeChange={onDateTimeChange}
+            />
+            {/* <div className="flex gap-6 items-center ">
               <FormField
                 control={form.control}
                 name="from"
@@ -255,7 +274,7 @@ const CreateOverallPlan = () => {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
             <FormField
               control={form.control}
               name="note"

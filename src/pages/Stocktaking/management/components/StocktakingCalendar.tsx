@@ -40,7 +40,6 @@ export default function StocktakingCalendar() {
   const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
   const [isLoading, setIsLoading] = useState(false);
 
-
   // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
@@ -79,7 +78,7 @@ export default function StocktakingCalendar() {
             columnFilters: debouncedColumnFilters,
             pagination: debouncedPagination
           });
-          // setInventoryReportPlanList(response);
+          setInventoryReportPlanList(response);
         } finally {
           setIsLoading(false); // Stop loading
         }
@@ -89,50 +88,6 @@ export default function StocktakingCalendar() {
     }
   }, [debouncedColumnFilters, debouncedSorting, debouncedPagination]);
 
-  //   const renderCalendar = () => {
-  //     const days = getDaysInMonth(currentDate);
-  //     const firstDayOfMonth = days[0].getDay();
-
-  //     return (
-  //         <div className="grid grid-cols-7">
-  //             {daysOfWeek.map((day) => (
-  //                 <div key={day} className="text-center font-semibold text-sm py-2">
-  //                     {day}
-  //                 </div>
-  //             ))}
-  //             {Array(firstDayOfMonth)
-  //                 .fill(null)
-  //                 .map((_, index) => (
-  //                     <div key={`empty-${index}`} className="p-2"></div>
-  //                 ))}
-  //             {days.map((day, index) => {
-  //                 const dayEvents = inventoryReportPlanList.filter((event) => {
-  //                     const eventFrom = new Date(event.from);
-  //                     const eventTo = new Date(event.to);
-  //                     return day >= eventFrom && day <= eventTo;
-
-  //                 });
-
-  //                 return (
-  //                     <div
-  //                         onClick={() => setSelectedDate(day)}
-  //                         className={`p-2 border rounded-sm cursor-pointer shadow-sm flex flex-col gap-2 ${
-  //                             day.toDateString() === new Date().toDateString() ? 'bg-blue-500 text-white' : ''
-  //                         }`}>
-  //                         <div className="font-semibold text-right mb-6">{day.getDate()}</div>
-  //                         {dayEvents.map((event, eventIndex) => (
-  //                             <div
-  //                                 key={eventIndex}
-  //                                 className="text-xs flex bg-green-500 p-1 mt-1 rounded">
-  //                                 {event.title} {event.code}
-  //                             </div>
-  //                         ))}
-  //                     </div>
-  //                 );
-  //             })}
-  //         </div>
-  //     );
-  // };
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -140,140 +95,275 @@ export default function StocktakingCalendar() {
     return Array.from({ length: days }, (_, i) => new Date(year, month, i + 1));
   };
 
+  // const renderCalendar = () => {
+  //   const days = getDaysInMonth(currentDate);
+  //   const firstDayOfMonth = days[0].getDay();
+
+  //   if (isLoading) {
+  //     return <CalendarSkeleton />;
+  //   }
+
+  //   return (
+  //     <div className="grid grid-cols-7">
+  //       {/* Render Days of the Week */}
+  //       {daysOfWeek.map((day) => (
+  //         <div key={day} className="text-center font-semibold text-sm py-2">
+  //           {day}
+  //         </div>
+  //       ))}
+
+  //       {/* Fill Empty Cells for Days Before the Start of the Month */}
+  //       {Array(firstDayOfMonth)
+  //         .fill(null)
+  //         .map((_, index) => (
+  //           <div key={`empty-${index}`} className="p-2"></div>
+  //         ))}
+
+  //       {/* Render Days and Events */}
+  //       {days.map((day, index) => {
+  //         const dayEvents = inventoryReportPlanList.filter(
+  //           (event) =>
+  //             new Date(event.from).toLocaleDateString() === day.toLocaleDateString()
+  //         );
+
+  //         return (
+  //           <div
+  //             key={index}
+  //             onClick={() => setSelectedDate(day)}
+  //             className={`p-2 border rounded-sm shadow-sm flex flex-col gap-2 ${
+  //               day.toLocaleDateString() === new Date().toLocaleDateString()
+  //                 ? "bg-blue-500 text-white"
+  //                 : ""
+  //             }`}
+  //           >
+  //             {/* Display Day Number */}
+  //             <div className="font-semibold text-right mb-2">{day.getDate()}</div>
+
+  //             {/* Render Events */}
+  //             <div className="flex flex-col gap-1">
+  //               {dayEvents.map((event, eventIndex) => {
+  //                 const timeStart = new Date(event.from).toLocaleTimeString("en-GB", {
+  //                   hour: "2-digit",
+  //                   minute: "2-digit",
+  //                 });
+  //                 const timeEnd = new Date(event.to).toLocaleTimeString("en-GB", {
+  //                   hour: "2-digit",
+  //                   minute: "2-digit",
+  //                 });
+
+  //                 return (
+  //                   <Card
+  //                     key={eventIndex}
+  //                     onClick={() => navigate(`/stocktaking/plan/${event.id}`)}
+  //                     className={cn(
+  //                       "border-none shadow-sm transition-all hover:shadow-md cursor-pointer",
+  //                       event.status === "PENDING"
+  //                         ? "bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900/70"
+  //                         : event.status === "IN_PROGRESS"
+  //                         ? "bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:hover:bg-yellow-900/70"
+  //                         : event.status === "FINISHED"
+  //                         ? "bg-green-100 hover:bg-green-200 dark:bg-green-900/50 dark:hover:bg-green-900/70"
+  //                         : "bg-blue-200 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70"
+  //                     )}
+  //                   >
+  //                     <CardContent className="p-3">
+  //                       <div className="flex items-start gap-2">
+  //                         <ClipboardList
+  //                           className={cn(
+  //                             "h-5 w-5 mt-0.5",
+  //                             event.status === "PENDING" && "text-red-700 dark:text-red-400",
+  //                             event.status === "IN_PROGRESS" &&
+  //                               "text-yellow-700 dark:text-yellow-400",
+  //                             event.status === "FINISHED" &&
+  //                               "text-green-700 dark:text-green-400"
+  //                           )}
+  //                         />
+  //                         <div className="flex-1 min-w-0">
+  //                           <h3
+  //                             className={cn(
+  //                               "font-medium truncate text-sm",
+  //                               event.status === "PENDING" && "text-red-900 dark:text-red-100",
+  //                               event.status === "IN_PROGRESS" &&
+  //                                 "text-yellow-900 dark:text-yellow-100",
+  //                               event.status === "FINISHED" &&
+  //                                 "text-green-900 dark:text-green-100"
+  //                             )}
+  //                           >
+  //                             {event.title}
+  //                           </h3>
+  //                           <p
+  //                             className={cn(
+  //                               "text-xs truncate",
+  //                               event.status === "PENDING" && "text-red-700 dark:text-red-300",
+  //                               event.status === "IN_PROGRESS" &&
+  //                                 "text-yellow-700 dark:text-yellow-300",
+  //                               event.status === "FINISHED" &&
+  //                                 "text-green-700 dark:text-green-300"
+  //                             )}
+  //                           >
+  //                             {event.code}
+  //                           </p>
+  //                           <p
+  //                             className={cn(
+  //                               "text-xs font-medium mt-1",
+  //                               event.status === "PENDING" && "text-red-800 dark:text-red-200",
+  //                               event.status === "IN_PROGRESS" &&
+  //                                 "text-yellow-800 dark:text-yellow-200",
+  //                               event.status === "FINISHED" &&
+  //                                 "text-green-800 dark:text-green-200"
+  //                             )}
+  //                           >
+  //                             {`${timeStart} - ${timeEnd}`}
+  //                           </p>
+  //                         </div>
+  //                       </div>
+  //                     </CardContent>
+  //                   </Card>
+  //                 );
+  //               })}
+  //             </div>
+  //           </div>
+  //         );
+  //       })}
+  //     </div>
+  //   );
+  // };
+
   const renderCalendar = () => {
     const days = getDaysInMonth(currentDate);
     const firstDayOfMonth = days[0].getDay();
-  
+
     if (isLoading) {
       return <CalendarSkeleton />;
     }
-  
+
     return (
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 gap-1">
+        {/* Render Days of the Week */}
         {daysOfWeek.map((day) => (
           <div key={day} className="text-center font-semibold text-sm py-2">
             {day}
           </div>
         ))}
+
+        {/* Fill Empty Cells for Days Before the Start of the Month */}
         {Array(firstDayOfMonth)
           .fill(null)
           .map((_, index) => (
             <div key={`empty-${index}`} className="p-2"></div>
           ))}
+
+        {/* Render Days and Events */}
         {days.map((day, index) => {
           const dayEvents = inventoryReportPlanList.filter(
-            (event) =>
-              new Date(event.from).toLocaleDateString() <= day.toLocaleDateString() &&
-              day.toLocaleDateString() <= new Date(event.to).toLocaleDateString()
+            (event) => new Date(event.from).toLocaleDateString() === day.toLocaleDateString()
           );
-  
+
           return (
             <div
+              key={index}
               onClick={() => setSelectedDate(day)}
-              className={`p-2 border rounded-sm shadow-sm flex flex-col gap-2 ${
+              className={cn(
+                'p-2 border rounded-sm shadow-sm flex flex-col gap-2',
                 day.toLocaleDateString() === new Date().toLocaleDateString()
-                  ? 'bg-blue-500 text-white'
-                  : ''
-              }`}>
-              <div className="font-semibold text-right mb-6">{day.getDate()}</div>
-              {dayEvents.map((event, eventIndex) => {
-                const isFirstDay =
-                  new Date(event.from).toLocaleDateString() === day.toLocaleDateString();
-                const isSpanningDay =
-                  new Date(event.from).toLocaleDateString() < day.toLocaleDateString() &&
-                  new Date(event.to).toLocaleDateString() > day.toLocaleDateString();
-  
-                if (isFirstDay || isSpanningDay) {
-                  const eventDateFrom = new Date(event.from);
-                  const eventDateTo = new Date(event.to);
-                  const spanDays = Math.min(
-                    (eventDateTo.getTime() - eventDateFrom.getTime()) / (1000 * 60 * 60 * 24) + 1,
-                    days.length - index
-                  );
-  
-                  const timeStart = eventDateFrom.toLocaleTimeString('en-GB', {
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background'
+              )}>
+              {/* Display Day Number */}
+              <div className="font-semibold text-right mb-2">{day.getDate()}</div>
+
+              {/* Render Events */}
+              <div className="flex flex-col gap-1">
+                {dayEvents.map((event, eventIndex) => {
+                  const timeStart = new Date(event.from).toLocaleTimeString('en-GB', {
                     hour: '2-digit',
                     minute: '2-digit'
                   });
-                  const timeEnd = eventDateTo.toLocaleTimeString('en-GB', {
+                  const timeEnd = new Date(event.to).toLocaleTimeString('en-GB', {
                     hour: '2-digit',
                     minute: '2-digit'
                   });
-  
+
                   return (
                     <Card
                       key={eventIndex}
                       onClick={() => navigate(`/stocktaking/plan/${event.id}`)}
                       className={cn(
-                        "border-none shadow-sm transition-all hover:shadow-md cursor-pointer",
-                        event.status === "PENDING"
-                          ? "bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900/70"
-                          : event.status === "IN_PROGRESS"
-                          ? "bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:hover:bg-yellow-900/70"
-                          : event.status === "FINISH"
-                          ? "bg-green-100 hover:bg-green-200 dark:bg-green-900/50 dark:hover:bg-green-900/70"
-                          : "bg-blue-200 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70"
-                      )}
-                      style={{
-                        gridColumn: `span ${spanDays}`
-                      }}>
+                        'border-none shadow-sm transition-all hover:shadow-md cursor-pointer',
+                        event.status === 'NOT_YET' &&
+                          'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/50 dark:hover:bg-slate-900/70',
+                        event.status === 'AWAIT' &&
+                          'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70',
+                        event.status === 'IN_PROGRESS' &&
+                          'bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:hover:bg-yellow-900/70',
+                        event.status === 'FINISHED' &&
+                          'bg-green-100 hover:bg-green-200 dark:bg-green-900/50 dark:hover:bg-green-900/70',
+                        event.status === 'CANCELLED' &&
+                          'bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900/70'
+                      )}>
                       <CardContent className="p-3">
                         <div className="flex items-start gap-2">
                           <ClipboardList
                             className={cn(
-                              "h-5 w-5 mt-0.5",
-                              event.status === "PENDING" && "text-red-700 dark:text-red-400",
-                              event.status === "IN_PROGRESS" && "text-yellow-700 dark:text-yellow-400",
-                              event.status === "FINISH" && "text-green-700 dark:text-green-400"
+                              'h-5 w-5 mt-0.5',
+                              event.status === 'NOT_YET' && 'text-slate-700 dark:text-slate-400',
+                              event.status === 'AWAIT' && 'text-blue-700 dark:text-blue-400',
+                              event.status === 'IN_PROGRESS' &&
+                                'text-yellow-700 dark:text-yellow-400',
+                              event.status === 'FINISHED' && 'text-green-700 dark:text-green-400',
+                              event.status === 'CANCELLED' && 'text-red-700 dark:text-red-400'
                             )}
                           />
                           <div className="flex-1 min-w-0">
                             <h3
                               className={cn(
-                                "font-medium truncate text-sm",
-                                event.status === "PENDING" && "text-red-900 dark:text-red-100",
-                                event.status === "IN_PROGRESS" &&
-                                  "text-yellow-900 dark:text-yellow-100",
-                                event.status === "FINISH" && "text-green-900 dark:text-green-100"
+                                'font-medium truncate text-sm',
+                                event.status === 'NOT_YET' && 'text-slate-900 dark:text-slate-100',
+                                event.status === 'AWAIT' && 'text-blue-900 dark:text-blue-100',
+                                event.status === 'IN_PROGRESS' &&
+                                  'text-yellow-900 dark:text-yellow-100',
+                                event.status === 'FINISHED' && 'text-green-900 dark:text-green-100',
+                                event.status === 'CANCELLED' && 'text-red-900 dark:text-red-100'
                               )}>
                               {event.title}
                             </h3>
                             <p
                               className={cn(
-                                "text-xs truncate",
-                                event.status === "PENDING" && "text-red-700 dark:text-red-300",
-                                event.status === "IN_PROGRESS" &&
-                                  "text-yellow-700 dark:text-yellow-300",
-                                event.status === "FINISH" && "text-green-700 dark:text-green-300"
+                                'text-xs truncate',
+                                event.status === 'NOT_YET' && 'text-slate-700 dark:text-slate-300',
+                                event.status === 'AWAIT' && 'text-blue-700 dark:text-blue-300',
+                                event.status === 'IN_PROGRESS' &&
+                                  'text-yellow-700 dark:text-yellow-300',
+                                event.status === 'FINISHED' && 'text-green-700 dark:text-green-300',
+                                event.status === 'CANCELLED' && 'text-red-700 dark:text-red-300'
                               )}>
                               {event.code}
                             </p>
                             <p
                               className={cn(
-                                "text-xs font-medium mt-1",
-                                event.status === "PENDING" && "text-red-800 dark:text-red-200",
-                                event.status === "IN_PROGRESS" &&
-                                  "text-yellow-800 dark:text-yellow-200",
-                                event.status === "FINISH" && "text-green-800 dark:text-green-200"
+                                'text-xs font-medium mt-1',
+                                event.status === 'NOT_YET' && 'text-slate-800 dark:text-slate-200',
+                                event.status === 'AWAIT' && 'text-blue-800 dark:text-blue-200',
+                                event.status === 'IN_PROGRESS' &&
+                                  'text-yellow-800 dark:text-yellow-200',
+                                event.status === 'FINISHED' && 'text-green-800 dark:text-green-200',
+                                event.status === 'CANCELLED' && 'text-red-800 dark:text-red-200'
                               )}>
-                              {timeStart} - {timeEnd}
+                              {`${timeStart} - ${timeEnd}`}
                             </p>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
                   );
-                }
-  
-                return null;
-              })}
+                })}
+              </div>
             </div>
           );
         })}
       </div>
     );
   };
-  
 
   const updateMonth = (monthOffset: number) => {
     // Update the current date based on the offset
@@ -294,7 +384,7 @@ export default function StocktakingCalendar() {
   return (
     <Card className="w-full max-w-8xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
-        <CardTitle className="text-2xl font-bold">Schedule</CardTitle>
+        <CardTitle className="text-2xl font-bold">Plan Schedule</CardTitle>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="icon" onClick={() => updateMonth(-1)}>
             <ChevronLeft className="h-4 w-4" />
@@ -315,16 +405,24 @@ export default function StocktakingCalendar() {
         <div className="flex justify-center items-center mt-4 ">
           <div className="flex gap-4 justify-center items-center border p-2 border-slate-300 w-fit rounded-sm">
             <div className="flex gap-2 justify-center items-center">
-              <div className="h-2 w-2 bg-red-500" />
-              <Label>Pending</Label>
+              <div className="h-2 w-2 bg-slate-500" />
+              <Label>Not Yet</Label>
+            </div>
+            <div className="flex gap-2 justify-center items-center">
+              <div className="h-2 w-2 bg-blue-500" />
+              <Label>Await</Label>
             </div>
             <div className="flex gap-2 justify-center items-center">
               <div className="h-2 w-2 bg-yellow-500" />
-              <Label>In progress</Label>
+              <Label>In Progress</Label>
             </div>
             <div className="flex gap-2 justify-center items-center">
               <div className="h-2 w-2 bg-green-500" />
-              <Label>Finish</Label>
+              <Label>Finished</Label>
+            </div>
+            <div className="flex gap-2 justify-center items-center">
+              <div className="h-2 w-2 bg-red-500" />
+              <Label>Cancelled</Label>
             </div>
           </div>
         </div>

@@ -104,7 +104,7 @@ const ExportRequestTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div>
-          <Link to={`/export-request/${row.original.id}`} className="text-blue-500 underline">
+          <Link to={`/export-request/${row.original.id}`} className="text-blue-500 hover:underline">
             {row.original.code}
           </Link>
         </div>
@@ -122,20 +122,20 @@ const ExportRequestTable = (props: Props) => {
       cell: ({ row }) => {
         const id = row.original.productionBatch?.id;
         return (
-          <Link to={`/production-batch/${id}`} className="underline text-bluePrimary">
+          <Link to={`/production-batch/${id}`} className="hover:underline text-bluePrimary">
             <div>{row.original?.productionBatch?.code}</div>
           </Link>
         );
       }
     },
-    {
-      header: 'Production Batch',
-      accessorKey: 'productionBatch.name',
-      enableColumnFilter: false,
-      cell: ({ row }) => (
-        <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
-      )
-    },
+    // {
+    //   header: 'Production Batch',
+    //   accessorKey: 'productionBatch.name',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => (
+    //     <div className="truncate w-[130px]">{row.original.productionBatch?.name || 'N/A'}</div>
+    //   )
+    // },
     {
       header: 'Created By',
       enableColumnFilter: false,
