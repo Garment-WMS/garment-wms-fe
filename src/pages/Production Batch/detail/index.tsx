@@ -258,12 +258,20 @@ const ProductionBatchDetail: React.FC = () => {
                     </h3>
                     <Badge>{material.materialVariant.code}</Badge>
                   </div>
-                  <div className="flex flex-row justify-end items-center gap-2">
-                    <p className="text-xs font-medium text-slate-500">Quantity: </p>{' '}
-                    <span className="font-bold text-xs">
-                      {material.quantityByUom}{' '}
-                      {material.materialVariant.material.materialUom.uomCharacter}
-                    </span>
+                  <div className="flex flex-row items-center justify-between">
+                    <div className="flex flex-row justify-end items-center gap-2">
+                      <p className="text-xs font-medium text-slate-500">
+                        Expected Export Quantity:{' '}
+                      </p>{' '}
+                      <span className="font-bold text-xs text-primaryLight">
+                        {material.quantityByUom}{' '}
+                        {material.materialVariant.material.materialUom.uomCharacter}
+                      </span>
+                    </div>
+                    <div className="flex flex-row justify-end items-center gap-2">
+                      <p className="text-xs font-medium text-slate-500">Actual Export Quantity: </p>{' '}
+                      <span className="font-bold text-xs">Not yet</span>
+                    </div>
                   </div>
                   <div>
                     <h4 className="text-xs font-medium text-muted-foreground mb-2">Attributes:</h4>

@@ -43,7 +43,10 @@ export const exportRequestApi = {
         exportExpectedFinishedAt
       });
     }
-  }
+  },
+  checkQuantity: (id: string) => get(`${url}/check-quantity/${id}`),
+  checkQuantityByVariant: (materialVariantId: string, quantityByUom: number) =>
+    post(`${url}/check-quantity-variant`, { materialVariantId, quantityByUom })
 };
 export const approveExportRequestFn = async (
   id: string,
@@ -93,6 +96,19 @@ export const createMaterialExportRequest = async (
     );
     return res.data;
   }
+};
+export const checkExportRequestQuantityFn = async (id: string) => {
+  const res = await privateCall(exportRequestApi.checkQuantity(id));
+  return res.data;
+};
+export const checkQuantityByVariantFn = async (
+  materialVariantId: string,
+  quantityByUom: number
+) => {
+  const res = await privateCall(
+    exportRequestApi.checkQuantityByVariant(materialVariantId, quantityByUom)
+  );
+  return res.data;
 };
 export const getAllExportRequestFn = async ({
   sorting,

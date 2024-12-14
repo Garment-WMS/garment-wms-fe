@@ -129,25 +129,26 @@ const ExportReceiptTable = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         const warehouseStaff = row.original.warehouseStaff;
-        if(!warehouseStaff) return <div>N/A</div>
-        return(
-        <div className="flex gap-2 items-center ">
-          <Avatar className="">
-            <AvatarImage
-              src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
-            />
-            <AvatarFallback className="w-full h-full text-center">
-              {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
-                row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-          <h4>
-            {row?.original?.warehouseStaff?.account?.lastName +
-              ' ' +
-              row?.original?.warehouseStaff?.account?.firstName}
-          </h4>
-        </div>
-      )}
+        if (!warehouseStaff) return <div>N/A</div>;
+        return (
+          <div className="flex gap-2 items-center ">
+            <Avatar className="">
+              <AvatarImage
+                src={row?.original?.warehouseStaff?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {row?.original?.warehouseStaff?.account?.lastName.slice(0, 1) +
+                  row?.original?.warehouseStaff?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <h4>
+              {row?.original?.warehouseStaff?.account?.lastName +
+                ' ' +
+                row?.original?.warehouseStaff?.account?.firstName}
+            </h4>
+          </div>
+        );
+      }
     },
     // {
     //   header: 'Approved by',
@@ -257,7 +258,6 @@ const ExportReceiptTable = (props: Props) => {
       enableHiding: false,
       cell: ({ row }) => {
         const request = row.original;
-
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
