@@ -239,7 +239,7 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
   isLast
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
+  console.log(sizeDetail);
   return (
     <div className={`pt-4 ${!isLast ? 'border-b border-gray-300 pb-4' : ''}`}>
       <div className="flex justify-between items-center mb-2">
@@ -257,7 +257,15 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
             </span>
           </p>
         </div>
-        <Badge>{sizeDetail?.code}</Badge>
+        <div className="flex flex-col">
+          <Badge>{sizeDetail?.code}</Badge>
+          <p className="text-sm font-medium text-gray-700">
+            Quantity Produced:{' '}
+            <span className="text-lg font-semibold text-green-800">
+              {sizeDetail.productPlanDetailProducedQuantity}
+            </span>
+          </p>
+        </div>
       </div>
       <div className="flex justify-center items-center">
         <Button
@@ -312,12 +320,6 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
               value={sizeDetail?.productPlanDetailManufacturingQuantity ?? 0}
               icon={<PlayCircle className="h-5 w-5" />}
               variant="manufacturing"
-            />
-            <SummaryCard
-              title="Produced Quantity"
-              value={sizeDetail?.productPlanDetailProducedQuantity ?? 0}
-              icon={<CheckCircle className="h-5 w-5" />}
-              variant="success"
             />
             <SummaryCard
               title="Defect Quantity"
