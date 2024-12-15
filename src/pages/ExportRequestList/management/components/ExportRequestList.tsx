@@ -70,7 +70,7 @@ const ExportRequestTable = (props: Props) => {
         exportRequests.map(async (request) => {
           try {
             const response = await checkExportRequestQuantityFn(request.id);
-            statuses[request.id] = response.isFullFilled;
+            statuses[request.id] = response?.data?.isFullFilled;
           } catch (error) {
             console.error(`Failed to fetch status for request ${request.id}:`, error);
             statuses[request.id] = false;
@@ -254,11 +254,9 @@ const ExportRequestTable = (props: Props) => {
         const requestId = row.original.id;
         const status = row.original.status; // Extract the status from the row data
         const isFulfilled = fulfillmentStatuses[requestId];
-
         if (isFulfilled === null || isFetching) {
           return <span>Loading...</span>;
         }
-
         if (status === 'PENDING') {
           return (
             <div
