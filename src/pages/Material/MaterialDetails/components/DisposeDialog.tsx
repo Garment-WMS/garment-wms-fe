@@ -22,6 +22,7 @@ interface DisposeDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onDisposeSuccess: () => void;
+  refetch?: () => void;
 }
 
 const DisposeDialog: React.FC<DisposeDialogProps> = ({

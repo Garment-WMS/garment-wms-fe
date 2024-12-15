@@ -25,12 +25,14 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 import DisposeProductDialog from './DisposeProductDialog';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   id: string;
   receiptId: string | undefined;
 };
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
+  const navigate = useNavigate();
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
   const [isDisposeDialogOpen, setIsDisposeDialogOpen] = useState(false);
@@ -53,7 +55,8 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   };
   const handleDisposeSuccess = () => {
     // Refresh the table data
-    reRender();
+    // reRender();
+    navigate(0)
   };
 
   useEffect(() => {

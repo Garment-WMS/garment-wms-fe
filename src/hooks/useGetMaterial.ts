@@ -14,7 +14,8 @@ export const useGetMaterial = ({
     const {
       data,
       isLoading,
-      isFetching
+      isFetching,
+      refetch,
     } = useQuery<MaterialVariantResponse, AxiosError>({
       queryKey: ['MaterialVariant', sorting, columnFilters, pagination],
       queryFn: () =>
@@ -33,7 +34,7 @@ export const useGetMaterial = ({
 
     // }
 
-    return {pageMeta, materialList,isFetching, isLoading };
+    return {pageMeta, materialList,isFetching, isLoading, refetch };
   };
 
   export const useGetMaterialWithReceipt = ({
@@ -76,7 +77,8 @@ export const useGetMaterial = ({
     const {
       data,
       isLoading,
-      isFetching
+      isFetching,
+      refetch
     } = useQuery<MaterialReceiptResponse, AxiosError>({
       queryKey: ['MaterialReceipt', sorting, columnFilters, pagination],
       queryFn: () =>
@@ -90,7 +92,7 @@ export const useGetMaterial = ({
     let receiptData = data?.data.data;
     const pageMeta = data?.data.pageMeta;
 
-    return {pageMeta, receiptData,isFetching, isLoading };
+    return {pageMeta, receiptData,isFetching, isLoading, refetch };
   };
 
   export const useGetMaterialDisposeReceipt = (id:string,{

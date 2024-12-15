@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 import DisposeDialog from './DisposeDialog';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   id: string;
@@ -27,11 +28,12 @@ type Props = {
 };
 
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
+  const navigate = useNavigate()
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
   const [isDisposeDialogOpen, setIsDisposeDialogOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<MaterialReceipt | null>(null);
-  const [render, setRender] = useState(0);
+  // const [render, setRender] = useState(0);
 
   const getStatusBadgeVariant = (status: string) => {
     const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
@@ -47,20 +49,17 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     setSelectedReceipt(receipt);
     setIsDisposeDialogOpen(true);
   };
-  const reRender = () => {
-    setRender((render) => render + 1);
-  };
+  // const reRender = () => {
+  //   setRender((render) => render + 1);
+  // };
 
-  const handleDisposeSuccess = () => {
-    // Refresh the table data
-    reRender();
-  };
+ 
 
   useEffect(() => {
     if (receiptId) {
       openDialog(receiptId);
     }
-  }, [receiptId, render]);
+  }, [receiptId]);
 
   const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
     {
@@ -199,7 +198,8 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   const {
     pageMeta: importPageMeta,
     receiptData,
-    isLoading: isImportLoading
+    isLoading: isImportLoading,
+    refetch
   } = useGetMaterialReceipt(id, {
     sorting: importDebouncedSorting,
     columnFilters: importDebouncedColumnFilters,
@@ -222,7 +222,10 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       </div>
     );
   }
-
+  const handleDisposeSuccess = () => {
+    // Refresh the table data
+    navigate(0)
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="h-full">
