@@ -9,7 +9,7 @@ import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Label } from '@/components/ui/Label';
 
 import { ReceiptChart } from './ReceiptChart';
-import { useGetProductReceipt } from '@/hooks/useGetProductImportReceipt';
+import { useGetProductDisposeReceipt, useGetProductReceipt } from '@/hooks/useGetProductImportReceipt';
 import { ProductReceipt, ReceiptStatusLabel } from '@/types/ProductType';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { badgeVariants } from '@/components/ui/Badge';
@@ -108,26 +108,26 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
         );
       }
     },
-    {
-      header: 'Type',
-      accessorKey: 'isDefect',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const isDefect = row.original.isDefect;
-        console.log(isDefect);
-        let result;
-        if (isDefect === null || isDefect === undefined) {
-          return <div>N/A</div>;
-        } else {
-          isDefect ? (result = 'Disqualified') : (result = 'Qualified');
-        }
-        return (
-          <div>
-            <div className={!isDefect ? `text-green-500` : `text-red-500`}>{result}</div>
-          </div>
-        );
-      }
-    },
+    // {
+    //   header: 'Type',
+    //   accessorKey: 'isDefect',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => {
+    //     const isDefect = row.original.isDefect;
+    //     console.log(isDefect);
+    //     let result;
+    //     if (isDefect === null || isDefect === undefined) {
+    //       return <div>N/A</div>;
+    //     } else {
+    //       isDefect ? (result = 'Disqualified') : (result = 'Qualified');
+    //     }
+    //     return (
+    //       <div>
+    //         <div className={!isDefect ? `text-green-500` : `text-red-500`}>{result}</div>
+    //       </div>
+    //     );
+    //   }
+    // },
     // {
     //   header: 'Material',
     //   accessorKey: 'material.name',
@@ -138,20 +138,20 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     //   })),
     //   cell: ({ row }) => <div>{row.original.material.name}</div>
     // },
+    // {
+    //   header: 'Import Quantity',
+    //   accessorKey: 'quantityByUom',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="flex">
+    //         <div className="">{row.original.quantityByUom}</div>
+    //       </div>
+    //     );
+    //   }
+    // },
     {
-      header: 'Import Quantity',
-      accessorKey: 'quantityByUom',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div className="flex">
-            <div className="">{row.original.quantityByUom}</div>
-          </div>
-        );
-      }
-    },
-    {
-      header: 'Remain Quantity',
+      header: 'Quantity',
       accessorKey: 'remainQuantityByUom',
       enableColumnFilter: false,
       cell: ({ row }) => {
@@ -194,9 +194,9 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => openDialog(receipt.id)}>View</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
+              {/* <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
                 Dispose
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -228,7 +228,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     pageMeta: importPageMeta,
     receiptData,
     isLoading: isImportLoading
-  } = useGetProductReceipt(id, {
+  } = useGetProductDisposeReceipt(id, {
     sorting: importDebouncedSorting,
     columnFilters: importDebouncedColumnFilters,
     pagination: importPagination

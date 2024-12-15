@@ -1,5 +1,5 @@
 
-import { getOneProductImportReceiptFn, getOneProductReceiptFn } from "@/api/services/productApi";
+import { getOneProductDisposeReceiptFn, getOneProductImportReceiptFn, getOneProductReceiptFn } from "@/api/services/productApi";
 import { ProductImportReceiptResponse, ProductReceiptResponse } from "@/types/ProductType";
 import { InputType } from "@/types/Shared";
 import { useQuery } from "@tanstack/react-query";
@@ -45,6 +45,32 @@ export const useGetProductImportReceipt = (id:string,{
       queryKey: ['ProductReceipt', sorting, columnFilters, pagination],
       queryFn: () =>
         getOneProductReceiptFn(id,{
+          sorting,
+          columnFilters,
+          pagination,
+        }),
+
+    });
+    let receiptData = data?.data.data;
+    const pageMeta = data?.data.pageMeta;
+
+    return {pageMeta, receiptData,isFetching, isLoading };
+  };
+
+  export const useGetProductDisposeReceipt = (id:string,{
+    sorting,
+    columnFilters,
+    pagination,
+  }: InputType) => {
+        
+    const {
+      data,
+      isLoading,
+      isFetching
+    } = useQuery<ProductReceiptResponse, AxiosError>({
+      queryKey: ['ProductDisposeReceipt', sorting, columnFilters, pagination],
+      queryFn: () =>
+        getOneProductDisposeReceiptFn(id,{
           sorting,
           columnFilters,
           pagination,

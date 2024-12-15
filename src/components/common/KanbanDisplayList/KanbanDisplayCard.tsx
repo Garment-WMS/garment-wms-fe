@@ -47,7 +47,7 @@ const KanbanDisplayCard: React.FC<Props> = ({ product }) => {
                 <AlertCircle size={22} className="text-yellow-500" />
                 <AlertTitle className="font-bold">Low Quantity</AlertTitle>
                 <AlertDescription className="flex items-center gap-1">
-                  The quantity is low.
+                  The quantity is below reorder level. 
                 </AlertDescription>
               </Alert>{' '}
             </HoverCardContent>

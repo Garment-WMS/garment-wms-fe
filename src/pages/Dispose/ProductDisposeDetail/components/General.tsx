@@ -38,18 +38,12 @@ const General: React.FC<Props> = ({ productVariant }) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center">
           <Label htmlFor="track-inventory" className="flex gap-1">
-           Quantity:  {" "}<span className='text-green-500'>{productVariant?.onHandQualified || 0}</span>  units
+             Quantity:  {" "}<span className='text-red-500'>{productVariant?.onHand || 0}</span>  units
           </Label>
           <div className='font-primary'> </div>
         </div>
-        {/* <div className="flex items-center">
-          <Label htmlFor="track-inventory" className="flex gap-1">
-            Disqualified Quantity:  {" "}<span className='text-red-500'>{productVariant?.onHandDisqualified || 0}</span>  units
-          </Label>
-          <div className='font-primary'> </div>
-        </div> */}
         <p className="text-sm text-gray-500">
-          The quantity is based on the import receipt that have the status of Available.
+          The quantity is based on the receipt that have the status of Deposed.
         </p>
       </div>
 
