@@ -226,7 +226,7 @@ const ExportRequestDetail = () => {
           return null;
         }
         return (
-          <div className="text-red-600 ml-5 text-lg font-semibold">
+          <div className="text-red-600 ml-5 text-md font-semibold">
             {formatNumber(row.original.requiredQuantity)}
           </div>
         );
@@ -243,7 +243,7 @@ const ExportRequestDetail = () => {
         }
 
         return (
-          <div className="text-primaryLight text-lg ml-6 font-semibold">
+          <div className="text-primaryLight text-md ml-6 font-semibold">
             {formatNumber(row.original.remainQuantityByPack)}
           </div>
         );
