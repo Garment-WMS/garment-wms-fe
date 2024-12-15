@@ -6,7 +6,6 @@ import { InspectionDepartment } from './InspectionDepartment';
 export interface ImportRequest {
   code: string;
   managerNote: string;
-  code: string;
   id: string;
   warehouseStaffId: string | null;
   status:
