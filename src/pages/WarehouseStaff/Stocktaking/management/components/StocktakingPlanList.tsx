@@ -165,19 +165,20 @@ const StocktakingPlanList = (props: Props) => {
   //   }).sort((a, b) => a.from.getTime() - b.from.getTime()) // Sort by start date
   // : [];
   const eventDateRanges = inventoryReportPlanList
-    .map((plan) => {
-      const startDate = new Date(plan.from);
-      const endDate = new Date(plan.to);
-      const label = formatDateRange(startDate, endDate);
+  .map((plan) => {
+    const isFinished = plan.status === "FINISHED";
+    const startDate = new Date(isFinished ? plan.startedAt : plan.from);
+    const endDate = new Date(isFinished ? plan.finishedAt : plan.to);
+    const label = formatDateRange(startDate, endDate);
 
-      return {
-        label,
-        from: startDate,
-        to: endDate,
-        events: plan
-      };
-    })
-    .sort((a, b) => a.from.getTime() - b.from.getTime());
+    return {
+      label,
+      from: startDate,
+      to: endDate,
+      events: plan
+    };
+  })
+  .sort((a, b) => a.from.getTime() - b.from.getTime());
   console.log('ds', inventoryReportPlanList);
   return (
     <Card className="w-full mx-auto">

@@ -256,7 +256,12 @@ export default function StocktakingCalendar() {
         {/* Render Days and Events */}
         {days.map((day, index) => {
           const dayEvents = inventoryReportPlanList.filter(
-            (event) => new Date(event.from).toLocaleDateString() === day.toLocaleDateString()
+            (event) =>{
+              if(event?.status === 'FINISHED'){
+                return new Date(event.startedAt).toLocaleDateString() === day.toLocaleDateString() 
+              }
+              return new Date(event.from).toLocaleDateString() === day.toLocaleDateString()
+            }
           );
 
           return (
@@ -275,14 +280,28 @@ export default function StocktakingCalendar() {
               {/* Render Events */}
               <div className="flex flex-col gap-1">
                 {dayEvents.map((event, eventIndex) => {
-                  const timeStart = new Date(event.from).toLocaleTimeString('en-GB', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  });
-                  const timeEnd = new Date(event.to).toLocaleTimeString('en-GB', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  });
+                  let timeStart;
+                  let timeEnd;
+                  if(event?.status === 'FINISHED'){
+                    timeStart = new Date(event.startedAt).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                    timeEnd = new Date(event.finishedAt).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                  }else{
+                    timeStart = new Date(event.from).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                    timeEnd = new Date(event.to).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                  }
+                  
 
                   return (
                     <Card

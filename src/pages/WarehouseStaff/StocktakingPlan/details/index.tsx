@@ -153,13 +153,13 @@ const WarehouseStaffStocktakingPlanDetails = (props: Props) => {
             <div>
               <h3 className="text-md font-medium">From</h3>
               <p className="text-md text-muted-foreground">
-                {planData?.from ? format(new Date(planData.from), 'PPP') : 'N/A'}
+                {planData?.from ? formatDateTimeToDDMMYYYYHHMM(planData?.from) : 'N/A'}
               </p>
             </div>
             <div>
               <h3 className="text-md font-medium">To</h3>
               <p className="text-md text-muted-foreground">
-                {planData?.to ? format(new Date(planData?.to), 'PPP') : 'N/A'}
+                {planData?.to ? formatDateTimeToDDMMYYYYHHMM(planData?.to) : 'N/A'}
               </p>
             </div>
             <div>

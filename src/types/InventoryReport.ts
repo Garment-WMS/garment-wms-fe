@@ -164,6 +164,8 @@ export interface InventoryReportPlan{
     createdAt?: string,
     updatedAt?: string,
     deletedAt?: string,
+    startedAt: string,
+    finishedAt: string,
     inventoryReportPlanDetail: InventoryReportPlanDetail[]
 }
 
