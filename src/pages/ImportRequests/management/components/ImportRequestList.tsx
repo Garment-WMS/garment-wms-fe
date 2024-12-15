@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Textarea } from '@/components/ui/Textarea';
 import { cancelImportRequest } from '@/api/services/importRequestApi';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type Props = {};
 export interface Filter {
   label: string;
@@ -223,6 +224,43 @@ const ImportRequestList = (props: Props) => {
       })),
       cell: ({ row }) => <div>{row.original?.productionBatch?.code || 'N/A'}</div>
     },
+    {
+      header: 'Created By',
+      accessorKey: 'creator',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        let creator ;
+        if(row.original.purchasingStaff){
+          creator = row.original.purchasingStaff;
+        }
+        if(row.original.productionDepartment){
+          creator = row.original.productionDepartment;
+        }
+        if(!creator){
+          return <div>N/A</div>
+        }
+        return(
+          <div className="flex items-center justify-start" >
+          <div className="flex items-center">
+            <Avatar className="mr-2 flex  items-center justify-start">
+              <AvatarImage
+                src={creator?.account?.avatarUrl as string | undefined}
+              />
+              <AvatarFallback className="w-full h-full text-center">
+                {creator?.account?.lastName.slice(0, 1) +
+                  creator?.account?.firstName.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center align-middle">
+              {creator?.account?.lastName +
+                ' ' +
+                creator?.account?.firstName}
+            </div>
+          </div>
+        </div>
+      )}
+    },
+   
     {
       header: 'Create date',
       accessorKey: 'createdAt',

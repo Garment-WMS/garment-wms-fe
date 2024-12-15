@@ -200,6 +200,7 @@ export const receiptStatus = ['IMPORTING', 'AVAILABLE', 'USED'];
 export const ReceiptStatusLabel: { label: string; value: string; variant: StatusVariant }[] = [
   { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
   { label: 'Available', value: 'AVAILABLE', variant: 'success' },
+  { label: 'Disposed', value: 'DISPOSED', variant: 'destructive' },
   { label: 'Used', value: 'USED', variant: 'destructive' }
 ];
 export interface ProductExportReceipt {

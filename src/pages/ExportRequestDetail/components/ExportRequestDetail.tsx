@@ -218,12 +218,12 @@ const ExportRequestDetail = () => {
       )
     },
     {
-      header: 'Required',
+      header: exportRequestStatus === 'PENDING' ? 'Required' : null,
       accessorKey: 'requiredQuantity',
       enableColumnFilter: false,
       cell: ({ row }) => {
         if (exportRequestStatus !== 'PENDING') {
-          return <div className="text-center text-xl mr-14">-</div>;
+          return null;
         }
         return (
           <div className="text-red-600 ml-5 text-lg font-semibold">
@@ -233,13 +233,13 @@ const ExportRequestDetail = () => {
       }
     },
     {
-      header: 'Remaining',
+      header: exportRequestStatus === 'PENDING' ? 'Remaining' : null,
       accessorKey: 'remainQuantityByPack',
       enableColumnFilter: false,
       cell: ({ row }) => {
         // Hide the column if the export request status is PENDING
         if (exportRequestStatus !== 'PENDING') {
-          return <div className="text-center text-xl mr-14">-</div>;
+          return null;
         }
 
         return (
@@ -250,14 +250,14 @@ const ExportRequestDetail = () => {
       }
     },
     {
-      header: 'Is Fulfilled',
+      header: exportRequestStatus === 'PENDING' ? 'Is Fulfilled' : null,
       accessorKey: 'isFulfilled',
       enableColumnFilter: false,
       cell: ({ row }) => {
         const isFulfilled = row.original.isFulfilled;
         // Hide the column if the export request status is PENDING
         if (exportRequestStatus !== 'PENDING') {
-          return <div className="text-center text-xl mr-14">-</div>;
+          return null;
         }
 
         if (isFulfilled === null || loading) {

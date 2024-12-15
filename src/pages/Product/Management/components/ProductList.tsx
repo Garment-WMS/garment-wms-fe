@@ -66,6 +66,26 @@ const ProductList: React.FC<Props> = ({productTypes}) => {
       }
     },
     {
+      header: 'Image',
+      accessorKey: 'image',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div className='w-10 h-10'>
+            {row.original.image ? (
+                <AspectRatio ratio={16 / 9}>
+                  <img src={row.original.image}  className="object-cover rounded" />
+                </AspectRatio>
+              ) : (
+                <AspectRatio ratio={16 / 9}>
+                  <img src={empty} className="object-cover rounded" />
+                </AspectRatio>
+              )}
+          </div>
+        );
+      }
+    },
+    {
       header: 'Product name',
       accessorKey: 'name',
       enableColumnFilter: false,
@@ -114,26 +134,7 @@ const ProductList: React.FC<Props> = ({productTypes}) => {
         );
       }
     },
-    {
-      header: 'Image',
-      accessorKey: 'image',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div className='w-10 h-10'>
-            {row.original.image ? (
-                <AspectRatio ratio={16 / 9}>
-                  <img src={row.original.image}  className="object-cover rounded" />
-                </AspectRatio>
-              ) : (
-                <AspectRatio ratio={16 / 9}>
-                  <img src={empty} className="object-cover rounded" />
-                </AspectRatio>
-              )}
-          </div>
-        );
-      }
-    },
+    
     {
       id: 'actions',
       enableHiding: false,

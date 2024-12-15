@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import KanbanDisplayList from '../../../../components/common/KanbanDisplayList/KanbanDisplayList';
-import { Grid, List } from 'lucide-react';
+import { AlertCircle, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
@@ -25,17 +25,17 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import empty from '@/assets/images/null_placeholder.jpg';
 import { TypeChart } from './TypeChart';
 import { Label } from '@/components/ui/Label';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type Props = {
-  materialTypes :filterType[]
+  materialTypes: filterType[];
 };
 interface filterType {
   label: string;
   value: string;
 }
-const MaterialManagementData: React.FC<Props> = ({
-  materialTypes
-}) => {
+const MaterialManagementData: React.FC<Props> = ({ materialTypes }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -54,21 +54,21 @@ const MaterialManagementData: React.FC<Props> = ({
   });
 
   const debouncedPagination: PaginationState = useDebounce(pagination, 1000);
-  
 
   const { materialList, pageMeta, isLoading, isFetching } = useGetMaterial({
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
-  })
+  });
 
-  const dataWithPage = materialList && pageMeta && {
-    data: materialList,
-    limit: pageMeta?.limit || 0,
-    page: pageMeta?.page || 0,
-    total: pageMeta?.total || 0,
-    totalFiltered: pageMeta?.total || 0
-  }
+  const dataWithPage = materialList &&
+    pageMeta && {
+      data: materialList,
+      limit: pageMeta?.limit || 0,
+      page: pageMeta?.page || 0,
+      total: pageMeta?.total || 0,
+      totalFiltered: pageMeta?.total || 0
+    };
 
   const handleViewClick = (requestId: string) => {
     const basePath = location.pathname.split('/material')[0]; // Get base path (either manager or purchase-staff)
@@ -90,13 +90,50 @@ const MaterialManagementData: React.FC<Props> = ({
       }
     },
     {
+      header: 'Image',
+      accessorKey: 'image',
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        return (
+          <div className="w-10 h-10">
+            {row.original.image ? (
+              <AspectRatio ratio={16 / 9}>
+                <img src={row.original.image} className="object-cover rounded" />
+              </AspectRatio>
+            ) : (
+              <AspectRatio ratio={16 / 9}>
+                <img src={empty} className="object-cover rounded" />
+              </AspectRatio>
+            )}
+          </div>
+        );
+      }
+    },
+    {
       header: 'Material name',
       accessorKey: 'name',
       enableColumnFilter: false,
       cell: ({ row }) => {
         return (
-          <div>
+          <div className='flex gap-2 items-center'>
+            
             <div>{row.original.name}</div>
+            {row.original?.onHandUom < row.original?.reorderLevel && (
+              <HoverCard>
+                <HoverCardTrigger>
+                  <AlertCircle className=" p-1  text-yellow-500 rounded-full" />
+                </HoverCardTrigger>
+                <HoverCardContent side="bottom" align="start" className="mt-2 ml-8">
+                  <Alert variant={'warning'} className=" ">
+                    <AlertCircle size={22} className="text-yellow-500" />
+                    <AlertTitle className="font-bold">Low Quantity</AlertTitle>
+                    <AlertDescription className="flex items-center gap-1">
+                      The quantity is below reorder level.
+                    </AlertDescription>
+                  </Alert>{' '}
+                </HoverCardContent>
+              </HoverCard>
+            )}
           </div>
         );
       }
@@ -112,15 +149,33 @@ const MaterialManagementData: React.FC<Props> = ({
       cell: ({ row }) => <div>{row.original.material.name}</div>
     },
     {
-      header: 'Quantity',
+      header: 'Quantity By Package',
       accessorKey: 'onHand',
       enableColumnFilter: false,
       enableSorting: false,
 
       cell: ({ row }) => {
         return (
-          <div className='flex'>
-            <div className=''>{row.original.onHand}</div>
+          <div className="flex">
+            <div className="">
+              {row.original.onHand} {row?.original?.materialPackage[0]?.packUnit || 'Units'}
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      header: 'Quantity By Uom',
+      accessorKey: 'onHand',
+      enableColumnFilter: false,
+      enableSorting: false,
+
+      cell: ({ row }) => {
+        return (
+          <div className="flex">
+            <div className="">
+              {row.original.onHandUom} {row?.original?.material?.materialUom?.uomCharacter}
+            </div>
           </div>
         );
       }
@@ -132,32 +187,13 @@ const MaterialManagementData: React.FC<Props> = ({
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className='flex'>
-            <div className=''>{row.original.numberOfMaterialPackage}</div>
+          <div className="flex">
+            <div className="">{row.original.numberOfMaterialPackage} packages</div>
           </div>
         );
       }
     },
-    {
-      header: 'Image',
-      accessorKey: 'image',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div className='w-10 h-10'>
-            {row.original.image ? (
-                <AspectRatio ratio={16 / 9}>
-                  <img src={row.original.image}  className="object-cover rounded" />
-                </AspectRatio>
-              ) : (
-                <AspectRatio ratio={16 / 9}>
-                  <img src={empty} className="object-cover rounded" />
-                </AspectRatio>
-              )}
-          </div>
-        );
-      }
-    },
+
     {
       id: 'actions',
       enableHiding: false,
@@ -183,7 +219,7 @@ const MaterialManagementData: React.FC<Props> = ({
   ];
   return (
     <div className="w-full  bg-white rounded-xl shadow-sm border">
-      <div className='p-4'>
+      <div className="p-4">
         <Label className="text-2xl ">Material Management</Label>
       </div>
       <CompositeTableWithGrid

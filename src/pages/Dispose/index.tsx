@@ -1,18 +1,20 @@
-import React from 'react'
-import DisposeIntroduction from './components/DisposeIntroduction'
-import MaterialDisposeList from './components/MaterialDisposeList'
-import ProductDisposeList from './components/ProductDisposeList'
+import React from 'react';
+import DisposeIntroduction from './components/DisposeIntroduction';
+import MaterialDisposeList from './components/MaterialDisposeList';
+import ProductDisposeList from './components/ProductDisposeList';
 
-type Props = {}
+type Props = {};
 
 const DisposeManagement = (props: Props) => {
   return (
-    <div>
-        <DisposeIntroduction/>
-        <MaterialDisposeList/>
-        <ProductDisposeList/>
+    <div className="flex flex-col gap-2">
+      <DisposeIntroduction />
+      <div className='w-full  bg-white rounded-xl shadow-sm border'>
+        <MaterialDisposeList />
+        <ProductDisposeList />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default DisposeManagement
+export default DisposeManagement;

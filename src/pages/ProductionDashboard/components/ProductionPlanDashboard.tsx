@@ -110,7 +110,7 @@ function renderUi(planDetails: ProductionPlan, productionBatches: any[] | null) 
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="materials">Materials</TabsTrigger>
-          <TabsTrigger value="orders">Purchase Orders</TabsTrigger>
+          {/* <TabsTrigger value="orders">Purchase Orders</TabsTrigger> */}
           <TabsTrigger value="details">Plan Details</TabsTrigger>
           <TabsTrigger value="batch">Production Batch</TabsTrigger>
         </TabsList>
@@ -120,9 +120,9 @@ function renderUi(planDetails: ProductionPlan, productionBatches: any[] | null) 
         <TabsContent value="materials">
           <MaterialSummaryTable materialVariantSummary={planDetails?.materialVariantSummary} />
         </TabsContent>
-        <TabsContent value="orders">
+        {/* <TabsContent value="orders">
           <PurchaseOrderSummary purchaseOrder={planDetails?.purchaseOrder} />
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="details">
           <ProductionPlanDetails planDetails={planDetails?.productionPlanDetail} />
         </TabsContent>

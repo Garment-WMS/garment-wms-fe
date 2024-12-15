@@ -217,7 +217,8 @@ export const receiptStatus = ['IMPORTING', 'AVAILABLE', 'USED'];
 export const ReceiptStatusLabel: { label: string; value: string; variant: StatusVariant }[] = [
   { label: 'Importing', value: 'IMPORTING', variant: 'warning' },
   { label: 'Available', value: 'AVAILABLE', variant: 'success' },
-  { label: 'Used', value: 'USED', variant: 'destructive' }
+  { label: 'Used', value: 'USED', variant: 'destructive' },
+  { label: 'Disposed', value: 'DISPOSED', variant: 'destructive' },
 ];
 export interface MaterialExportReceipt {
   id: string;

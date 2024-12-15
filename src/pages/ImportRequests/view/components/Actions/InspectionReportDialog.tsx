@@ -121,7 +121,7 @@ export default function InspectionReportDialog({
                             </div>
                             <div>
                               <p className="font-semibold">Total Quantity:</p>
-                              <p>
+                              <p className="text-lg font-semibold text-slate-800">
                                 {detail.quantityByPack}{' '}
                                 {detail?.materialPackage?.packUnit ??
                                   detail?.productSize?.uom?.name ??
@@ -135,7 +135,9 @@ export default function InspectionReportDialog({
                                 <CheckCircle className="w-5 h-5 text-green-500" />
                                 <span className="font-semibold">Approved</span>
                               </div>
-                              <span>{detail.approvedQuantityByPack}</span>
+                              <span className="text-lg font-semibold text-green-800">
+                                {detail.approvedQuantityByPack}
+                              </span>
                             </div>
                             <div className="text-sm text-gray-600">
                               {(
@@ -151,7 +153,9 @@ export default function InspectionReportDialog({
                                 <XCircle className="w-5 h-5 text-red-500" />
                                 <span className="font-semibold">Defect</span>
                               </div>
-                              <span>{detail.defectQuantityByPack}</span>
+                              <span className="text-lg font-semibold text-red-800">
+                                {detail.defectQuantityByPack}
+                              </span>
                             </div>
                             <div className="text-sm text-gray-600">
                               {(

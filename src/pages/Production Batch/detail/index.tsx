@@ -270,7 +270,10 @@ const ProductionBatchDetail: React.FC = () => {
                     </div>
                     <div className="flex flex-row justify-end items-center gap-2">
                       <p className="text-xs font-medium text-slate-500">Actual Export Quantity: </p>{' '}
-                      <span className="font-bold text-xs">Not yet</span>
+                      <span className="font-bold text-xs text-green-700">
+                        {material.actualExportQuantity}{' '}
+                        {material.materialVariant.material.materialUom.uomCharacter}
+                      </span>
                     </div>
                   </div>
                   <div>

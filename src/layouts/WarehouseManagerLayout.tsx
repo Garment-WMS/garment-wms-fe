@@ -20,6 +20,8 @@ import { BiTask } from 'react-icons/bi';
 import { PiPackage } from 'react-icons/pi';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { GrUserWorker } from 'react-icons/gr';
+import { RiDeleteBin5Line } from "react-icons/ri";
+
 type Props = {};
 const iconSize = 22;
 const WarehouseManagerMenu: MenuProps[] = [
@@ -105,7 +107,7 @@ const WarehouseManagerMenu: MenuProps[] = [
   },
   {
     title: 'Dispose',
-    renderIcon: <BiTask size={iconSize} />,
+    renderIcon: <RiDeleteBin5Line  size={iconSize} />,
     link: '/dispose'
   },
   {
