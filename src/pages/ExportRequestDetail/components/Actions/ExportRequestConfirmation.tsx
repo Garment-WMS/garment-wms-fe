@@ -229,6 +229,14 @@ export default function ExportRequestConfirmation({
       </CardContent>
       <CardFooter className="flex-col gap-4 text-sm border-t pt-6">
         <div className="flex items-center justify-center w-full">
+          {(currentStatus == 'PRODUCTION_APPROVED' || currentStatus == 'PRODUCTION_REJECTED') &&
+            exportReceipt && (
+              <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
+                <Button variant={'default'} className="ml-4">
+                  Go to Receipt
+                </Button>
+              </Link>
+            )}
           {currentStatus == 'EXPORTED' && exportReceipt && (
             <ProductionDepartmentGuardDiv className="flex w-full justify-center">
               <AlertDialog>

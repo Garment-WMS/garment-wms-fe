@@ -352,7 +352,7 @@ export default function ExportReceiptDetail() {
                         : 'Export completed'}
                     </p>
                   </div> */}
-                  <ImportStepper currentStep={exportReceipt?.status} />
+                  <ImportStepper currentStep={exportReceipt?.status as any} />
                 </div>
               </CardContent>
             </Card>
@@ -370,24 +370,32 @@ export default function ExportReceiptDetail() {
                       Basic Information
                     </h3>
                     <div className="grid gap-2">
-                      <p>
+                      <p className="flex">
                         <strong>Export Request:</strong>{' '}
-                        <Link
-                          to={`/export-request/${exportReceipt?.materialExportRequest?.id}`}
-                          className="flex text-primary underline underline-offset-2">
-                          {exportReceipt?.materialExportRequest?.code || 'N/A'}
-                        </Link>
+                        {exportReceipt?.materialExportRequest?.code ? (
+                          <Link
+                            to={`/export-request/${exportReceipt?.materialExportRequest?.id}`}
+                            className="flex text-primary underline underline-offset-2 ml-2">
+                            {exportReceipt?.materialExportRequest?.code || 'N/A'}
+                          </Link>
+                        ) : (
+                          <div className="ml-2">N/A</div>
+                        )}
                       </p>
-                      <p>
+                      <p className="flex">
                         <strong>Production batch:</strong>{' '}
-                        <Link
-                          to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
-                          className="flex text-primary underline underline-offset-2">
-                          {exportReceipt?.materialExportRequest?.productionBatch?.code || 'N/A'}
-                        </Link>
+                        {exportReceipt?.materialExportRequest?.productionBatch?.code ? (
+                          <Link
+                            to={`/production-batch/${exportReceipt?.materialExportRequest?.productionBatch?.id}`}
+                            className="flex text-primary underline underline-offset-2 ml-2">
+                            {exportReceipt?.materialExportRequest?.productionBatch?.code || 'N/A'}
+                          </Link>
+                        ) : (
+                          <div className="ml-2">N/A</div>
+                        )}
                       </p>
                       <p>
-                        <strong>Receipt Date:</strong>{' '}
+                        <strong>Receipt create Date:</strong>{' '}
                         {new Date(exportReceipt?.createdAt ?? '').toLocaleString('en-GB', {
                           year: 'numeric',
                           month: 'numeric',
@@ -404,15 +412,23 @@ export default function ExportReceiptDetail() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Requested by Production Department</CardTitle>
+                <CardTitle>
+                  Requested by{' '}
+                  {exportReceipt?.type == 'DISCHARGE'
+                    ? 'Production Department'
+                    : 'Warehouse manager'}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                {exportReceipt?.materialExportRequest?.productionDepartment ? (
+                {exportReceipt?.materialExportRequest?.warehouseManager ? (
                   <div>
                     <div className="flex items-center space-x-4 flex-col justify-center">
                       <Avatar className="w-[80px] h-[80px]">
                         <AvatarImage
-                          src={'/placeholder.svg?height=100&width=100'}
+                          src={
+                            exportReceipt?.materialExportRequest?.warehouseManager?.account
+                              ?.avatarUrl as string
+                          }
                           alt="John Doe"
                           className="w-[80px] h-[80px]"
                         />
@@ -420,19 +436,17 @@ export default function ExportReceiptDetail() {
                       </Avatar>
                       <div className="flex flex-col items-center">
                         <p className="text-xl font-bold">
-                          {exportReceipt?.materialExportRequest.productionDepartment.account
-                            .firstName +
+                          {exportReceipt?.materialExportRequest.warehouseManager.account.firstName +
                             ' ' +
-                            exportReceipt?.materialExportRequest.productionDepartment.account
-                              .lastName}
+                            exportReceipt?.materialExportRequest.warehouseManager.account.lastName}
                         </p>
                         <p className="text-md text-muted-foreground"></p>
                         <p className="text-md text-muted-foreground">
-                          {exportReceipt?.materialExportRequest.productionDepartment.account.email}
+                          {exportReceipt?.materialExportRequest.warehouseManager.account.email}
                         </p>
                         <p className="text-md text-muted-foreground">
                           {
-                            exportReceipt?.materialExportRequest.productionDepartment.account
+                            exportReceipt?.materialExportRequest.warehouseManager.account
                               .phoneNumber
                           }
                         </p>
@@ -447,6 +461,43 @@ export default function ExportReceiptDetail() {
                       </div>
                     </div>
                   </div>
+                )}
+                {exportReceipt?.materialExportRequest?.warehouseManager &&
+                exportReceipt?.type == 'DISCHARGE' ? (
+                  <div>
+                    <div className="flex items-center space-x-4 flex-col justify-center">
+                      <Avatar className="w-[80px] h-[80px]">
+                        <AvatarImage
+                          src={
+                            exportReceipt?.materialExportRequest?.warehouseManager?.account
+                              ?.avatarUrl as string
+                          }
+                          alt="John Doe"
+                          className="w-[80px] h-[80px]"
+                        />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center">
+                        <p className="text-xl font-bold">
+                          {exportReceipt?.materialExportRequest.warehouseManager.account.firstName +
+                            ' ' +
+                            exportReceipt?.materialExportRequest.warehouseManager.account.lastName}
+                        </p>
+                        <p className="text-md text-muted-foreground"></p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.materialExportRequest.warehouseManager.account.email}
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {
+                            exportReceipt?.materialExportRequest.warehouseManager.account
+                              .phoneNumber
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <></>
                 )}
               </CardContent>
             </Card>
@@ -483,41 +534,43 @@ export default function ExportReceiptDetail() {
                       <p className="text-md text-muted-foreground">
                         {exportReceipt?.warehouseStaff?.account?.phoneNumber}
                       </p>
-                      {/* <p className="text-md text-muted-foreground">
-                        {exportReceipt?.task[0]?.expectedStartedAt &&
-                          exportReceipt?.task[0]?.expectedFinishedAt &&
-                          !exportReceipt?.task[0]?.startedAt && (
-                            <div>
+                      <p className="text-md text-muted-foreground">
+                        {exportReceipt?.expectedStartedAt &&
+                          exportReceipt?.expectedFinishedAt &&
+                          !exportReceipt?.startedAt && (
+                            <div className="flex flex-col items-center">
                               <span className="font-bold">Expect work time : </span>
-                              {new Date(
-                                exportReceipt?.task[0]?.expectedStartedAt
-                              ).toLocaleDateString('en-GB', {
-                                year: 'numeric',
-                                month: 'numeric',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false // Use 24-hour format
-                              })}{' '}
+                              {new Date(exportReceipt?.expectedStartedAt).toLocaleDateString(
+                                'en-GB',
+                                {
+                                  year: 'numeric',
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: false // Use 24-hour format
+                                }
+                              )}{' '}
                               -{' '}
-                              {new Date(
-                                exportReceipt?.task[0]?.expectedFinishedAt
-                              ).toLocaleDateString('en-GB', {
-                                year: 'numeric',
-                                month: 'numeric',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false // Use 24-hour format
-                              })}
+                              {new Date(exportReceipt?.expectedFinishedAt).toLocaleDateString(
+                                'en-GB',
+                                {
+                                  year: 'numeric',
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: false // Use 24-hour format
+                                }
+                              )}
                             </div>
                           )}
                       </p>
                       <p className="text-md text-muted-foreground">
-                        {exportReceipt?.task[0]?.startedAt && (
-                          <div>
-                            <span className="font-bold">Actual work time : </span>
-                            {new Date(exportReceipt?.task[0]?.startedAt).toLocaleString('en-GB', {
+                        {exportReceipt?.startedAt && (
+                          <div className="flex flex-col items-center">
+                            <div className="font-bold">Actual work time : </div>
+                            {new Date(exportReceipt?.startedAt).toLocaleString('en-GB', {
                               year: 'numeric',
                               month: '2-digit',
                               day: '2-digit',
@@ -526,22 +579,19 @@ export default function ExportReceiptDetail() {
                               hour12: false // 24-hour format
                             })}{' '}
                             -{' '}
-                            {exportReceipt?.task[0]?.finishedAt
-                              ? new Date(exportReceipt?.task[0]?.finishedAt).toLocaleString(
-                                  'en-GB',
-                                  {
-                                    year: 'numeric',
-                                    month: 'numeric',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false // Use 24-hour format
-                                  }
-                                )
+                            {exportReceipt?.finishedAt
+                              ? new Date(exportReceipt?.finishedAt).toLocaleString('en-GB', {
+                                  year: 'numeric',
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: false // Use 24-hour format
+                                })
                               : 'Not yet'}
                           </div>
                         )}
-                      </p> */}
+                      </p>
                     </div>
                   </div>
                 </div>

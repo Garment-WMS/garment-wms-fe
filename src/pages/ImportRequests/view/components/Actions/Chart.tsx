@@ -140,12 +140,13 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
             </WarehouseManagerGuardDiv>
           </div>
         )}
-        {!importRequest?.inspectionRequest[0]?.inspectionReport && (
-          <div className="col-span-3 flex flex-col items-center justify-center">
-            <img src={empty} alt="No Inspection Report" className="w-[250px] h-[250px]" />
-            <h2 className="font-bold text-xl text-gray-700">Not Yet</h2>
-          </div>
-        )}
+        {!importRequest?.inspectionRequest[0]?.inspectionReport &&
+          currentStatus !== 'INSPECTING' && (
+            <div className="col-span-3 flex flex-col items-center justify-center">
+              <img src={empty} alt="No Inspection Report" className="w-[250px] h-[250px]" />
+              <h2 className="font-bold text-xl text-gray-700">Not Yet</h2>
+            </div>
+          )}
         {importRequest?.inspectionRequest[0]?.inspectionReport && (
           <>
             <div className="col-span-3 sm:col-span-1">
