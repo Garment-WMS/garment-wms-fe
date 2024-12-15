@@ -125,6 +125,8 @@ export type ExportReceipt = {
   materialExportReceiptDetail: MaterialExportReceiptDetail[];
   productReceipt: any[]; // Replace with appropriate type if productReceipt has a defined structure
   inspectionReport: InspectionReport | null;
+  expectedStartedAt: string;
+  expectedFinishedAt: string;
 };
 export const ExportReceiptType = [
   { label: 'For Production', value: 'PRODUCTION', variant: 'default' },
