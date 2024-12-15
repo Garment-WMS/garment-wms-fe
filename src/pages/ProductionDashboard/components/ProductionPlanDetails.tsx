@@ -19,8 +19,10 @@ import {
     planDetails: Array<any>
   }
   export function ProductionPlanDetails({planDetails}: ProductionPlanDetails) {
+    console.log(planDetails)
     const data = planDetails.map((detail) => ({
       name: detail.productSize.name,
+      image: detail.productSize?.productVariant.image,
       quantityToProduct: detail.quantityToProduce,
       produced: detail.productPlanDetailProducedQuantity,
       manufacturing: detail.productPlanDetailManufacturingQuantity,
@@ -40,6 +42,15 @@ import {
         <TableBody>
           {data.map((detail) => (
             <TableRow key={detail.name}>
+              <TableCell>
+                    <img
+                      src={detail.image}
+                      alt={detail.name}
+                      width={40}
+                      height={40}
+                      className="object-cover rounded-full"
+                    />
+                  </TableCell>
               <TableCell>{detail.name}</TableCell>
               <TableCell>{detail.quantityToProduct}</TableCell>
               <TableCell>{detail.produced}</TableCell>
