@@ -43,6 +43,12 @@ const errorMessages = {
     message: 'Invalid file format, worksheet not found',
     clientMessage:
       'This is not the production batch worksheet. Please use the correct template and try again.'
+  },
+  productionBatchTableNotFound: {
+    statusCode: 400,
+    message: 'Invalid format, production batch info table not found',
+    clientMessage:
+      'There seems to be an issue with the production batch info table. Please check and try again.'
   }
 };
 
@@ -136,6 +142,8 @@ const UploadExcelProductionBatch: React.FC = () => {
       setUploadError(errorMessages.invalidProductionPlan?.clientMessage);
     } else if (response?.message === errorMessages.worksheetNotFound?.message) {
       setUploadError(errorMessages.worksheetNotFound?.clientMessage);
+    } else if (response?.message === errorMessages.productionBatchTableNotFound?.message) {
+      setUploadError(errorMessages.productionBatchTableNotFound?.clientMessage);
     } else {
       setUploadError('An unknown error occurred. Please try again.');
     }
