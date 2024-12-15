@@ -56,12 +56,14 @@ export const productVariantApi = {
   getOneHistory: (id: string, queryString: string) =>
     get(`${productVariantPath}/${id}/history${queryString}`),
   disposeProduct: (productReceiptId: string, quantityByPack: number) =>
-    post('/product-receipt/dispose', { productReceipts: [{ productReceiptId, quantityByPack }] }),
-  getAllDisposeProductVariant: (queryString: string) => get(`${productVariantPath}/disposed${queryString}`),
+    post('/product-receipt/dispose', {
+      productReceipts: [{ productReceiptId, quantityByUom: quantityByPack }]
+    }),
+  getAllDisposeProductVariant: (queryString: string) =>
+    get(`${productVariantPath}/disposed${queryString}`),
   getOneDispose: (id: string) => get(`${productVariantPath}/disposed/${id}`),
-  getOneDisposeReceipt: (id:string,queryString: string) => get(`${productVariantPath}/${id}/product-receipt/disposed${queryString}`)
-
-
+  getOneDisposeReceipt: (id: string, queryString: string) =>
+    get(`${productVariantPath}/${id}/product-receipt/disposed${queryString}`)
 };
 export const disposeProductFn = async (productReceiptId: string, quantityByPack: number) => {
   const res = await privateCall(productVariantApi.disposeProduct(productReceiptId, quantityByPack));
