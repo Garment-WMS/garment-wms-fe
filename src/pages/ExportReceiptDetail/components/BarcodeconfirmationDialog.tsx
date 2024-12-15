@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Switch } from '@/components/ui/switch';
-import { Keyboard, ScanLine } from 'lucide-react';
+import { Keyboard, ScanLine, Scan } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface BarcodeConfirmationDialogProps {
   isOpen: boolean;
@@ -28,8 +29,9 @@ export function BarcodeConfirmationDialog({
   materialName,
   expectedBarcode
 }: BarcodeConfirmationDialogProps) {
-  const [entryMode, setEntryMode] = useState<'manual' | 'scanner'>('manual');
+  const [entryMode, setEntryMode] = useState<'manual' | 'scanner'>('scanner');
   const [inputBarcode, setInputBarcode] = useState('');
+  const [scannerInput, setScannerInput] = useState('');
   const [isReady, setIsReady] = useState(false);
   const scannerInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,21 +42,25 @@ export function BarcodeConfirmationDialog({
   }, [isOpen, entryMode]);
 
   const handleConfirm = () => {
-    if (inputBarcode === expectedBarcode) {
-      onConfirm(inputBarcode);
+    if (scannerInput === expectedBarcode) {
+      onConfirm(scannerInput);
       onClose();
     } else {
-      alert('Scanned barcode does not match the material. Please try again.');
+      toast({ variant: 'destructive', title: 'Wrong Material Receipt' });
+      alert(scannerInput);
     }
     setInputBarcode('');
     setIsReady(false);
   };
 
-  const handleScannerInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleScannerInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const scannedValue = e.target.value.trim();
+    setScannerInput(scannedValue);
+  };
+
+  const handleKeyDownScanner = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const scannedValue = e.currentTarget.value;
-      setInputBarcode(scannedValue);
       handleConfirm();
     }
   };
@@ -94,17 +100,22 @@ export function BarcodeConfirmationDialog({
           ) : (
             <div className="grid gap-2">
               <Label htmlFor="scanner-input">Scan Barcode</Label>
-              <div className="relative">
+              <div className="relative flex flex-col items-center">
                 <Input
                   id="scanner-input"
                   ref={scannerInputRef}
                   type="text"
-                  className="pr-10"
-                  onKeyDown={handleScannerInput}
+                  className="pr-10 opacity-0"
+                  onChange={handleScannerInput}
+                  onKeyDown={handleKeyDownScanner}
                   placeholder="Ready to scan..."
-                  readOnly
+                  value={scannerInput}
                 />
-                <ScanLine className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                {isReady ? (
+                  <ScanLine className=" text-green-400 w-10 h-10" />
+                ) : (
+                  <Scan className=" text-gray-400 w-10 h-10" />
+                )}
               </div>
             </div>
           )}
@@ -118,6 +129,7 @@ export function BarcodeConfirmationDialog({
             onClick={() => {
               if (entryMode === 'scanner') {
                 setIsReady(true);
+                setScannerInput('');
                 if (scannerInputRef.current) {
                   scannerInputRef.current.focus();
                 }
