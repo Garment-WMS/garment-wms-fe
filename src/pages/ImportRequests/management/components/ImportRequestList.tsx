@@ -229,7 +229,13 @@ const ImportRequestList = (props: Props) => {
       accessorKey: 'creator',
       enableColumnFilter: false,
       cell: ({ row }) => {
-        const creator = row.original.purchasingStaff;
+        let creator ;
+        if(row.original.purchasingStaff){
+          creator = row.original.purchasingStaff;
+        }
+        if(row.original.productionDepartment){
+          creator = row.original.productionDepartment;
+        }
         if(!creator){
           return <div>N/A</div>
         }
@@ -238,17 +244,17 @@ const ImportRequestList = (props: Props) => {
           <div className="flex items-center">
             <Avatar className="mr-2 flex  items-center justify-start">
               <AvatarImage
-                src={row?.original?.purchasingStaff?.account?.avatarUrl as string | undefined}
+                src={creator?.account?.avatarUrl as string | undefined}
               />
               <AvatarFallback className="w-full h-full text-center">
-                {row?.original?.purchasingStaff?.account?.lastName.slice(0, 1) +
-                  row?.original?.purchasingStaff?.account?.firstName.slice(0, 1)}
+                {creator?.account?.lastName.slice(0, 1) +
+                  creator?.account?.firstName.slice(0, 1)}
               </AvatarFallback>
             </Avatar>
             <div className="text-center align-middle">
-              {row?.original?.purchasingStaff?.account?.lastName +
+              {creator?.account?.lastName +
                 ' ' +
-                row?.original?.purchasingStaff?.account?.firstName}
+                creator?.account?.firstName}
             </div>
           </div>
         </div>
