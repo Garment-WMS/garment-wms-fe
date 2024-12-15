@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/Table';
-import { ArrowUpIcon, ArrowDownIcon, BarChart2Icon, PackageIcon } from 'lucide-react';
+import { ClipboardListIcon, PackageIcon, Loader2Icon, CheckCircleIcon } from 'lucide-react';
 
 interface ProductVariant {
   id: string;
@@ -23,15 +23,19 @@ interface ProductVariantProduction {
   defectQuantity: number;
 }
 
+interface ProductionBatchStatistic {
+  total: number;
+  totalPending: number;
+  totalExecuting: number;
+  totalManufacturing: number;
+  totalImporting: number;
+  totalFinished: number;
+  totalCancelled: number;
+}
+
 interface ProductionBatchSummaryProps {
   productionBatchSummary: {
-    monthlyData: Array<{
-      month: number;
-      data: {
-        numberOfProducedProduct: number;
-        numberOfBatch: number;
-      };
-    }>;
+    productionBatchStatistic: ProductionBatchStatistic;
     qualityRate: number;
     totalDefectProduct: number;
     totalProducedProduct: number;
@@ -42,20 +46,23 @@ interface ProductionBatchSummaryProps {
 const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
   productionBatchSummary
 }) => {
-  const { qualityRate, totalDefectProduct, totalProducedProduct, totalProductVariantProduced } =
-    productionBatchSummary;
+  const {
+    productionBatchStatistic,
+    qualityRate,
+    totalDefectProduct,
+    totalProducedProduct,
+    totalProductVariantProduced
+  } = productionBatchSummary;
 
   const StatCard = ({
     title,
     value,
     icon,
-    trend,
     color
   }: {
     title: string;
-    value: string;
+    value: number;
     icon: React.ReactNode;
-    trend?: 'up' | 'down';
     color?: string;
   }) => (
     <Card>
@@ -64,7 +71,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
         {icon}
       </CardHeader>
       <CardContent>
-        <div className={`text-2xl font-bold ${color}`}>{value}</div>
+        <div className={`text-2xl font-bold ${color}`}>{value.toLocaleString()}</div>
       </CardContent>
     </Card>
   );
@@ -73,34 +80,38 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Production Overview</CardTitle>
-          <CardDescription>Summary of production performance</CardDescription>
+          <CardTitle className="text-2xl">Batches Overview</CardTitle>
+          <CardDescription>Summary of production batch statuses</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              title="Total Produced"
-              value={totalProducedProduct.toLocaleString()}
+              title="Total Batches"
+              value={productionBatchStatistic.total}
+              icon={<ClipboardListIcon className="h-4 w-4 text-muted-foreground" />}
+              color="text-blue-700"
+            />
+            <StatCard
+              title="Pending"
+              value={productionBatchStatistic.totalPending}
               icon={<PackageIcon className="h-4 w-4 text-muted-foreground" />}
-              trend="up"
-              color="text-green-700"
+              color="text-yellow-600"
             />
             <StatCard
-              title="Total Defects"
-              value={totalDefectProduct.toLocaleString()}
-              icon={<BarChart2Icon className="h-4 w-4 text-muted-foreground" />}
-              trend="down"
-              color="text-red-700"
+              title="Manufacturing"
+              value={
+                productionBatchStatistic.totalManufacturing +
+                productionBatchStatistic.totalExecuting +
+                productionBatchStatistic.totalImporting
+              }
+              icon={<Loader2Icon className="h-4 w-4 text-muted-foreground" />}
+              color="text-purple-600"
             />
             <StatCard
-              title="Quality Rate"
-              value={`${(qualityRate * 100).toFixed(2)}%`}
-              icon={<ArrowUpIcon className="h-4 w-4 text-muted-foreground" />}
-            />
-            <StatCard
-              title="Total Product"
-              value={totalProductVariantProduced.length.toString()}
-              icon={<PackageIcon className="h-4 w-4 text-muted-foreground" />}
+              title="Finished"
+              value={productionBatchStatistic.totalFinished}
+              icon={<CheckCircleIcon className="h-4 w-4 text-muted-foreground" />}
+              color="text-green-600"
             />
           </div>
         </CardContent>
@@ -110,7 +121,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
         <CardHeader>
           <CardTitle>Product Variant Production Details</CardTitle>
           <CardDescription>
-            Detailed information about each product varian&apos;s production
+            Detailed information about each product variant&apos;s production
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,7 +142,9 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
                     <img
                       src={variant.productVariant.image}
                       alt={variant.productVariant.name}
-                      className="w-10 h-10 object-cover rounded-full"
+                      width={40}
+                      height={40}
+                      className="object-cover rounded-full"
                     />
                   </TableCell>
                   <TableCell className="font-medium">{variant.productVariant.name}</TableCell>
