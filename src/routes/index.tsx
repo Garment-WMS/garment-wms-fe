@@ -70,6 +70,8 @@ import CreateReturnImportRequest from '@/pages/ImportRequests/createReturnMateri
 import PurchaseDashboard from '@/pages/PurchaseDashboard';
 import ProductionDashboard from '@/pages/ProductionDashboard';
 import DisposeManagement from '@/pages/Dispose';
+import MaterialDisposeDetails from '@/pages/Dispose/MaterialDisposeDetails';
+import ProductDisposeDetail from '@/pages/Dispose/ProductDisposeDetail';
 
 const RouterComponent: React.FC = () => {
   const router = createBrowserRouter([
@@ -376,6 +378,14 @@ const RouterComponent: React.FC = () => {
           path: '/dispose',
           element: <DisposeManagement />
         },
+        {
+          path: '/dispose/material-variant/:id',
+          element: <MaterialDisposeDetails/>
+        },
+        {
+          path: '/dispose/product-variant/:id',
+          element: <ProductDisposeDetail/>
+        }
       ]
     },
     {

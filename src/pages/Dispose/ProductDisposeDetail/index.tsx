@@ -22,7 +22,7 @@ import HistoryTable from './components/HistoryTable';
 
 type Props = {};
 
-const ProductVariantDetails = (props: Props) => {
+const ProductDisposeDetail = (props: Props) => {
   const { id,receiptId } = useParams<{ id: string ,receiptId: string}>();
   const [isLoading, setIsLoading] = useState(false);
   const [productVariant, setProductVariant] = useState<ProductVariant>();
@@ -30,7 +30,7 @@ const ProductVariantDetails = (props: Props) => {
   const fetchProductVariant = async (id: string) => {
     try {
       setIsLoading(true);
-      const res = await privateCall(productVariantApi.getOneProductVariant(id));
+      const res = await privateCall(productVariantApi.getOneDispose(id));
       if (res.status === 200) {
         setProductVariant(res.data.data);
       }
@@ -105,7 +105,7 @@ const ProductVariantDetails = (props: Props) => {
       ) : productVariant ? (
         <div className="container mx-auto p-6 w-full bg-white shadow-md rounded-lg">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Product Variant Details</h1>
+            <h1 className="text-2xl font-bold">Disposed Product Variant Details</h1>
           </div>
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -128,7 +128,7 @@ const ProductVariantDetails = (props: Props) => {
             <div className="flex flex-col gap-2">
               <Accordion
                 type="multiple"
-                defaultValue={['item-1', 'item-2', 'item-3', 'item-4','item-5']}
+                defaultValue={['item-1', 'item-2', 'item-3', 'item-4']}
                 className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>
@@ -146,21 +146,13 @@ const ProductVariantDetails = (props: Props) => {
                     <ProductSizeAndFormula productSizes={productSize}/>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-3">
+                {/* <AccordionItem value="item-3">
                   <AccordionTrigger>
                     <Label className="text-xl">Attributes</Label>
                   </AccordionTrigger>
                   <AccordionContent><Attributes/></AccordionContent>
-                </AccordionItem>
+                </AccordionItem> */}
                 <AccordionItem value="item-4">
-                  <AccordionTrigger>
-                    <Label className="text-xl">History</Label>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <HistoryTable  id={productVariant.id}/>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-5">
                   <AccordionTrigger>
                     <Label className="text-xl">Receipt</Label>
                   </AccordionTrigger>
@@ -181,4 +173,4 @@ const ProductVariantDetails = (props: Props) => {
   );
 };
 
-export default ProductVariantDetails;
+export default ProductDisposeDetail;
