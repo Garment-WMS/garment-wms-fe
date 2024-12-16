@@ -153,8 +153,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-primaryLight lowercase ml-2">
-          {row.original.quantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.quantityByPack)}
+          {row.original.quantityByPack} {row.original.packUnit}
         </div>
       )
     },
@@ -164,8 +163,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-green-500 ml-9 lowercase">
-          {row.original.approvedQuantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.approvedQuantityByPack)}
+          {row.original.approvedQuantityByPack} {row.original.packUnit}
         </div>
       )
     },
@@ -175,8 +173,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-red-500 ml-5 lowercase">
-          {row.original.defectQuantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.defectQuantityByPack)}
+          {row.original.defectQuantityByPack} {row.original.packUnit}
         </div>
       )
     }
