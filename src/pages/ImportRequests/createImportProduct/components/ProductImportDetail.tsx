@@ -48,7 +48,7 @@ const ProductImportDetail = ({ selectedProductionBatch }: Props) => {
                   <div className="mt-2 flex items-center">
                     <Package2 className="w-4 h-4 mr-2 text-slate-700" />
                     <span className="text-sms font-semibold text-green-600">
-                      <span className="text-slate-700">Quantity to import:</span>{' '}
+                      <span className="text-slate-700">Import Quantity:</span>{' '}
                       {selectedProductionBatch.quantityToProduce}{' '}
                       {product?.product.productUom.uomCharacter}
                     </span>
