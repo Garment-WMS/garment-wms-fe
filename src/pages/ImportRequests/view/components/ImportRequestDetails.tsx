@@ -71,7 +71,8 @@ const ImportRequestDetails = (props: Props) => {
         }
         return null; // Return null if materialPackage is not defined
       })
-      .filter((item): item is ColumnType => item !== null);
+      .filter((item): item is ColumnType => item !== null)
+      .filter((item): item => item.quantityByPack > 0);
 
     // Format product details
     formattedDetailsProduct = details
@@ -347,27 +348,29 @@ const ImportRequestDetails = (props: Props) => {
   if (importRequest?.inspectionRequest && importRequest.inspectionRequest.length > 0) {
     const inspectionReport = importRequest.inspectionRequest[0].inspectionReport;
     if (inspectionReport && inspectionReport.inspectionReportDetail) {
-      formattedDetailsPostInspection = inspectionReport.inspectionReportDetail.map((detail) => {
-        const item = detail.materialPackage || detail.productSize;
-        const imageUrl =
-          detail.materialPackage?.materialVariant?.image ||
-          detail.productSize?.productVariant?.image;
-        const packUnit =
-          (detail.materialPackage?.packUnit ||
-            item?.productVariant?.product?.productUom?.uomCharacter) ??
-          'N/A';
+      formattedDetailsPostInspection = inspectionReport.inspectionReportDetail
+        .map((detail) => {
+          const item = detail.materialPackage || detail.productSize;
+          const imageUrl =
+            detail.materialPackage?.materialVariant?.image ||
+            detail.productSize?.productVariant?.image;
+          const packUnit =
+            (detail.materialPackage?.packUnit ||
+              item?.productVariant?.product?.productUom?.uomCharacter) ??
+            'N/A';
 
-        return {
-          id: detail.id,
-          name: item?.name ?? 'N/A',
-          code: item?.code ?? 'N/A',
-          image: imageUrl ?? null, // Image for both material and product
-          packUnit, // Include pack unit for later use
-          quantityByPack: detail.quantityByPack ?? 0,
-          approvedQuantityByPack: detail.approvedQuantityByPack ?? 0,
-          defectQuantityByPack: detail.defectQuantityByPack ?? 0
-        };
-      });
+          return {
+            id: detail.id,
+            name: item?.name ?? 'N/A',
+            code: item?.code ?? 'N/A',
+            image: imageUrl ?? null, // Image for both material and product
+            packUnit, // Include pack unit for later use
+            quantityByPack: detail.quantityByPack ?? 0,
+            approvedQuantityByPack: detail.approvedQuantityByPack ?? 0,
+            defectQuantityByPack: detail.defectQuantityByPack ?? 0
+          };
+        })
+        .filter((item) => item.quantityByPack > 0);
     }
   }
 
