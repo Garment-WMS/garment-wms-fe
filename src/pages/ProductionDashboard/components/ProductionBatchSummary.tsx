@@ -210,6 +210,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
         </CardHeader>
         <CardContent>
           <TanStackBasicTable
+            showToolbar={false}
             isTableDataLoading={false}
             paginatedTableData={paginatedTableData}
             columns={productionBatchColumns}
