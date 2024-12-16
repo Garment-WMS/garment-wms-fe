@@ -218,6 +218,7 @@ export default function ExportReceiptDetail() {
             <div>Material Export Receipt {exportReceipt?.code || 'N/A'}</div>
           </h1> */}
           <MaterialExportActions
+            exportReceipt={exportReceipt}
             code={exportReceipt?.code || 'N/A'}
             status={exportReceipt?.status || ''}
             isLoading={isLoading}
