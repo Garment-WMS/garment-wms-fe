@@ -235,9 +235,9 @@ export default function ExportMaterialPage() {
                   <TableHead>Variant Code</TableHead>
                   <TableHead>Quantity</TableHead>
                   <TableHead>Unit</TableHead>
-                  <TableHead>Condition</TableHead>
                   <TableHead>Required</TableHead>
                   <TableHead>Remain</TableHead>
+                  <TableHead>Condition</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -257,11 +257,17 @@ export default function ExportMaterialPage() {
                       </TableCell>
                       <TableCell>{material.materialVariant.material.code}</TableCell>
                       <TableCell>{material.materialVariant.code}</TableCell>
-                      <TableCell className="text-lg text-slate-700">
+                      <TableCell className="text-md font-semibold ml-3 text-slate-700">
                         {material.quantityByUom}
                       </TableCell>
                       <TableCell>
                         {material.materialVariant.material.materialUom.uomCharacter}
+                      </TableCell>
+                      <TableCell className="text-red-600 text-md font-semibold ml-3">
+                        {status?.data?.requiredQuantity || 0}
+                      </TableCell>
+                      <TableCell className="text-primaryLight text-md font-semibold ml-3">
+                        {status?.data?.remainQuantityByPack || 0}
                       </TableCell>
                       <TableCell>
                         {status ? (
@@ -273,14 +279,6 @@ export default function ExportMaterialPage() {
                         ) : (
                           <span>Loading...</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-red-600 text-lg">
-                        {status?.data?.requiredQuantity || 0}
-                        <span className="ml-1">*</span>
-                      </TableCell>
-                      <TableCell className="text-primaryLight text-lg">
-                        {status?.data?.remainQuantityByPack || 0}
-                        <span className="ml-1">*</span>
                       </TableCell>
                     </TableRow>
                   );
@@ -312,7 +310,7 @@ export default function ExportMaterialPage() {
       )}
 
       <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
-        <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
+        <DialogContent className="sm:max-w-[550px] w-full  flex flex-col justify-between bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-yellow-600  text-lg">
               <AlertTriangle className="h-9 w-9 text-yellow-600" />
@@ -332,7 +330,7 @@ export default function ExportMaterialPage() {
             </Button>
             <Button
               variant="destructive"
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={handleConfirmedExport}
               disabled={isCreatingExportRequest}>
               Proceed Anyway
@@ -342,7 +340,7 @@ export default function ExportMaterialPage() {
       </Dialog>
 
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-[550px] w-full h-[300px] flex flex-col justify-between bg-white">
+        <DialogContent className="sm:max-w-[550px] w-full  flex flex-col justify-between bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-800  text-lg">
               <CheckCircle className="h-9 w-9 text-green-600" />

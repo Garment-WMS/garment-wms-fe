@@ -1,20 +1,33 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import TanStackBasicTable from '@/components/common/CompositeTable';
 import { Badge } from '@/components/ui/Badge';
+import { useDebounce } from '@/hooks/useDebouce';
 import { CustomColumnDef } from '@/types/CompositeTable';
+import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { Link } from 'react-router-dom';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import {
   ProductionBatchStatus,
   ProductionBatchStatusColors,
   ProductionBatchStatusLabels
 } from '@/enums/productionBatch';
-import { Link } from 'react-router-dom';
 import { CheckCircleIcon, ClipboardListIcon, Loader2Icon, PackageIcon } from 'lucide-react';
-import { DataTable } from '@/components/ui/DataTable';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ProductionBatchSummaryProps {
   productionBatchSummary: any;
-  productionBatchList: any[];
+  productionBatchList: {
+    data: any[];
+    pageMeta: {
+      total: number;
+      offset: number;
+      limit: number;
+      page: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    };
+  };
 }
 
 const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
@@ -22,6 +35,24 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
   productionBatchList
 }) => {
   const { productionBatchStatistic } = productionBatchSummary;
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: productionBatchList.pageMeta.page - 1,
+    pageSize: productionBatchList.pageMeta.limit
+  });
+
+  const paginatedTableData =
+    productionBatchList && productionBatchList.pageMeta
+      ? {
+          data: productionBatchList.data,
+          limit: productionBatchList.pageMeta.limit,
+          page: productionBatchList.pageMeta.page,
+          total: productionBatchList.pageMeta.total,
+          totalFiltered: productionBatchList.pageMeta.totalPages
+        }
+      : undefined;
 
   const productionBatchColumns: CustomColumnDef<any>[] = [
     {
@@ -178,7 +209,19 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
           <CardDescription>Details of all production batches</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable columns={productionBatchColumns} data={productionBatchList?.data || []} />
+          <TanStackBasicTable
+            showToolbar={false}
+            isTableDataLoading={false}
+            paginatedTableData={paginatedTableData}
+            columns={productionBatchColumns}
+            pagination={pagination}
+            setPagination={setPagination}
+            sorting={sorting}
+            setSorting={setSorting}
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            totalPages={paginatedTableData?.totalFiltered || 0}
+          />
         </CardContent>
       </Card>
     </div>
