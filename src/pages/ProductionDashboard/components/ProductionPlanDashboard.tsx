@@ -1,29 +1,22 @@
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/Label';
 import { ProductionProgressChart } from './ProductionProgressChart';
 import { SelectProductionPlan } from './SelectProductionPlan';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { useDebounce } from '@/hooks/useDebouce';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGetAllProductionPlans } from '@/hooks/useGetAllProductionPlan';
-import { useGetProductionPlanById } from '@/hooks/useGetProductionPlanById';
-import { getProductionPlanById, getProductionPlanDetailsById } from '@/api/services/productionPlan';
+import { getProductionPlanDetailsById } from '@/api/services/productionPlan';
 import { ProductionPlan } from '@/types/ProductionPlan';
 import Loading from '@/components/common/Loading';
 import { MaterialSummaryTable } from './MaterialSummaryTable';
-import { PurchaseOrderSummary } from './PurchaseOrderSummary';
 import { ProductionPlanDetails } from './ProductionPlanDetails';
-import { ChartNoAxesColumnIncreasing, Factory, LucideCirclePercent, Package } from 'lucide-react';
-import { TbPackages, TbShirt } from 'react-icons/tb';
+import { Factory, Package } from 'lucide-react';
+import { TbShirt } from 'react-icons/tb';
 import { BiErrorCircle } from 'react-icons/bi';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import { MdOutlinePercent } from 'react-icons/md';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
-import { ProductionBatchListResponse } from '@/types/ProductionBatchListResponse';
-import { ProductionBatch } from '@/types/ProductionBatch';
 import { getProductionBatchByPlan, getProductionBatchChart } from '@/api/services/productionBatch';
 import ProductionBatchSummary from './ProductionBatchSummary';
 
@@ -151,7 +144,7 @@ export function ProductionPlanDashboard() {
   const [productionBatches, setProductionBatches] = useState<any[] | null>(null);
   const [productionBatchList, setProductionBatchList] = useState<any[] | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination] = useState<PaginationState>({ pageSize: 10, pageIndex: 0 });
+  const [pagination] = useState<PaginationState>({ pageSize: 99, pageIndex: 0 });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
