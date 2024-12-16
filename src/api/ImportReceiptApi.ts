@@ -3,6 +3,7 @@ import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-commo
 import { get } from './ApiCaller';
 import privateCall from './PrivateCaller';
 import { patch } from './services/ApiCaller';
+import { replaceAll } from '@/helpers/replaceAll';
 
 let importRequestUrl = '/import-receipt';
 
@@ -27,32 +28,55 @@ export const getAllImportReceiptFn = async ({
   const limit = pagination.pageSize;
   const offset = pagination.pageIndex * pagination.pageSize;
 
-  // Initialize filter and order arrays
-  const filter: any[] = [];
-  const order: any[] = [];
 
-  // Build filter array from columnFilters
-  columnFilters.forEach((filterItem) => {
-    const { id, value } = filterItem;
+ // Initialize filter and order arrays
+ const filter: any[] = [];
+ const order: any[] = [];
 
-    // Check the type of operation based on your requirement
-    let type: FilterOperationType;
-    if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings; // Example operation type
-    } else if (value === null) {
-      type = FilterOperationType.NeNull; // Example operation type
-    } else {
-      type = FilterOperationType.Eq; // Default operation type
-    }
+ const filters = columnFilters.map((filter) => {
+   // Replace all dots in the id with underscores
+   const fieldKey = replaceAll(filter.id, '_', '.'); // Alternatively, `.replace(/\./g, '_')` works the same
+   return {
+     id: fieldKey,
+     value: filter.value
+   };
+ });
+ const sorts = sorting.map((sort) => {
+   // Replace dots with underscores only if there are any dots in the id
+   const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
 
-    filter.push({ field: id, type, value });
-  });
+   return {
+     id: fieldKey,
+     desc: sort.desc
+   };
+ });
 
-  // Build order array from sorting
-  sorting.forEach((sort) => {
-    const direction = sort.desc ? 'desc' : 'asc';
-    order.push({ field: sort.id, dir: direction });
-  });
+ // Build filter array from columnFilters
+ filters.forEach((filterItem) => {
+   const { id, value } = filterItem;
+
+   let type: FilterOperationType;
+   if (id === 'name' || id === 'code') {
+     type = FilterOperationType.Ilike;
+   } else {
+     type = FilterOperationType.In;
+   }
+   // Handle FilterOperationType.In as an array
+   if (type === FilterOperationType.In && Array.isArray(value)) {
+     // Push a single filter object with `value` as an array
+     filter.push({ field: id, type, value });
+   } else if (Array.isArray(value)) {
+     value.forEach((val) => {
+       filter.push({ field: id, type, value: val });
+     });
+   } else {
+     filter.push({ field: id, type, value });
+   }
+ });
+ sorts.forEach((sort) => {
+   const direction = sort.desc ? 'desc' : 'asc';
+   order.push({ field: sort.id, dir: direction });
+ });
 
   // Construct the query string
   const queryString = FilterBuilder.buildFilterQueryString({
@@ -79,25 +103,46 @@ export const getMyImportReceiptFn = async ({
   const filter: any[] = [];
   const order: any[] = [];
 
-  // Build filter array from columnFilters
-  columnFilters.forEach((filterItem) => {
-    const { id, value } = filterItem;
+  const filters = columnFilters.map((filter) => {
+    const fieldKey = replaceAll(filter.id, '_', '.'); 
+    return {
+      id: fieldKey,
+      value: filter.value
+    };
+  });
+  console.log(filters)
+  const sorts = sorting.map((sort) => {
+    const fieldKey = sort.id.includes('_') ? sort.id.replace('_', '.') : sort.id;
 
-    // Check the type of operation based on your requirement
-    let type: FilterOperationType;
-    if (Array.isArray(value)) {
-      type = FilterOperationType.InStrings; // Example operation type
-    } else if (value === null) {
-      type = FilterOperationType.NeNull; // Example operation type
-    } else {
-      type = FilterOperationType.Eq; // Default operation type
-    }
-
-    filter.push({ field: id, type, value });
+    return {
+      id: fieldKey,
+      desc: sort.desc
+    };
   });
 
-  // Build order array from sorting
-  sorting.forEach((sort) => {
+  // Build filter array from columnFilters
+  filters.forEach((filterItem) => {
+    const { id, value } = filterItem;
+
+    let type: FilterOperationType;
+    if (id === 'name' || id === 'code') {
+      type = FilterOperationType.Ilike;
+    } else {
+      type = FilterOperationType.In;
+    }
+    // Handle FilterOperationType.In as an array
+    if (type === FilterOperationType.In && Array.isArray(value)) {
+      // Push a single filter object with `value` as an array
+      filter.push({ field: id, type, value });
+    } else if (Array.isArray(value)) {
+      value.forEach((val) => {
+        filter.push({ field: id, type, value: val });
+      });
+    } else {
+      filter.push({ field: id, type, value });
+    }
+  });
+  sorts.forEach((sort) => {
     const direction = sort.desc ? 'desc' : 'asc';
     order.push({ field: sort.id, dir: direction });
   });
