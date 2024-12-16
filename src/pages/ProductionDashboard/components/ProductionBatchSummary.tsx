@@ -56,6 +56,16 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
 
   const productionBatchColumns: CustomColumnDef<any>[] = [
     {
+      header: 'Batch Code',
+      accessorKey: 'code',
+      cell: ({ row }) => (
+        <Link to={`/production-batch/${row.original.id}`} className="text-blue-500 underline">
+          {row.original.code}
+        </Link>
+      ),
+      enableColumnFilter: false
+    },
+    {
       header: 'Product',
       id: 'product',
       cell: ({ row }) => {
@@ -74,16 +84,6 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
           </div>
         );
       },
-      enableColumnFilter: false
-    },
-    {
-      header: 'Batch Code',
-      accessorKey: 'code',
-      cell: ({ row }) => (
-        <Link to={`/production-batch/${row.original.id}`} className="text-blue-500 underline">
-          {row.original.code}
-        </Link>
-      ),
       enableColumnFilter: false
     },
     {
