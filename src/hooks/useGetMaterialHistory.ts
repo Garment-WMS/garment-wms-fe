@@ -1,4 +1,4 @@
-import { getAllMaterialFn, getAllMaterialHasReceiptFn, getOneMaterialHistoryFn, getOneMaterialReceiptFn } from '@/api/services/materialApi';
+import { getAllMaterialFn, getAllMaterialHasReceiptFn, getOneMaterialDisposedHistoryFn, getOneMaterialHistoryFn, getOneMaterialReceiptFn } from '@/api/services/materialApi';
 import { MaterialHistoryResponse, MaterialReceiptResponse, MaterialVariantResponse } from '@/types/MaterialTypes';
 import { InputType } from '@/types/Shared';
 import { useQuery } from '@tanstack/react-query';
@@ -49,7 +49,7 @@ export const useGetMaterialHistory = (id: string,{
     } = useQuery<MaterialHistoryResponse, AxiosError>({
       queryKey: ['MaterialVariantHistory', sorting, columnFilters, pagination],
       queryFn: () =>
-        getOneMaterialHistoryFn(id,{
+        getOneMaterialDisposedHistoryFn(id,{
           sorting,
           columnFilters,
           pagination,

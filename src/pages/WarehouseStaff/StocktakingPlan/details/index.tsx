@@ -32,7 +32,6 @@ import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 import { CgProfile } from 'react-icons/cg';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/Label';
-import KanbanDisplayCard from '@/components/common/KanbanDisplayList/KanbanDisplayCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScrollBar } from '@/components/ui/ScrollArea';
 import InventoryReportDialog from './components/InventoryReportDialog';
@@ -40,6 +39,7 @@ import Loading from '@/components/common/Loading';
 import { useGetProfile } from '@/hooks/useGetProfile';
 import { BreadcrumbResponsive } from '@/components/common/BreadcrumbReponsive';
 import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import KanbanDisplayCard from '@/pages/StocktakingPlan/details/components/KanbanDisplayCard';
 
 type Props = {};
 
