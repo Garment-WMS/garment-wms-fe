@@ -58,7 +58,7 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
     (total, request) => total + (request?.inspectionReport?.inspectionReportDetail?.length ?? 0),
     0
   );
-
+  const inspectionRequestType = inspectionRequest?.[0]?.type;
   const totalApproved = inspectionRequest?.reduce((total, request) => {
     return (
       total +
@@ -104,11 +104,10 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
         });
 
         totalDefectCount += totalDefectQuantity;
-
         defects.push({
           type: defect.description,
           value: totalDefectQuantity,
-          percentage: 0 // Temporary, calculated below
+          percentage: 0
         });
       });
 
@@ -240,7 +239,10 @@ export function Chart({ currentStatus, inspectionRequest, onApproval, importRequ
             <div className="flex items-center justify-between w-full text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                <span>Total Inspected: {totalReports}</span>
+                <span>
+                  Total {inspectionRequestType === 'MATERIAL' ? 'Material' : 'Product'} Inspected:{' '}
+                  {totalReports}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Cog className="h-5 w-5" />

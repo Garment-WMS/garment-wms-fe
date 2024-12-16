@@ -24,10 +24,14 @@ import { MdOutlinePercent } from 'react-icons/md';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { ProductionBatchListResponse } from '@/types/ProductionBatchListResponse';
 import { ProductionBatch } from '@/types/ProductionBatch';
-import { getProductionBatchChart } from '@/api/services/productionBatch';
+import { getProductionBatchByPlan, getProductionBatchChart } from '@/api/services/productionBatch';
 import ProductionBatchSummary from './ProductionBatchSummary';
 
-function renderUi(planDetails: ProductionPlan, productionBatches: any[] | null) {
+function renderUi(
+  planDetails: ProductionPlan,
+  productionBatches: any[] | null,
+  productionBatchList: any[] | null
+) {
   const completionPercentage =
     (planDetails?.totalProducedQuantity / planDetails?.totalQuantityToProduce) * 100;
 
@@ -127,8 +131,11 @@ function renderUi(planDetails: ProductionPlan, productionBatches: any[] | null) 
           <ProductionPlanDetails planDetails={planDetails?.productionPlanDetail} />
         </TabsContent>
         <TabsContent value="batch">
-          {productionBatches ? (
-            <ProductionBatchSummary productionBatchSummary={productionBatches} />
+          {productionBatches && productionBatchList ? (
+            <ProductionBatchSummary
+              productionBatchSummary={productionBatches}
+              productionBatchList={productionBatchList}
+            />
           ) : (
             <p>No production batches available for this plan.</p>
           )}
@@ -142,7 +149,9 @@ export function ProductionPlanDashboard() {
   // const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<ProductionPlan>();
   const [productionBatches, setProductionBatches] = useState<any[] | null>(null);
+  const [productionBatchList, setProductionBatchList] = useState<any[] | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination] = useState<PaginationState>({ pageSize: 10, pageIndex: 0 });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const debouncedColumnFilters: ColumnFiltersState = useDebounce(columnFilters, 1000);
@@ -166,12 +175,16 @@ export function ProductionPlanDashboard() {
       setContainerLoading(true);
       const data = await getProductionPlanDetailsById(planId); // Fetch details
       const chartData = await getProductionBatchChart(planId);
+      const batchList = await getProductionBatchByPlan(planId, pagination, sorting);
       // setPlanDetails(data); // Store fetched details
       if (data.statusCode === 200) {
         setPlanDetails(data.data);
       }
       if (chartData.statusCode === 200) {
         setProductionBatches(chartData.data);
+      }
+      if (batchList?.data) {
+        setProductionBatchList(batchList);
       }
     } catch (error) {
       console.error('Failed to fetch plan details:', error);
@@ -197,7 +210,7 @@ export function ProductionPlanDashboard() {
       ) : (
         <div>
           {planDetails ? (
-            renderUi(planDetails, productionBatches)
+            renderUi(planDetails, productionBatches, productionBatchList)
           ) : (
             <div className="flex justify-center items-center h-[80vh]">
               <p>Select a production plan to see the details.</p>
