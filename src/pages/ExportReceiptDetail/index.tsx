@@ -65,7 +65,6 @@ export default function ExportReceiptDetail() {
   const [blockingInventoryPlans, setBlockingInventoryPlans] = useState<any[]>([]);
   const [isBlockedDialogOpen, setIsBlockedDialogOpen] = useState(false);
   const [render, setRender] = useState<number>(0);
-  console.log(exportReceipt?.materialExportReceiptDetail);
   const onRender = () => {
     setRender((render: number) => render + 1);
   };
