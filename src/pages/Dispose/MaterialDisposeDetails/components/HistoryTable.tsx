@@ -4,7 +4,7 @@ import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { useDebounce } from '@/hooks/useDebouce';
-import { useGetMaterialHistory } from '@/hooks/useGetMaterialHistory';
+import { useGetMaterialDisposedHistory, useGetMaterialHistory } from '@/hooks/useGetMaterialHistory';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { AdjustmentReceiptForHistory, ExportReceiptForHistory, ImportReceiptForHistory, ReceiptBase } from '@/types/MaterialTypes';
 import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons';
@@ -33,7 +33,7 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
     pageSize: 10 //default page size
   });
 
-  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetMaterialHistory(id,{
+  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetMaterialDisposedHistory(id,{
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination

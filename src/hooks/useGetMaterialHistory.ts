@@ -36,6 +36,36 @@ export const useGetMaterialHistory = (id: string,{
     return {pageMeta, historyReceiptList,isFetching, isLoading };
   };
 
+  export const useGetMaterialDisposedHistory = (id: string,{
+    sorting,
+    columnFilters,
+    pagination,
+  }: InputType) => {
+        
+    const {
+      data,
+      isLoading,
+      isFetching
+    } = useQuery<MaterialHistoryResponse, AxiosError>({
+      queryKey: ['MaterialVariantHistory', sorting, columnFilters, pagination],
+      queryFn: () =>
+        getOneMaterialHistoryFn(id,{
+          sorting,
+          columnFilters,
+          pagination,
+        }),
+
+    });
+    let historyReceiptList = data?.data.data;
+    const pageMeta = data?.data.pageMeta;
+
+    // if(AxiosError.){
+    //     materialList = [];
+
+    // }
+
+    return {pageMeta, historyReceiptList,isFetching, isLoading };
+  };
 //   export const useGetMaterialWithReceipt = ({
 //     sorting,
 //     columnFilters,

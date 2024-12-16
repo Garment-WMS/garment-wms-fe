@@ -128,7 +128,7 @@ const ProductDisposeDetail = (props: Props) => {
             <div className="flex flex-col gap-2">
               <Accordion
                 type="multiple"
-                defaultValue={['item-1', 'item-2', 'item-3', 'item-4']}
+                defaultValue={['item-1', 'item-2', 'item-3', 'item-4', 'item-5']}
                 className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>
@@ -153,6 +153,14 @@ const ProductDisposeDetail = (props: Props) => {
                   <AccordionContent><Attributes/></AccordionContent>
                 </AccordionItem> */}
                 <AccordionItem value="item-4">
+                  <AccordionTrigger>
+                    <Label className="text-xl">History</Label>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <HistoryTable  id={productVariant.id}/>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-5">
                   <AccordionTrigger>
                     <Label className="text-xl">Receipt</Label>
                   </AccordionTrigger>

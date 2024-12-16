@@ -5,7 +5,7 @@ import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
 import { useDebounce } from '@/hooks/useDebouce';
 import { useGetMaterialHistory } from '@/hooks/useGetMaterialHistory';
-import { useGetProductHistory } from '@/hooks/useGetProductHistory';
+import { useGetProductHistory, useGetProductHistoryDisposed } from '@/hooks/useGetProductHistory';
 import { CustomColumnDef } from '@/types/CompositeTable';
 import { AdjustmentReceiptForHistory, ExportReceiptForHistory, ImportReceiptForHistory, ReceiptBase } from '@/types/MaterialTypes';
 import { ProductReceiptBase } from '@/types/ProductType';
@@ -35,7 +35,7 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
     pageSize: 10 //default page size
   });
 
-  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetProductHistory(id,{
+  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetProductHistoryDisposed(id,{
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
@@ -88,26 +88,26 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
         );
       }
     },
-    {
-      header: 'Product Type',
-      accessorKey: 'isDefect',
-      enableColumnFilter: false,
-      cell: ({ row }) => {
-        const isDefect = row.original.isDefect;
-        console.log(isDefect)
-        let result 
-        if (isDefect === null || isDefect === undefined) {
-          return <div>N/A</div>;
-        }else {
-          isDefect ? result = 'Disqualified' : result = 'Qualified'
-        }
-        return (
-          <div>
-            <div className={!isDefect? `text-green-500` : `text-red-500`}>{result}</div>
-          </div>
-        );
-      }
-    },
+    // {
+    //   header: 'Product Type',
+    //   accessorKey: 'isDefect',
+    //   enableColumnFilter: false,
+    //   cell: ({ row }) => {
+    //     const isDefect = row.original.isDefect;
+    //     console.log(isDefect)
+    //     let result 
+    //     if (isDefect === null || isDefect === undefined) {
+    //       return <div>N/A</div>;
+    //     }else {
+    //       isDefect ? result = 'Disqualified' : result = 'Qualified'
+    //     }
+    //     return (
+    //       <div>
+    //         <div className={!isDefect? `text-green-500` : `text-red-500`}>{result}</div>
+    //       </div>
+    //     );
+    //   }
+    // },
     // {
     //   header: 'Material',
     //   accessorKey: 'material.name',

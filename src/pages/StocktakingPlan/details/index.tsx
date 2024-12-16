@@ -43,7 +43,6 @@ import { getStatusBadgeVariant } from '@/helpers/getStatusBadgeVariant';
 import { CgProfile } from 'react-icons/cg';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/Label';
-import KanbanDisplayCard from '@/components/common/KanbanDisplayList/KanbanDisplayCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScrollBar } from '@/components/ui/ScrollArea';
 import Loading from '@/components/common/Loading';
@@ -55,6 +54,7 @@ import { PlanErrorDialog } from './components/PlanErrorDialog';
 import { ReadOnlyTextArea } from '@/components/common/ReadOnlyTextArea';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 import { formatDateTimeToDDMMYYYYHHMM } from '@/helpers/convertDate';
+import KanbanDisplayCard from './components/KanbanDisplayCard';
 
 
 // const breadcrumbItems = [
