@@ -32,6 +32,7 @@ interface Material {
 }
 
 interface MaterialExportActionsProps {
+  contentRef: any;
   exportReceipt: any;
   code: string;
   status: string;
@@ -41,6 +42,7 @@ interface MaterialExportActionsProps {
 }
 
 export function MaterialExportActions({
+  contentRef,
   exportReceipt,
   code,
   status,
@@ -54,12 +56,11 @@ export function MaterialExportActions({
     confirmedMaterials.includes(material.barcode)
   );
 
-  const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
   return (
     <Card className="p-6 mb-6">
-      <div className="flex items-center justify-between" ref={contentRef}>
+      <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-bluePrimary">
           <div>Material Export Receipt {code}</div>
         </h1>
