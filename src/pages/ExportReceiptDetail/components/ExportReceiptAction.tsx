@@ -22,6 +22,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { FaRegSave } from 'react-icons/fa';
 import { useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { useSelector } from 'react-redux';
+import exportRequestSelector from '@/pages/ExportRequestDetail/slice/selector';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 interface Material {
   id: string;
   name: string;
@@ -47,6 +50,7 @@ export function MaterialExportActions({
   materials
 }: MaterialExportActionsProps) {
   const [confirmedMaterials, setConfirmedMaterials] = useState<string[]>([]);
+  const exportReceipt: any = useSelector(exportRequestSelector);
 
   const allMaterialsConfirmed = materials.every((material) =>
     confirmedMaterials.includes(material.barcode)
@@ -118,6 +122,31 @@ export function MaterialExportActions({
                 <AlertDialogContent className="max-w-3xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Start Exporting</AlertDialogTitle>
+                    {new Date(exportReceipt?.expectedStartedAt) > new Date() && (
+                      <Alert variant={'destructive'}>
+                        <AlertTitle>Heads up!</AlertTitle>
+                        <AlertDescription>
+                          Warning: You are starting this work earlier than the expected time :
+                          {new Date(exportReceipt?.expectedStartedAt).toLocaleString('en-GB', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true // Use 24-hour format
+                          })}
+                          {' to '}
+                          {new Date(exportReceipt?.expectedFinishedAt).toLocaleString('en-GB', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true // Use 24-hour format
+                          })}
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <AlertDialogDescription>
                       Starting this task will initiate the export process immediately.
                       <br />

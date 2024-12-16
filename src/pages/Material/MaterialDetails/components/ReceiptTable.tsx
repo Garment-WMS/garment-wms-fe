@@ -22,6 +22,7 @@ import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 import DisposeDialog from './DisposeDialog';
 import { useNavigate } from 'react-router-dom';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import { useGetProfile } from '@/hooks/useGetProfile';
 
 type Props = {
   id: string;
@@ -29,12 +30,13 @@ type Props = {
 };
 
 const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [isOpened, setIsOpened] = useState(false);
   const [isDisposeDialogOpen, setIsDisposeDialogOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<MaterialReceipt | null>(null);
   // const [render, setRender] = useState(0);
+  const { role } = useGetProfile();
 
   const getStatusBadgeVariant = (status: string) => {
     const statusObj = ReceiptStatusLabel.find((s) => s.value === status);
@@ -53,8 +55,6 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   // const reRender = () => {
   //   setRender((render) => render + 1);
   // };
-
- 
 
   useEffect(() => {
     if (receiptId) {
@@ -177,9 +177,11 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => openDialog(receipt.id)}>View</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
-                Dispose
-              </DropdownMenuItem>
+              {role == 'WAREHOUSE_MANAGER' && (
+                <DropdownMenuItem onClick={() => openDisposeDialog(receipt)}>
+                  Dispose
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -225,7 +227,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
   }
   const handleDisposeSuccess = () => {
     // Refresh the table data
-    navigate(0)
+    navigate(0);
   };
   return (
     <div className="flex flex-col gap-4">

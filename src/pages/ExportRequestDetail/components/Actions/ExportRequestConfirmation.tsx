@@ -143,7 +143,7 @@ export default function ExportRequestConfirmation({
         response.data.data[0]?.materialExportReceiptDetail?.map((detail: any) => ({
           id: detail.id,
           name: detail.materialReceipt.materialPackage.name,
-          barcode: detail.materialReceipt.materialPackage.code,
+          barcode: detail.materialReceipt.code,
           quantity: detail.quantityByPack,
           unit: detail.materialReceipt.materialPackage.packUnit,
           imageUrl:
