@@ -358,7 +358,8 @@ export default function ExportReceiptDetail() {
             </Card>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
+          <div
+            className={`grid gap-6 ${exportReceipt?.type == 'DISPOSED' ? 'md:grid-cols-2' : 'md:grid-cols-3'}  mb-8`}>
             <Card>
               <CardHeader>
                 <CardTitle>Receipt Details</CardTitle>
@@ -414,9 +415,9 @@ export default function ExportReceiptDetail() {
               <CardHeader>
                 <CardTitle>
                   Requested by{' '}
-                  {exportReceipt?.type == 'DISCHARGE'
-                    ? 'Production Department'
-                    : 'Warehouse manager'}
+                  {exportReceipt?.type == 'DISPOSED'
+                    ? 'Warehouse manager'
+                    : 'Production Department'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -463,7 +464,7 @@ export default function ExportReceiptDetail() {
                   </div>
                 )}
                 {exportReceipt?.materialExportRequest?.warehouseManager &&
-                exportReceipt?.type == 'DISCHARGE' ? (
+                exportReceipt?.type == 'DISPOSED' ? (
                   <div>
                     <div className="flex items-center space-x-4 flex-col justify-center">
                       <Avatar className="w-[80px] h-[80px]">
@@ -501,102 +502,104 @@ export default function ExportReceiptDetail() {
                 )}
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Warehouse Staff Assignment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <div className="flex items-center space-x-4 flex-col justify-center">
-                    <Avatar className="w-[80px] h-[80px]">
-                      <AvatarImage
-                        src={
-                          exportReceipt?.warehouseStaff?.account?.avatarUrl as string | undefined
-                        }
-                        alt="John Doe"
-                        className="w-[80px] h-[80px]"
-                      />
-                      <AvatarFallback>
-                        {exportReceipt?.warehouseStaff?.account?.lastName?.slice(0, 1) ??
-                          '' + exportReceipt?.warehouseStaff?.account?.firstName.slice(0, 1)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-center">
-                      <p className="text-xl font-bold">
-                        {exportReceipt?.warehouseStaff?.account?.lastName +
-                          ' ' +
-                          exportReceipt?.warehouseStaff?.account?.firstName}
-                      </p>
-                      <p className="text-md text-muted-foreground">Export Staff</p>
-                      <p className="text-md text-muted-foreground">
-                        {exportReceipt?.warehouseStaff?.account?.email}
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {exportReceipt?.warehouseStaff?.account?.phoneNumber}
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {exportReceipt?.expectedStartedAt &&
-                          exportReceipt?.expectedFinishedAt &&
-                          !exportReceipt?.startedAt && (
+            {exportReceipt?.type !== 'DISPOSED' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Warehouse Staff Assignment</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <div className="flex items-center space-x-4 flex-col justify-center">
+                      <Avatar className="w-[80px] h-[80px]">
+                        <AvatarImage
+                          src={
+                            exportReceipt?.warehouseStaff?.account?.avatarUrl as string | undefined
+                          }
+                          alt="John Doe"
+                          className="w-[80px] h-[80px]"
+                        />
+                        <AvatarFallback>
+                          {exportReceipt?.warehouseStaff?.account?.lastName?.slice(0, 1) ??
+                            '' + exportReceipt?.warehouseStaff?.account?.firstName.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center">
+                        <p className="text-xl font-bold">
+                          {exportReceipt?.warehouseStaff?.account?.lastName +
+                            ' ' +
+                            exportReceipt?.warehouseStaff?.account?.firstName}
+                        </p>
+                        <p className="text-md text-muted-foreground">Export Staff</p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.warehouseStaff?.account?.email}
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.warehouseStaff?.account?.phoneNumber}
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.expectedStartedAt &&
+                            exportReceipt?.expectedFinishedAt &&
+                            !exportReceipt?.startedAt && (
+                              <div className="flex flex-col items-center">
+                                <span className="font-bold">Expect work time : </span>
+                                {new Date(exportReceipt?.expectedStartedAt).toLocaleDateString(
+                                  'en-GB',
+                                  {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false // Use 24-hour format
+                                  }
+                                )}{' '}
+                                -{' '}
+                                {new Date(exportReceipt?.expectedFinishedAt).toLocaleDateString(
+                                  'en-GB',
+                                  {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false // Use 24-hour format
+                                  }
+                                )}
+                              </div>
+                            )}
+                        </p>
+                        <p className="text-md text-muted-foreground">
+                          {exportReceipt?.startedAt && (
                             <div className="flex flex-col items-center">
-                              <span className="font-bold">Expect work time : </span>
-                              {new Date(exportReceipt?.expectedStartedAt).toLocaleDateString(
-                                'en-GB',
-                                {
-                                  year: 'numeric',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  hour12: false // Use 24-hour format
-                                }
-                              )}{' '}
+                              <div className="font-bold">Actual work time : </div>
+                              {new Date(exportReceipt?.startedAt).toLocaleString('en-GB', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false // 24-hour format
+                              })}{' '}
                               -{' '}
-                              {new Date(exportReceipt?.expectedFinishedAt).toLocaleDateString(
-                                'en-GB',
-                                {
-                                  year: 'numeric',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  hour12: false // Use 24-hour format
-                                }
-                              )}
+                              {exportReceipt?.finishedAt
+                                ? new Date(exportReceipt?.finishedAt).toLocaleString('en-GB', {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false // Use 24-hour format
+                                  })
+                                : 'Not yet'}
                             </div>
                           )}
-                      </p>
-                      <p className="text-md text-muted-foreground">
-                        {exportReceipt?.startedAt && (
-                          <div className="flex flex-col items-center">
-                            <div className="font-bold">Actual work time : </div>
-                            {new Date(exportReceipt?.startedAt).toLocaleString('en-GB', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: false // 24-hour format
-                            })}{' '}
-                            -{' '}
-                            {exportReceipt?.finishedAt
-                              ? new Date(exportReceipt?.finishedAt).toLocaleString('en-GB', {
-                                  year: 'numeric',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                  hour12: false // Use 24-hour format
-                                })
-                              : 'Not yet'}
-                          </div>
-                        )}
-                      </p>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">

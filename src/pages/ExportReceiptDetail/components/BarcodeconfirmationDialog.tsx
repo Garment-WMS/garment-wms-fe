@@ -42,12 +42,14 @@ export function BarcodeConfirmationDialog({
   }, [isOpen, entryMode]);
 
   const handleConfirm = () => {
-    if (scannerInput === expectedBarcode) {
+    if (inputBarcode == expectedBarcode && entryMode == 'manual') {
+      onConfirm(inputBarcode);
+      onClose();
+    } else if (scannerInput === expectedBarcode) {
       onConfirm(scannerInput);
       onClose();
     } else {
       toast({ variant: 'destructive', title: 'Wrong Material Receipt' });
-      alert(scannerInput);
     }
     setInputBarcode('');
     setIsReady(false);
