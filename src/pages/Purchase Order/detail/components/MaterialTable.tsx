@@ -1,5 +1,6 @@
 import TanStackBasicTable from '@/components/common/CompositeTable';
 import { DataTable } from '@/components/ui/DataTable';
+import { PurchaseOrderDeliveryStatus } from '@/enums/purchaseOrderDeliveryStatus';
 import { CustomColumnDef, UseGetTableResponseType } from '@/types/CompositeTable';
 import { PODeliveryDetail } from '@/types/PurchaseOrder';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
@@ -7,9 +8,10 @@ import React, { useState } from 'react';
 
 interface MaterialTableProps {
   poDeliveryDetail: PODeliveryDetail[];
+  status?: any;
 }
 
-const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
+const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail, status }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -23,6 +25,7 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
     totalFiltered: 10,
     data: poDeliveryDetail
   };
+  console.log(poDeliveryDetail);
 
   const purchaseOrderDeliveryDetailsColumns: CustomColumnDef<PODeliveryDetail>[] = [
     {
@@ -87,7 +90,9 @@ const MaterialTable: React.FC<MaterialTableProps> = ({ poDeliveryDetail }) => {
         return (
           <div className="ml-1">
             {uomPerPack === 0 ? (
-              <span className="text-slate-500 ml-9">Not yet</span>
+              <span className="text-slate-500 ml-9">
+                {status === PurchaseOrderDeliveryStatus.FINISHED ? '0' : 'Not yet'}
+              </span>
             ) : (
               <div className="ml-9">
                 <span>{uomPerPack}</span>{' '}

@@ -223,7 +223,10 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
                     </Link>
                   </div>
                   <div className="mt-4 border-t pt-4">
-                    <MaterialTable poDeliveryDetail={delivery.poDeliveryDetail} />
+                    <MaterialTable
+                      poDeliveryDetail={delivery.poDeliveryDetail}
+                      status={delivery.status}
+                    />
                   </div>
                 </ExpandableSectionCustom>
               );
