@@ -110,7 +110,7 @@ export type ExportReceipt = {
   inspectionReportId: string | null;
   code: string;
   status: 'EXPORTING' | 'EXPORTED' | 'CANCELLED';
-  type: 'PRODUCTION' | 'DISCHARGE';
+  type: 'PRODUCTION' | 'DISPOSED';
   note: string | null;
   startedAt: string;
   finishedAt: string | null;

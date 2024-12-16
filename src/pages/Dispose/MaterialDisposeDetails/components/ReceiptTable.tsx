@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 import DisposeDialog from './DisposeDialog';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 type Props = {
   id: string;
@@ -108,15 +109,10 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
         if (!dateString) {
           return <div>N/A</div>;
         }
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-GB', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+        
         return (
           <div>
-            <div>{formattedDate}</div>
+            <div>{convertDateWithTime(dateString)}</div>
           </div>
         );
       }

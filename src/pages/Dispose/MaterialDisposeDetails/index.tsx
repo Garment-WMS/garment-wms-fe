@@ -223,14 +223,14 @@ const MaterialDisposeDetails = () => {
                     <Attributes attributes={attribute} />
                   </AccordionContent>
                 </AccordionItem> */}
-                {/* <AccordionItem value="item-4">
+                <AccordionItem value="item-4">
                 <AccordionTrigger>
                     <Label className="text-xl">History</Label>
                   </AccordionTrigger>
                   <AccordionContent>
                     <HistoryTable id={id} />
                   </AccordionContent>
-                </AccordionItem> */}
+                </AccordionItem>
                 <AccordionItem value="item-5">
                   <AccordionTrigger>
                     <Label className="text-xl">Receipt</Label>
