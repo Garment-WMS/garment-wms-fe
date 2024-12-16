@@ -9,51 +9,20 @@ import {
   TableRow
 } from '@/components/ui/Table';
 import { ClipboardListIcon, PackageIcon, Loader2Icon, CheckCircleIcon } from 'lucide-react';
-
-interface ProductVariant {
-  id: string;
-  name: string;
-  code: string;
-  image: string;
-}
-
-interface ProductVariantProduction {
-  productVariant: ProductVariant;
-  producedQuantity: number;
-  defectQuantity: number;
-}
-
-interface ProductionBatchStatistic {
-  total: number;
-  totalPending: number;
-  totalExecuting: number;
-  totalManufacturing: number;
-  totalImporting: number;
-  totalFinished: number;
-  totalCancelled: number;
-}
+import { Badge } from '@/components/ui/Badge';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 interface ProductionBatchSummaryProps {
-  productionBatchSummary: {
-    productionBatchStatistic: ProductionBatchStatistic;
-    qualityRate: number;
-    totalDefectProduct: number;
-    totalProducedProduct: number;
-    totalProductVariantProduced: ProductVariantProduction[];
-  };
+  productionBatchSummary: any;
+  productionBatchList: any[];
 }
 
 const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
-  productionBatchSummary
+  productionBatchSummary,
+  productionBatchList
 }) => {
-  const {
-    productionBatchStatistic,
-    qualityRate,
-    totalDefectProduct,
-    totalProducedProduct,
-    totalProductVariantProduced
-  } = productionBatchSummary;
-
+  const { productionBatchStatistic, totalProductVariantProduced } = productionBatchSummary;
+  console.log(productionBatchList);
   const StatCard = ({
     title,
     value,
@@ -78,6 +47,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Batches Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Batches Overview</CardTitle>
@@ -117,43 +87,41 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
         </CardContent>
       </Card>
 
+      {/* Production Batch List Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Product Variant Production Details</CardTitle>
-          <CardDescription>
-            Detailed information about each product variant&apos;s production
-          </CardDescription>
+          <CardTitle>Production Batch List</CardTitle>
+          <CardDescription>Details of all production batches</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead></TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Produced</TableHead>
-                <TableHead>Defects</TableHead>
+                <TableHead>Batch Code</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created Date</TableHead>
+                <TableHead>Quantity</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {totalProductVariantProduced.map((variant) => (
-                <TableRow key={variant.productVariant.id}>
+              {productionBatchList?.productionBatchOfProductionPlan?.map((batch) => (
+                <TableRow key={batch.id}>
+                  <TableCell className="font-semibold">{batch.code}</TableCell>
+                  <TableCell className="font-semibold">{batch.name}</TableCell>
                   <TableCell>
-                    <img
-                      src={variant.productVariant.image}
-                      alt={variant.productVariant.name}
-                      width={40}
-                      height={40}
-                      className="object-cover rounded-full"
-                    />
+                    <Badge
+                      className={`${
+                        batch.status === 'FINISHED'
+                          ? 'bg-green-200 text-green-800'
+                          : 'bg-yellow-200 text-yellow-800'
+                      }`}>
+                      {batch.status}
+                    </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{variant.productVariant.name}</TableCell>
-                  <TableCell>{variant.productVariant.code}</TableCell>
-                  <TableCell className="font-semibold text-green-600 text-lg ml-8">
-                    {variant.producedQuantity.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="font-semibold text-red-600 text-lg ml-8">
-                    {variant.defectQuantity.toLocaleString()}
+                  <TableCell>{convertDateWithTime(batch.createdAt)}</TableCell>
+                  <TableCell className="text-center font-semibold">
+                    {batch.quantityToProduce}
                   </TableCell>
                 </TableRow>
               ))}

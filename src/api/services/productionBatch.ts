@@ -156,3 +156,40 @@ export const getProductionBatchChart = async (productionPlanId: string): Promise
     throw new Error('An unexpected error occurred while fetching chart data.');
   }
 };
+
+export const getProductionBatchByPlan = async (
+  productionPlanId: string,
+  pagination: PaginationState,
+  sorting: SortingState
+): Promise<ProductionBatchListResponse> => {
+  const limit = pagination.pageSize;
+  const offset = pagination.pageIndex * pagination.pageSize;
+
+  const filter = [
+    {
+      field: 'productionPlanDetail.productionPlanId',
+      type: FilterOperationType.Eq,
+      value: productionPlanId
+    }
+  ];
+
+  const order: any[] = [];
+
+  sorting.forEach((sort) => {
+    const direction = sort.desc ? 'desc' : 'asc';
+    order.push({ field: sort.id, dir: direction });
+  });
+
+  const queryString = FilterBuilder.buildFilterQueryString({
+    limit,
+    offset,
+    filter,
+    order
+  });
+
+  const config = productionBatchApi.getAll();
+  config.url += queryString;
+
+  const response = await privateCall(config);
+  return response.data.data as ProductionBatchListResponse;
+};
