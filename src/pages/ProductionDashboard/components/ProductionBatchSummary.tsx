@@ -94,6 +94,16 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
         <div className="ml-16 font-semibold">{row.original.quantityToProduce || '0'}</div>
       ),
       enableColumnFilter: false
+    },
+    {
+      header: 'Quantity Produced',
+      accessorKey: 'quantityToProduce',
+      cell: ({ row }) => (
+        <div className="ml-16 font-semibold text-green-700">
+          {row.original.numberOfProducedProduct || '0'}
+        </div>
+      ),
+      enableColumnFilter: false
     }
   ];
 
@@ -142,7 +152,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
               color="text-yellow-600"
             />
             <StatCard
-              title="Manufacturing"
+              title="In Progress"
               value={
                 productionBatchStatistic.totalManufacturing +
                 productionBatchStatistic.totalExecuting +
