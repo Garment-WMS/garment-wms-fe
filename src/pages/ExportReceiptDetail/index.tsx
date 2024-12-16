@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, FileText, CheckCircle, UserCircle, Users, Printer } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
@@ -65,6 +65,7 @@ export default function ExportReceiptDetail() {
   const [blockingInventoryPlans, setBlockingInventoryPlans] = useState<any[]>([]);
   const [isBlockedDialogOpen, setIsBlockedDialogOpen] = useState(false);
   const [render, setRender] = useState<number>(0);
+  const contentRef = useRef<HTMLDivElement>(null);
   const onRender = () => {
     setRender((render: number) => render + 1);
   };
@@ -206,7 +207,7 @@ export default function ExportReceiptDetail() {
     }
   }, [id, dispatch, render]);
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 printContent" ref={contentRef}>
       {isLoading ? (
         // Show the loading component when `isLoading` is true
         <div className="flex items-center justify-center min-h-screen">
@@ -218,6 +219,7 @@ export default function ExportReceiptDetail() {
             <div>Material Export Receipt {exportReceipt?.code || 'N/A'}</div>
           </h1> */}
           <MaterialExportActions
+            contentRef={contentRef}
             exportReceipt={exportReceipt}
             code={exportReceipt?.code || 'N/A'}
             status={exportReceipt?.status || ''}

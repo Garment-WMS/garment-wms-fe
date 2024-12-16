@@ -77,35 +77,57 @@ const WarehouseStaffList: React.FC = () => {
       cell: ({ row }) => {
         const avatarUrl = row.original.account.avatarUrl || avatar;
         return (
-          <div className="flex justify-center">
+          <div className="flex">
             <img src={avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
           </div>
         );
       }
     },
     {
-      header: 'Username',
-      accessorKey: 'account.username',
-      cell: ({ row }) => <span className="font-bold">{row.original.account.username}</span>,
-      enableColumnFilter: true
-    },
-    {
-      header: 'First Name',
+      header: 'Full Name',
       accessorKey: 'account.firstName',
-      cell: ({ row }) => <span>{row.original.account.firstName}</span>,
-      enableColumnFilter: true
-    },
-    {
-      header: 'Last Name',
-      accessorKey: 'account.lastName',
-      cell: ({ row }) => <span>{row.original.account.lastName}</span>,
-      enableColumnFilter: true
+      cell: ({ row }) => (
+        <span className="font-bold">
+          {row.original.account.lastName + ' ' + row.original.account.firstName}
+        </span>
+      )
     },
     {
       header: 'Email',
       accessorKey: 'account.email',
-      cell: ({ row }) => <span>{row.original.account.email}</span>,
-      enableColumnFilter: true
+      cell: ({ row }) => <span className="text-blue-500">{row.original.account.email}</span>
+    },
+    {
+      header: 'Username',
+      accessorKey: 'account.username',
+      cell: ({ row }) => <span>{row.original.account.username}</span>
+    },
+    {
+      header: 'Gender',
+      accessorKey: 'account.gender',
+      cell: ({ row }) => <span>{row.original.account.gender}</span>
+    },
+    {
+      header: 'Phone number',
+      accessorKey: 'account.email',
+      cell: ({ row }) => <span>{row.original.account.phoneNumber}</span>
+    },
+
+    {
+      header: 'Created on',
+      accessorKey: 'account.email',
+      cell: ({ row }) => (
+        <span>
+          {new Date(row.original.account.createdAt).toLocaleString('en-GB', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false // Use 24-hour format
+          })}
+        </span>
+      )
     },
     {
       id: 'actions',
