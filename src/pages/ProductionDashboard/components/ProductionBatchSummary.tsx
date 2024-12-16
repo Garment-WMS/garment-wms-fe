@@ -122,7 +122,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
       header: 'Quantity To Produce',
       accessorKey: 'quantityToProduce',
       cell: ({ row }) => (
-        <div className="ml-16 font-semibold">{row.original.quantityToProduce || '0'}</div>
+        <div className="ml-6 font-semibold">{row.original.quantityToProduce || '0'}</div>
       ),
       enableColumnFilter: false
     },
@@ -130,7 +130,7 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
       header: 'Quantity Produced',
       accessorKey: 'quantityToProduce',
       cell: ({ row }) => (
-        <div className="ml-16 font-semibold text-green-700">
+        <div className="ml-6 font-semibold text-green-700">
           {row.original.numberOfProducedProduct || '0'}
         </div>
       ),
