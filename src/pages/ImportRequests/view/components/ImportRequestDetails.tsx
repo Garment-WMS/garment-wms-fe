@@ -373,7 +373,7 @@ const ImportRequestDetails = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="font-primary text-xl font-bold my-2">Import Request Details</div>
+      <div className="font-primary text-xl font-bold my-2">Import request details</div>
       <div className="pb-4">
         {formattedDetailsMaterial.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
@@ -387,7 +387,7 @@ const ImportRequestDetails = (props: Props) => {
         )}
         {formattedDetailsPostInspection.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-            <div className="font-primary text-lg font-semibold p-4">Post-Inspection Details</div>
+            <div className="font-primary text-lg font-semibold p-4">Post-Inspection details</div>
             <DataTable
               columns={DetailsColumnForPostInspection}
               data={formattedDetailsPostInspection}
