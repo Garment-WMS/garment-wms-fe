@@ -13,10 +13,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/AlertDialog';
 import { VscDebugStart } from 'react-icons/vsc';
-import {
-  WarehouseStaffGuardDiv,
-  ProductionDepartmentGuardDiv
-} from '@/components/authentication/createRoleGuard';
+import { WarehouseStaffGuardDiv } from '@/components/authentication/createRoleGuard';
 import { MaterialDetailsGrid } from './MaterialDetailsGrid';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FaRegSave } from 'react-icons/fa';
@@ -35,6 +32,7 @@ interface Material {
 }
 
 interface MaterialExportActionsProps {
+  exportReceipt: any;
   code: string;
   status: string;
   isLoading: boolean;
@@ -43,6 +41,7 @@ interface MaterialExportActionsProps {
 }
 
 export function MaterialExportActions({
+  exportReceipt,
   code,
   status,
   isLoading,
@@ -50,7 +49,6 @@ export function MaterialExportActions({
   materials
 }: MaterialExportActionsProps) {
   const [confirmedMaterials, setConfirmedMaterials] = useState<string[]>([]);
-  const exportReceipt: any = useSelector(exportRequestSelector);
 
   const allMaterialsConfirmed = materials.every((material) =>
     confirmedMaterials.includes(material.barcode)
