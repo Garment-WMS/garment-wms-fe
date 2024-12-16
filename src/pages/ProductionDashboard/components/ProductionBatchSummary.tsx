@@ -1,16 +1,16 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/Table';
-import { ClipboardListIcon, PackageIcon, Loader2Icon, CheckCircleIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { CustomColumnDef } from '@/types/CompositeTable';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import {
+  ProductionBatchStatus,
+  ProductionBatchStatusColors,
+  ProductionBatchStatusLabels
+} from '@/enums/productionBatch';
+import { Link } from 'react-router-dom';
+import { CheckCircleIcon, ClipboardListIcon, Loader2Icon, PackageIcon } from 'lucide-react';
+import { DataTable } from '@/components/ui/DataTable';
 
 interface ProductionBatchSummaryProps {
   productionBatchSummary: any;
@@ -21,8 +21,82 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
   productionBatchSummary,
   productionBatchList
 }) => {
-  const { productionBatchStatistic, totalProductVariantProduced } = productionBatchSummary;
-  console.log(productionBatchList);
+  const { productionBatchStatistic } = productionBatchSummary;
+
+  const productionBatchColumns: CustomColumnDef<any>[] = [
+    {
+      header: 'Product',
+      id: 'product',
+      cell: ({ row }) => {
+        const productSize = row.original.productionPlanDetail?.productSize;
+        return (
+          <div className="flex items-center gap-4">
+            <img
+              src={productSize?.productVariant?.image || 'https://via.placeholder.com/50'}
+              alt={productSize?.productVariant?.name || 'Unknown Product'}
+              className="w-12 h-12 rounded-md object-cover"
+            />
+            <span className="font-semibold text-gray-800">
+              {productSize?.productVariant?.name || 'Unknown Product'} -{' '}
+              {productSize?.size || 'N/A'}
+            </span>
+          </div>
+        );
+      },
+      enableColumnFilter: false
+    },
+    {
+      header: 'Batch Code',
+      accessorKey: 'code',
+      cell: ({ row }) => (
+        <Link to={`/production-batch/${row.original.id}`} className="text-blue-500 underline">
+          {row.original.code}
+        </Link>
+      ),
+      enableColumnFilter: false
+    },
+    {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({ row }) => (
+        <div className="font-semibold text-gray-800">{row.original.name || 'Unknown'}</div>
+      ),
+      enableColumnFilter: false
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      enableColumnFilter: true,
+      filterOptions: Object.keys(ProductionBatchStatus).map((key) => ({
+        label:
+          ProductionBatchStatusLabels[
+            ProductionBatchStatus[key as keyof typeof ProductionBatchStatus]
+          ],
+        value: ProductionBatchStatus[key as keyof typeof ProductionBatchStatus]
+      })),
+      cell: ({ row }) => {
+        const status = row.original.status as ProductionBatchStatus;
+        const statusLabel = ProductionBatchStatusLabels[status];
+        const colorVariant = ProductionBatchStatusColors[status] || 'bg-gray-200 text-black';
+        return <Badge className={`mr-6 ${colorVariant}`}>{statusLabel}</Badge>;
+      }
+    },
+    {
+      header: 'Created Date',
+      accessorKey: 'createdAt',
+      cell: ({ row }) => <div>{convertDateWithTime(row.original.createdAt || '')}</div>,
+      enableColumnFilter: false
+    },
+    {
+      header: 'Quantity To Produce',
+      accessorKey: 'quantityToProduce',
+      cell: ({ row }) => (
+        <div className="ml-16 font-semibold">{row.original.quantityToProduce || '0'}</div>
+      ),
+      enableColumnFilter: false
+    }
+  ];
+
   const StatCard = ({
     title,
     value,
@@ -90,43 +164,11 @@ const ProductionBatchSummary: React.FC<ProductionBatchSummaryProps> = ({
       {/* Production Batch List Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Production Batch List</CardTitle>
+          <CardTitle className="text-2xl">Batches List</CardTitle>
           <CardDescription>Details of all production batches</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Batch Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created Date</TableHead>
-                <TableHead>Quantity</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {productionBatchList?.productionBatchOfProductionPlan?.map((batch) => (
-                <TableRow key={batch.id}>
-                  <TableCell className="font-semibold">{batch.code}</TableCell>
-                  <TableCell className="font-semibold">{batch.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${
-                        batch.status === 'FINISHED'
-                          ? 'bg-green-200 text-green-800'
-                          : 'bg-yellow-200 text-yellow-800'
-                      }`}>
-                      {batch.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{convertDateWithTime(batch.createdAt)}</TableCell>
-                  <TableCell className="text-center font-semibold">
-                    {batch.quantityToProduce}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={productionBatchColumns} data={productionBatchList?.data || []} />
         </CardContent>
       </Card>
     </div>

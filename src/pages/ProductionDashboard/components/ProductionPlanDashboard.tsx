@@ -184,7 +184,7 @@ export function ProductionPlanDashboard() {
         setProductionBatches(chartData.data);
       }
       if (batchList?.data) {
-        setProductionBatchList(chartData.data);
+        setProductionBatchList(batchList);
       }
     } catch (error) {
       console.error('Failed to fetch plan details:', error);
