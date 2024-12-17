@@ -58,7 +58,7 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
         const navigate = useNavigate();
         let url = ''
         const receipt = row.original;
-        if (receipt.type === 'IMPORT_RECEIPT' && 'importReceiptId' in receipt){
+        if (receipt.type === 'DISPOSED' && 'importReceiptId' in receipt){
             url = `/import-receipt/${receipt.importReceiptId}`
         }else if (receipt.type === 'EXPORT_RECEIPT'  && 'exportReceiptId' in receipt){
             url = `/export-receipt/${receipt.exportReceiptId}`
