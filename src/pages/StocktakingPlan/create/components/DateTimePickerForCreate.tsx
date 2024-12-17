@@ -27,16 +27,23 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
       setError(null)
     }
   }, [startTime, endTime])
+  const now = new Date();
 
   const businessHoursStart = 9; // 9:00 AM
-  const businessHoursEnd = 18; // 6:00 PM
+  const businessHoursEnd = 17; // 6:00 PM
 
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date)
-    setStartTime(null)
-    setEndTime(null)
-    setError(null)
-  }
+    const minAllowedDate = getMinDate();
+    if (date && date < minAllowedDate) {
+      setSelectedDate(minAllowedDate);
+    } else {
+      setSelectedDate(date);
+    }
+  
+    setStartTime(null);
+    setEndTime(null);
+    setError(null);
+  };
 //   let newStartDate = new Date()    
   const handleStartTimeChange = (time: Date | null) => {
     setStartTime(time)
@@ -48,22 +55,27 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
       onDateTimeChange(newStartDate, null)
     }
   }
+  const getMinDate = () => {
+    const endOfBusinessDay = new Date();
+    endOfBusinessDay.setHours(businessHoursEnd, 45, 0, 0); // 5:45 PM
+    return now > endOfBusinessDay ? new Date(now.getTime() + 24 * 60 * 60 * 1000) : now;
+  };
   const getMinTimeForStart = () => {
     if (!selectedDate) return undefined;
-
-    const now = new Date();
+  
     const isSameDay = isToday(selectedDate);
-
+  
     if (isSameDay) {
-      // If today, the minimum time is the later of the current time or 9:00 AM
       const minToday = new Date();
       minToday.setSeconds(0, 0);
       const businessStartTime = new Date(selectedDate);
       businessStartTime.setHours(businessHoursStart, 0, 0, 0);
+  
+      // Ensure we do not set the minimum time after 5:45 PM
       return now > businessStartTime ? now : businessStartTime;
     }
-
-    // Default to 9:00 AM for other days
+  
+    // Default minTime for future days
     const businessStartTime = new Date(selectedDate);
     businessStartTime.setHours(businessHoursStart, 0, 0, 0);
     return businessStartTime;
@@ -117,7 +129,7 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
                 timeCaption="Time"
                 dateFormat="h:mm aa"
                 minTime={getMinTimeForStart()}
-                maxTime={new Date(selectedDate.setHours(businessHoursEnd, 0, 0, 0))}
+                maxTime={new Date(selectedDate.setHours(businessHoursEnd, 45, 0, 0))}
                 className="w-full pl-10 pr-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 placeholderText="Select start time"
               />
@@ -141,7 +153,7 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
                 placeholderText="Select end time"
                 disabled={!startTime}
                 minTime={startTime || undefined}
-                maxTime={new Date(selectedDate.setHours(18, 0, 0))}
+                maxTime={new Date(selectedDate.setHours(17, 45, 0))}
               />
               <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={15} />
             </div>
