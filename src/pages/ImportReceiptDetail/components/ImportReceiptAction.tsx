@@ -75,10 +75,6 @@ export function ImportReceiptAction({
         </h1>
 
         <div className="space-x-2 flex justify-center items-center">
-          <Button variant="outline" onClick={handlePrint}>
-            <Printer className="mr-2 h-4 w-4" />
-            Print
-          </Button>
           <WarehouseStaffGuardDiv>
             {importReceipt.status === 'IMPORTING' && (
               <Button onClick={handleFinishImport} disabled={isLoading}>

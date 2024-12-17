@@ -56,13 +56,14 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
         const navigate = useNavigate();
         let url = ''
         const receipt = row.original;
+        
         if (receipt.type === 'IMPORT_RECEIPT' && 'importReceiptId' in receipt){
             url = `/import-receipt/${receipt.importReceiptId}`
         }else if (receipt.type === 'EXPORT_RECEIPT'  && 'materialExportReceiptId' in receipt){
             url = `/export-receipt/${receipt.materialExportReceiptId}`
         }else if(receipt.type === 'RECEIPT_ADJUSTMENT' && 'inventoryReportId' in receipt){
             url = `/stocktaking/${receipt.inventoryReportId}`
-        }
+        }else url = '#'
         const handleClick = (e: React.MouseEvent) => {
             e.preventDefault(); // Prevent default navigation
             window.open(url, '_blank'); // Open the link in a new tab

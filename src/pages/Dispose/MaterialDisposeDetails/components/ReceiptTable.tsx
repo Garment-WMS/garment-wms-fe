@@ -21,6 +21,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import ReceiptDetailsDialog from './ReceiptDetailsDialog';
 import DisposeDialog from './DisposeDialog';
 import { convertDateWithTime } from '@/helpers/convertDateWithTime';
+import { MaterialExportReceipt } from '@/types/ExportReceipt';
 
 type Props = {
   id: string;
@@ -63,15 +64,16 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
     }
   }, [receiptId, render]);
 
-  const materialImportReceiptColumn: CustomColumnDef<MaterialReceipt>[] = [
+  const materialImportReceiptColumn: CustomColumnDef<any>[] = [
     {
       header: 'Receipt code',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
+        const code = row.original.materialExportReceipt.code
         return (
           <div>
-            <div>{row.original?.code}</div>
+            <div>{code}</div>
           </div>
         );
       }
@@ -83,7 +85,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       cell: ({ row }) => {
         return (
           <div>
-            <div>{row.original?.materialPackage?.code}</div>
+            <div>{row.original?.materialReceipt?.materialPackage?.code}</div>
           </div>
         );
       }
@@ -95,17 +97,18 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       cell: ({ row }) => {
         return (
           <div>
-            <div>{row.original?.materialPackage?.name}</div>
+            <div>{row.original?.materialReceipt?.materialPackage?.name}</div>
           </div>
         );
       }
     },
     {
-      header: 'Import Date',
-      accessorKey: 'importDate',
+      header: 'Export Date',
+      accessorKey: 'createdAt',
       enableColumnFilter: false,
+      enableSorting: false,
       cell: ({ row }) => {
-        const dateString = row.original?.importDate;
+        const dateString = row.original?.createdAt;
         if (!dateString) {
           return <div>N/A</div>;
         }
@@ -118,7 +121,7 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       }
     },
     {
-      header: 'Import Quantity',
+      header: 'Export Quantity',
       accessorKey: 'quantityByPack',
       enableColumnFilter: false,
       cell: ({ row }) => {
@@ -130,31 +133,22 @@ const ReceiptTable: React.FC<Props> = ({ id, receiptId }) => {
       }
     },
     {
-      header: 'Remain Quantity',
-      accessorKey: '',
+      header: 'Type',
+      accessorKey: 'type',
       enableColumnFilter: false,
-      cell: ({ row }) => {
-        return (
-          <div className="flex">
-            <div className="">{row.original?.remainQuantityByPack}</div>
-          </div>
-        );
-      }
-    },
-    {
-      header: 'Status',
-      accessorKey: 'status',
-      enableColumnFilter: true,
       cell: ({ row }) => (
-        <div
-          className={badgeVariants({ variant: getStatusBadgeVariant(row.original?.status ?? '') })}>
-          {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
+        // <div
+        //   className={badgeVariants({ variant: getStatusBadgeVariant(row.original?.status ?? '') })}>
+        //   {capitalizeFirstLetter(row.original?.status ?? 'N/A')}
+        // </div>
+        <div className={badgeVariants({variant: "destructive"})}>
+          {row.original?.materialExportReceipt?.type}
         </div>
       ),
-      filterOptions: ReceiptStatusLabel.map((status) => ({
-        label: status.label,
-        value: status.value
-      }))
+      // filterOptions: ReceiptStatusLabel.map((status) => ({
+      //   label: status.label,
+      //   value: status.value
+      // }))
     },
     {
       id: 'actions',

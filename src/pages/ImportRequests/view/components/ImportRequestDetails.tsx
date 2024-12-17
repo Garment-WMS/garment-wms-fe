@@ -153,8 +153,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-primaryLight lowercase ml-2">
-          {row.original.quantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.quantityByPack)}
+          {row.original.quantityByPack} {row.original.packUnit}
         </div>
       )
     },
@@ -164,8 +163,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-green-500 ml-9 lowercase">
-          {row.original.approvedQuantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.approvedQuantityByPack)}
+          {row.original.approvedQuantityByPack} {row.original.packUnit}
         </div>
       )
     },
@@ -175,8 +173,7 @@ const ImportRequestDetails = (props: Props) => {
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className=" font-medium text-red-500 ml-5 lowercase">
-          {row.original.defectQuantityByPack}{' '}
-          {pluralize(row.original.packUnit, row.original.defectQuantityByPack)}
+          {row.original.defectQuantityByPack} {row.original.packUnit}
         </div>
       )
     }
@@ -376,7 +373,7 @@ const ImportRequestDetails = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="font-primary text-xl font-bold my-2">Import Request Details</div>
+      <div className="font-primary text-xl font-bold my-2">Import request details</div>
       <div className="pb-4">
         {formattedDetailsMaterial.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
@@ -390,7 +387,7 @@ const ImportRequestDetails = (props: Props) => {
         )}
         {formattedDetailsPostInspection.length > 0 && (
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
-            <div className="font-primary text-lg font-semibold p-4">Post-Inspection Details</div>
+            <div className="font-primary text-lg font-semibold p-4">Post-Inspection details</div>
             <DataTable
               columns={DetailsColumnForPostInspection}
               data={formattedDetailsPostInspection}

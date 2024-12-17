@@ -6,6 +6,7 @@ import importRequestSelector from '../slice/selector';
 import { getSatusName, getStatusBadgeVariant } from '../helper';
 import exportRequestSelector from '../slice/selector';
 import { MaterialExportRequest, MaterialExportRequestDetail } from '@/types/exportRequest';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 
 type Props = {};
 
@@ -101,13 +102,27 @@ const ImportRequestStatus = (props: Props) => {
           )}
         </div>
         <div className="flex justify-center items-center gap-2 font-primary text-sm">
-          Created at: <div className="font-primary text-xs text-bluePrimary">{createdDate}</div>
+          Created at:{' '}
+          <div className="font-primary text-xs text-bluePrimary">
+            {convertDateWithTime(createdDate)}
+          </div>
         </div>
         <div className="flex justify-center items-center gap-2 font-primary text-sm">
-          Last updated : <div className="font-primary text-xs text-bluePrimary">{lastUpdated}</div>
-        </div>
-        <div className="flex justify-center items-center gap-2 font-primary text-sm">
-          Closed at : <div className="font-primary text-xs text-bluePrimary">{closedAt}</div>
+          {status === 'PRODUCTION_APPROVED' ? (
+            <>
+              Finished at:{' '}
+              <div className="font-primary text-xs text-green-500">
+                {convertDateWithTime(lastUpdated)}
+              </div>
+            </>
+          ) : (
+            <>
+              Last updated:{' '}
+              <div className="font-primary text-xs text-bluePrimary">
+                {convertDateWithTime(lastUpdated)}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

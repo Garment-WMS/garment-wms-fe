@@ -101,7 +101,7 @@ const RouterComponent: React.FC = () => {
               warehouseStaffComponent={<Home />}
               productionDepartmentComponent={<ProductionDashboard/>}
               inspectingDepartmentComponent={<Home />}
-              factoryDirectorComponent={<Home />}
+              factoryDirectorComponent={<ProductionDashboard />}
               purchasingStaffComponent={<PurchaseDashboard />}
             />
           )
@@ -116,7 +116,7 @@ const RouterComponent: React.FC = () => {
               warehouseStaffComponent={<Home />}
               productionDepartmentComponent={<ProductionDashboard/>}
               inspectingDepartmentComponent={<Home />}
-              factoryDirectorComponent={<Home />}
+              factoryDirectorComponent={<ProductionDashboard />}
               purchasingStaffComponent={<PurchaseDashboard />}
             />
           )

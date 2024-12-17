@@ -140,7 +140,7 @@ const ProductVariantDetails = (props: Props) => {
                 </AccordionItem>
                 <AccordionItem value="item-2">
                   <AccordionTrigger>
-                    <Label className="text-xl">Sizes and Formulas</Label>
+                    <Label className="text-xl">Sizes</Label>
                   </AccordionTrigger>
                   <AccordionContent>
                     <ProductSizeAndFormula productSizes={productSize}/>

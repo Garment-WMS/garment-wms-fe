@@ -15,13 +15,15 @@ import { CustomColumnDef } from '@/types/CompositeTable';
 import { DeliveryType, ImportRequest, Status } from '@/types/ImportRequestType';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getStatusBadgeVariant } from '../helper';
 import { useGetImportReceipts } from '@/hooks/useGetImportReceipts';
 import { ImportReceipt, ImportReceiptType } from '@/types/ImportReceipt';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { convertTitleToTitleCase } from '@/helpers/convertTitleToCaseTitle';
+import { getAllPurchaseOrdersNoPage } from '@/api/services/purchaseOrder';
+import { Filter } from '@/pages/ImportRequests/management/components/ImportRequestList';
 type Props = {};
 
 const ImportReceiptTable = (props: Props) => {
@@ -65,6 +67,7 @@ const ImportReceiptTable = (props: Props) => {
           totalFiltered: pageMeta.totalPages
         }
       : undefined;
+      const [purchaseOrderFilter, setPurchaseOrderFilter] = useState<Filter[]>([]);
 
   function formatString(input: string): string {
     return input
@@ -78,10 +81,28 @@ const ImportReceiptTable = (props: Props) => {
     const typeObj = DeliveryType.find((s) => s.value === type);
     return typeObj ? typeObj.label : 'N/A'; // Default variant if no match is found
   };
-
+  const fetchPurchaseOrder = async () => {
+    try {
+      const res = await getAllPurchaseOrdersNoPage();
+      const uniqueCodes = new Set();
+      const mappedArray = res.reduce((acc: any, item: any) => {
+        if (item.code && !uniqueCodes.has(item.code)) {
+          uniqueCodes.add(item.code);
+          acc.push({ label: item.code, value: item.code });
+        }
+        return acc;
+      }, []);
+      setPurchaseOrderFilter(mappedArray);
+    } catch (error) {
+      console.error('Failed to fetch purchase order data', error);
+    }
+  };
+  useEffect(() => {
+    fetchPurchaseOrder();
+  }, []);
   const importRequestColumn: CustomColumnDef<ImportReceipt>[] = [
     {
-      header: 'Import receipt code',
+      header: 'Import receipt',
       accessorKey: 'code',
       enableColumnFilter: false,
       cell: ({ row }) => {
@@ -94,7 +115,7 @@ const ImportReceiptTable = (props: Props) => {
       }
     },
     {
-      header: 'Import request code',
+      header: 'Import request',
       accessorKey: 'code',
       enableColumnFilter: false,
       enableSorting: false,
@@ -103,6 +124,27 @@ const ImportReceiptTable = (props: Props) => {
         return (
           <Link to={`/import-request/${id}`} className="hover:underline text-bluePrimary">
             <div>{row.original.inspectionReport?.inspectionRequest.importRequest?.code}</div>
+          </Link>
+        );
+      }
+    },
+    {
+      header: 'Purchase Order',
+      accessorKey: 'inspectionReport.inspectionRequest.importRequest.poDelivery.purchaseOrder.code',
+      enableColumnFilter: true,
+      enableSorting: false,
+      filterOptions: purchaseOrderFilter.map((delivery) => ({
+        label: delivery.label,
+        value: delivery.value
+      })),
+      cell: ({ row }) => {
+        const code = row.original.inspectionReport?.inspectionRequest?.importRequest?.poDelivery?.purchaseOrder?.code;
+        const id = row.original.inspectionReport?.inspectionRequest?.importRequest?.poDelivery?.purchaseOrder?.id;
+        if (!code)
+          return 'N/A'
+        return (
+          <Link to={`/purchase-order/${id}`} className="hover:underline text-bluePrimary">
+            <div>{code}</div>
           </Link>
         );
       }
@@ -117,6 +159,7 @@ const ImportReceiptTable = (props: Props) => {
       })),
       cell: ({ row }) => <div>{convertTitleToTitleCase(row.original.type)}</div>
     },
+
     {
       header: 'Assigned to',
       accessorKey: 'creator',
@@ -138,31 +181,6 @@ const ImportReceiptTable = (props: Props) => {
                 ' ' +
                 row?.original?.warehouseStaff?.account?.firstName}
             </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      header: 'Approved by',
-      accessorKey: 'creator',
-      enableColumnFilter: false,
-      cell: ({ row }) => (
-        <div className="flex">
-          <div className="flex justify-center items-center">
-            <Avatar className="mr-2 flex justify-center items-center">
-              <AvatarImage
-                src={row?.original?.warehouseManager?.account?.avatarUrl as string | undefined}
-              />
-              <AvatarFallback className="w-full h-full text-center">
-                {row?.original?.warehouseManager?.account?.lastName.slice(0, 1) +
-                  row?.original?.warehouseManager?.account?.firstName.slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
-            <h4>
-              {row?.original?.warehouseManager?.account?.lastName +
-                ' ' +
-                row?.original?.warehouseManager?.account?.firstName}
-            </h4>
           </div>
         </div>
       )

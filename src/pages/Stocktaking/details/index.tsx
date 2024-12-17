@@ -345,13 +345,27 @@ export default function StocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            {(inventoryReport.status !== 'IN_PROGRESS') && (
+                            {(inventoryReport.status === 'REPORTED') && (
                               <div>
                               <h4 className="font-semibold text-muted-foreground">
                                 Expected Quantity: {detail.totalExpectedQuantity}{' '}
                               </h4>
                               <h4 className="font-semibold text-muted-foreground">
                                 Actual Quantity: {detail.totalActualQuantity}{' '}
+                              </h4>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Quantity of difference:{' '}
+                                {detail.totalActualQuantity - detail.totalExpectedQuantity}
+                              </h4>
+                            </div>
+                            )}
+                            {(inventoryReport.status === 'FINISHED') && (
+                              <div>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Expected Quantity: {detail.totalExpectedQuantity}{' '}
+                              </h4>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Actual Quantity: {detail.totalManagerQuantityConfirm}{' '}
                               </h4>
                               <h4 className="font-semibold text-muted-foreground">
                                 Quantity of difference:{' '}
@@ -498,13 +512,27 @@ export default function StocktakingDetails() {
                                 </h4>
                               </div>
                             </div>
-                            {(inventoryReport.status !== 'IN_PROGRESS') && (
+                            {(inventoryReport.status === 'REPORTED') && (
                               <div>
                               <h4 className="font-semibold text-muted-foreground">
                                 Expected Quantity: {detail.totalExpectedQuantity}{' '}
                               </h4>
                               <h4 className="font-semibold text-muted-foreground">
                                 Actual Quantity: {detail.totalActualQuantity}{' '}
+                              </h4>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Quantity of difference:{' '}
+                                {detail.totalActualQuantity - detail.totalExpectedQuantity}
+                              </h4>
+                            </div>
+                            )}
+                            {(inventoryReport.status === 'FINISHED') && (
+                              <div>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Expected Quantity: {detail.totalExpectedQuantity}{' '}
+                              </h4>
+                              <h4 className="font-semibold text-muted-foreground">
+                                Actual Quantity: {detail.totalManagerQuantityConfirm}{' '}
                               </h4>
                               <h4 className="font-semibold text-muted-foreground">
                                 Quantity of difference:{' '}

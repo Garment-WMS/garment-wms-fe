@@ -403,7 +403,7 @@ const ExportRequestDetail = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="font-primary text-xl font-bold my-2">Export Request Details</div>
+      <div className="font-primary text-xl font-bold my-2">Export request details</div>
       <div className="pb-4">
         <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
           <DataTable columns={DetailsColumn} data={formattedDetails} />
@@ -412,7 +412,7 @@ const ExportRequestDetail = () => {
 
       {formattedReceiptDetails.length > 0 && (
         <div>
-          <div className="font-primary text-xl font-bold my-2">Material Export Receipt Details</div>
+          <div className="font-primary text-xl font-bold my-2">Material export receipt details</div>
           <div className="mb-4 w-auto bg-white rounded-xl shadow-sm border">
             <DataTable columns={ReceiptDetailsColumn} data={formattedReceiptDetails} />
           </div>

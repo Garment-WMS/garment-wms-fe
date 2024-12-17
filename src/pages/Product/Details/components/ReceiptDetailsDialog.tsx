@@ -22,6 +22,7 @@ import { productApi, productVariantApi } from '@/api/services/productApi';
 import { AlertTriangle, Calendar, Package, User } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Separator } from '@/components/ui/Seperator';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 type Props = {
   id: string;
   isOpen: boolean;
@@ -214,44 +215,34 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
               </Card>
             </TabsContent>
             <TabsContent value="adjustments">
-              <Card>
+            <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">Receipt Adjustments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {productReceipt.receiptAdjustment.length > 0 ? (
-                    <div className="space-y-4">
-                      {productReceipt.receiptAdjustment.map((adjustment, index) => (
-                        <Card key={index}>
-                          <CardHeader>
-                            <CardTitle className="text-lg">Adjustment #{index + 1}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <p className="font-semibold">Before Quantity</p>
-                                <p>{adjustment.beforeAdjustQuantity}</p>
-                              </div>
-                              <div>
-                                <p className="font-semibold">After Quantity</p>
-                                <p>{adjustment.afterAdjustQuantity}</p>
-                              </div>
-                            </div>
-                            <div>
-                              <p className="font-semibold">Status</p>
-                              <Badge>{adjustment.status}</Badge>
-                            </div>
-                            <div>
-                              <p className="font-semibold">Adjusted At</p>
-                              <p>{format(new Date(adjustment.adjustedAt), 'PPP')}</p>
-                            </div>
-                           
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                {productReceipt.receiptAdjustment.length > 0 ? (
+                    <table className="w-full ">
+                      <thead>
+                        <tr>
+                          <th className="text-left">Before</th>
+                          <th className="text-left">After</th>
+                          <th className="text-left">Status</th>
+                          <th className="text-left">Adjusted At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {productReceipt.receiptAdjustment.map((adjustment, index) => (
+                          <tr key={index}>
+                            <td>{adjustment.beforeAdjustQuantity} units</td>
+                            <td>{adjustment.afterAdjustQuantity} units</td>
+                            <td><Badge>{adjustment.status}</Badge></td>
+                            <td>{convertDateWithTime(adjustment.adjustedAt)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   ) : (
-                    <p>No adjustments have been made to this receipt.</p>
+                    <p>No adjustments have been made to this product receipt.</p>
                   )}
                 </CardContent>
               </Card>

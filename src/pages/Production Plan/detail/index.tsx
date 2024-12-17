@@ -242,6 +242,12 @@ const ExpandableSizeDetail: React.FC<{ sizeDetail: any; isLast: boolean }> = ({
   console.log(sizeDetail);
   return (
     <div className={`pt-4 ${!isLast ? 'border-b border-gray-300 pb-4' : ''}`}>
+      <div className="flex flex-row justify-end mb-3">
+        <p className="text-xs font-medium text-gray-700">
+          Size Code:{' '}
+          <span className="text-md font-semibold text-blue-600">{sizeDetail.productSize.code}</span>
+        </p>
+      </div>
       <div className="flex justify-between items-center mb-2">
         <div className="flex flex-col">
           <h4 className="text-sm font-medium text-gray-700">

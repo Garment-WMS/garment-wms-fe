@@ -35,6 +35,11 @@ const ProductionStaffMenu: MenuProps[] = [
     renderIcon: <LuContainer size={iconSize} />,
     link: '/production-batch'
   },
+    {
+      title: 'Purchase Order',
+      renderIcon: <TbShoppingCartCog size={iconSize} />,
+      link: '/purchase-order'
+    },
   {
     title: 'Import/Export',
     renderIcon: <CgArrowsExchangeAltV size={iconSize} />,

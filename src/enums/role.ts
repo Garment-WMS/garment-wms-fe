@@ -18,11 +18,11 @@ export const Role = [
   {
     value: 'production-department',
     label: 'Production Department'
-  },
-  {
-    value: 'inspection-department',
-    label: 'Inspection Department'
   }
+  // {
+  //   value: 'inspection-department',
+  //   label: 'Inspection Department'
+  // }
 ];
 
 export const ROLES_ENUM = {

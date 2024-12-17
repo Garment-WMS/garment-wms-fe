@@ -54,6 +54,7 @@ export function PurchaseOrderDeliveryTable({
   poId,
   poDeliveries
 }: PurchaseOrderDeliveryTableProps) {
+  console.log(poDeliveries);
   const handleNavigateToPoDelivery = (id: string) => {};
   return (
     <Table>
@@ -71,11 +72,7 @@ export function PurchaseOrderDeliveryTable({
         {poDeliveries.map((delivery) => (
           <TableRow key={delivery.id}>
             <TableCell>
-              <Link
-                className="text-bluePrimary hover:underline"
-                to={`/purchase-order/${poId}/po-delivery/${delivery.id}`}>
-                {delivery.code}
-              </Link>
+              <span className="text-bluePrimary ">{delivery.code}</span>
             </TableCell>
             <TableCell>
               {delivery?.importRequest?.[0] ? (
