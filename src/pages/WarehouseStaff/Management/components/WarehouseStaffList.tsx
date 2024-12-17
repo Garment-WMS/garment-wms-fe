@@ -27,7 +27,8 @@ import avatar from '@/assets/images/avatar.png';
 const Role = [
   { value: 'WAREHOUSE_STAFF', label: 'Warehouse Staff' },
   { value: 'PURCHASING_STAFF', label: 'Purchasing Staff' },
-  { value: 'PRODUCTION_DEPARTMENT', label: 'Production Department' }
+  { value: 'PRODUCTION_DEPARTMENT', label: 'Production Department' },
+  { value: 'INSPECTION_DEPARTMENT', label: 'Inspection Department' }
 ];
 
 const WarehouseStaffList: React.FC = () => {
