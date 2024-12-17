@@ -72,9 +72,7 @@ export function PurchaseOrderDeliveryTable({
         {poDeliveries.map((delivery) => (
           <TableRow key={delivery.id}>
             <TableCell>
-              <Link className="text-bluePrimary hover:underline" to={`/purchase-order/${poId}`}>
-                {delivery.code}
-              </Link>
+              <span className="text-bluePrimary ">{delivery.code}</span>
             </TableCell>
             <TableCell>
               {delivery?.importRequest?.[0] ? (
