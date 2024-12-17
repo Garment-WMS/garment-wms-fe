@@ -17,6 +17,7 @@ export type MaterialExportReceipt = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  quantityByPack: number;
   warehouseStaff: User;
   materialExportRequest: MaterialExportRequest;
   materialExportReceiptDetail: MaterialExportReceiptDetail[];

@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/Badge"
 import { Separator } from '@/components/ui/Seperator';
 import { ArrowRight, Calendar, Package } from 'lucide-react';
+import { convertDateWithTime } from '@/helpers/convertDateWithTime';
 type Props = {
   id: string;
   isOpen: boolean;
@@ -107,10 +108,10 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
                     <Separator />
                     <div className="space-y-2">
                       <p>
-                        <strong>Quantity:</strong> {materialReceipt.quantityByPack} {materialReceipt.materialPackage.packUnit}
+                        <strong>Import Quantity:</strong> {materialReceipt.quantityByPack} {materialReceipt.materialPackage.packUnit}
                       </p>
                       <p>
-                        <strong>Remaining:</strong> {materialReceipt.remainQuantityByPack} {materialReceipt.materialPackage.packUnit}
+                        <strong>Remaining Quantity:</strong> {materialReceipt.remainQuantityByPack} {materialReceipt.materialPackage.packUnit}
                       </p>
                       <p>
                         <strong>Units per {materialReceipt.materialPackage.packUnit}:</strong> {materialReceipt.materialPackage.uomPerPack} {materialReceipt.materialPackage.materialVariant.material.materialUom.uomCharacter}
@@ -143,6 +144,10 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
                       <p>{materialReceipt.importReceipt.type}</p>
                     </div>
                     <div className="space-y-2">
+                      <p className="font-semibold">Quantity</p>
+                      <p>{materialReceipt.quantityByPack} {materialReceipt.materialPackage.packUnit}</p>
+                    </div>
+                    <div className="space-y-2">
                       <p className="font-semibold">Started At</p>
                       <p>{format(new Date(materialReceipt.importReceipt.startedAt), 'PPP')}</p>
                     </div>
@@ -167,23 +172,29 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
                   <CardTitle className="text-xl">Export Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {materialReceipt.materialExportReceiptDetail.length > 0 ? (
-                    <div className="space-y-4">
-                      {materialReceipt.materialExportReceiptDetail.map((export_, index) => (
-                        <Card key={index}>
-                          <CardHeader>
-                            <CardTitle className="text-lg">Export #{index + 1}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <p><strong>Export Code:</strong> {export_.materialExportReceipt.code}</p>
-                            <p><strong>Quantity:</strong> {export_.quantityByPack} {materialReceipt.materialPackage.packUnit}</p>
-                            <p><strong>Type:</strong> {export_.materialExportReceipt.type}</p>
-                            <p><strong>Status:</strong> {export_.materialExportReceipt.status}</p>
-                            <p><strong>Date:</strong> {format(new Date(export_.materialExportReceipt.startedAt), 'PPP')}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                {materialReceipt.materialExportReceiptDetail.length > 0 ? (
+                    <table className="w-full">
+                      <thead>
+                        <tr>
+                          <th className="text-left">Export Code</th>
+                          <th className="text-left">Quantity</th>
+                          <th className="text-left">Type</th>
+                          <th className="text-left">Status</th>
+                          <th className="text-left">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {materialReceipt.materialExportReceiptDetail.map((export_, index) => (
+                          <tr key={index}>
+                            <td>{export_.materialExportReceipt.code}</td>
+                            <td>{export_.quantityByPack} {materialReceipt.materialPackage.packUnit}</td>
+                            <td>{export_.materialExportReceipt.type}</td>
+                            <td><Badge>{export_.materialExportReceipt.status}</Badge></td>
+                            <td>{format(new Date(export_.materialExportReceipt.startedAt), 'PPP')}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   ) : (
                     <p>No export details available for this material receipt.</p>
                   )}
@@ -196,26 +207,27 @@ const ReceiptDetailsDialog = ({ id, isOpen, setIsOpen }: Props) => {
                   <CardTitle className="text-xl">Receipt Adjustments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {materialReceipt.receiptAdjustment.length > 0 ? (
-                    <div className="space-y-4">
-                      {materialReceipt.receiptAdjustment.map((adjustment, index) => (
-                        <Card key={index}>
-                          <CardHeader>
-                            <CardTitle className="text-lg">Adjustment #{index + 1}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <span>{adjustment.beforeAdjustQuantity}</span>
-                              <ArrowRight className="w-4 h-4" />
-                              <span>{adjustment.afterAdjustQuantity}</span>
-                              <span>{materialReceipt.materialPackage.packUnit}</span>
-                            </div>
-                            <p><strong>Status:</strong> <Badge>{adjustment.status}</Badge></p>
-                            <p><strong>Adjusted At:</strong> {format(new Date(adjustment.adjustedAt), 'PPP')}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                {materialReceipt.receiptAdjustment.length > 0 ? (
+                    <table className="w-full ">
+                      <thead>
+                        <tr>
+                          <th className="text-left">Before</th>
+                          <th className="text-left">After</th>
+                          <th className="text-left">Status</th>
+                          <th className="text-left">Adjusted At</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {materialReceipt.receiptAdjustment.map((adjustment, index) => (
+                          <tr key={index}>
+                            <td>{adjustment.beforeAdjustQuantity} {materialReceipt.materialPackage.packUnit}</td>
+                            <td>{adjustment.afterAdjustQuantity} {materialReceipt.materialPackage.packUnit}</td>
+                            <td><Badge>{adjustment.status}</Badge></td>
+                            <td>{convertDateWithTime(adjustment.adjustedAt)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   ) : (
                     <p>No adjustments have been made to this material receipt.</p>
                   )}
