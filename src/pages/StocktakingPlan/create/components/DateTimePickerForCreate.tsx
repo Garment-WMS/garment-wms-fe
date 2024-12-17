@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
-import { format, isAfter } from 'date-fns'
+import { format, isAfter, isToday } from 'date-fns'
 import { Calendar, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/Label"
@@ -28,6 +28,9 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
     }
   }, [startTime, endTime])
 
+  const businessHoursStart = 9; // 9:00 AM
+  const businessHoursEnd = 18; // 6:00 PM
+
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date)
     setStartTime(null)
@@ -45,6 +48,26 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
       onDateTimeChange(newStartDate, null)
     }
   }
+  const getMinTimeForStart = () => {
+    if (!selectedDate) return undefined;
+
+    const now = new Date();
+    const isSameDay = isToday(selectedDate);
+
+    if (isSameDay) {
+      // If today, the minimum time is the later of the current time or 9:00 AM
+      const minToday = new Date();
+      minToday.setSeconds(0, 0);
+      const businessStartTime = new Date(selectedDate);
+      businessStartTime.setHours(businessHoursStart, 0, 0, 0);
+      return now > businessStartTime ? now : businessStartTime;
+    }
+
+    // Default to 9:00 AM for other days
+    const businessStartTime = new Date(selectedDate);
+    businessStartTime.setHours(businessHoursStart, 0, 0, 0);
+    return businessStartTime;
+  };
 
   const handleEndTimeChange = (time: Date | null) => {
     if (startTime && time && isAfter(time, startTime)) {
@@ -93,8 +116,8 @@ export function DateTimePickerForCreate({ onDateTimeChange }: DateTimePickerProp
                 timeIntervals={15}
                 timeCaption="Time"
                 dateFormat="h:mm aa"
-                minTime={new Date(selectedDate.setHours(9, 0, 0))}
-                maxTime={new Date(selectedDate.setHours(18, 0, 0))}
+                minTime={getMinTimeForStart()}
+                maxTime={new Date(selectedDate.setHours(businessHoursEnd, 0, 0, 0))}
                 className="w-full pl-10 pr-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 placeholderText="Select start time"
               />
