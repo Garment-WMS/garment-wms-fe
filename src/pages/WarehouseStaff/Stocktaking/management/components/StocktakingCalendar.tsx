@@ -20,6 +20,7 @@ import { InventoryReportPlan, InventoryReportPlanResponse } from '@/types/Invent
 import { cn } from '@/lib/utils';
 import Loading from '@/components/common/Loading';
 import CalendarSkeleton from './CalendarSkeleton';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
 
 type Event = {
   date: Date;
@@ -415,9 +416,11 @@ export default function StocktakingCalendar() {
           <Button variant="outline" size="icon" onClick={() => updateMonth(1)}>
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="default" onClick={() => navigate('/stocktaking/plan/create')}>
-            Create plan
-          </Button>
+              <WarehouseManagerGuardDiv>
+                      <Button variant="default" onClick={() => navigate('/stocktaking/plan/create')}>
+                      Create plan
+                    </Button>
+                    </WarehouseManagerGuardDiv>
         </div>
       </CardHeader>
       <CardContent>
