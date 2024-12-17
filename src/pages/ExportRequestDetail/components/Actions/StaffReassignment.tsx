@@ -232,7 +232,7 @@ export default function ReassingStaffPopup({
     try {
       setLoading(true);
       const res = await reAssignStaffForExportRequest(
-        exportRequest.warehouseStaff.id,
+        staff?.id,
         id as string,
         selectedWareHouseTimeFrame?.expectedStartedAt,
         selectedWareHouseTimeFrame?.expectedFinishedAt

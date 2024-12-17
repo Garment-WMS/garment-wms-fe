@@ -239,10 +239,10 @@ export default function ReassingStaffPopup({
       const res = await reassignStaffFn(
         role,
         id as string,
-        importRequest?.warehouseStaff.id,
+        staff?.id,
         selectedWareHouseTimeFrame.expectedStartedAt,
         selectedWareHouseTimeFrame.expectedFinishedAt,
-        importRequest?.inspectionRequest[0]?.inspectionDepartment?.id,
+        staff?.id,
         selectedWareHouseTimeFrame.expectedStartedAt,
         selectedWareHouseTimeFrame.expectedFinishedAt
       );
