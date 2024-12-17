@@ -195,7 +195,7 @@ export default function WarehouseStaffAssignment({
               </Link>
             )}
           {currentStatus == 'AWAIT_TO_EXPORT' && (
-            <WarehouseManagerGuardDiv>
+            <WarehouseManagerGuardDiv className="ml-4">
               <ReassingStaffPopup
                 onApproval={onApproval}
                 exportRequest={exportRequest}

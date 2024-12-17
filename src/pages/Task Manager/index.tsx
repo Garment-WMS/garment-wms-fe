@@ -305,7 +305,7 @@ export default function TaskManagerOverview() {
                 components={{
                   event: EventComponent
                 }}
-                className="min-h-[600px]"
+                className="min-h-[800px]"
               />
             </CardContent>
           </Card>

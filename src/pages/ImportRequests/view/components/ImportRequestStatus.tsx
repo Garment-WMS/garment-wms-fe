@@ -199,14 +199,6 @@ const ImportRequestStatus = (props: Props) => {
             />
           </div>
         )}
-        {finishedAt && (
-          <div className="flex justify-center items-center gap-2 font-primary text-sm">
-            Finished at :{' '}
-            <div className="font-primary text-xs text-green-600">
-              {convertDateWithTime(finishedAt)}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

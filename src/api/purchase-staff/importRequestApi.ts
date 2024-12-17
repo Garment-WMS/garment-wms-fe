@@ -68,7 +68,7 @@ export const importRequestApi = {
   ) =>
     post(`/import-request/reassign`, {
       importRequestId,
-      inspectionStaffId,
+      inspectionDepartmentId: inspectionStaffId,
       inspectExpectedStartedAt,
       inspectExpectedFinishedAt
     })
