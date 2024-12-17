@@ -7,7 +7,7 @@ export const accountApi = {
   uploadAvatar: (file: File | Blob) => {
     const formData = new FormData();
     formData.append('file', file);
-    console.log(file);
+    console.log(formData);
     return post(`/account/avatar`, formData); // Using a multipart/form-data POST
   }
 };

@@ -180,7 +180,7 @@ const WarehouseStaffList: React.FC = () => {
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Warehouse Staff List</h1>
-        <AddStaffPopup />
+
         <div className="w-64">
           <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value)}>
             <SelectTrigger>
@@ -196,6 +196,7 @@ const WarehouseStaffList: React.FC = () => {
           </Select>
         </div>
       </div>
+
       {error && <div className="text-red-500 text-center">{error}</div>}
       <div className="overflow-auto h-[700px]">
         <TanStackBasicTable
@@ -212,6 +213,7 @@ const WarehouseStaffList: React.FC = () => {
           searchColumnId="account.username"
         />
       </div>
+      <AddStaffPopup />
     </div>
   );
 };
