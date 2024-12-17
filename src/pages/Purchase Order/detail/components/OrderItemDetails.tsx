@@ -94,8 +94,13 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
     const label = 'Create Import Request';
     const color = 'bg-primaryLight';
 
-    // Render button only if the delivery status is PENDING
-    if (delivery.status === PurchaseOrderDeliveryStatus.PENDING) {
+    // Check if there are any Pending deliveries
+    const hasOtherPending = poDelivery.some(
+      (del) => del.status === PurchaseOrderDeliveryStatus.PENDING && del.id !== delivery.id
+    );
+
+    // If the delivery is Pending and NOT isExtra -> Always show the button
+    if (delivery.status === PurchaseOrderDeliveryStatus.PENDING && !delivery.isExtra) {
       return (
         <TooltipProvider>
           <Tooltip delayDuration={5}>
@@ -120,8 +125,37 @@ const OrderItemDetails: React.FC<OrderItemDetailsProps> = ({
       );
     }
 
-    // Return null if the delivery status is not PENDING
-    return null;
+    // If the delivery is Pending and IS isExtra -> Only show button if no other Pending deliveries exist
+    if (
+      delivery.status === PurchaseOrderDeliveryStatus.PENDING &&
+      delivery.isExtra &&
+      !hasOtherPending
+    ) {
+      return (
+        <TooltipProvider>
+          <Tooltip delayDuration={5}>
+            <TooltipTrigger asChild>
+              <Button
+                className={`w-30 ${color}`}
+                size={'sm'}
+                onClick={() => {
+                  if (poId) {
+                    navigate(path, { state: { delivery, poNumber } });
+                  }
+                }}>
+                {label}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="mb-1" side="top">
+              <TooltipArrow />
+              <p>{label}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    return null; // Button will not render otherwise
   };
 
   return (
