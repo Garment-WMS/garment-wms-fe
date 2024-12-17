@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const [importReceipts, setImportReceipts] = useState<any[]>([]);
   const [exportReceipts, setExportReceipts] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-    from: new Date(new Date().setDate(new Date().getDate() - 30)), // Default to last 30 days
+    from: new Date(new Date().setDate(new Date().getDate() - 360)), // Default to last 30 days
     to: new Date()
   });
 
@@ -180,8 +180,10 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
+                orientLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
+                enableParentLabel={false}
                 labelTextColor={{
                   from: 'color',
                   modifiers: [['darker', 1.2]]
@@ -211,6 +213,8 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
+                orientLabel={false}
+                enableParentLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
                 label={(e) => e.id + ' (' + e.formattedValue + ')'}

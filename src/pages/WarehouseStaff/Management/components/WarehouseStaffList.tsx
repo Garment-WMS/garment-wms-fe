@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { get } from '@/api/ApiCaller';
 import avatar from '@/assets/images/avatar.png';
+import { AddStaffPopup } from './add-staff-popup';
 
 const WarehouseStaffList: React.FC = () => {
   const navigate = useNavigate();
@@ -158,6 +159,7 @@ const WarehouseStaffList: React.FC = () => {
     <div className="flex flex-col px-3 pt-3 pb-4 w-auto bg-white rounded-xl shadow-sm border">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primaryLight">Warehouse Staff List</h1>
+        <AddStaffPopup />
       </div>
       {error && <div className="text-red-500 text-center">{error}</div>}
       <div className="overflow-auto h-[700px]">
