@@ -6,10 +6,22 @@ export const accountApi = {
   createNewAccount: (data: CreateAccountData) => post(`/auth/sign-up`, data),
   uploadAvatar: (file: File | Blob) => {
     const formData = new FormData();
+    const config = {
+      'Content-Type': 'multipart/form-data'
+    };
     formData.append('file', file);
     console.log(formData);
-    return post(`/account/avatar`, formData); // Using a multipart/form-data POST
-  }
+    return post(`/account/avatar`, formData,undefined,config); // Using a multipart/form-data POST
+  },
+  uploadAvatarById: (id: string,file: File | Blob) => {
+    const formData = new FormData();
+    const config = {
+      'Content-Type': 'multipart/form-data'
+    };
+    formData.append('file', file);
+    console.log(formData);
+    return post(`/account/avatar/${id}`, formData,undefined,config); // Using a multipart/form-data POST
+  },
 };
 
 export const getAccountByRole = async ({ role }: any): Promise<any> => {
@@ -26,7 +38,10 @@ export const uploadAvatar = async (file: File | Blob): Promise<any> => {
   const res = await privateCall(accountApi.uploadAvatar(file));
   return res.data;
 };
-
+export const uploadAvatarById = async (id:string,file: File | Blob): Promise<any> => {
+  const res = await privateCall(accountApi.uploadAvatarById(id,file));
+  return res.data;
+};
 // Define a TypeScript interface for type safety
 interface CreateAccountData {
   email: string;

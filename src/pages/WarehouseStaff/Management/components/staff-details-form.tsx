@@ -34,7 +34,7 @@ const formSchema = z.object({
   password: z.string().min(8, {
     message: 'Password must be at least 8 characters.'
   }),
-  role: z.enum(['PURCHASING_STAFF', 'ADMIN', 'MANAGER', 'WAREHOUSE_STAFF'], {
+  role: z.enum(['PURCHASING_STAFF', 'PRODUCTION_DEPARTMENT', 'WAREHOUSE_STAFF'], {
     required_error: 'Please select a role.'
   }),
   phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, {
@@ -141,8 +141,7 @@ export function StaffDetailsForm({ onSubmit }) {
                 <SelectContent>
                   <SelectItem value="PURCHASING_STAFF">Purchasing Staff</SelectItem>
                   <SelectItem value="WAREHOUSE_STAFF">Warehouse Staff</SelectItem>
-                  <SelectItem value="MANAGER">Manager</SelectItem>
-                  <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                  <SelectItem value="PRODUCTION_DEPARTMENT">Production Department</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

@@ -189,7 +189,6 @@ export default function DashboardPage() {
                   modifiers: [['darker', 1.2]]
                 }}
                 parentLabelPosition="left"
-                orientLabel={false}
                 parentLabelTextColor={{
                   from: 'color',
                   modifiers: [['darker', 2]]

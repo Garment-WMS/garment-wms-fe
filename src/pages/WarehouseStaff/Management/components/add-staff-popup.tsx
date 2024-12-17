@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { StaffDetailsForm } from './staff-details-form';
 import { AvatarUpload } from './avatar-upload';
 import { ConfirmationDialog } from './confirmation-dialog';
-import { createNewAccount, uploadAvatar } from '@/api/account/accountApi';
+import { createNewAccount, uploadAvatar, uploadAvatarById } from '@/api/account/accountApi';
 import { toast } from '@/hooks/use-toast';
 
 export function AddStaffPopup() {
@@ -16,7 +16,7 @@ export function AddStaffPopup() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationData, setConfirmationData] = useState({ title: '', description: '' });
   const [isLoading, setIsLoading] = useState(false);
-
+  const [user, setUser] = useState<any | null>(null);
   const handleStaffDetailsSubmit = (details: any) => {
     setStaffDetails(details);
     setConfirmationData({
@@ -43,6 +43,7 @@ export function AddStaffPopup() {
     if (step === 1 && staffDetails) {
       try {
         const result = await createNewAccount(staffDetails);
+        setUser(result.data);
         toast({
           title: 'Account created successfully',
           description: `New staff member ${staffDetails.firstName} ${staffDetails.lastName} has been added.`
@@ -65,7 +66,7 @@ export function AddStaffPopup() {
 
     setIsLoading(false);
   };
-
+console.log('us',user);
   const handleCancel = () => {
     setShowConfirmation(false);
   };
@@ -75,7 +76,8 @@ export function AddStaffPopup() {
 
     setIsLoading(true);
     try {
-      await uploadAvatar(file);
+      const id = user?.user?.id;
+      await uploadAvatarById(id,file);
       toast({
         title: 'Avatar uploaded successfully',
         description: "The staff member's avatar has been updated."

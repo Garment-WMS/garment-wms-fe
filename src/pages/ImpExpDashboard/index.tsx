@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const [importReceipts, setImportReceipts] = useState<any[]>([]);
   const [exportReceipts, setExportReceipts] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-    from: new Date(new Date().setDate(new Date().getDate() - 30)), // Default to last 30 days
+    from: new Date(new Date().setDate(new Date().getDate() - 360)), // Default to last 30 days
     to: new Date()
   });
 
@@ -125,7 +125,7 @@ export default function DashboardPage() {
       <div className="border-b"></div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold tracking-tight text-bluePrimary">LATEST IMPORT/EXPORT</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-bluePrimary">Latest import/export</h1>
           <div className="flex items-center gap-4">
             <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
             <Button onClick={fetchData}>Confirm</Button>
@@ -180,14 +180,15 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
+                orientLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
+                enableParentLabel={false}
                 labelTextColor={{
                   from: 'color',
                   modifiers: [['darker', 1.2]]
                 }}
                 parentLabelPosition="left"
-                orientLabel={false}
                 parentLabelTextColor={{
                   from: 'color',
                   modifiers: [['darker', 2]]
@@ -212,6 +213,8 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
+                orientLabel={false}
+                enableParentLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
                 label={(e) => e.id + ' (' + e.formattedValue + ')'}
