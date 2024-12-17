@@ -848,7 +848,7 @@ export default function WarehouseApproval({
                               materials exceed the requested amount.
                               <br />
                               Total exceed percentage:{' '}
-                              <span className="text-yellow-300 text-bold">
+                              <span className="text-yellow-700 text-bold">
                                 {totalExceedPercentage}%
                               </span>
                             </AlertDescription>
