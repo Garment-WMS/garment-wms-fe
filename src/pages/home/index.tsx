@@ -180,7 +180,6 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
-                orientLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
                 enableParentLabel={false}
@@ -213,7 +212,6 @@ export default function DashboardPage() {
                 identity="name"
                 value="loc"
                 valueFormat=".02s"
-                orientLabel={false}
                 enableParentLabel={false}
                 margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                 labelSkipSize={12}
@@ -222,7 +220,6 @@ export default function DashboardPage() {
                   from: 'color',
                   modifiers: [['darker', 1.2]]
                 }}
-                orientLabel={false}
                 parentLabelPosition="left"
                 parentLabelTextColor={{
                   from: 'color',
