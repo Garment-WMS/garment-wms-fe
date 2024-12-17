@@ -38,7 +38,7 @@ import { WarehouseManagerGuardDiv } from '@/components/authentication/createRole
 import { useSelector } from 'react-redux';
 import importRequestSelector from '@/pages/ImportRequests/slice/selector';
 
-type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'approved' | 'REJECTED' | 'INSPECTED';
+type ApprovalStatus = 'APPROVED' | 'ARRIVED' | 'INSPECTING' | 'REJECTED' | 'INSPECTED';
 
 interface WarehouseApprovalProps {
   requestId: string;
@@ -66,7 +66,7 @@ const getStatusDetails = (status: ApprovalStatus, importRequest: any) => {
       color: 'bg-blue-500 text-blue-950',
       icon: InfoIcon
     };
-  } else if (importRequest?.inspectionRequest[0]?.inspectionReport) {
+  } else if (importRequest?.inspectionRequest[0]?.inspectionReport || status == 'INSPECTING') {
     return {
       label: 'Approved',
       color: 'bg-green-500 text-green-950',
