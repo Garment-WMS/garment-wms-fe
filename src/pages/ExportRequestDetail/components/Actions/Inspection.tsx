@@ -61,12 +61,14 @@ const InspectionStep: React.FC<Props> = ({
       title: 'Pending Approval',
       content: (
         <WarehouseStaffAssignment
+          exportRequest={exportRequest}
           currentStatus={currentStatus}
           requestId={exportRequest?.code}
           exportRequestId={exportRequest?.id}
           warehouseManager={exportRequest?.warehouseManager}
           warehouseStaff={exportRequest?.warehouseStaff}
           lastedUpdate={exportRequest?.updatedAt}
+          onApproval={onApproval}
         />
       )
     },

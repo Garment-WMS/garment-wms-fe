@@ -2,6 +2,7 @@ import { UseExportRequestsInput, UseExportRequestsResponse } from '@/types/Impor
 import { get, post } from '../ApiCaller';
 import privateCall from '../PrivateCaller';
 import { FilterBuilder, FilterOperationType } from '@chax-at/prisma-filter-common';
+import { exportReceiptApi } from './exportReceiptApi';
 
 let url = '/material-export-request';
 
@@ -48,7 +49,35 @@ export const exportRequestApi = {
   },
   checkQuantity: (id: string) => get(`${url}/check-quantity/${id}`),
   checkQuantityByVariant: (materialVariantId: string, quantityByUom: number) =>
-    post(`${url}/check-quantity-variant`, { materialVariantId, quantityByUom })
+    post(`${url}/check-quantity-variant`, { materialVariantId, quantityByUom }),
+  reAssign: (
+    warehouseStaffId: string,
+    materialExportRequestId: string,
+    expectedStartedAt: string,
+    expectedFinishedAt: string
+  ) =>
+    post(`${url}/reassign`, {
+      warehouseStaffId,
+      materialExportRequestId,
+      expectedStartedAt,
+      expectedFinishedAt
+    })
+};
+export const reAssignStaffForExportRequest = async (
+  warehouseStaffId: string,
+  materialExportRequestId: string,
+  expectedStartedAt: string,
+  expectedFinishedAt: string
+) => {
+  const res = await privateCall(
+    exportRequestApi.reAssign(
+      warehouseStaffId,
+      materialExportRequestId,
+      expectedStartedAt,
+      expectedFinishedAt
+    )
+  );
+  return res.data;
 };
 export const getMaterialVariantFn = async (materialVariantId: string) => {
   const res = await privateCall(exportRequestApi.getMaterialReceipt(materialVariantId));
