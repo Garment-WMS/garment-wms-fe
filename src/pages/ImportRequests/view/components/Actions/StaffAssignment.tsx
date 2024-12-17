@@ -183,13 +183,13 @@ export default function AssignStaffPopup({
         newDate.setDate(newDate.getDate() - 1);
         // If the new date is Friday, go back to Thursday
         if (newDate.getDay() === 0) {
-          newDate.setDate(newDate.getDate() - 1);
+          newDate.setDate(newDate.getDate() - 2);
         }
       } else {
         // Go forward one day
         newDate.setDate(newDate.getDate() + 1);
         // If the new date is Friday, skip to Monday
-        if (newDate.getDay() === 5) {
+        if (newDate.getDay() === 6) {
           newDate.setDate(newDate.getDate() + 2);
         }
       }

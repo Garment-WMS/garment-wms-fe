@@ -181,11 +181,27 @@ export default function ReassingStaffPopup({
     setIsDialogOpen(false);
   };
   const handleDateChange = (direction: 'prev' | 'next') => {
-    setSelectedDate((prevDate) =>
-      direction === 'prev'
-        ? new Date(prevDate.setDate(prevDate.getDate() - 1))
-        : new Date(prevDate.setDate(prevDate.getDate() + 1))
-    );
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+
+      if (direction === 'prev') {
+        // Go back one day
+        newDate.setDate(newDate.getDate() - 1);
+        // If the new date is Friday, go back to Thursday
+        if (newDate.getDay() === 0) {
+          newDate.setDate(newDate.getDate() - 2);
+        }
+      } else {
+        // Go forward one day
+        newDate.setDate(newDate.getDate() + 1);
+        // If the new date is Friday, skip to Monday
+        if (newDate.getDay() === 6) {
+          newDate.setDate(newDate.getDate() + 2);
+        }
+      }
+
+      return newDate;
+    });
   };
 
   useEffect(() => {
