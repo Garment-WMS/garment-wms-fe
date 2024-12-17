@@ -8,10 +8,14 @@ import { useEffect, useState } from 'react';
 import { exportReceiptApi } from '@/api/services/exportReceiptApi';
 import privateCall from '@/api/PrivateCaller';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { WarehouseManagerGuardDiv } from '@/components/authentication/createRoleGuard';
+import ReassingStaffPopup from './StaffReassignment';
 
 type AssignmentStatus = 'WAITING FOR ASSIGNMENT' | 'EXPORTING' | 'EXPORTED' | 'declined';
 
 interface WarehouseStaffAssignmentProps {
+  exportRequest: any;
+  onApproval: () => void;
   currentStatus: string;
   requestId: string;
   exportRequestId: string;
@@ -67,6 +71,8 @@ const getInitials = (name: string | undefined): string => {
 };
 
 export default function WarehouseStaffAssignment({
+  onApproval,
+  exportRequest,
   currentStatus,
   requestId,
   exportRequestId,
@@ -86,7 +92,7 @@ export default function WarehouseStaffAssignment({
       currentStatus == 'EXPORTING' ||
       currentStatus == 'EXPORTED' ||
       currentStatus == 'PRODUCTION_APPROVED' ||
-      currentStatus == 'PRODUCTION_REJECTED'||
+      currentStatus == 'PRODUCTION_REJECTED' ||
       currentStatus == 'AWAIT_TO_EXPORT'
     ) {
       getExportReceipt();
@@ -179,9 +185,8 @@ export default function WarehouseStaffAssignment({
           {(currentStatus == 'EXPORTING' ||
             currentStatus == 'EXPORTED' ||
             currentStatus == 'PRODUCTION_APPROVED' ||
-            currentStatus == 'PRODUCTION_REJECTED'||
-            currentStatus == 'AWAIT_TO_EXPORT'
-          ) &&
+            currentStatus == 'PRODUCTION_REJECTED' ||
+            currentStatus == 'AWAIT_TO_EXPORT') &&
             exportReceipt && (
               <Link to={`/export-receipt/${exportReceipt[0]?.id}`}>
                 <Button variant={'default'} className="ml-4">
@@ -189,6 +194,16 @@ export default function WarehouseStaffAssignment({
                 </Button>
               </Link>
             )}
+          {currentStatus == 'AWAIT_TO_EXPORT' && (
+            <WarehouseManagerGuardDiv>
+              <ReassingStaffPopup
+                onApproval={onApproval}
+                exportRequest={exportRequest}
+                type={'warehouseStaffId'}
+                role="warehouse-staff"
+              />
+            </WarehouseManagerGuardDiv>
+          )}
         </div>
       </CardFooter>
     </Card>

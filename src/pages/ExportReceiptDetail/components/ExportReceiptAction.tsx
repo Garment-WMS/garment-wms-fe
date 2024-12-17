@@ -66,11 +66,6 @@ export function MaterialExportActions({
         </h1>
         <div className="space-x-2"></div>
         <div className="space-x-2 flex justify-center items=center">
-          {/* Print button */}
-          <Button variant="outline" onClick={reactToPrintFn}>
-            <Printer className="mr-2 h-4 w-4" />
-            Print
-          </Button>
           {/* Conditional rendering for export actions */}
           {status === 'EXPORTING' && (
             <WarehouseStaffGuardDiv>

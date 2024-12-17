@@ -123,22 +123,20 @@ const ProductionBatchDetail: React.FC = () => {
         <h1 className="text-2xl font-bold mb-4">Production Batch Details</h1>
         <div className="flex flex-row items-center gap-2">
           {status === ProductionBatchStatus.PENDING && (
-            <>
-              <ProductionDepartmentGuardDiv>
-                <Button onClick={() => handleNavigate(id as string, 'export-request')}>
-                  <FileInput size={18} color="#ffffff" className="mr-3" />
-                  Create Export
-                </Button>
-              </ProductionDepartmentGuardDiv>
-              {status === ProductionBatchStatus.PENDING && (
-                <ProductionDepartmentGuardDiv>
-                  <Button className="bg-red-600" onClick={() => setIsModalOpen(true)}>
-                    <SquareX size={18} color="#ffffff" className="mr-3" />
-                    Cancel Batch
-                  </Button>
-                </ProductionDepartmentGuardDiv>
-              )}
-            </>
+            <ProductionDepartmentGuardDiv>
+              <Button onClick={() => handleNavigate(id as string, 'export-request')}>
+                <FileInput size={18} color="#ffffff" className="mr-3" />
+                Create Export
+              </Button>
+            </ProductionDepartmentGuardDiv>
+          )}
+          {status === ProductionBatchStatus.PENDING && (
+            <ProductionDepartmentGuardDiv>
+              <Button className="bg-red-600" onClick={() => setIsModalOpen(true)}>
+                <SquareX size={18} color="#ffffff" className="mr-3" />
+                Cancel Batch
+              </Button>
+            </ProductionDepartmentGuardDiv>
           )}
           {status === ProductionBatchStatus.MANUFACTURING && (
             <>
