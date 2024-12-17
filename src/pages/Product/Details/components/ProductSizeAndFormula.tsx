@@ -20,25 +20,23 @@ export default function ProductSizeAndFormula({ productSizes }: Props) {
       {productSizes?.map((productSize) => (
         <Card key={productSize.id} className="w-full">
           <CardHeader>
-            <CardTitle className="text-xl">{productSize.name}</CardTitle>
+            <CardTitle className="text-xl">
+              <div className=" font-bold">{productSize.name}</div>{' '}
+              <div className="text-lg font-semibold">
+                Quantity: {productSize?.inventoryStock?.quantityByUom | 0} units
+              </div>
+            </CardTitle>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant="outline">{productSize.code}</Badge>
               <Badge variant="outline">Size: {productSize.size}</Badge>
-              <Badge variant="outline">
-                Width: {productSize.width} m
-              </Badge>
-              <Badge variant="outline">
-                Height: {productSize.height} m
-              </Badge>
-              <Badge variant="outline">
-                Leight: {productSize.length} m
-              </Badge>
+              <Badge variant="outline">Width: {productSize.width} m</Badge>
+              <Badge variant="outline">Height: {productSize.height} m</Badge>
+              <Badge variant="outline">Leight: {productSize.length} m</Badge>
               <Badge variant="outline">Weight: {productSize.weight} kg</Badge>
-              <Badge variant="outline">Quantity: {productSize?.inventoryStock?.quantityByUom | 0}</Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <Accordion type="single" collapsible className="w-full">
+            {/* <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="formulas">
                 <AccordionTrigger>Product Formulas</AccordionTrigger>
                 <AccordionContent>
@@ -123,7 +121,7 @@ export default function ProductSizeAndFormula({ productSizes }: Props) {
             
             }{' '}
               </AccordionItem>
-            </Accordion>
+            </Accordion> */}
           </CardContent>
         </Card>
       ))}
