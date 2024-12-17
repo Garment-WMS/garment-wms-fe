@@ -46,6 +46,9 @@ const ImportRequestStatus = (props: Props) => {
     : 'N/A';
   const cancelledAt = importRequest?.cancelledAt;
   const cancelledReason = importRequest?.cancelReason;
+  const rejectedAt = importRequest?.rejectAt;
+  const managerNote = importRequest?.managerNote;
+  const finishedAt = importRequest?.finishedAt;
 
   const getAssignedTo = (status: ImportRequest['status']) => {
     switch (status) {
@@ -150,9 +153,6 @@ const ImportRequestStatus = (props: Props) => {
         <div className="flex justify-center items-center gap-2 font-primary text-sm">
           Last updated : <div className="font-primary text-xs text-bluePrimary">{lastUpdated}</div>
         </div>
-        <div className="flex justify-center items-center gap-2 font-primary text-sm">
-          Closed at : <div className="font-primary text-xs text-bluePrimary">{closedAt}</div>
-        </div>
         {cancelledAt && (
           <div className="flex justify-center items-center gap-2 font-primary text-sm">
             Cancelled at :{' '}
@@ -174,6 +174,37 @@ const ImportRequestStatus = (props: Props) => {
               placeholder="Enter cancellation reason"
               className="w-full h-20 text-sm border-red-300 focus:border-red-500 focus:ring-red-500 placeholder-red-300"
             />
+          </div>
+        )}
+        {rejectedAt && (
+          <div className="flex justify-center items-center gap-2 font-primary text-sm">
+            Rejected at :{' '}
+            <div className="font-primary text-xs text-red-600">
+              {convertDateWithTime(rejectedAt)}
+            </div>
+          </div>
+        )}
+        {rejectedAt && (
+          <div className="flex flex-col gap-1 w-full">
+            <label htmlFor="cancelReason" className="">
+              Reject Reason:
+            </label>
+            <Input
+              id="cancelReason"
+              type="text"
+              value={managerNote?.toString()}
+              disabled={true}
+              placeholder="Enter cancellation reason"
+              className="w-full h-20 text-sm border-red-300 focus:border-red-500 focus:ring-red-500 placeholder-red-300"
+            />
+          </div>
+        )}
+        {finishedAt && (
+          <div className="flex justify-center items-center gap-2 font-primary text-sm">
+            Finished at :{' '}
+            <div className="font-primary text-xs text-green-600">
+              {convertDateWithTime(finishedAt)}
+            </div>
           </div>
         )}
       </div>

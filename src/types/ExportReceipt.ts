@@ -131,7 +131,7 @@ export type ExportReceipt = {
 };
 export const ExportReceiptType = [
   { label: 'For Production', value: 'PRODUCTION', variant: 'default' },
-  { label: 'Canceled', value: 'DISCHARGE', variant: 'destructive' }
+  { label: 'Dispose', value: 'DISPOSED', variant: 'destructive' }
 ];
 
 export const ExportReceiptStatus = [

@@ -219,3 +219,24 @@
 .rbc-day-slot .rbc-background-event {
   @apply border-none;
 }
+/* @media print {
+  @page {
+    size: 250mm 150mm;
+  }
+} */
+@page {
+  size: auto;
+  margin: 20mm;
+}
+
+@media print {
+  body {
+    width: 1024px !important;
+    height: 768px !important;
+    transform: scale(1);
+    transform-origin: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+}

@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/Badge';
 import { PiShirtFoldedBold } from 'react-icons/pi';
 import { GiCardboardBoxClosed } from 'react-icons/gi';
-
+import { ResponsiveTreeMap, TreeMap } from '@nivo/treemap';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -67,31 +67,33 @@ export default function DashboardPage() {
   const totalMaterialStock = dashboardData.numberOfMaterialStock;
 
   const getMaterialData = () => {
+    if (!dashboardData || !dashboardData.materialVariant) return null;
+
     const materials = dashboardData.materialVariant.map((material: any) => ({
       name: material.name,
-      value: material.quantity
+      loc: material.quantity
     }));
 
-    // Sort materials by quantity in descending order
-    materials.sort((a: any, b: any) => b.value - a.value);
-
-    // Calculate total quantity
-    const totalQuantity = materials.reduce((sum: number, material: any) => sum + material.value, 0);
-
-    // Calculate percentage and add color
-    return materials.map((material: any, index: number) => ({
-      ...material,
-      percentage: (material.value / totalQuantity) * 100,
-      color: `hsl(${(index * 40) % 360}, 70%, 60%)`
-    }));
+    return {
+      name: 'Raw Materials',
+      children: materials
+    };
   };
   // Helper function to get product data
   const getProductData = () => {
-    return dashboardData.productVariant.map((product: any) => ({
+    if (!dashboardData || !dashboardData.productVariant) return null;
+
+    const products = dashboardData.productVariant.map((product: any) => ({
       name: product.name,
-      value: product.quantity
+      loc: product.quantity
     }));
+
+    return {
+      name: 'Products',
+      children: products
+    };
   };
+
   const formatStatus = (status: string) => {
     // List of known statuses and their proper capitalization
     const statusMap: { [key: string]: string } = {
@@ -170,26 +172,63 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Raw Material Distribution</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-2 ">
-              {getMaterialData()
-                .slice(0, 10)
-                .map((material: any, i: number) => (
-                  <div
-                    key={i}
-                    className="rounded-lg p-2 text-white flex flex-col justify-between"
-                    style={{
-                      backgroundColor: material.color,
-                      gridRow: `span ${Math.ceil((material.percentage / 10) * 2)}` // Dynamic scaling
-                    }}
-                    title={`Name: ${material.name}\nValue: ${material.value}\nPercentage: ${material.percentage.toFixed(2)}%`}>
-                    <div>
-                      <div className="font-medium">{material.name}</div>
-                      <div className="text-sm opacity-80">{material.value} units</div>
-                    </div>
-                    <div className="text-xs mt-2">{material.percentage.toFixed(2)}%</div>
-                  </div>
-                ))}
+          <CardContent className="flex flex-col justify-center w-full">
+            <div style={{ height: '750px' }}>
+              <ResponsiveTreeMap
+                data={getMaterialData()}
+                label={(e) => e.id + ' (' + e.formattedValue + ')'}
+                identity="name"
+                value="loc"
+                valueFormat=".02s"
+                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                labelSkipSize={12}
+                labelTextColor={{
+                  from: 'color',
+                  modifiers: [['darker', 1.2]]
+                }}
+                parentLabelPosition="left"
+                parentLabelTextColor={{
+                  from: 'color',
+                  modifiers: [['darker', 2]]
+                }}
+                borderColor={{
+                  from: 'color',
+                  modifiers: [['darker', 0.1]]
+                }}
+                colors={{ scheme: 'paired' }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Distribution</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col justify-center w-full">
+            <div style={{ height: '750px' }}>
+              <ResponsiveTreeMap
+                data={getProductData()}
+                identity="name"
+                value="loc"
+                valueFormat=".02s"
+                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                labelSkipSize={12}
+                label={(e) => e.id + ' (' + e.formattedValue + ')'}
+                labelTextColor={{
+                  from: 'color',
+                  modifiers: [['darker', 1.2]]
+                }}
+                parentLabelPosition="left"
+                parentLabelTextColor={{
+                  from: 'color',
+                  modifiers: [['darker', 2]]
+                }}
+                borderColor={{
+                  from: 'color',
+                  modifiers: [['darker', 0.1]]
+                }}
+                colors={{ scheme: 'nivo' }}
+              />
             </div>
           </CardContent>
         </Card>
