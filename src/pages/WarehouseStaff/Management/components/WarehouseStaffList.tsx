@@ -213,7 +213,7 @@ const WarehouseStaffList: React.FC = () => {
           searchColumnId="account.username"
         />
       </div>
-      <AddStaffPopup />
+      <AddStaffPopup fetchWarehouseStaff={fetchWarehouseStaff}/>
     </div>
   );
 };

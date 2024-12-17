@@ -8,8 +8,10 @@ import { AvatarUpload } from './avatar-upload';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { createNewAccount, uploadAvatar, uploadAvatarById } from '@/api/account/accountApi';
 import { toast } from '@/hooks/use-toast';
-
-export function AddStaffPopup() {
+interface AddStaffPopupProps {
+  fetchWarehouseStaff: (role: string) => void;
+}
+export function AddStaffPopup({ fetchWarehouseStaff }: AddStaffPopupProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [staffDetails, setStaffDetails] = useState<any | null>(null);
@@ -66,7 +68,6 @@ export function AddStaffPopup() {
 
     setIsLoading(false);
   };
-console.log('us',user);
   const handleCancel = () => {
     setShowConfirmation(false);
   };
@@ -82,6 +83,7 @@ console.log('us',user);
         title: 'Avatar uploaded successfully',
         description: "The staff member's avatar has been updated."
       });
+      fetchWarehouseStaff('WAREHOUSE_STAFF');
       setOpen(false);
       setStep(1);
       setStaffDetails(null);
