@@ -135,20 +135,7 @@ const MaterialDisposeList = (props: Props) => {
       })),
       cell: ({ row }) => <div>{row.original.material.name}</div>
     },
-    {
-      header: 'Quantity By Package',
-      accessorKey: 'onHand',
-      enableColumnFilter: false,
-      enableSorting: false,
-
-      cell: ({ row }) => {
-        return (
-          <div className='flex'>
-            <div className=''>{row.original.onHand} {" "} {row?.original?.materialPackage[0]?.packUnit || "Units"}</div>
-          </div>
-        );
-      }
-    },
+   
     {
       header: 'Quantity By Uom',
       accessorKey: 'onHand',
@@ -176,7 +163,20 @@ const MaterialDisposeList = (props: Props) => {
         );
       }
     },
-   
+    {
+      header: 'Quantity By Package',
+      accessorKey: 'onHand',
+      enableColumnFilter: false,
+      enableSorting: false,
+
+      cell: ({ row }) => {
+        return (
+          <div className='flex'>
+            <div className=''>{row.original.onHand} {" "} {row?.original?.materialPackage[0]?.packUnit || "Units"}</div>
+          </div>
+        );
+      }
+    },
     {
       id: 'actions',
       enableHiding: false,

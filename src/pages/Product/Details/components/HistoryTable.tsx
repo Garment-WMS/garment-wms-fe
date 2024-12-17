@@ -7,21 +7,25 @@ import { useDebounce } from '@/hooks/useDebouce';
 import { useGetMaterialHistory } from '@/hooks/useGetMaterialHistory';
 import { useGetProductHistory } from '@/hooks/useGetProductHistory';
 import { CustomColumnDef } from '@/types/CompositeTable';
-import { AdjustmentReceiptForHistory, ExportReceiptForHistory, ImportReceiptForHistory, ReceiptBase } from '@/types/MaterialTypes';
+import {
+  AdjustmentReceiptForHistory,
+  ExportReceiptForHistory,
+  ImportReceiptForHistory,
+  ReceiptBase
+} from '@/types/MaterialTypes';
 import { ProductReceiptBase } from '@/types/ProductType';
 import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons';
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { Minus } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 type Props = {
-    id: string;
+  id: string;
+};
 
-  };
-
-const HistoryTable: React.FC<Props> = ({ id}) => {
-    // sorting state of the table
+const HistoryTable: React.FC<Props> = ({ id }) => {
+  // sorting state of the table
   const [sorting, setSorting] = useState<SortingState>([]);
   // column filters state of the table
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -35,19 +39,20 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
     pageSize: 10 //default page size
   });
 
-  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetProductHistory(id,{
+  const { historyReceiptList, pageMeta, isLoading, isFetching } = useGetProductHistory(id, {
     sorting: debouncedSorting,
     columnFilters: debouncedColumnFilters,
     pagination
-  })
+  });
 
-  const dataWithPage = historyReceiptList && pageMeta && {
-    data: historyReceiptList,
-    limit: pageMeta?.limit || 0,
-    page: pageMeta?.page || 0,
-    total: pageMeta?.total || 0,
-    totalFiltered: pageMeta?.total || 0
-  }
+  const dataWithPage = historyReceiptList &&
+    pageMeta && {
+      data: historyReceiptList,
+      limit: pageMeta?.limit || 0,
+      page: pageMeta?.page || 0,
+      total: pageMeta?.total || 0,
+      totalFiltered: pageMeta?.total || 0
+    };
 
   const materialImportReceiptColumn: CustomColumnDef<ProductReceiptBase>[] = [
     {
@@ -56,21 +61,23 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
       enableColumnFilter: false,
       cell: ({ row }) => {
         const navigate = useNavigate();
-        let url = ''
+        let url = '';
         const receipt = row.original;
-        if (receipt.type === 'IMPORT_RECEIPT' && 'importReceiptId' in receipt){
-            url = `/import-receipt/${receipt.importReceiptId}`
-        }else if (receipt.type === 'EXPORT_RECEIPT'  && 'exportReceiptId' in receipt){
-            url = `/export-receipt/${receipt.exportReceiptId}`
-        }else if(receipt.type === 'RECEIPT_ADJUSTMENT' && 'inventoryReportId' in receipt){
-            url = `/stocktaking/${receipt.inventoryReportId}`
+        if (receipt.type === 'IMPORT_RECEIPT' && 'importReceiptId' in receipt) {
+          url = `/import-receipt/${receipt.importReceiptId}`;
+        } else if (receipt.type === 'DISPOSED' && 'importReceiptId' in receipt) {
+          url = `/import-receipt/${receipt.importReceiptId}`;
+        } else if (receipt.type === 'EXPORT_RECEIPT' && 'exportReceiptId' in receipt) {
+          url = `/export-receipt/${receipt.exportReceiptId}`;
+        } else if (receipt.type === 'RECEIPT_ADJUSTMENT' && 'inventoryReportId' in receipt) {
+          url = `/stocktaking/${receipt.inventoryReportId}`;
         }
         const handleClick = (e: React.MouseEvent) => {
-            e.preventDefault(); // Prevent default navigation
-            window.open(url, '_blank'); // Open the link in a new tab
-          };
+          e.preventDefault(); // Prevent default navigation
+          window.open(url, '_blank'); // Open the link in a new tab
+        };
         return (
-          <div onClick={handleClick} className='text-bluePrimary underline cursor-pointer'>
+          <div onClick={handleClick} className="text-bluePrimary underline cursor-pointer">
             <div>{row.original?.code}</div>
           </div>
         );
@@ -95,7 +102,7 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
     //   cell: ({ row }) => {
     //     const isDefect = row.original.isDefect;
     //     console.log(isDefect)
-    //     let result 
+    //     let result
     //     if (isDefect === null || isDefect === undefined) {
     //       return <div>N/A</div>;
     //     }else {
@@ -132,45 +139,43 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
       }
     },
     {
-        header: 'Quantity',
-        accessorKey: 'quantityByPack',
-        enableColumnFilter: false,
-        enableSorting: false,
-        cell: ({ row }) => {
-          const quantity = row.original?.quantityByPack ?? 0; // Default to 0 if undefined
-      
-          // Determine styles and icons based on quantity
-          const isPositive = quantity > 0;
-          const isNegative = quantity < 0;
-      
-          const icon = isPositive ? (
-            <ArrowUpIcon className="h-4 w-4 text-green-500" />
-          ) : isNegative ? (
-            <ArrowDownIcon className="h-4 w-4 text-red-500" />
-          ) : <Minus className="h-4 w-4"/>;
-      
-          const textColor = isPositive
-            ? 'text-green-500'
-            : isNegative
+      header: 'Quantity',
+      accessorKey: 'quantityByPack',
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const quantity = row.original?.quantityByPack ?? 0; // Default to 0 if undefined
+
+        // Determine styles and icons based on quantity
+        const isPositive = quantity > 0;
+        const isNegative = quantity < 0;
+
+        const icon = isPositive ? (
+          <ArrowUpIcon className="h-4 w-4 text-green-500" />
+        ) : isNegative ? (
+          <ArrowDownIcon className="h-4 w-4 text-red-500" />
+        ) : (
+          <Minus className="h-4 w-4" />
+        );
+
+        const textColor = isPositive
+          ? 'text-green-500'
+          : isNegative
             ? 'text-red-500'
             : 'text-gray-700'; // Default neutral color
-      
-          const bgColor = isPositive
-            ? 'bg-green-100'
-            : isNegative
-            ? 'bg-red-100'
-            : 'bg-gray-100'; // Background color for balance indicator
-      
-          return (
-            <div className={`flex items-center space-x-2 p-2 rounded `}>
-              {icon}
-              <div className={`font-semibold ${textColor}`}>
-                {quantity === 0 ? '0' : Math.abs(quantity)}
-              </div>
+
+        const bgColor = isPositive ? 'bg-green-100' : isNegative ? 'bg-red-100' : 'bg-gray-100'; // Background color for balance indicator
+
+        return (
+          <div className={`flex items-center space-x-2 p-2 rounded `}>
+            {icon}
+            <div className={`font-semibold ${textColor}`}>
+              {quantity === 0 ? '0' : Math.abs(quantity)}
             </div>
-          );
-        },
-      },
+          </div>
+        );
+      }
+    }
     // {
     //   header: 'Status',
     //   accessorKey: 'status',
@@ -206,10 +211,8 @@ const HistoryTable: React.FC<Props> = ({ id}) => {
           />
         </div>
       </div>
-
-
     </div>
-  )
-}
+  );
+};
 
-export default HistoryTable
+export default HistoryTable;
